@@ -2,7 +2,7 @@ PKGS := github.com/mailchain/mailchain/...
 SRCDIRS := $(shell go list -f '{{.Dir}}' $(PKGS))
 GO := go
 
-check: test vet gofmt misspell unconvert ineffassign unparam
+check: test vet gofmt misspell unconvert ineffassign unparam sec
 
 build:
 	go build $(PKGS)

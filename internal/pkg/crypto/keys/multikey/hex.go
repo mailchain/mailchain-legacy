@@ -26,12 +26,11 @@ func init() {
 	})
 }
 
-func registerPrivateKeyFromHex(keyType string, privateKeyFromHex privateKeyFromHex) error {
+func registerPrivateKeyFromHex(keyType string, privateKeyFromHex privateKeyFromHex) {
 	_, ok := privateKeyFromHexTable[keyType]
 	if ok {
-		return errors.Errorf("func for key type %v already registered", keyType)
+		panic(errors.Errorf("func for key type %v already registered", keyType))
 	}
 
 	privateKeyFromHexTable[keyType] = privateKeyFromHex
-	return nil
 }

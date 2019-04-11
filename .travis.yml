@@ -6,7 +6,7 @@ go:
   - tip
 env:
   - GO111MODULE=on  
-dist: trusty
+dist: xenial
 install: true
 script:
   - make build

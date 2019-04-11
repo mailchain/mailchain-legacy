@@ -20,6 +20,10 @@ misspell:
 		-error \
 		*.md *.go
 
+sec:
+	$(GO) get github.com/securego/gosec/cmd/gosec/...
+	gosec $(PKGS)
+
 unconvert:
 	$(GO) get github.com/mdempsky/unconvert
 	unconvert -v $(PKGS)

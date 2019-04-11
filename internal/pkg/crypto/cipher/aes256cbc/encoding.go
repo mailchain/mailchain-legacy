@@ -37,10 +37,7 @@ func BytesDecode(raw []byte) (*encryptedData, error) {
 		return nil, errors.Errorf("invalid prefix")
 	}
 	raw = raw[1:]
-	decompressedKey, err := decompress(raw[ivLen : ivLen+pubKeyBytesLenCompressed])
-	if err != nil {
-		return nil, err
-	}
+	decompressedKey := decompress(raw[ivLen : ivLen+pubKeyBytesLenCompressed])
 	// iv and mac must be created this way to ensure the cap of the array is not different
 	iv := make([]byte, ivLen)
 	copy(iv, raw[:ivLen])

@@ -31,7 +31,7 @@ func compress(publicKey []byte) ([]byte, error) {
 }
 
 // decompress a 33 byte compressed public key
-func decompress(publicKey []byte) ([]byte, error) {
+func decompress(publicKey []byte) []byte {
 	x, y := secp256k1.DecompressPubkey(publicKey)
-	return elliptic.Marshal(ecies.DefaultCurve, x, y), nil
+	return elliptic.Marshal(ecies.DefaultCurve, x, y)
 }

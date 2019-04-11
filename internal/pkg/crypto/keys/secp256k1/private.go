@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/crypto/ecies"
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
 	"github.com/pkg/errors"
 )
@@ -45,4 +46,13 @@ func PrivateKeyFromHex(hexkey string) (*PrivateKey, error) {
 		return nil, errors.New("invalid hex string")
 	}
 	return PrivateKeyFromBytes(b)
+}
+
+// TODO: hang off key object instead
+func PrivateKeyToECIES(pk keys.PrivateKey) (*ecies.PrivateKey, error) {
+	rpk, err := crypto.ToECDSA(pk.Bytes())
+	if err != nil {
+		return nil, errors.Errorf("could not convert private key")
+	}
+	return ecies.ImportECDSA(rpk), nil
 }

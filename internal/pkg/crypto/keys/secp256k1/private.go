@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/pkg/errors"
 )
 
 // PrivateKey based on the secp256k1 curve
@@ -19,4 +20,13 @@ func (pk PrivateKey) Bytes() []byte {
 // PrivateKeyFromECDSA get a private key from an ecdsa.PrivateKey
 func PrivateKeyFromECDSA(pk ecdsa.PrivateKey) PrivateKey {
 	return PrivateKey{ecdsa: pk}
+}
+
+// PrivateKeyFromBytes get a private key from []byte
+func PrivateKeyFromBytes(pk []byte) (*PrivateKey, error) {
+	rpk, err := crypto.ToECDSA(pk)
+	if err != nil {
+		return nil, errors.Errorf("could not convert private key")
+	}
+	return &PrivateKey{ecdsa: *rpk}, nil
 }

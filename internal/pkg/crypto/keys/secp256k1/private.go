@@ -56,3 +56,12 @@ func PrivateKeyToECIES(pk keys.PrivateKey) (*ecies.PrivateKey, error) {
 	}
 	return ecies.ImportECDSA(rpk), nil
 }
+
+// TODO: hang off key object instead
+func PrivateKeyToECDSA(pk keys.PrivateKey) (*ecdsa.PrivateKey, error) {
+	rpk, err := crypto.ToECDSA(pk.Bytes())
+	if err != nil {
+		return nil, errors.Errorf("could not convert private key")
+	}
+	return rpk, nil
+}

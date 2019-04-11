@@ -6,6 +6,7 @@ go:
   - tip
 env:
   - GO111MODULE=on  
+dist: trusty
 install: true
 script:
   - make check

@@ -3,6 +3,7 @@ package secp256k1
 import (
 	"crypto/ecdsa"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/pkg/errors"
 )
@@ -29,4 +30,19 @@ func PublicKeyFromBytes(pk []byte) (*PublicKey, error) {
 		return nil, errors.WithMessage(err, "could not convert pk")
 	}
 	return &PublicKey{ecdsa: *rpk}, nil
+}
+
+// PublicKeyFromHex create a public key from hex
+func PublicKeyFromHex(hex string) (*PublicKey, error) {
+	keyBytes, err := hexutil.Decode(hex)
+	if err != nil {
+		return nil, err
+	}
+
+	publicKey, err := PublicKeyFromBytes(keyBytes)
+	if err != nil {
+		return nil, errors.WithMessage(err, "can not unmarshal public-key")
+	}
+
+	return publicKey, nil
 }

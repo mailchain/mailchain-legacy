@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
 	"github.com/pkg/errors"
 )
 
@@ -16,6 +17,11 @@ type PrivateKey struct {
 // Bytes returns the byte representation of the private key
 func (pk PrivateKey) Bytes() []byte {
 	return crypto.FromECDSA(&pk.ecdsa)
+}
+
+// PublicKey return the public key that is derived from the private key
+func (pk PrivateKey) PublicKey() keys.PublicKey {
+	return PublicKey{ecdsa: pk.ecdsa.PublicKey}
 }
 
 // PrivateKeyFromECDSA get a private key from an ecdsa.PrivateKey

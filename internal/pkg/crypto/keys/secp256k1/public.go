@@ -5,6 +5,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/crypto/ecies"
+	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
 	"github.com/pkg/errors"
 )
 
@@ -45,4 +47,13 @@ func PublicKeyFromHex(hex string) (*PublicKey, error) {
 	}
 
 	return publicKey, nil
+}
+
+// TODO: hang off object instead
+func PublicKeyToECIES(pk keys.PublicKey) (*ecies.PublicKey, error) {
+	rpk, err := crypto.DecompressPubkey(pk.Bytes())
+	if err != nil {
+		return nil, errors.WithMessage(err, "could not convert pk")
+	}
+	return ecies.ImportECDSAPublic(rpk), nil
 }

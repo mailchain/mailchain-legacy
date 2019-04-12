@@ -21,7 +21,7 @@ misspell:
 		*.md *.go
 
 sec:
-	curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $GOPATH/bin 1.3.0
+	curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(GOPATH)/bin 1.3.0
 	gosec $(PKGS)
 
 unconvert:

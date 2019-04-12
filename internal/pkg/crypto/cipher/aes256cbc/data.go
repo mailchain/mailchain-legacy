@@ -9,7 +9,7 @@ type encryptedData struct {
 	MessageAuthenticationCode []byte `json:"mac"`
 }
 
-func (e encryptedData) verify() error {
+func (e *encryptedData) verify() error {
 	if len(e.InitializationVector) != 16 {
 		return errors.Errorf("`InitializationVector` must be 16")
 	}

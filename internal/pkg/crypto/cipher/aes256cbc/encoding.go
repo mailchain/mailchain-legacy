@@ -5,8 +5,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// BytesEncode encode the encrypted data to the hex format
-func BytesEncode(data encryptedData) ([]byte, error) {
+// bytesEncode encode the encrypted data to the hex format
+func bytesEncode(data *encryptedData) ([]byte, error) {
 	if err := data.verify(); err != nil {
 		return nil, errors.WithMessage(err, "encrypted data is invalid")
 	}
@@ -23,8 +23,8 @@ func BytesEncode(data encryptedData) ([]byte, error) {
 	return encodedData, nil
 }
 
-// BytesDecode convert the hex format in to the encrypted data format
-func BytesDecode(raw []byte) (*encryptedData, error) {
+// bytesDecode convert the hex format in to the encrypted data format
+func bytesDecode(raw []byte) (*encryptedData, error) {
 	macLen := 32
 	ivLen := 16
 	if len(raw) == 0 {

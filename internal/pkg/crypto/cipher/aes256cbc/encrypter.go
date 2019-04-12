@@ -14,7 +14,7 @@ import (
 )
 
 // Encrypt data using recipient public key with AES in CBC mode.  Generate an ephemeral private key and IV.
-func Encrypt(recipientPublicKey keys.PublicKey, message []byte) (*encryptedData, error) {
+func Encrypt(recipientPublicKey keys.PublicKey, message []byte) ([]byte, error) {
 	rpk, err := secp256k1.PublicKeyToECIES(recipientPublicKey)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert pk")
@@ -28,10 +28,15 @@ func Encrypt(recipientPublicKey keys.PublicKey, message []byte) (*encryptedData,
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not generate iv")
 	}
-	return encrypt(ephemeral, rpk, message, iv)
+	encryptedData, err := encrypt(ephemeral, rpk, message, iv)
+	if err != nil {
+		return nil, errors.WithMessage(err, "could not encrypt data")
+	}
+
+	return bytesEncode(encryptedData)
 }
 
-func encrypt(ephemeralPrivateKey *ecies.PrivateKey, pub *ecies.PublicKey, input []byte, iv []byte) (*encryptedData, error) {
+func encrypt(ephemeralPrivateKey *ecies.PrivateKey, pub *ecies.PublicKey, input, iv []byte) (*encryptedData, error) {
 	ephemeralPublicKey := ephemeralPrivateKey.PublicKey
 	sharedSecret, err := deriveSharedSecret(pub, ephemeralPrivateKey)
 	if err != nil {

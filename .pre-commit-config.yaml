@@ -8,7 +8,6 @@ repos:
 - repo: https://github.com/dnephin/pre-commit-golang
   sha: v0.3.3
   hooks:
-  - id: go-build
   - id: go-unit-tests
   - id: golangci-lint
 - repo: https://github.com/Lucas-C/pre-commit-hooks-go

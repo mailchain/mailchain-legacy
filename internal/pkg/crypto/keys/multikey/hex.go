@@ -7,8 +7,14 @@ import (
 )
 
 // PrivateKeyFromHex get private key from hex.
-func PrivateKeyFromHex(hex string, keyType string) (keys.PrivateKey, error) {
-	f, ok := privateKeyFromHexTable[keyType]
+func PrivateKeyFromHex(hex, keyType string) (keys.PrivateKey, error) {
+	table := map[string]privateKeyFromHex{
+		SECP256K1: func(hex string) (keys.PrivateKey, error) {
+			return secp256k1.PrivateKeyFromHex(hex)
+		},
+	}
+
+	f, ok := table[keyType]
 	if !ok {
 		return nil, errors.Errorf("func for key type %v not registered", keyType)
 	}
@@ -16,21 +22,3 @@ func PrivateKeyFromHex(hex string, keyType string) (keys.PrivateKey, error) {
 }
 
 type privateKeyFromHex func(hex string) (keys.PrivateKey, error)
-
-// privateKeyFromHexTable maps key types values to hash functions.
-var privateKeyFromHexTable = make(map[string]privateKeyFromHex)
-
-func init() {
-	registerPrivateKeyFromHex(SECP256K1, func(hex string) (keys.PrivateKey, error) {
-		return secp256k1.PrivateKeyFromHex(hex)
-	})
-}
-
-func registerPrivateKeyFromHex(keyType string, privateKeyFromHex privateKeyFromHex) {
-	_, ok := privateKeyFromHexTable[keyType]
-	if ok {
-		panic(errors.Errorf("func for key type %v already registered", keyType))
-	}
-
-	privateKeyFromHexTable[keyType] = privateKeyFromHex
-}

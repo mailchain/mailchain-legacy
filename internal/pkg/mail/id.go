@@ -39,10 +39,10 @@ func FromHexString(hex string) (ID, error) {
 	return ID(id), nil
 }
 
-// String create a multihash representation of ID
-func (id ID) String() string {
+// HexString create a multihash representation of ID as hex string
+func (id ID) HexString() string {
 	mh := multihash.Multihash(id)
-	return mh.String()
+	return mh.HexString()
 }
 
 // ID create the mail message ID header

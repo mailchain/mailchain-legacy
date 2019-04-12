@@ -41,8 +41,11 @@ run:
   # If invoked with -mod=vendor, the go command assumes that the vendor
   # directory holds the correct copies of dependencies and ignores
   # the dependency descriptions in go.mod.
-  # modules-download-mode: vendor
+  modules-download-mode: vendor
 
+service:
+  prepare:
+    - GO111MODULE=on go mod vendor
 # all available settings of specific linters
 linters-settings:
   golint:
@@ -75,7 +78,7 @@ linters-settings:
       - experimental
     disabled-checks:
       - wrapperFunc  
-
+  golangci-lint-version: 1.16.x
 linters:
   presets:
     - bugs

@@ -3,11 +3,10 @@ go_import_path: github.com/mailchain/mailchain
 go:
   - 1.11.x
   - 1.12.x
-  - tip
 env:
-  - GO111MODULE=on  
+  - GO111MODULE=on
 dist: xenial
 install: true
 script:
   - make build
-  - make check
+  - make test

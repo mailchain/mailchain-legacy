@@ -24,6 +24,7 @@ run:
   skip-dirs:
     - internal/pkg/testutil
     - vendor
+    - github.com/ethereum
     
   # which files to skip: they will be analyzed, but issues from them
   # won't be reported. Default value is empty list, but there is
@@ -43,9 +44,6 @@ run:
   # the dependency descriptions in go.mod.
   # modules-download-mode: readonly
 
-service:
-  prepare:
-    - GO111MODULE=on go mod vendor
 # all available settings of specific linters
 linters-settings:
   golint:

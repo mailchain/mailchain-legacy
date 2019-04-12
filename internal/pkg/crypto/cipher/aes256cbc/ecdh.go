@@ -16,7 +16,7 @@ import (
 func deriveSharedSecret(pub *ecies.PublicKey, private *ecies.PrivateKey) ([]byte, error) {
 	x, _ := pub.ScalarMult(pub.X, pub.Y, private.D.Bytes())
 	if x == nil {
-		return nil, errors.New("Failed to derive shared secret")
+		return nil, errors.New("failed to derive shared secret")
 	}
 	return x.Bytes(), nil
 }
@@ -34,7 +34,7 @@ func generateIV() ([]byte, error) {
 	return iv, err
 }
 
-func generateMac(macKey []byte, iv []byte, ephemeralPublicKey ecies.PublicKey, ciphertext []byte) ([]byte, error) {
+func generateMac(macKey, iv []byte, ephemeralPublicKey ecies.PublicKey, ciphertext []byte) ([]byte, error) {
 	// TODO: curve is hard code yet the type is stored in the keystore. Can aes256cbc work with other curves?
 	pub := elliptic.Marshal(ecies.DefaultCurve, ephemeralPublicKey.X, ephemeralPublicKey.Y)
 	dataToMac := append(iv, pub...)

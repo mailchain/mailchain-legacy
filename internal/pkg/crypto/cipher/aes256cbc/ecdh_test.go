@@ -1,7 +1,6 @@
 package aes256cbc
 
 import (
-	"bytes"
 	"encoding/hex"
 	"log"
 	"testing"
@@ -11,7 +10,6 @@ import (
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys/secp256k1"
 	"github.com/mailchain/mailchain/internal/pkg/testutil"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -71,86 +69,6 @@ func TestGenerateMac(t *testing.T) {
 	assert.Equal("4367ae8a54b65f99e4f2fd315ba65bf85e1138967a7bea451faf80f75cdf3404", hex.EncodeToString(actual))
 }
 
-func TestEncryptEncodeDecodeDecrypt(t *testing.T) {
-	assert := assert.New(t)
-	logrus.SetLevel(logrus.DebugLevel)
-	cases := []struct {
-		name                string
-		recipientPublicKey  keys.PublicKey
-		recipientPrivateKey keys.PrivateKey
-		data                []byte
-		err                 error
-	}{
-		{"to-sofia-short-text",
-			testutil.SofiaPublicKey,
-			testutil.SofiaPrivateKey,
-			[]byte("Hi Sofia"),
-			nil,
-		},
-		{"to-sofia-medium-text",
-			testutil.SofiaPublicKey,
-			testutil.SofiaPrivateKey,
-			[]byte("Hi Sofia, this is a little bit of a longer message to make sure there are no problems"),
-			nil,
-		},
-		{"to-charlotte-short-text",
-			testutil.CharlottePublicKey,
-			testutil.CharlottePrivateKey,
-			[]byte("Hi Charlotte"),
-			nil,
-		}, {"to-charlotte-medium-text",
-			testutil.CharlottePublicKey,
-			testutil.CharlottePrivateKey,
-			[]byte("Hi Charlotte, this is a little bit of a longer message to make sure there are no problems"),
-			nil,
-		},
-	}
-
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			encrypted, err := Encrypt(tc.recipientPublicKey, tc.data)
-			assert.Equal(tc.err, err)
-			assert.NotNil(encrypted)
-			encodedBytes, err := BytesEncode(*encrypted)
-			assert.NoError(err)
-			logrus.Debug(hex.EncodeToString(encodedBytes))
-			toDecrypt, err := BytesDecode(encodedBytes)
-			assert.NoError(err)
-
-			toDecryptCopy := encryptedData{
-				Ciphertext:                encrypted.Ciphertext,
-				EphemeralPublicKey:        encrypted.EphemeralPublicKey,
-				InitializationVector:      encrypted.InitializationVector,
-				MessageAuthenticationCode: encrypted.MessageAuthenticationCode,
-			}
-
-			assert.Equal(encrypted, toDecrypt)
-			assert.True(bytes.Equal(encrypted.Ciphertext, toDecryptCopy.Ciphertext))
-			assert.True(bytes.Equal(encrypted.EphemeralPublicKey, toDecryptCopy.EphemeralPublicKey))
-			assert.True(bytes.Equal(encrypted.InitializationVector, toDecryptCopy.InitializationVector))
-			assert.True(bytes.Equal(encrypted.MessageAuthenticationCode, toDecryptCopy.MessageAuthenticationCode))
-
-			assert.Equal(hex.EncodeToString(encrypted.Ciphertext), hex.EncodeToString(toDecryptCopy.Ciphertext))
-			assert.Equal(hex.EncodeToString(encrypted.EphemeralPublicKey), hex.EncodeToString(toDecryptCopy.EphemeralPublicKey))
-			assert.Equal(hex.EncodeToString(encrypted.InitializationVector), hex.EncodeToString(toDecryptCopy.InitializationVector))
-			assert.Equal(hex.EncodeToString(encrypted.MessageAuthenticationCode), hex.EncodeToString(toDecryptCopy.MessageAuthenticationCode))
-
-			nonEncodedDecrypt, err := decryptEncryptedData(tc.recipientPrivateKey, *encrypted)
-			assert.Equal(tc.err, err)
-			assert.Equal(tc.data, nonEncodedDecrypt)
-
-			decryptedCopy, err := decryptEncryptedData(tc.recipientPrivateKey, toDecryptCopy)
-			assert.Equal(tc.err, err)
-			assert.Equal(tc.data, decryptedCopy)
-
-			decrypted, err := decryptEncryptedData(tc.recipientPrivateKey, *toDecrypt)
-			assert.Equal(tc.err, err)
-			assert.Equal(tc.data, decrypted)
-
-		})
-	}
-}
-
 func TestEncryptDecrypt(t *testing.T) {
 	assert := assert.New(t)
 	cases := []struct {
@@ -189,10 +107,11 @@ func TestEncryptDecrypt(t *testing.T) {
 			encrypted, err := Encrypt(tc.recipientPublicKey, tc.data)
 			assert.Equal(tc.err, err)
 			assert.NotNil(encrypted)
+			decrypter := Decrypter{&tc.recipientPrivateKey}
 
-			decrypted, err := decryptEncryptedData(tc.recipientPrivateKey, *encrypted)
+			decrypted, err := decrypter.Decrypt(encrypted)
 			assert.Equal(tc.err, err)
-			assert.Equal(tc.data, decrypted)
+			assert.Equal(tc.data, []byte(decrypted))
 		})
 	}
 }

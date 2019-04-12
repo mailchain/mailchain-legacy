@@ -14,7 +14,7 @@ test:
 
 license:
 	$(GO) get github.com/google/addlicense
-	addlicense -l mit -c Finobo .
+	addlicense -l apache -c Finobo .
 
 proto:
 	rm -f ./internal/pkg/mail/*.pb.go

@@ -13,12 +13,12 @@ func TestBytesEncode(t *testing.T) {
 	assert := assert.New(t)
 	cases := []struct {
 		name     string
-		original encryptedData
+		original *encryptedData
 		expected []byte
 		err      error
 	}{
 		{"tc1",
-			encryptedData{
+			&encryptedData{
 				Ciphertext:                testutil.MustHexDecodeString("a6537a3781ed4927228bd7d80d1d6f07"),
 				EphemeralPublicKey:        testutil.MustHexDecodeString("049dce5444ad23a68a76dd1821b9b2b3a9c6e53d464420e2363a80df94cc7b05f5c0896985fc8156846a42d1b922f253e1e2537b9279cafe44bce66552cbc58c04"),
 				InitializationVector:      testutil.MustHexDecodeString("b3d72325f94ed8b9e1b7f28e2fb26492"),
@@ -28,7 +28,7 @@ func TestBytesEncode(t *testing.T) {
 			nil,
 		},
 		{"tc2",
-			encryptedData{
+			&encryptedData{
 				Ciphertext:                testutil.MustHexDecodeString("9110ac2e87fcbe9c73faf41183d23a27"),
 				EphemeralPublicKey:        testutil.MustHexDecodeString("0487a2cd646044a0f9639aa3b50aa26b170f21fbedd20e079ab890d3a9c880dea4cbdaab93155fa43441dca3e7e94dc2ff67882ec4908e82b0496821cffb4d7cc8"),
 				InitializationVector:      testutil.MustHexDecodeString("f8307114bb283da496056a8502376cdf"),
@@ -40,7 +40,7 @@ func TestBytesEncode(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, err := BytesEncode(tc.original)
+			actual, err := bytesEncode(tc.original)
 			assert.EqualValues(hex.EncodeToString(tc.expected), hex.EncodeToString(actual))
 			assert.Equal(tc.err, err)
 		})
@@ -78,7 +78,7 @@ func TestBytesDecode(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, err := BytesDecode(tc.original)
+			actual, err := bytesDecode(tc.original)
 			assert.EqualValues(tc.expected.Ciphertext, actual.Ciphertext)
 			assert.EqualValues(tc.expected.InitializationVector, actual.InitializationVector)
 			assert.EqualValues(tc.expected.MessageAuthenticationCode, actual.MessageAuthenticationCode)
@@ -107,10 +107,10 @@ func TestEncodeDecode(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			decoded, err := BytesDecode(tc.encodedData)
+			decoded, err := bytesDecode(tc.encodedData)
 			assert.NoError(err)
 
-			encoded, err := BytesEncode(*decoded)
+			encoded, err := bytesEncode(decoded)
 			assert.NoError(err)
 			assert.EqualValues(tc.encodedData, encoded)
 			assert.True(bytes.Equal(tc.encodedData, encoded))
@@ -147,9 +147,9 @@ func TestDecodeEncode(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			encoded, err := BytesEncode(*tc.encryptedData)
+			encoded, err := bytesEncode(tc.encryptedData)
 			assert.NoError(err)
-			actual, err := BytesDecode(encoded)
+			actual, err := bytesDecode(encoded)
 			assert.NoError(err)
 			assert.EqualValues(len(tc.encryptedData.Ciphertext), cap(actual.Ciphertext))
 			assert.EqualValues(len(tc.encryptedData.InitializationVector), cap(actual.InitializationVector))

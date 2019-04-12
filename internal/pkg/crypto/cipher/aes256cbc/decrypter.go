@@ -24,15 +24,15 @@ type Decrypter struct {
 
 // Decrypt data using recipient private key with AES in CBC mode.
 func (d Decrypter) Decrypt(data mc.EncryptedContent) (mc.PlainContent, error) {
-	encryptedData, err := BytesDecode(data)
+	encryptedData, err := bytesDecode(data)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert encryptedData")
 	}
 
-	return decryptEncryptedData(*d.privateKey, *encryptedData)
+	return decryptEncryptedData(*d.privateKey, encryptedData)
 }
 
-func decryptEncryptedData(privateKey keys.PrivateKey, data encryptedData) ([]byte, error) {
+func decryptEncryptedData(privateKey keys.PrivateKey, data *encryptedData) ([]byte, error) {
 	tmpEphemeralPublicKey, err := secp256k1.PublicKeyFromBytes(data.EphemeralPublicKey)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert ephemeralPublicKey")
@@ -62,7 +62,7 @@ func decryptEncryptedData(privateKey keys.PrivateKey, data encryptedData) ([]byt
 	return decryptCBC(encryptionKey, data.InitializationVector, data.Ciphertext)
 }
 
-func decryptCBC(key []byte, iv []byte, ciphertext []byte) ([]byte, error) {
+func decryptCBC(key, iv, ciphertext []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err

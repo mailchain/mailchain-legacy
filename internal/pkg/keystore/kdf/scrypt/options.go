@@ -48,9 +48,9 @@ func DefaultDeriveOptions() DeriveOptionsBuilder {
 	}
 }
 
-func FromEncryptedKey(len int, n int, p int, r int, salt []byte) DeriveOptionsBuilder {
+func FromEncryptedKey(length, n, p, r int, salt []byte) DeriveOptionsBuilder {
 	return func(o *DeriveOpts) {
-		o.Len = len
+		o.Len = length
 		o.N = n
 		o.P = p
 		o.R = r

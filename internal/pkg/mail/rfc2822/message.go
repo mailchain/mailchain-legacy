@@ -27,7 +27,7 @@ import (
 )
 
 func messageIDHeaderValue(id mail.ID) string {
-	return fmt.Sprintf("%s@mailchain", id.String())
+	return fmt.Sprintf("%s@mailchain", id.HexString())
 }
 
 func EncodeNewMessage(message *mail.Message) ([]byte, error) {

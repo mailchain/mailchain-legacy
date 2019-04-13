@@ -1,16 +1,57 @@
 package mailbox
 
 import (
+	"bytes"
 	"io/ioutil"
 	"net/url"
 	"strings"
 
+	"github.com/gogo/protobuf/proto"
 	"github.com/mailchain/mailchain/internal/pkg/crypto"
 	"github.com/mailchain/mailchain/internal/pkg/crypto/cipher"
+	"github.com/mailchain/mailchain/internal/pkg/encoding"
 	"github.com/mailchain/mailchain/internal/pkg/mail"
+	"github.com/mailchain/mailchain/internal/pkg/mail/rfc2822"
 	"github.com/pkg/errors"
 	"gopkg.in/resty.v1"
 )
+
+// ReadMessage gets the messages, decrypts and checks to see if it's valid
+// - Check transaction data
+// - Decrypt location
+// - Get message
+// - Decrypt message
+// - Check hash
+func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, error) {
+	if txData[0] != encoding.Protobuf {
+		return nil, errors.Errorf("invalid encoding prefix")
+	}
+	var data mail.Data
+	if err := proto.Unmarshal(txData[1:], &data); err != nil {
+		return nil, errors.WithMessage(err, "could not unmarshal to data")
+	}
+
+	decryptedLocation, err := decryptLocation(&data, decrypter)
+	if err != nil {
+		return nil, err
+	}
+	toDecrypt, err := getMessage(decryptedLocation)
+	if err != nil {
+		return nil, errors.WithMessage(err, "could not get message from `location`")
+	}
+	rawMsg, err := decrypter.Decrypt(toDecrypt)
+	if err != nil {
+		return nil, errors.WithMessage(err, "could not decrypt transaction data")
+	}
+	messageHash, err := crypto.CreateMessageHash(rawMsg)
+	if err != nil {
+		return nil, errors.WithMessage(err, "could not create message hash")
+	}
+	if !bytes.Equal(messageHash, data.Hash) {
+		return nil, errors.Errorf("message-hash invalid")
+	}
+	return rfc2822.DecodeNewMessage(bytes.NewReader(rawMsg))
+}
 
 // decryptLocation return the location in readable form
 func decryptLocation(d *mail.Data, decrypter cipher.Decrypter) (string, error) {

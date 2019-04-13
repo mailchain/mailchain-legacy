@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate mockgen -source=crypto.go -package=mocks -destination=$PACKAGE_PATH/internal/pkg/testutil/mocks/cipher.go
+//go:generate mockgen -source=cipher.go -package=mocks -destination=$PACKAGE_PATH/internal/pkg/testutil/mocks/cipher.go
 package cipher
 
 import (

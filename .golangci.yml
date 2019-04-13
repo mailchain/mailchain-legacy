@@ -87,6 +87,7 @@ linters:
 service:
   prepare:
     - export GO111MODULE=on
+    - echo $GO111MODULE
     - go list -e $(go list -m all)
     - go get github.com/ethereum/go-ethereum
     - go list -e -json -compiled -test=false -export=false -deps=true -find=false -- ./...

@@ -21,19 +21,19 @@ import (
 	"github.com/pkg/errors"
 )
 
-// PrivateKeyFromHex get private key from hex.
-func PrivateKeyFromHex(hex, keyType string) (keys.PrivateKey, error) {
-	table := map[string]privateKeyFromHex{
-		encoding.SECP256K1: func(hex string) (keys.PrivateKey, error) {
-			return secp256k1.PrivateKeyFromHex(hex)
+type keyFunc func(data []byte) (keys.PrivateKey, error)
+
+// PrivateKeyFromBytes use the correct function to get the private key from bytes
+func PrivateKeyFromBytes(keyType string, data []byte) (keys.PrivateKey, error) {
+	table := map[string]keyFunc{
+		encoding.SECP256K1: func(data []byte) (keys.PrivateKey, error) {
+			return secp256k1.PrivateKeyFromBytes(data)
 		},
 	}
 
-	f, ok := table[keyType]
+	keyFunc, ok := table[keyType]
 	if !ok {
-		return nil, errors.Errorf("func for key type %v not registered", keyType)
+		return nil, errors.Errorf("unsupported curve type")
 	}
-	return f(hex)
+	return keyFunc(data)
 }
-
-type privateKeyFromHex func(hex string) (keys.PrivateKey, error)

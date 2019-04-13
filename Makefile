@@ -13,8 +13,7 @@ test: genmock unit-test
 unit-test:
 	$(GO) test $(PKGS)
 
-license:
-	$(GO) get github.com/google/addlicense
+license: .FORCE
 	addlicense -l apache -c Finobo ./internal
 
 proto:
@@ -23,3 +22,8 @@ proto:
 
 genmock:
 	sh ./scripts/generate.sh
+
+lint: 
+	golangci-lint run --fix
+
+.FORCE:

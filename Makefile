@@ -9,7 +9,8 @@ clean:
 build:
 	$(GO) build $(PKGS)
 
-test:
+test: genmock unit-test
+unit-test:
 	$(GO) test $(PKGS)
 
 license:
@@ -19,3 +20,6 @@ license:
 proto:
 	rm -f ./internal/pkg/mail/*.pb.go
 	protoc ./internal/pkg/mail/data.proto -I. --go_out=:.
+
+genmock:
+	sh ./scripts/generate.sh

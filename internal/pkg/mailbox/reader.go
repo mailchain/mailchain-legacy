@@ -3,10 +3,33 @@ package mailbox
 import (
 	"io/ioutil"
 	"net/url"
+	"strings"
 
+	"github.com/mailchain/mailchain/internal/pkg/crypto"
 	"github.com/pkg/errors"
 	"gopkg.in/resty.v1"
 )
+
+// getMessage get the message contents from the location and perform location hash check
+func getMessage(location string) ([]byte, error) {
+	msg, err := getAnyMessage(location)
+	if err != nil {
+		return nil, err
+	}
+
+	hash, err := crypto.CreateLocationHash(msg)
+	if err != nil {
+		return nil, err
+	}
+	parts := strings.Split(location, "-")
+	if len(parts) < 1 {
+		return nil, errors.Errorf("could not safely extract hash from location")
+	}
+	if hash.String() != parts[len(parts)-1] {
+		return nil, errors.Errorf("hash does not match contents")
+	}
+	return msg, nil
+}
 
 func getAnyMessage(location string) ([]byte, error) {
 	parsed, err := url.Parse(location)

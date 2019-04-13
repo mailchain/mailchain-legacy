@@ -6,9 +6,20 @@ import (
 	"strings"
 
 	"github.com/mailchain/mailchain/internal/pkg/crypto"
+	"github.com/mailchain/mailchain/internal/pkg/crypto/cipher"
+	"github.com/mailchain/mailchain/internal/pkg/mail"
 	"github.com/pkg/errors"
 	"gopkg.in/resty.v1"
 )
+
+// decryptLocation return the location in readable form
+func decryptLocation(d *mail.Data, decrypter cipher.Decrypter) (string, error) {
+	decryptedLocation, err := decrypter.Decrypt(d.EncryptedLocation)
+	if err != nil {
+		return "", errors.WithMessage(err, "could not decrypt location")
+	}
+	return string(decryptedLocation), nil
+}
 
 // getMessage get the message contents from the location and perform location hash check
 func getMessage(location string) ([]byte, error) {

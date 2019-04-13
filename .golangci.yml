@@ -88,7 +88,7 @@ service:
   prepare:
     # - export GO111MODULE=on
     # - echo $GO111MODULE
-    - GO111MODULE=on go list -e $(go list all)
+    - go list -e $(go list all)
     - GO111MODULE=on go get github.com/ethereum/go-ethereum
     # - go list -e -json -compiled -test=false -export=false -deps=true -find=false -- ./...
     - golangci-lint run -v

@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/gogo/protobuf/proto"
+	"github.com/mailchain/mailchain/internal/pkg/crypto/cipher/aes256cbc"
+	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
 	"github.com/mailchain/mailchain/internal/pkg/encoding"
 	"github.com/pkg/errors"
 )
@@ -27,4 +29,14 @@ func prefixedBytes(data proto.Message) ([]byte, error) {
 	copy(prefixedProto[1:], protoData)
 
 	return prefixedProto, nil
+}
+
+// encryptLocation is encrypted with supplied public key and location string
+func encryptLocation(pk keys.PublicKey, location string) ([]byte, error) {
+	// TODO: encryptLocation hard coded to aes256cbc
+	encryptedLocation, err := aes256cbc.Encrypt(pk, []byte(location))
+	if err != nil {
+		return nil, errors.WithMessage(err, "could not encrypt data")
+	}
+	return encryptedLocation, nil
 }

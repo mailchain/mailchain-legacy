@@ -17,13 +17,14 @@ package multikey
 import (
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys/secp256k1"
+	"github.com/mailchain/mailchain/internal/pkg/encoding"
 	"github.com/pkg/errors"
 )
 
 // PrivateKeyFromHex get private key from hex.
 func PrivateKeyFromHex(hex, keyType string) (keys.PrivateKey, error) {
 	table := map[string]privateKeyFromHex{
-		SECP256K1: func(hex string) (keys.PrivateKey, error) {
+		encoding.SECP256K1: func(hex string) (keys.PrivateKey, error) {
 			return secp256k1.PrivateKeyFromHex(hex)
 		},
 	}

@@ -40,7 +40,7 @@ run:
   # If invoked with -mod=vendor, the go command assumes that the vendor
   # directory holds the correct copies of dependencies and ignores
   # the dependency descriptions in go.mod.
-  # modules-download-mode: readonly
+  modules-download-mode: vendor
 
 # all available settings of specific linters
 linters-settings:
@@ -86,9 +86,9 @@ linters:
 
 service:
   prepare:
-    - export GO111MODULE=on
-    - echo $GO111MODULE
-    - go list -e $(go list -m all)
-    - go get github.com/ethereum/go-ethereum
-    - go list -e -json -compiled -test=false -export=false -deps=true -find=false -- ./...
-    - golangci-lint run -v
+    # - export GO111MODULE=on
+    # - echo $GO111MODULE
+    - GO111MODULE=on go list -e $(go list -m all)
+    - GO111MODULE=on go get github.com/ethereum/go-ethereum
+    - GO111MODULE=on go list -e -json -compiled -test=false -export=false -deps=true -find=false -- ./...
+    - GO111MODULE=on golangci-lint run -v

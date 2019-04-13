@@ -87,3 +87,4 @@ linters:
 service:
   prepare:
     - go get github.com/ethereum/go-ethereum
+    - go build ./..

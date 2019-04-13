@@ -24,3 +24,7 @@ const (
 	Protobuf  byte = 0x50
 	AES256CBC byte = 0x2e // TODO: Not merged yet to multihash
 )
+
+const (
+	Ethereum = "ethereum"
+)

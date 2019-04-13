@@ -9,4 +9,4 @@ dist: xenial
 install: true
 script:
   - make build
-  - make test
+  - make unit-test

@@ -86,8 +86,7 @@ linters:
 
 service:
   prepare:
-    - GO111MODULE=on go mod vendor
+    # - GO111MODULE=on go mod vendor
     - GO111MODULE=on go get github.com/ethereum/go-ethereum
-    - GO111MODULE=on go build ./mailchain/...
     - go list -e -json -compiled -test=false -export=false -deps=true -find=false -- ./...
     - golangci-lint run -v

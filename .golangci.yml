@@ -90,5 +90,5 @@ service:
     # - echo $GO111MODULE
     - GO111MODULE=on go list -e $(go list -m all)
     - GO111MODULE=on go get github.com/ethereum/go-ethereum
-    - GO111MODULE=on go list -e -json -compiled -test=false -export=false -deps=true -find=false -- ./...
+    - go list -e -json -compiled -test=false -export=false -deps=true -find=false -- ./...
     - GO111MODULE=on golangci-lint run -v

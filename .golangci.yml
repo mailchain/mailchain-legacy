@@ -87,4 +87,5 @@ linters:
 service:
   prepare:
     - go get github.com/ethereum/go-ethereum
-    - go build ./..
+    - go build ./mailchain/..
+    - golangci-lint run -v

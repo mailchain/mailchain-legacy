@@ -8,5 +8,5 @@ func DataPrefix() []byte {
 const (
 	ID        byte = 0x00
 	Protobuf  byte = 0x50
-	AES256CBC byte = 0x2e // TODO: Not merged yet
+	AES256CBC byte = 0x2e // TODO: Not merged yet to multihash
 )

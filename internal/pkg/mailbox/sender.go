@@ -40,3 +40,14 @@ func encryptLocation(pk keys.PublicKey, location string) ([]byte, error) {
 	}
 	return encryptedLocation, nil
 }
+
+// encryptMailMessage is encrypted with supplied public key and location string
+func encryptMailMessage(pk keys.PublicKey, encodedMsg []byte) ([]byte, error) {
+	// TODO: encryptMailMessage hard coded to aes256cbc
+	encryptedData, err := aes256cbc.Encrypt(pk, encodedMsg)
+	if err != nil {
+		return nil, errors.WithMessage(err, "could not encrypt message")
+	}
+
+	return encryptedData, nil
+}

@@ -21,10 +21,6 @@ import (
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
 )
 
-const (
-	AES256CBC byte = 0x2e // TODO: Not merged yet
-)
-
 // EncryptedContent typed version of byte array that holds encrypted data
 type EncryptedContent []byte
 

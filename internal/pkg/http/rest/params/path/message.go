@@ -14,11 +14,13 @@
 
 package path
 
-// func MessageID() {
-// 	return multihash.FromHexString(hex)
-// 	messageID, err := mail.FromHexString(mux.Vars(r)["message_id"])
-// 	if err != nil {
-// 		errHandler(w, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
-// 		return
-// 	}
-// }
+import (
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/mailchain/mailchain/internal/pkg/mail"
+)
+
+func MessageID(r *http.Request) (mail.ID, error) {
+	return mail.FromHexString(mux.Vars(r)["message_id"])
+}

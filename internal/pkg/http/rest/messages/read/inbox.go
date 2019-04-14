@@ -17,14 +17,14 @@ package read
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/internal/pkg/http/rest/errs"
+	"github.com/mailchain/mailchain/internal/pkg/http/rest/params/path"
 	"github.com/mailchain/mailchain/internal/pkg/mail"
 	"github.com/pkg/errors"
 )
 
 func doRead(inboxFunc func(messageID mail.ID) error, w http.ResponseWriter, r *http.Request) {
-	messageID, err := mail.FromHexString(mux.Vars(r)["message_id"])
+	messageID, err := path.MessageID(r)
 	if err != nil {
 		errs.JSONHandler(w, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
 		return

@@ -14,7 +14,15 @@
 
 package nacl
 
-import "os"
+import (
+	"encoding/hex"
+	"io/ioutil"
+	"os"
+	"strings"
+
+	"github.com/mailchain/mailchain/internal/pkg/encoding"
+	"github.com/pkg/errors"
+)
 
 // HasAddress check for the presence of the address in the store
 func (fs FileStore) HasAddress(address []byte) bool {
@@ -25,4 +33,32 @@ func (fs FileStore) HasAddress(address []byte) bool {
 	defer fd.Close()
 
 	return true
+}
+
+// GetAddresses list all the address this key store has
+func (fs FileStore) GetAddresses() ([][]byte, error) {
+	files, err := ioutil.ReadDir(fs.path)
+	if err != nil {
+		return nil, err
+	}
+	addresses := [][]byte{}
+	for _, f := range files {
+		fileName := f.Name()
+		if !strings.HasSuffix(fileName, ".json") {
+			continue
+		}
+		fileName = strings.TrimSuffix(fileName, ".json")
+		splits := strings.Split(fileName, "/")
+		addressPortion := splits[len(splits)-1]
+		address, err := hex.DecodeString(addressPortion)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+		encryptedKey, err := fs.getEncryptedKey(address)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+		addresses = append(addresses, encoding.HexToAddress(encryptedKey.Address))
+	}
+	return addresses, nil
 }

@@ -27,5 +27,5 @@ type Store interface {
 	GetDecrypter(address []byte, decrypterType string, deriveKeyOptions multi.OptionsBuilders) (cipher.Decrypter, error)
 	Store(private keys.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) (address []byte, err error)
 	HasAddress(address []byte) bool
-	GetAddresses() ([]byte, error)
+	GetAddresses() ([][]byte, error)
 }

@@ -16,8 +16,13 @@ package nacl
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
+
+	"github.com/mailchain/mailchain/internal/pkg/keystore"
+	"github.com/pkg/errors"
 )
 
 // NewFileStore create a new filestore with the path specified
@@ -28,6 +33,24 @@ func NewFileStore(path string) FileStore {
 // FileStore object
 type FileStore struct {
 	path string
+}
+
+func (fs FileStore) getEncryptedKey(address []byte) (*keystore.EncryptedKey, error) {
+	fd, err := os.Open(fs.filename(address))
+	if err != nil {
+		return nil, errors.WithMessage(err, "could not find key file")
+	}
+	defer fd.Close()
+
+	encryptedKey := new(keystore.EncryptedKey)
+	if err := json.NewDecoder(fd).Decode(encryptedKey); err != nil {
+		return nil, err
+	}
+	if encryptedKey.Address != hex.EncodeToString(address) {
+		return nil, fmt.Errorf("key content mismatch: have address %x, want %x", encryptedKey.Address, hex.EncodeToString(address))
+	}
+
+	return encryptedKey, nil
 }
 
 func (fs FileStore) filename(address []byte) string {

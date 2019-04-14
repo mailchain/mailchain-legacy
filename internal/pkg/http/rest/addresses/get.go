@@ -20,6 +20,7 @@ import (
 	"net/http"
 
 	"github.com/mailchain/mailchain/internal/pkg/http/rest/errs"
+
 	"github.com/mailchain/mailchain/internal/pkg/keystore"
 	"github.com/pkg/errors"
 )
@@ -35,12 +36,11 @@ func Get(ks keystore.Store) func(w http.ResponseWriter, r *http.Request) {
 	//   200: GetAddressesResponse
 	//   404: NotFoundError
 	//   422: ValidationError
-	errHandler := errs.JSONHandler
 	return func(w http.ResponseWriter, r *http.Request) {
 		addresses := []string{}
 		rawAddresses, err := ks.GetAddresses()
 		if err != nil {
-			errHandler(w, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
 		for _, x := range rawAddresses {
@@ -49,7 +49,7 @@ func Get(ks keystore.Store) func(w http.ResponseWriter, r *http.Request) {
 
 		js, err := json.Marshal(GetResponse{Addresses: addresses})
 		if err != nil {
-			errHandler(w, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, http.StatusInternalServerError, err)
 			return
 		}
 

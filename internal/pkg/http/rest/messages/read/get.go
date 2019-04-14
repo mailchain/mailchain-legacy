@@ -35,11 +35,10 @@ func Get(store stores.Inbox) func(w http.ResponseWriter, r *http.Request) {
 	//   200: GetReadResponse
 	//   404: NotFoundError
 	//   422: ValidationError
-	errHandler := errs.JSONHandler
 	return func(w http.ResponseWriter, r *http.Request) {
 		messageID, err := mail.FromHexString(mux.Vars(r)["message_id"])
 		if err != nil {
-			errHandler(w, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
+			errs.JSONWriter(w, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
 			return
 		}
 		read, err := store.GetReadStatus(messageID)
@@ -48,7 +47,7 @@ func Get(store stores.Inbox) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if err != nil {
-			errHandler(w, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -56,7 +55,7 @@ func Get(store stores.Inbox) func(w http.ResponseWriter, r *http.Request) {
 			Read: read,
 		})
 		if err != nil {
-			errHandler(w, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, http.StatusInternalServerError, err)
 			return
 		}
 

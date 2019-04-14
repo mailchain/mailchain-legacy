@@ -65,7 +65,7 @@ func Get(store stores.Inbox) func(w http.ResponseWriter, r *http.Request) {
 }
 
 // swagger:response GetReadResponse
-type GetResponse struct {
+type GetReadResponse struct {
 	// in: body
 	Body GetBody
 }

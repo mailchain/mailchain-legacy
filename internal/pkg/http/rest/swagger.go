@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package spec MailChain API
+// Package rest MailChain API
 //
 // All the information needed to talk to the API.
 //
@@ -30,7 +30,7 @@
 //
 //
 // swagger:meta
-package spec
+package rest
 
 import (
 	// blank imports to support doc creations
@@ -39,4 +39,5 @@ import (
 	_ "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/publickey"
 	_ "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/messages/send"
 	_ "github.com/mailchain/mailchain/internal/pkg/http/rest/messages/read"
+	_ "github.com/mailchain/mailchain/internal/pkg/http/rest/spec"
 )

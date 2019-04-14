@@ -17,7 +17,7 @@ package commands
 import (
 	"fmt"
 
-	"github.com/robdefeo/mailchain/cmd/mailchain/config"
+	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	log "github.com/sirupsen/logrus" // nolint: depguard
 	"github.com/spf13/cobra"
 	"github.com/ttacon/chalk"
@@ -27,8 +27,8 @@ func rootCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "mailchain",
 		Short: "MailChain node.",
-		Long: `Decentralized mailchain client, run it locally.
-Complete documentation is available at github.com/mailchain/mailchains`,
+		Long: `Decentralized Mailchain client, run it locally.
+Complete documentation is available at github.com/mailchain/mailchain`,
 	}
 	var cfgFile string
 	var logLevel string

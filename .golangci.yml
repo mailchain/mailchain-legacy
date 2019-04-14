@@ -61,6 +61,7 @@ linters-settings:
       # logging is allowed only by logutils.Log, logrus
       # is allowed to use only in logutils package
       - github.com/sirupsen/logrus
+      - github.com/robdefeo/mailchain
   misspell:
     locale: US
     ignore-words:

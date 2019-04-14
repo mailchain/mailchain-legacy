@@ -89,7 +89,6 @@ service:
     - git clone https://github.com/bitcoin-core/secp256k1.git
     - ls
     - ls ./secp256k1
-    - ls ./secp256k1/secp256k1
-    - ./secp256k1/autogen.sh
-    - ./secp256k1./configure
+    # - ./secp256k1/autogen.sh
+    # - ./secp256k1./configure
     - make -C ./secp256k1 install

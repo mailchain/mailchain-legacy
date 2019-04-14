@@ -14,22 +14,15 @@
 
 package nacl
 
-import (
-	"encoding/hex"
-	"fmt"
-	"path/filepath"
-)
+import "os"
 
-// NewFileStore create a new filestore with the path specified
-func NewFileStore(path string) FileStore {
-	return FileStore{path: path}
-}
+// HasAddress check for the presence of the address in the store
+func (fs FileStore) HasAddress(address []byte) bool {
+	fd, err := os.Open(fs.filename(address))
+	if err != nil {
+		return false
+	}
+	defer fd.Close()
 
-// FileStore object
-type FileStore struct {
-	path string
-}
-
-func (fs FileStore) filename(address []byte) string {
-	return filepath.Join(fs.path, fmt.Sprintf("%s.json", hex.EncodeToString(address)))
+	return true
 }

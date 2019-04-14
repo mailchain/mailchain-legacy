@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package keystore
+package nacl
 
 import (
 	"github.com/mailchain/mailchain/internal/pkg/crypto/cipher"
-	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
+	"github.com/mailchain/mailchain/internal/pkg/keystore"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"
-	"github.com/mailchain/mailchain/internal/pkg/mailbox"
+	"github.com/pkg/errors"
 )
 
-// Store private keys but does not return them, instead return decrypter or signer.
-type Store interface {
-	GetSigner(address []byte, chain string, deriveKeyOptions multi.OptionsBuilders) (mailbox.Signer, error)
-	GetDecrypter(address []byte, decrypterType byte, deriveKeyOptions multi.OptionsBuilders) (cipher.Decrypter, error)
-	Store(private keys.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) (address []byte, err error)
-	HasAddress(address []byte) bool
-	GetAddresses() ([][]byte, error)
+// GetDecrypter the decrypter for the specified address.
+func (fs FileStore) GetDecrypter(address []byte, decrypterType byte, deriveKeyOptions multi.OptionsBuilders) (cipher.Decrypter, error) {
+	pk, err := fs.getPrivateKey(address, deriveKeyOptions)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return keystore.Decrypter(decrypterType, pk)
 }

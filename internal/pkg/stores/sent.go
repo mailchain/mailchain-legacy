@@ -22,19 +22,19 @@ import (
 	"github.com/pkg/errors"
 )
 
-// The Sender saves the message. This should not be used directly but as the first argument of storing.PutMessage.
-type Sender interface {
+// The Sent saves the message. This should not be used directly but as the first argument of storing.PutMessage.
+type Sent interface {
 	// PutMessage should write the message contents to the underlying storage service. Return the final location or any error.
 	PutMessage(path string, msg []byte) (location string, err error)
 }
 
 // PutMessage does the pre work before saving the message as implemented by store.
-func PutMessage(store Sender, messageID mail.ID, msg []byte) (location string, err error) {
+func PutMessage(sent Sent, messageID mail.ID, msg []byte) (location string, err error) {
 	hash, err := crypto.CreateLocationHash(msg)
 	if err != nil {
 		return "", err
 	}
-	location, err = store.PutMessage(fmt.Sprintf("%s-%s", messageID.HexString(), hash.String()), msg)
+	location, err = sent.PutMessage(fmt.Sprintf("%s-%s", messageID.HexString(), hash.String()), msg)
 	if err != nil {
 		return "", errors.Wrap(err, "could not store message")
 	}

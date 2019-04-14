@@ -31,7 +31,7 @@ import (
 )
 
 // Post handler http
-func Post(store stores.Sender, senders map[string]mailbox.Sender, ks keystore.Store,
+func Post(sent stores.Sent, senders map[string]mailbox.Sender, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
 	// Post swagger:route POST /ethereum/{network}/messages/send Send Ethereum SendMessage
 	//
@@ -80,7 +80,7 @@ func Post(store stores.Sender, senders map[string]mailbox.Sender, ks keystore.St
 			return
 		}
 
-		if err := mailbox.SendMessage(ctx, msg, req.publicKey, sender, store, signer); err != nil {
+		if err := mailbox.SendMessage(ctx, msg, req.publicKey, sender, sent, signer); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}

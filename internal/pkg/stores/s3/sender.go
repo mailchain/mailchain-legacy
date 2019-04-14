@@ -25,8 +25,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// NewSenderStore creates a new S3 store.
-func NewSenderStore(region, bucket, id, secret string) (*SenderStore, error) {
+// NewSentStore creates a new S3 store.
+func NewSentStore(region, bucket, id, secret string) (*SentStore, error) {
 	if region == "" {
 		return nil, errors.Errorf("`region` must be specified")
 	}
@@ -49,21 +49,21 @@ func NewSenderStore(region, bucket, id, secret string) (*SenderStore, error) {
 	// S3 service client the Upload manager will use.
 	s3Svc := s3.New(ses)
 
-	return &SenderStore{
+	return &SentStore{
 		uploader: s3manager.NewUploaderWithClient(s3Svc), // Create an uploader with S3 client and default options
 		s3:       s3Svc,
 		bucket:   bucket,
 	}, err
 }
 
-// SenderStore handles storing messages in S3
-type SenderStore struct {
+// SentStore handles storing messages in S3
+type SentStore struct {
 	uploader *s3manager.Uploader
 	s3       *s3.S3
 	bucket   string
 }
 
-func (h SenderStore) PutMessage(path string, msg []byte) (string, error) {
+func (h SentStore) PutMessage(path string, msg []byte) (string, error) {
 	upParams := &s3manager.UploadInput{
 		Bucket: &h.bucket,
 		Key:    &path,

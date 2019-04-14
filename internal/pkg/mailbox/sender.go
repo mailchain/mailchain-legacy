@@ -45,7 +45,7 @@ type SenderOpts interface{}
 // - Create transaction data with encrypted location and message hash
 // - Send transaction
 func SendMessage(ctx context.Context, msg *mail.Message, recipientKey keys.PublicKey,
-	sender Sender, store stores.Sender, signer Signer) error {
+	sender Sender, sent stores.Sent, signer Signer) error {
 	encodedMsg, err := rfc2822.EncodeNewMessage(msg)
 	if err != nil {
 		return errors.WithMessage(err, "could not encode message")
@@ -60,7 +60,7 @@ func SendMessage(ctx context.Context, msg *mail.Message, recipientKey keys.Publi
 		return errors.WithStack(err)
 	}
 
-	location, err := stores.PutMessage(store, msg.ID, encrypted)
+	location, err := stores.PutMessage(sent, msg.ID, encrypted)
 	if err != nil {
 		return errors.WithStack(err)
 	}

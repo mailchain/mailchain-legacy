@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package rest MailChain API
+// Package spec MailChain API
 //
 // All the information needed to talk to the API.
 //
@@ -30,7 +30,7 @@
 //
 //
 // swagger:meta
-package rest
+package spec
 
 import (
 	// blank imports to support doc creations

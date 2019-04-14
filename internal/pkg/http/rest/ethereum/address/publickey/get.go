@@ -76,9 +76,9 @@ func Get(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseWriter, r 
 	}
 }
 
-// GetRequest pubic key from address request
+// GetPublicKey pubic key from address request
 // swagger:parameters GetPublicKey
-type GetRequest struct {
+type GetPublicKey struct {
 	// address to query to get public key for
 	//
 	// in: path
@@ -110,10 +110,10 @@ func parseGetRequest(r *http.Request) (address []byte, network string, err error
 	return common.HexToAddress(addr).Bytes(), strings.ToLower(mux.Vars(r)["network"]), nil
 }
 
-// GetResponse public key from address response
+// GetPublicKeyResponse public key from address response
 //
 // swagger:response GetPublicKeyResponse
-type GetResponse struct {
+type GetPublicKeyResponse struct {
 	// in: body
 	Body GetBody
 }
@@ -125,7 +125,7 @@ type GetBody struct {
 	// The public key
 	//
 	// Required: true
-	// example: 0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44ce
-	// f525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463
+	// nolint: lll
+	// example: 0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463
 	PublicKey string `json:"public_key"`
 }

@@ -47,7 +47,7 @@ func Get(ks keystore.Store) func(w http.ResponseWriter, r *http.Request) {
 			addresses = append(addresses, hex.EncodeToString(x))
 		}
 
-		js, err := json.Marshal(GetResponse{Addresses: addresses})
+		js, err := json.Marshal(GetAddressesResponse{Addresses: addresses})
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, err)
 			return
@@ -59,10 +59,10 @@ func Get(ks keystore.Store) func(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// GetResponse Holds the response messages
+// GetAddressesResponse Holds the response messages
 //
 // swagger:response GetAddressesResponse
-type GetResponse struct {
+type GetAddressesResponse struct {
 	// in: body
 	Addresses []string `json:"addresses"`
 }

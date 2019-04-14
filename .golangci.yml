@@ -87,8 +87,6 @@ linters:
 service:
   prepare:
     - git clone https://github.com/bitcoin-core/secp256k1.git
-    - cd ./secp256k1
-    - ls
-    - ./autogen.sh
-    - ./configure
-    - make install
+    - ./secp256k1/autogen.sh
+    - ./secp256k1./configure
+    - make -C ./secp256k1 install

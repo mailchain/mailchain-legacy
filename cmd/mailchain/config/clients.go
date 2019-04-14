@@ -17,6 +17,7 @@ package config
 import (
 	"fmt"
 
+	"github.com/mailchain/mailchain/internal/pkg/clients/etherscan"
 	"github.com/mailchain/mailchain/internal/pkg/clients/ethrpc"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
@@ -28,4 +29,12 @@ func etherRPC2Client(network string) (*ethrpc.EthRPC2, error) {
 		return nil, errors.Errorf("`clients.ethereum-rpc2.%s.address` must not be empty", network)
 	}
 	return ethrpc.New(address)
+}
+
+func etherscanClient() (*etherscan.APIClient, error) {
+	apiKey := viper.GetString("clients.etherscan.api-key")
+	if apiKey == "" {
+		return nil, errors.Errorf("`clients.etherscan.api-key` must not be empty")
+	}
+	return etherscan.NewAPIClient(apiKey)
 }

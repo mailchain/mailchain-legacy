@@ -20,7 +20,7 @@ proto:
 	rm -f ./internal/pkg/mail/*.pb.go
 	protoc ./internal/pkg/mail/data.proto -I. --go_out=:.
 
-genmock:
+generate:
 	sh ./scripts/generate.sh
 
 lint: 

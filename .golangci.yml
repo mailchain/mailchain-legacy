@@ -45,7 +45,7 @@ run:
 # all available settings of specific linters
 linters-settings:
   golint:
-    min-confidence: 0
+    min-confidence: 0.8
   gocyclo:
     min-complexity: 10
   maligned:

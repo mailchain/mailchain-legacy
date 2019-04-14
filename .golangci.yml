@@ -88,6 +88,7 @@ service:
   prepare:
     - git clone https://github.com/bitcoin-core/secp256k1.git
     - cd ./secp256k1
+    - ls
     - ./autogen.sh
     - ./configure
     - make install

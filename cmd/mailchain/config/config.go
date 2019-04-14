@@ -21,7 +21,7 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
 	log "github.com/sirupsen/logrus" // nolint: depguard
-	"github.com/spf13/viper"
+	"github.com/spf13/viper"         // nolint: depguard
 )
 
 // MailChainHome set home directory for mailchain

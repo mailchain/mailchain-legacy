@@ -20,24 +20,25 @@ import (
 	"github.com/mailchain/mailchain/internal/pkg/stores"
 )
 
-// Delete returns a handler
-func Delete(store stores.Inbox) func(w http.ResponseWriter, r *http.Request) {
-	// Delete swagger:route Delete /messages/{message_id}/read Messages DeleteRead
+// Put returns a handler put spec
+func Put(store stores.Inbox) func(w http.ResponseWriter, r *http.Request) {
+	// Put swagger:route PUT /messages/{message_id}/read Messages PutRead
 	//
-	// Mark message as unread
+	// Put inputs.
 	//
+	// Put encrypted input of all mailchain messages.
 	// Responses:
 	//   200: StatusOK
 	//   404: NotFoundError
 	//   422: ValidationError
 	return func(w http.ResponseWriter, r *http.Request) {
-		doRead(store.DeleteMessageRead, w, r)
+		doRead(store.PutMessageRead, w, r)
 	}
 }
 
-// DeleteRequest open api documentation
-// swagger:parameters DeleteRead
-type DeleteRequest struct {
+// PutRequest open api documentation
+// swagger:parameters PutRead
+type PutRequest struct {
 	// Unique id of the message
 	//
 	// in: path

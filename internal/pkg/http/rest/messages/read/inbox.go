@@ -26,12 +26,12 @@ import (
 func doRead(inboxFunc func(messageID mail.ID) error, w http.ResponseWriter, r *http.Request) {
 	messageID, err := path.MessageID(r)
 	if err != nil {
-		errs.JSONHandler(w, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
+		errs.JSONWriter(w, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
 		return
 	}
 
 	if err := inboxFunc(messageID); err != nil {
-		errs.JSONHandler(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+		errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 		return
 	}
 

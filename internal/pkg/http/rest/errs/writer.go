@@ -25,10 +25,10 @@ import (
 
 // A function called whenever an error is encountered
 // type errorHandler func(w http.ResponseWriter, r *http.Request, err string)
-type ErrorHandler func(w http.ResponseWriter, code int, err error)
+type ErrorWriter func(w http.ResponseWriter, code int, err error)
 
 // errorf writes a swagger-compliant error response.
-func JSONHandler(w http.ResponseWriter, code int, err error) {
+func JSONWriter(w http.ResponseWriter, code int, err error) {
 	var out struct {
 		Code    int    `json:"code"`
 		Message string `json:"message"`

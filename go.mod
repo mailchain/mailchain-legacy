@@ -13,7 +13,6 @@ require (
 	github.com/golang/mock v1.2.0
 	github.com/golang/protobuf v1.3.1
 	github.com/gorilla/mux v1.7.1
-	github.com/kevinburke/nacl v0.0.0-20190102041437-38063847a0c9
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/multiformats/go-multihash v0.0.1
 	github.com/pkg/errors v0.8.1

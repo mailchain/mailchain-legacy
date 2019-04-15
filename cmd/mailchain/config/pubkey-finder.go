@@ -25,39 +25,39 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-// Receivers in configured state
-func Receivers() (map[string]mailbox.Receiver, error) {
-	receivers := make(map[string]mailbox.Receiver)
+// PublicKeyFinders in configured state
+func PublicKeyFinders() (map[string]mailbox.PubKeyFinder, error) {
+	finders := make(map[string]mailbox.PubKeyFinder)
 	for chain := range viper.GetStringMap("chains") {
-		chRcvrs, err := chainReceivers(chain)
+		chFinders, err := chainFinders(chain)
 		if err != nil {
 			return nil, err
 		}
-		if err := mergo.Merge(&receivers, chRcvrs); err != nil {
+		if err := mergo.Merge(&finders, chFinders); err != nil {
 			return nil, err
 		}
 	}
-	return receivers, nil
+	return finders, nil
 }
 
-func chainReceivers(chain string) (map[string]mailbox.Receiver, error) {
-	receivers := make(map[string]mailbox.Receiver)
+func chainFinders(chain string) (map[string]mailbox.PubKeyFinder, error) {
+	finders := make(map[string]mailbox.PubKeyFinder)
 	for network := range viper.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
-		receiver, err := receiver(chain, network)
+		finder, err := finder(chain, network)
 		if err != nil {
 			return nil, err
 		}
-		receivers[fmt.Sprintf("%s.%s", chain, network)] = receiver
+		finders[fmt.Sprintf("%s.%s", chain, network)] = finder
 	}
 
-	return receivers, nil
+	return finders, nil
 }
 
-func receiver(chain, network string) (mailbox.Receiver, error) {
-	switch viper.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) {
+func finder(chain, network string) (mailbox.PubKeyFinder, error) {
+	switch viper.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) {
 	case names.Etherscan:
 		return etherscanClient()
 	default:
-		return nil, errors.Errorf("unsupported receiver")
+		return nil, errors.Errorf("unsupported pubkey finder")
 	}
 }

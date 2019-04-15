@@ -15,35 +15,51 @@
 package nacl
 
 import (
-	"github.com/kevinburke/nacl/secretbox"
+	"crypto/rand"
+
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys/multikey"
 	"github.com/mailchain/mailchain/internal/pkg/keystore"
+	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/scrypt"
 	"github.com/pkg/errors"
+	"golang.org/x/crypto/nacl/secretbox"
 )
 
+const nonceSize = 24
+
 func easyOpen(box, key []byte) ([]byte, error) {
-	if len(box) < 24 {
+	if len(box) < nonceSize {
 		return nil, errors.New("secretbox: message too short")
 	}
-	decryptNonce := new([24]byte)
-	copy(decryptNonce[:], box[:24])
+	decryptNonce := new([nonceSize]byte)
+	copy(decryptNonce[:], box[:nonceSize])
 
 	var secretKey [32]byte
 	copy(secretKey[:], key)
 
-	decrypted, ok := secretbox.Open([]byte{}, box[24:], decryptNonce, &secretKey)
+	decrypted, ok := secretbox.Open([]byte{}, box[nonceSize:], decryptNonce, &secretKey)
 	if !ok {
 		return nil, errors.New("secretbox: Could not decrypt invalid input")
 	}
 	return decrypted, nil
 }
 
+func easySeal(message, key []byte) ([]byte, error) {
+	nonce := new([nonceSize]byte)
+	if _, err := rand.Read(nonce[:]); err != nil {
+		return nil, err
+	}
+
+	var secretKey [32]byte
+	copy(secretKey[:], key)
+	return secretbox.Seal(nonce[:], message, nonce, &secretKey), nil
+}
+
 func deriveKey(ek *keystore.EncryptedKey, deriveKeyOptions multi.OptionsBuilders) ([]byte, error) {
 	switch ek.KDF {
-	case "scrypt":
+	case kdf.Scrypt:
 		if ek.ScryptParams == nil {
 			return nil, errors.New("scryptParams are required")
 		}

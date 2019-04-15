@@ -17,7 +17,6 @@ package config
 import (
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/nacl"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
@@ -75,7 +74,7 @@ func passphraseFromPrompt() (string, error) {
 		return "", errors.Errorf("failed read passphrase confirmation")
 	}
 	if password != confirm {
-		utils.Fatalf("Passphrases do not match")
+		return "", errors.Errorf("Passphrases do not match")
 	}
 
 	return password, nil

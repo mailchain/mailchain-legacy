@@ -18,12 +18,11 @@ import (
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	log "github.com/sirupsen/logrus" // nolint: depguard
 	"github.com/spf13/cobra"
 	"github.com/ttacon/chalk"
 )
 
-func rootCmd() *cobra.Command {
+func rootCmd() (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "mailchain",
 		Short: "MailChain node.",
@@ -46,12 +45,12 @@ Complete documentation is available at github.com/mailchain/mailchain`,
 			chalk.Bold.TextStyle("`mailchain init`"),
 			chalk.Bold.TextStyle("`--config`"))
 	}
-	return cmd
-}
 
-// Execute run the command
-func Execute() {
-	if err := rootCmd().Execute(); err != nil {
-		log.Fatalln(err)
+	serve, err := serveCmd()
+	if err != nil {
+		return nil, err
 	}
+
+	cmd.AddCommand(serve)
+	return cmd, nil
 }

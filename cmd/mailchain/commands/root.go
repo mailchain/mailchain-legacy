@@ -46,11 +46,13 @@ Complete documentation is available at github.com/mailchain/mailchain`,
 			chalk.Bold.TextStyle("`--config`"))
 	}
 
+	account := accountCmd()
 	serve, err := serveCmd()
 	if err != nil {
 		return nil, err
 	}
 
+	cmd.AddCommand(account)
 	cmd.AddCommand(serve)
 	return cmd, nil
 }

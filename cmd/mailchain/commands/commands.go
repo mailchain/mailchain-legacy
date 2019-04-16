@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package commands
 
-import (
-	"log"
-
-	"github.com/mailchain/mailchain/cmd/mailchain/commands"
-)
-
-func main() {
-	if err := commands.Execute(); err != nil {
-		log.Fatalln(err)
+// Execute run the command
+func Execute() error {
+	root, err := rootCmd()
+	if err != nil {
+		return err
 	}
+	return root.Execute()
 }

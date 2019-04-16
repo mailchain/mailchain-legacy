@@ -12,16 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package config
 
-import (
-	"log"
+import "github.com/spf13/viper" // nolint: depguard
 
-	"github.com/mailchain/mailchain/cmd/mailchain/commands"
-)
-
-func main() {
-	if err := commands.Execute(); err != nil {
-		log.Fatalln(err)
-	}
+func GetServerPort() int {
+	return viper.GetInt("server.port")
 }

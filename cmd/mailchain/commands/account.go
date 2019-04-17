@@ -16,6 +16,7 @@ package commands
 
 import (
 	"encoding/hex"
+	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
@@ -54,6 +55,7 @@ Make sure you backup your keys regularly.`,
 		return nil, err
 	}
 	cmd.AddCommand(addCmd)
+	cmd.AddCommand(accountListCmd())
 
 	return cmd, nil
 }
@@ -118,6 +120,27 @@ func accountAddCmd() (*cobra.Command, error) {
 	}
 
 	return cmd, nil
+}
+
+func accountListCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "list",
+		Short: "List accounts",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ks, err := config.KeyStore()
+			if err != nil {
+				return errors.WithMessage(err, "could not create `keystore`")
+			}
+			addresses, err := ks.GetAddresses()
+			if err != nil {
+				return errors.WithMessage(err, "could not get addresses")
+			}
+			for _, x := range addresses {
+				fmt.Println(hex.EncodeToString(x))
+			}
+			return nil
+		},
+	}
 }
 
 func getKeyType(cmd *cobra.Command) (string, error) {

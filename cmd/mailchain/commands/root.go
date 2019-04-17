@@ -54,8 +54,8 @@ Complete documentation is available at github.com/mailchain/mailchain`,
 	if err != nil {
 		return nil, err
 	}
-
 	cmd.AddCommand(account)
+	cmd.AddCommand(cfgCmd())
 	cmd.AddCommand(serve)
 	return cmd, nil
 }

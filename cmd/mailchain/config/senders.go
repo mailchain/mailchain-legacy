@@ -19,16 +19,34 @@ import (
 
 	"github.com/imdario/mergo"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
+	"github.com/mailchain/mailchain/cmd/mailchain/prompts"
 	"github.com/mailchain/mailchain/internal/pkg/mailbox"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-// Senders in configured state
-func Senders() (map[string]mailbox.Sender, error) {
+func SetSender(network string) error {
+	sender, skipped, err := prompts.SelectItemSkipable(
+		"Sender",
+		[]string{names.EthereumRPC2},
+		viper.GetString(fmt.Sprintf("chains.ethereum.networks.%s.sender", network)) != "")
+	if err != nil || skipped {
+		return err
+	}
+
+	viper.Set(fmt.Sprintf("chains.ethereum.networks.%s.sender", network), sender)
+	if err := setClient(sender, network); err != nil {
+		return err
+	}
+	fmt.Printf("%s used for sending messages\n", sender)
+	return nil
+}
+
+// GetSenders in configured state
+func GetSenders() (map[string]mailbox.Sender, error) {
 	senders := make(map[string]mailbox.Sender)
 	for chain := range viper.GetStringMap("chains") {
-		chSenders, err := chainSenders(chain)
+		chSenders, err := getChainSenders(chain)
 		if err != nil {
 			return nil, err
 		}
@@ -39,10 +57,10 @@ func Senders() (map[string]mailbox.Sender, error) {
 	return senders, nil
 }
 
-func chainSenders(chain string) (map[string]mailbox.Sender, error) {
+func getChainSenders(chain string) (map[string]mailbox.Sender, error) {
 	senders := make(map[string]mailbox.Sender)
 	for network := range viper.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
-		sender, err := sender(chain, network)
+		sender, err := getSender(chain, network)
 		if err != nil {
 			return nil, err
 		}
@@ -52,10 +70,10 @@ func chainSenders(chain string) (map[string]mailbox.Sender, error) {
 	return senders, nil
 }
 
-func sender(chain, network string) (mailbox.Sender, error) {
+func getSender(chain, network string) (mailbox.Sender, error) {
 	switch viper.GetString(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network)) {
 	case names.EthereumRPC2:
-		return etherRPC2Client(network)
+		return getEtherRPC2Client(network)
 	default:
 		return nil, errors.Errorf("unsupported receiver")
 	}

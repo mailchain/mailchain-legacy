@@ -41,28 +41,28 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	router.HandleFunc("/api/spec.json", spec.Get()).Methods("GET")
 	router.HandleFunc("/api/docs", spec.DocsGet()).Methods("GET")
 
-	receivers, err := config.Receivers()
+	receivers, err := config.GetReceivers()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure receivers")
 	}
-	pubKeyFinders, err := config.PublicKeyFinders()
+	pubKeyFinders, err := config.GetPublicKeyFinders()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure receivers")
 	}
-	senders, err := config.Senders()
+	senders, err := config.GetSenders()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure senders")
 	}
 
-	senderStorage, err := config.SenderStorage()
+	senderStorage, err := config.GetSenderStorage()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config store")
 	}
-	mailboxStore, err := config.InboxStore()
+	mailboxStore, err := config.GetInboxStore()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config mailbox store")
 	}
-	keystore, err := config.KeyStore()
+	keystore, err := config.GetKeyStore()
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not create `keystore`")
 	}

@@ -21,8 +21,8 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-// InboxStore create all the clients based on configuration
-func InboxStore() (stores.Inbox, error) {
+// GetInboxStore create all the clients based on configuration
+func GetInboxStore() (stores.Inbox, error) {
 	if viper.GetString("storage.inbox") == "leveldb" {
 		return leveldb.New(viper.GetString("stores.leveldb.path"), 256, 0)
 	}

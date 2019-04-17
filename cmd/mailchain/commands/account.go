@@ -90,7 +90,7 @@ func accountAddCmd() (*cobra.Command, error) {
 				return errors.WithMessage(err, "could not create `random salt`")
 			}
 			// TODO: currently this only does scrypt need flag + config etc
-			ks, err := config.KeyStore()
+			ks, err := config.GetKeyStore()
 			if err != nil {
 				return errors.WithMessage(err, "could not create `keystore`")
 			}
@@ -127,7 +127,7 @@ func accountListCmd() *cobra.Command {
 		Use:   "list",
 		Short: "List accounts",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ks, err := config.KeyStore()
+			ks, err := config.GetKeyStore()
 			if err != nil {
 				return errors.WithMessage(err, "could not create `keystore`")
 			}

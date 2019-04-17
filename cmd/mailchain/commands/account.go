@@ -15,12 +15,20 @@
 package commands
 
 import (
+	"encoding/hex"
+
+	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
+	"github.com/mailchain/mailchain/internal/pkg/crypto/keys/multikey"
+	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"
+	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/scrypt"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/ttacon/chalk"
 )
 
 // account represents the say command
-func accountCmd() *cobra.Command {
+func accountCmd() (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "account",
 		Short: "Manage Accounts",
@@ -41,5 +49,91 @@ Make sure you backup your keys regularly.`,
 	}
 	cmd.PersistentFlags().StringP("key-type", "", "", "Select the chain [secp256k1]")
 
-	return cmd
+	addCmd, err := accountAddCmd()
+	if err != nil {
+		return nil, err
+	}
+	cmd.AddCommand(addCmd)
+
+	return cmd, nil
+}
+
+func accountAddCmd() (*cobra.Command, error) {
+	cmd := &cobra.Command{
+		Use:   "add",
+		Short: "Add private key",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			keytype, err := getKeyType(cmd)
+			if err != nil {
+				return errors.WithMessage(err, "could not determine `key-type`")
+			}
+			privateKey, err := cmd.Flags().GetString("private-key")
+			if err != nil {
+				return errors.WithMessage(err, "could not get `private-key`")
+			}
+			if privateKey == "" {
+				return errors.Errorf("private key must be specified")
+			}
+			pk, err := multikey.PrivateKeyFromHex(privateKey, keytype)
+			if err != nil {
+				return errors.WithMessage(err, "`private-key` could not be decoded")
+			}
+
+			passphrase, err := config.Passphrase(cmd)
+			if err != nil {
+				return errors.WithMessage(err, "could not get `passphrase`")
+			}
+			randomSalt, err := scrypt.RandomSalt()
+			if err != nil {
+				return errors.WithMessage(err, "could not create `random salt`")
+			}
+			// TODO: currently this only does scrypt need flag + config etc
+			ks, err := config.KeyStore()
+			if err != nil {
+				return errors.WithMessage(err, "could not create `keystore`")
+			}
+			address, err := ks.Store(pk, keytype,
+				multi.OptionsBuilders{
+					Scrypt: []scrypt.DeriveOptionsBuilder{
+						scrypt.DefaultDeriveOptions(),
+						scrypt.WithPassphrase(passphrase),
+						randomSalt,
+					},
+				})
+			if err != nil {
+				return errors.WithMessage(err, "key could not be stored")
+			}
+
+			cmd.Printf(chalk.Green.Color("Private key added")+" for address=%s\n", hex.EncodeToString(address))
+			return nil
+		},
+	}
+
+	cmd.Flags().StringP("chain", "C", "", "Select the chain [ethereum]")
+	cmd.Flags().StringP("private-key", "K", "", "Specify the private key to store")
+	cmd.Flags().String("passphrase", "", "Passphrase to encrypt/decrypt key with")
+
+	if err := cmd.MarkFlagRequired("private-key"); err != nil {
+		return nil, err
+	}
+
+	return cmd, nil
+}
+
+func getKeyType(cmd *cobra.Command) (string, error) {
+	keyType, err := cmd.Flags().GetString("key-type")
+	if err != nil {
+		return "", errors.WithMessage(err, "failed to get `key-type`")
+	}
+	if keyType != "" {
+		return keyType, nil
+	}
+	chain, err := cmd.Flags().GetString("chain")
+	if err != nil {
+		return "", errors.WithMessage(err, "failed to get `chain`")
+	}
+	if chain == "" {
+		return "", errors.Errorf("either `key-type` or `chain` must be specified")
+	}
+	return multikey.GetKeyTypeFromChain(chain)
 }

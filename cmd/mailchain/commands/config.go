@@ -29,6 +29,20 @@ func cfgCmd() *cobra.Command {
 			return cmd.Usage()
 		},
 	}
+	cmd.AddCommand(cfgChainCmd())
 
+	return cmd
+}
+
+func cfgChainCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "chain",
+		Short: "setup chain",
+		// Long:  ``,
+		PersistentPreRunE: prerun.InitConfig,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Usage()
+		},
+	}
 	return cmd
 }

@@ -16,25 +16,9 @@ package commands
 
 import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
 	"github.com/mailchain/mailchain/internal/pkg/encoding"
 	"github.com/spf13/cobra"
 )
-
-func cfgChainCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "chain",
-		Short: "setup chain",
-		// Long:  ``,
-		Example:           "",
-		PersistentPreRunE: prerun.InitConfig,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
-	}
-	cmd.AddCommand(cfgChainEthereum())
-	return cmd
-}
 
 func cfgChainEthereum() *cobra.Command {
 	return &cobra.Command{

@@ -24,10 +24,11 @@ import (
 
 func cfgKeystore() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "keystore",
+		Use:   "keys",
 		Short: "setup keystore",
 		// Long:  ``,
-		PersistentPreRunE: prerun.InitConfig,
+		PreRunE:  prerun.InitConfig,
+		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			keystoreType, err := selectKeyStore()
 			if err != nil {
@@ -48,6 +49,7 @@ func cfgKeystoreNaclFilestore() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:      "nacl-filestore",
 		Short:    "setup nacl filestore",
+		PreRunE:  prerun.InitConfig,
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := config.SetKeyStore(cmd, names.KeystoreNACLFilestore); err != nil {

@@ -21,15 +21,42 @@ import (
 
 func cfgCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "config",
-		Short:             "Config mailchain",
-		Aliases:           []string{"cfg"},
-		PersistentPreRunE: prerun.InitConfig,
+		Use:     "config",
+		Short:   "Config mailchain",
+		Aliases: []string{"cfg"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
 		},
 	}
 	cmd.AddCommand(cfgChainCmd())
+	cmd.AddCommand(cfgStorage())
+
+	return cmd
+}
+
+func cfgChainCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "chain",
+		Short: "Select a chain to configure",
+		// Long:  ``,
+		Example:           "",
+		PersistentPreRunE: prerun.InitConfig,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Usage()
+		},
+	}
+	cmd.AddCommand(cfgChainEthereum())
+	return cmd
+}
+func cfgStorage() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "storage",
+		Short: "Select a storage backend to configure",
+		Long:  "Mailchain has multiple storage backends, this command you can configure each of them.",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Usage()
+		},
+	}
 	cmd.AddCommand(cfgKeystore())
 
 	return cmd

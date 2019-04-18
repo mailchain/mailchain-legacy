@@ -25,8 +25,8 @@ import (
 	"github.com/ttacon/chalk"
 )
 
-// KeyStore create new keystore from config
-func KeyStore() (*nacl.FileStore, error) {
+// GetKeyStore create new keystore from config
+func GetKeyStore() (*nacl.FileStore, error) {
 	if viper.GetString("storage.keys") == "nacl-filestore" {
 		fs := nacl.NewFileStore(viper.GetString("stores.nacl-filestore.path"))
 		return &fs, nil

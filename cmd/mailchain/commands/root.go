@@ -27,7 +27,7 @@ func rootCmd() (*cobra.Command, error) {
 		Use:   "mailchain",
 		Short: "MailChain node.",
 		Long: `Decentralized Mailchain client, run it locally.
-Complete documentation is available at github.com/mailchain/mailchain`,
+Complete documentation is available at https://github.com/mailchain/mailchain`,
 	}
 	var cfgFile string
 	var logLevel string
@@ -50,12 +50,16 @@ Complete documentation is available at github.com/mailchain/mailchain`,
 	if err != nil {
 		return nil, err
 	}
+	cmd.AddCommand(account)
+
+	cfg := cfgCmd()
+	cmd.AddCommand(cfg)
+
 	serve, err := serveCmd()
 	if err != nil {
 		return nil, err
 	}
-	cmd.AddCommand(account)
-	cmd.AddCommand(cfgCmd())
 	cmd.AddCommand(serve)
+
 	return cmd, nil
 }

@@ -21,15 +21,15 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-// SenderStorage create all the clients based on configuration
-func SenderStorage() (stores.Sent, error) {
+// GetSenderStorage create all the clients based on configuration
+func GetSenderStorage() (stores.Sent, error) {
 	if viper.GetString("storage.sent") == "s3" {
-		return newS3Client()
+		return getS3Client()
 	}
 	return nil, errors.Errorf("unsupported storage client")
 }
 
-func newS3Client() (stores.Sent, error) {
+func getS3Client() (stores.Sent, error) {
 	return s3.NewSentStore(
 		viper.GetString("stores.s3.region"),
 		viper.GetString("stores.s3.bucket"),

@@ -19,46 +19,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func cfgCmd() *cobra.Command {
+func cfgStorageSent() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "config",
-		Short:   "Config mailchain",
-		Aliases: []string{"cfg"},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
-	}
-	cmd.AddCommand(cfgChainCmd())
-	cmd.AddCommand(cfgStorage())
-
-	return cmd
-}
-
-func cfgChainCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "chain",
-		Short: "Select a chain to configure",
-		// Long:  ``,
-		Example:           "",
+		Use:               "sent",
+		Short:             "Setup sent storage",
+		Long:              `Mailchain stores the sent messages so that the recipient can download them.`,
 		PersistentPreRunE: prerun.InitConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
 		},
 	}
-	cmd.AddCommand(cfgChainEthereum())
-	return cmd
-}
-func cfgStorage() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "storage",
-		Short: "Select a storage backend to configure",
-		Long:  "Mailchain has multiple storage backends, this command you can configure each of them.",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
-	}
-	cmd.AddCommand(cfgKeystore())
-	cmd.AddCommand(cfgStorageSent())
 
 	return cmd
 }

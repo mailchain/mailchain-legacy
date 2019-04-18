@@ -22,7 +22,7 @@ import (
 func cfgCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "config",
-		Short:             "config mailchain",
+		Short:             "Config mailchain",
 		Aliases:           []string{"cfg"},
 		PersistentPreRunE: prerun.InitConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {

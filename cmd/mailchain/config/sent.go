@@ -40,8 +40,9 @@ func getS3Client() (stores.Sent, error) {
 	)
 }
 
-func SetSentStorage(client string) error {
-	switch client {
+func SetSentStorage(sentType string) error {
+	viper.Set("storage.sent", sentType)
+	switch sentType {
 	case names.S3:
 		return setS3()
 	default:

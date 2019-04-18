@@ -33,6 +33,7 @@ func InitConfig(cmd *cobra.Command, args []string) error {
 			"Run %s to configure create or specify with %s\n",
 			chalk.Bold.TextStyle("`mailchain init`"),
 			chalk.Bold.TextStyle("`--config`"))
+		return err
 	}
 	return nil
 }

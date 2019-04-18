@@ -12,28 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package prerun
+package names
 
-import (
-	"fmt"
-
-	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/spf13/cobra"
-	"github.com/ttacon/chalk"
+const (
+	KeystoreNACLFilestore = "nacl-filestore"
+	S3                    = "s3"
 )
-
-func InitConfig(cmd *cobra.Command, args []string) error {
-	cfgFile, _ := cmd.PersistentFlags().GetString("config")
-	logLevel, _ := cmd.PersistentFlags().GetString("log-level")
-
-	if err := config.Init(cfgFile, logLevel); err != nil {
-		fmt.Println(err)
-
-		fmt.Printf(
-			"Run %s to configure create or specify with %s\n",
-			chalk.Bold.TextStyle("`mailchain init`"),
-			chalk.Bold.TextStyle("`--config`"))
-		return err
-	}
-	return nil
-}

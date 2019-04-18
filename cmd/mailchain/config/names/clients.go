@@ -18,7 +18,3 @@ const (
 	Etherscan    = "etherscan"
 	EthereumRPC2 = "ethereum-rpc2"
 )
-
-const (
-	KeystoreNACLFilestore = "nacl-filestore"
-)

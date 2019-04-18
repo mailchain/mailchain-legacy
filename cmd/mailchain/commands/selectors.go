@@ -17,6 +17,7 @@ package commands
 import (
 	"fmt"
 
+	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/prompts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
@@ -34,7 +35,10 @@ func selectNetwork(cmd *cobra.Command, args, networks []string) (string, error) 
 }
 
 func selectKeyStore() (string, error) {
-	keysStoreType, skipped, err := prompts.SelectItemSkipable("Key Store", []string{"nacl-filestore"}, viper.GetString("storage.keys") != "")
+	keysStoreType, skipped, err := prompts.SelectItemSkipable(
+		"Key Store",
+		[]string{names.KeystoreNACLFilestore},
+		viper.GetString("storage.keys") != "")
 	if err != nil || skipped {
 		return "", err
 	}

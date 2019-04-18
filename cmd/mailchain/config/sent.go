@@ -15,15 +15,17 @@
 package config
 
 import (
+	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
+	"github.com/mailchain/mailchain/cmd/mailchain/prompts"
 	"github.com/mailchain/mailchain/internal/pkg/stores"
 	"github.com/mailchain/mailchain/internal/pkg/stores/s3"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-// GetSenderStorage create all the clients based on configuration
-func GetSenderStorage() (stores.Sent, error) {
-	if viper.GetString("storage.sent") == "s3" {
+// GetSentStorage create all the clients based on configuration
+func GetSentStorage() (stores.Sent, error) {
+	if viper.GetString("storage.sent") == names.S3 {
 		return getS3Client()
 	}
 	return nil, errors.Errorf("unsupported storage client")
@@ -36,4 +38,39 @@ func getS3Client() (stores.Sent, error) {
 		viper.GetString("stores.s3.access-key-id"),
 		viper.GetString("stores.s3.secret-access-key"),
 	)
+}
+
+func SetSentStorage(sentType string) error {
+	viper.Set("storage.sent", sentType)
+	switch sentType {
+	case names.S3:
+		return setS3()
+	default:
+		return errors.Errorf("unsupported sender store type")
+	}
+}
+
+func setS3() error {
+	bucket, err := prompts.RequiredInput("bucket")
+	if err != nil {
+		return err
+	}
+	region, err := prompts.RequiredInput("region")
+	if err != nil {
+		return err
+	}
+	accessKeyID, err := prompts.RequiredInput("access-key-id")
+	if err != nil {
+		return err
+	}
+	secretAccessKey, err := prompts.RequiredInput("secret-access-key")
+	if err != nil {
+		return err
+	}
+
+	viper.Set("stores.s3.access-key-id", accessKeyID)
+	viper.Set("stores.s3.secret-access-key", secretAccessKey)
+	viper.Set("stores.s3.bucket", bucket)
+	viper.Set("stores.s3.region", region)
+	return nil
 }

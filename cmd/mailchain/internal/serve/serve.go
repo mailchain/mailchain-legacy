@@ -54,7 +54,7 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 		return nil, errors.WithMessage(err, "Could not configure senders")
 	}
 
-	senderStorage, err := config.GetSenderStorage()
+	sentStorage, err := config.GetSentStorage()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config store")
 	}
@@ -79,7 +79,7 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	router.HandleFunc(
 		"/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/messages",
 		messages.Get(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")
-	router.HandleFunc("/api/ethereum/{network}/messages/send", send.Post(senderStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
+	router.HandleFunc("/api/ethereum/{network}/messages/send", send.Post(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
 	router.HandleFunc("/api/messages/{message_id}/read", read.Get(mailboxStore)).Methods("GET")
 	router.HandleFunc("/api/messages/{message_id}/read", read.Put(mailboxStore)).Methods("PUT")
 	router.HandleFunc("/api/messages/{message_id}/read", read.Delete(mailboxStore)).Methods("DELETE")

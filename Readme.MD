@@ -1,5 +1,7 @@
 # MailChain
 
+[![Build Status](https://travis-ci.com/mailchain/mailchain.svg?branch=master)](https://travis-ci.com/mailchain/mailchain)
+
 Mailchain is a blockchain-based rich messaging with attachment capabilities. Using blockchain and decentralized storage it delivers a simple, secure, email-like experience to users. Using MailChain, Ethereum users can now send and receive rich-media HTML messages with attachments via an Ethereum address.
 
 ## Getting started

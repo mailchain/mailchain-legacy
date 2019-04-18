@@ -20,8 +20,11 @@ import (
 	"strings"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus" // nolint: depguard
-	"github.com/spf13/viper"         // nolint: depguard
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper" // nolint: depguard
+	"github.com/ttacon/chalk"
 )
 
 // MailChainHome set home directory for mailchain
@@ -61,5 +64,13 @@ func Init(cfgFile, logLevel string) error {
 		return err
 	}
 
+	return nil
+}
+
+func WriteConfig(cmd *cobra.Command, args []string) error {
+	if err := viper.WriteConfig(); err != nil {
+		return errors.WithStack(err)
+	}
+	cmd.Printf(chalk.Green.Color("Config saved\n"))
 	return nil
 }

@@ -15,7 +15,7 @@ repos:
   hooks:
   - id: checkmake
 - repo: https://github.com/mailchain/pre-commit
-  sha: v0.0.4
+  sha: v0.0.5
   hooks:
   - id: generate-api-docs
   - id: add-license

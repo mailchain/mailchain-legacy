@@ -17,6 +17,9 @@ package config
 import (
 	"fmt"
 
+	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
+	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
+	"github.com/mailchain/mailchain/cmd/mailchain/prompts"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/nacl"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
@@ -27,11 +30,35 @@ import (
 
 // GetKeyStore create new keystore from config
 func GetKeyStore() (*nacl.FileStore, error) {
-	if viper.GetString("storage.keys") == "nacl-filestore" {
-		fs := nacl.NewFileStore(viper.GetString("stores.nacl-filestore.path"))
+	if viper.GetString("storage.keys") == names.KeystoreNACLFilestore {
+		fs := nacl.NewFileStore(viper.GetString(fmt.Sprintf("stores.%s.path", names.KeystoreNACLFilestore)))
 		return &fs, nil
 	}
+
 	return nil, errors.Errorf("unknown keystore type")
+}
+
+func SetKeyStore(cmd *cobra.Command, keysStoreType string) error {
+	viper.Set("storage.keys", keysStoreType)
+	switch keysStoreType {
+	case names.KeystoreNACLFilestore:
+		// NACL only needs to set the path
+		return setKeystorePath(cmd, keysStoreType)
+	default:
+		return errors.Errorf("unsupported key store type")
+	}
+}
+
+func setKeystorePath(cmd *cobra.Command, keystoreType string) error {
+	if keystorePath, _ := cmd.Flags().GetString("keystore-path"); keystorePath != "" {
+		viper.Set(fmt.Sprintf("stores.%s.path", keystoreType), keystorePath)
+	}
+	keystorePath, err := prompts.RequiredInputWithDefault("path", defaults.KeystorePath)
+	if err != nil {
+		return err
+	}
+	viper.Set(fmt.Sprintf("stores.%s.path", keystoreType), keystorePath)
+	return nil
 }
 
 // Passphrase is extracted from the command

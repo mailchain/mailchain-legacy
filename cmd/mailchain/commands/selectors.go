@@ -12,17 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package encoding
+package commands
 
-func EthereumNetworks() []string {
-	return []string{Mainnet, Kovan, Rinkeby, Ropsten}
-}
-
-const Mainnet = "mainnet"
-
-// Ethereum
-const (
-	Kovan   = "kovan"
-	Rinkeby = "rinkeby"
-	Ropsten = "ropsten"
+import (
+	"github.com/mailchain/mailchain/cmd/mailchain/prompts"
+	"github.com/spf13/cobra"
 )
+
+func selectNetwork(cmd *cobra.Command, args, networks []string) (string, error) {
+	flg, _ := cmd.Flags().GetString("network")
+	if flg != "" {
+		return flg, nil
+	}
+	if len(args) == 1 {
+		return args[0], nil
+	}
+	return prompts.SelectItem("Network", networks)
+}

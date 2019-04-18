@@ -32,6 +32,7 @@ func cfgCmd() *cobra.Command {
 		},
 	}
 	cmd.AddCommand(cfgChainCmd())
+	cmd.AddCommand(cfgKeystore())
 
 	return cmd
 }
@@ -41,6 +42,7 @@ func cfgChainCmd() *cobra.Command {
 		Use:   "chain",
 		Short: "setup chain",
 		// Long:  ``,
+		Example:           "",
 		PersistentPreRunE: prerun.InitConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
@@ -48,6 +50,18 @@ func cfgChainCmd() *cobra.Command {
 	}
 	cmd.AddCommand(cfgChainEthereum())
 	return cmd
+}
+
+func cfgKeystore() *cobra.Command {
+	return &cobra.Command{
+		Use:   "keystore",
+		Short: "setup keystore",
+		// Long:  ``,
+		PersistentPreRunE: prerun.InitConfig,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Usage()
+		},
+	}
 }
 
 func cfgChainEthereum() *cobra.Command {

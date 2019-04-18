@@ -26,8 +26,7 @@ func InitConfig(cmd *cobra.Command, args []string) error {
 	cfgFile, _ := cmd.PersistentFlags().GetString("config")
 	logLevel, _ := cmd.PersistentFlags().GetString("log-level")
 
-	err := config.Init(cfgFile, logLevel)
-	if err != nil {
+	if err := config.Init(cfgFile, logLevel); err != nil {
 		fmt.Println(err)
 
 		fmt.Printf(
@@ -35,5 +34,5 @@ func InitConfig(cmd *cobra.Command, args []string) error {
 			chalk.Bold.TextStyle("`mailchain init`"),
 			chalk.Bold.TextStyle("`--config`"))
 	}
-	return err
+	return nil
 }

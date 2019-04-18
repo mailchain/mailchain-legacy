@@ -15,8 +15,11 @@
 package commands
 
 import (
+	"fmt"
+
 	"github.com/mailchain/mailchain/cmd/mailchain/prompts"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper" // nolint: depguard
 )
 
 func selectNetwork(cmd *cobra.Command, args, networks []string) (string, error) {
@@ -28,4 +31,13 @@ func selectNetwork(cmd *cobra.Command, args, networks []string) (string, error) 
 		return args[0], nil
 	}
 	return prompts.SelectItem("Network", networks)
+}
+
+func selectKeyStore() (string, error) {
+	keysStoreType, skipped, err := prompts.SelectItemSkipable("Key Store", []string{"nacl-filestore"}, viper.GetString("storage.keys") != "")
+	if err != nil || skipped {
+		return "", err
+	}
+	fmt.Printf("%s used for storing keys\n", keysStoreType)
+	return keysStoreType, nil
 }

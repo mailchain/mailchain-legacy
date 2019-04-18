@@ -15,6 +15,6 @@
 package names
 
 const (
-	Etherscan    = "etherscan"
-	EthereumRPC2 = "ethereum-rpc2"
+	KeystoreNACLFilestore = "nacl-filestore"
+	S3                    = "s3"
 )

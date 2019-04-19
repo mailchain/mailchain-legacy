@@ -38,7 +38,7 @@ func NewMessage(date time.Time, from, to Address, replyTo *Address, subject stri
 	}, nil
 }
 
-// Message MailChain message.
+// Message Mailchain message.
 type Message struct {
 	Headers *Headers
 	ID      ID

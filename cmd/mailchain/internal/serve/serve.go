@@ -62,7 +62,7 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config mailbox store")
 	}
-	keystore, err := config.GetKeyStore()
+	keystore, err := config.GetKeystore()
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not create `keystore`")
 	}

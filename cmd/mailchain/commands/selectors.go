@@ -34,14 +34,14 @@ func selectNetwork(cmd *cobra.Command, args, networks []string) (string, error) 
 	return prompts.SelectItem("Network", networks)
 }
 
-func selectKeyStore() (string, error) {
-	keysStoreType, skipped, err := prompts.SelectItemSkipable(
+func selectKeystore() (string, error) {
+	keystoreType, skipped, err := prompts.SelectItemSkipable(
 		"Key Store",
 		[]string{names.KeystoreNACLFilestore},
 		viper.GetString("storage.keys") != "")
 	if err != nil || skipped {
 		return "", err
 	}
-	fmt.Printf("%s used for storing keys\n", keysStoreType)
-	return keysStoreType, nil
+	fmt.Printf("%s used for storing keys\n", keystoreType)
+	return keystoreType, nil
 }

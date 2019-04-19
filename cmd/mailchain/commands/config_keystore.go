@@ -30,11 +30,11 @@ func cfgKeystore() *cobra.Command {
 		PreRunE:  prerun.InitConfig,
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			keystoreType, err := selectKeyStore()
+			keystoreType, err := selectKeystore()
 			if err != nil {
 				return err
 			}
-			if err := config.SetKeyStore(cmd, keystoreType); err != nil {
+			if err := config.SetKeystore(cmd, keystoreType); err != nil {
 				return err
 			}
 			cmd.Printf("Key store %q configured\n", names.KeystoreNACLFilestore)
@@ -52,7 +52,7 @@ func cfgKeystoreNaclFilestore() *cobra.Command {
 		PreRunE:  prerun.InitConfig,
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := config.SetKeyStore(cmd, names.KeystoreNACLFilestore); err != nil {
+			if err := config.SetKeystore(cmd, names.KeystoreNACLFilestore); err != nil {
 				return err
 			}
 			cmd.Printf("Key store %q configured\n", names.KeystoreNACLFilestore)

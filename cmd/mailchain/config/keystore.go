@@ -28,8 +28,8 @@ import (
 	"github.com/ttacon/chalk"
 )
 
-// GetKeyStore create new keystore from config
-func GetKeyStore() (*nacl.FileStore, error) {
+// GetKeystore create new keystore from config
+func GetKeystore() (*nacl.FileStore, error) {
 	if viper.GetString("storage.keys") == names.KeystoreNACLFilestore {
 		fs := nacl.NewFileStore(viper.GetString(fmt.Sprintf("stores.%s.path", names.KeystoreNACLFilestore)))
 		return &fs, nil
@@ -38,12 +38,12 @@ func GetKeyStore() (*nacl.FileStore, error) {
 	return nil, errors.Errorf("unknown keystore type")
 }
 
-func SetKeyStore(cmd *cobra.Command, keysStoreType string) error {
-	viper.Set("storage.keys", keysStoreType)
-	switch keysStoreType {
+func SetKeystore(cmd *cobra.Command, keystoreType string) error {
+	viper.Set("storage.keys", keystoreType)
+	switch keystoreType {
 	case names.KeystoreNACLFilestore:
 		// NACL only needs to set the path
-		return setKeystorePath(cmd, keysStoreType)
+		return setKeystorePath(cmd, keystoreType)
 	default:
 		return errors.Errorf("unsupported key store type")
 	}

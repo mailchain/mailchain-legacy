@@ -27,8 +27,8 @@ import (
 	"github.com/ttacon/chalk"
 )
 
-// MailChainHome set home directory for mailchain
-func MailChainHome() string {
+// MailchainHome set home directory for mailchain
+func MailchainHome() string {
 	usr, err := user.Current()
 	if err != nil {
 		panic(err)

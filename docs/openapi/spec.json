@@ -11,7 +11,7 @@
   "swagger": "2.0",
   "info": {
     "description": "All the information needed to talk to the API.\n\nTo raise see anything wrong? Raise an [issue](https://github.com/mailchain/mailchain/issues)",
-    "title": "MailChain API",
+    "title": "Mailchain API",
     "version": "0.0.1"
   },
   "basePath": "/api",

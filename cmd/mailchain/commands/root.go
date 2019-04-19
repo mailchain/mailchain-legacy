@@ -25,7 +25,7 @@ import (
 func rootCmd() (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "mailchain",
-		Short: "MailChain node.",
+		Short: "Mailchain node.",
 		Long: `Decentralized Mailchain client, run it locally.
 Complete documentation is available at https://github.com/mailchain/mailchain`,
 	}

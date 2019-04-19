@@ -1,9 +1,9 @@
-# MailChain
+# Mailchain
 
 [![Build Status](https://travis-ci.com/mailchain/mailchain.svg?branch=master)](https://travis-ci.com/mailchain/mailchain)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mailchain/mailchain)](https://goreportcard.com/report/github.com/mailchain/mailchain)
 
-Mailchain is a blockchain-based rich messaging with attachment capabilities. Using blockchain and decentralized storage it delivers a simple, secure, email-like experience to users. Using MailChain, Ethereum users can now send and receive rich-media HTML messages with attachments via an Ethereum address.
+Mailchain is a blockchain-based rich messaging with attachment capabilities. Using blockchain and decentralized storage it delivers a simple, secure, email-like experience to users. Using Mailchain, Ethereum users can now send and receive rich-media HTML messages with attachments via an Ethereum address.
 
 ## Getting started
 
@@ -39,8 +39,8 @@ message Data {
 ```
 
 - `Data.Version` describes the version of the protocol buffer, to support future expansion. *Note: protocol buffers support adding fields, the version will need to be incremented in this case. Removing or changing order or type of fields will result in incrementing the version.*
-- `Data.encryptionLocation` is stored as MultiFormat to support different encryption methods. `encryptedLocation = EncryptionType + EncryptedData`.  *Default: encryption method is AES-256-CBC*
-- `Data.hash` is stored as MultiFormat to support different hash methods `hash = HashType + HashedData`. *Default: [Murmur3](https://en.wikipedia.org/wiki/MurmurHash)*
+- `Data.encryptionLocation` is stored as MultiFormat to support different encryption methods. `encryptedLocation = EncryptionType + EncryptedData`.  *Default: encryption method is AES-256-CBC* `EncryptedData = SentStore + MessageID + EncryptedDataHash` The `EncryptedDataHash` is used to verify the contents have not been altered. *Default: [Murmur3](https://en.wikipedia.org/wiki/MurmurHash)* 
+- `Data.hash` is stored as MultiFormat to support different hash methods `hash = HashType + HashedData`. 
 
 | Field                          | Value                                                           | Description
 | ----------------------------   | --------------------------------------------------------------- | -----------
@@ -52,13 +52,18 @@ message Data {
 | Data.EncryptedLocation[0]      | `byte{0x2e}`                                                    | Encrypted type used. *Default: AES256CBC*
 | Data.EncryptedLocation[1:]     | `[]byte{EncryptedLocation...}`                                  | Encrypted location of the message
 | Data.Hash                      | `[]byte{MultiFormat....}`                                       | MultiFormat representation of encrypted message contents.
-| Data.Hash[0]                   | `byte{0x22}`                                                    | Hash function used. *Default: Murmur3*
-| Data.Hash[1:]                  | `[]byte{hash...}`                                               | Hash of encrypted message contents.
+| Data.Hash[0]                   | `byte{0x22}`                                                    | Hash function used. *Default: [SHA3-256](https://en.wikipedia.org/wiki/SHA-3)*
+| Data.Hash[1:]                  | `[]byte{hash...}`                                               | Hash of plain message contents.
 | ChainSuffix                    | `nil` (Ethereum)                                                | Optional - dependent on chain
+
+### Mail location
+
+Messages are publicly addressable 
 
 ### Mail message
 
 Messages are encrypted and stored publicly.
+
 
 #### Encrypted
 

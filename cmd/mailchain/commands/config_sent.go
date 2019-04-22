@@ -17,8 +17,8 @@ package commands
 import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/mailchain/mailchain/internal/pkg/cmd/prerun"
+	"github.com/mailchain/mailchain/internal/pkg/cmd/setup"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package serve
+package cmd
 
 import (
 	"net/http"
@@ -87,6 +87,7 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	_ = router.Walk(gorillaWalkFn)
 	return router, nil
 }
+
 func SetupFlags(cmd *cobra.Command) error {
 	cmd.Flags().Int("port", defaults.Port, "Port to run server on")
 	cmd.Flags().Bool("cors-disabled", defaults.CORSDisabled, "Disable CORS on the server")

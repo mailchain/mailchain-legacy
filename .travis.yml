@@ -6,7 +6,10 @@ go:
 env:
   - GO111MODULE=on
 dist: xenial
+before_install:
+  - go get github.com/mattn/goveralls
 install: true
 script:
   - make build
   - make unit-test
+  - $GOPATH/bin/goveralls -service=travis-ci

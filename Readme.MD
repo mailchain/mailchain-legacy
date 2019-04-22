@@ -1,7 +1,6 @@
 # Mailchain
 
-[![Build Status](https://travis-ci.com/mailchain/mailchain.svg?branch=master)](https://travis-ci.com/mailchain/mailchain)
-[![Go Report Card](https://goreportcard.com/badge/github.com/mailchain/mailchain)](https://goreportcard.com/report/github.com/mailchain/mailchain)
+[![Travis](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)](https://travis-ci.org/goreleaser/goreleaser)
 
 Mailchain is a blockchain-based rich messaging with attachment capabilities. Using blockchain and decentralized storage it delivers a simple, secure, email-like experience to users. Using Mailchain, Ethereum users can now send and receive rich-media HTML messages with attachments via an Ethereum address.
 

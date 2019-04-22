@@ -18,8 +18,8 @@ import (
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/serve"
+	"github.com/mailchain/mailchain/internal/pkg/cmd/prerun"
 	"github.com/spf13/cobra"
 	"github.com/ttacon/chalk"
 )

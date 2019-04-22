@@ -20,21 +20,13 @@ import (
 
 	"github.com/imdario/mergo"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/prompts"
 	"github.com/mailchain/mailchain/internal/pkg/mailbox"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SetReceiver(network string) error {
-	receiver, skipped, err := prompts.SelectItemSkipable(
-		"Receiver",
-		[]string{names.Etherscan},
-		viper.GetString(fmt.Sprintf("chains.ethereum.networks.%s.receiver", network)) != "")
-	if err != nil || skipped {
-		return err
-	}
-	viper.Set(fmt.Sprintf("chains.ethereum.networks.%s.receiver", network), receiver)
+func SetReceiver(chain, network, receiver string) error {
+	viper.Set(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network), receiver)
 	if err := setClient(receiver, network); err != nil {
 		return err
 	}

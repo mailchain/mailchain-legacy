@@ -54,6 +54,7 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 
 	cfg := cfgCmd()
 	cmd.AddCommand(cfg)
+	cmd.AddCommand(initCmd())
 
 	serve, err := serveCmd()
 	if err != nil {

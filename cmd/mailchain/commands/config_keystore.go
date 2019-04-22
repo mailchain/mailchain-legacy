@@ -19,6 +19,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/spf13/cobra"
 )
 
@@ -30,14 +31,11 @@ func cfgKeystore() *cobra.Command {
 		PreRunE:  prerun.InitConfig,
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			keystoreType, err := selectKeystore()
+			keystoreType, err := setup.Keystore(cmd, names.Empty)
 			if err != nil {
 				return err
 			}
-			if err := config.SetKeystore(cmd, keystoreType); err != nil {
-				return err
-			}
-			cmd.Printf("Key store %q configured\n", names.KeystoreNACLFilestore)
+			cmd.Printf("Key store %q configured\n", keystoreType)
 			return cmd.Usage()
 		},
 	}
@@ -52,10 +50,11 @@ func cfgKeystoreNaclFilestore() *cobra.Command {
 		PreRunE:  prerun.InitConfig,
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := config.SetKeystore(cmd, names.KeystoreNACLFilestore); err != nil {
+			keystoreType, err := setup.Keystore(cmd, names.KeystoreNACLFilestore)
+			if err != nil {
 				return err
 			}
-			cmd.Printf("Key store %q configured\n", names.KeystoreNACLFilestore)
+			cmd.Printf("Key store %q configured\n", keystoreType)
 			return nil
 		},
 	}

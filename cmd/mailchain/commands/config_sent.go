@@ -18,6 +18,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -43,9 +44,8 @@ func cfgSentStorageS3() *cobra.Command {
 		PreRunE:  prerun.InitConfig,
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			senderStoreType := names.S3
-
-			if err := config.SetSentStorage(senderStoreType); err != nil {
+			senderStoreType, err := setup.SentStorage(cmd, names.S3)
+			if err != nil {
 				return errors.WithStack(err)
 			}
 

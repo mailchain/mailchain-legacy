@@ -12,36 +12,41 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package commands
+package setup
 
 import (
 	"fmt"
 
+	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/prompts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func selectNetwork(cmd *cobra.Command, args, networks []string) (string, error) {
-	flg, _ := cmd.Flags().GetString("network")
-	if flg != "" {
-		return flg, nil
+func Keystore(cmd *cobra.Command, keystoreType string) (string, error) {
+	keystoreType, err := selectKeystore(keystoreType)
+	if err != nil {
+		return "", err
 	}
-	if len(args) == 1 {
-		return args[0], nil
+	if err := config.SetKeystore(cmd, keystoreType); err != nil {
+		return "", err
 	}
-	return prompts.SelectItem("Network", networks)
+
+	return keystoreType, nil
 }
 
-func selectKeyStore() (string, error) {
-	keysStoreType, skipped, err := prompts.SelectItemSkipable(
+func selectKeystore(keystoreType string) (string, error) {
+	if keystoreType != names.Empty {
+		return keystoreType, nil
+	}
+	keystoreType, skipped, err := prompts.SelectItemSkipable(
 		"Key Store",
 		[]string{names.KeystoreNACLFilestore},
 		viper.GetString("storage.keys") != "")
 	if err != nil || skipped {
 		return "", err
 	}
-	fmt.Printf("%s used for storing keys\n", keysStoreType)
-	return keysStoreType, nil
+	fmt.Printf("%q used for storing keys\n", keystoreType)
+	return keystoreType, nil
 }

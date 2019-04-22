@@ -20,21 +20,13 @@ import (
 
 	"github.com/imdario/mergo"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/prompts"
 	"github.com/mailchain/mailchain/internal/pkg/mailbox"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SetPubKeyFinder(network string) error {
-	pubkey, skipped, err := prompts.SelectItemSkipable(
-		"Public Key Finder",
-		[]string{names.Etherscan},
-		viper.GetString(fmt.Sprintf("chains.ethereum.networks.%s.pubkey-finder", network)) != "")
-	if err != nil || skipped {
-		return err
-	}
-	viper.Set(fmt.Sprintf("chains.ethereum.networks.%s.pubkey-finder", network), pubkey)
+func SetPubKeyFinder(chain, network, pubkey string) error {
+	viper.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkey)
 	if err := setClient(pubkey, network); err != nil {
 		return err
 	}

@@ -1,7 +1,6 @@
 # Mailchain
 
-[![Build Status](https://travis-ci.com/mailchain/mailchain.svg?branch=master)](https://travis-ci.com/mailchain/mailchain)
-[![Go Report Card](https://goreportcard.com/badge/github.com/mailchain/mailchain)](https://goreportcard.com/report/github.com/mailchain/mailchain)
+[![Travis](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)](https://travis-ci.org/goreleaser/goreleaser)
 
 Mailchain is a blockchain-based rich messaging with attachment capabilities. Using blockchain and decentralized storage it delivers a simple, secure, email-like experience to users. Using Mailchain, Ethereum users can now send and receive rich-media HTML messages with attachments via an Ethereum address.
 
@@ -40,7 +39,7 @@ message Data {
 
 - `Data.Version` describes the version of the protocol buffer, to support future expansion. *Note: protocol buffers support adding fields, the version will need to be incremented in this case. Removing or changing order or type of fields will result in incrementing the version.*
 - `Data.encryptionLocation` is stored as MultiFormat to support different encryption methods. `encryptedLocation = EncryptionType + EncryptedData`.  *Default: encryption method is AES-256-CBC* `EncryptedData = SentStore + MessageID + EncryptedDataHash` The `EncryptedDataHash` is used to verify the contents have not been altered. *Default: [Murmur3](https://en.wikipedia.org/wiki/MurmurHash)* 
-- `Data.hash` is stored as MultiFormat to support different hash methods `hash = HashType + HashedData`. 
+- `Data.hash` is stored as MultiFormat to support different hash methods `hash = HashType + HashedData`.
 
 | Field                          | Value                                                           | Description
 | ----------------------------   | --------------------------------------------------------------- | -----------
@@ -58,12 +57,11 @@ message Data {
 
 ### Mail location
 
-Messages are publicly addressable 
+Messages are publicly addressable
 
 ### Mail message
 
 Messages are encrypted and stored publicly.
-
 
 #### Encrypted
 

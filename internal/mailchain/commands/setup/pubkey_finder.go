@@ -20,7 +20,7 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/internal/pkg/cmd/prompts"
+	"github.com/mailchain/mailchain/internal/mailchain/commands/prompts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
 )

@@ -21,7 +21,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/internal/pkg/cmd/setup"
+	"github.com/mailchain/mailchain/internal/mailchain/commands/setup"
 	"github.com/mailchain/mailchain/internal/pkg/encoding"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"

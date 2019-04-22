@@ -39,7 +39,7 @@ message Data {
 
 - `Data.Version` describes the version of the protocol buffer, to support future expansion. *Note: protocol buffers support adding fields, the version will need to be incremented in this case. Removing or changing order or type of fields will result in incrementing the version.*
 - `Data.encryptionLocation` is stored as MultiFormat to support different encryption methods. `encryptedLocation = EncryptionType + EncryptedData`.  *Default: encryption method is AES-256-CBC* `EncryptedData = SentStore + MessageID + EncryptedDataHash` The `EncryptedDataHash` is used to verify the contents have not been altered. *Default: [Murmur3](https://en.wikipedia.org/wiki/MurmurHash)* 
-- `Data.hash` is stored as MultiFormat to support different hash methods `hash = HashType + HashedData`. 
+- `Data.hash` is stored as MultiFormat to support different hash methods `hash = HashType + HashedData`.
 
 | Field                          | Value                                                           | Description
 | ----------------------------   | --------------------------------------------------------------- | -----------
@@ -57,12 +57,11 @@ message Data {
 
 ### Mail location
 
-Messages are publicly addressable 
+Messages are publicly addressable
 
 ### Mail message
 
 Messages are encrypted and stored publicly.
-
 
 #### Encrypted
 

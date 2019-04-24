@@ -1,6 +1,7 @@
 # Mailchain
 
 [![Travis](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)](https://travis-ci.org/goreleaser/goreleaser)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmailchain%2Fmailchain.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmailchain%2Fmailchain?ref=badge_shield)
 
 Mailchain is a blockchain-based rich messaging with attachment capabilities. Using blockchain and decentralized storage it delivers a simple, secure, email-like experience to users. Using Mailchain, Ethereum users can now send and receive rich-media HTML messages with attachments via an Ethereum address.
 
@@ -80,3 +81,7 @@ Advanced Encryption Standard, with a 256 bit key length, operating in the Chain 
 ### Multi hash
 
 ### Serialization
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmailchain%2Fmailchain.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmailchain%2Fmailchain?ref=badge_large)

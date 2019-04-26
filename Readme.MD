@@ -1,6 +1,7 @@
 # Mailchain
 
-[![Travis](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)](https://travis-ci.org/goreleaser/goreleaser)
+![Travis](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)]
+![Coveralls](https://img.shields.io/coveralls/github/mailchain/mailchain.svg?style=for-the-badge)
 
 Mailchain is a blockchain-based rich messaging with attachment capabilities. Using blockchain and decentralized storage it delivers a simple, secure, email-like experience to users. Using Mailchain, Ethereum users can now send and receive rich-media HTML messages with attachments via an Ethereum address.
 
@@ -55,13 +56,13 @@ message Data {
 | Data.Hash[1:]                  | `[]byte{hash...}`                                               | Hash of plain message contents.
 | ChainSuffix                    | `nil` (Ethereum)                                                | Optional - dependent on chain
 
-### Mail location
-
-Messages are publicly addressable
-
 ### Mail message
 
 Messages are encrypted and stored publicly.
+
+#### Storage
+
+Messages are not stored on the blockchain they are stored in a publicly addressable location. The address of the message is stored on the blockchain and encrypted. Only the recipient is able to decrypt the message and determine its location.
 
 #### Encrypted
 

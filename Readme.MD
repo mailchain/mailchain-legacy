@@ -81,3 +81,7 @@ Advanced Encryption Standard, with a 256 bit key length, operating in the Chain 
 ### Multi hash
 
 ### Serialization
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmailchain%2Fmailchain.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmailchain%2Fmailchain?ref=badge_large)

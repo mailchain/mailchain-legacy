@@ -70,6 +70,11 @@ func TestParseAddress(t *testing.T) {
 			nil,
 			true,
 		},
+		{"invalid-address",
+			args{"Charlotte <0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum", "ethereum", "ropsten"},
+			nil,
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -80,6 +85,63 @@ func TestParseAddress(t *testing.T) {
 			}
 			if !assert.Equal(got, tt.want) {
 				t.Errorf("ParseAddress() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_tryAddChainNetwork(t *testing.T) {
+	type args struct {
+		input   string
+		chain   string
+		network string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			"has-@",
+			args{"0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum", "ethereum", "ropsten"},
+			"0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum",
+			false,
+		},
+		{
+			"has-chevrons",
+			args{"<0x92d8f10248c6a3953cc3692a894655ad05d61efb>", "ethereum", "ropsten"},
+			"",
+			true,
+		},
+		{
+			"missing-network",
+			args{"0x92d8f10248c6a3953cc3692a894655ad05d61efb", "", "ethereum"},
+			"",
+			true,
+		},
+		{
+			"missing-chain",
+			args{"0x92d8f10248c6a3953cc3692a894655ad05d61efb", "ropsten", ""},
+			"",
+			true,
+		},
+		{
+			"success",
+			args{"0x92d8f10248c6a3953cc3692a894655ad05d61efb", "ethereum", "ropsten"},
+			"0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum",
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tryAddChainNetwork(tt.args.input, tt.args.chain, tt.args.network)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("tryAddChainNetwork() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("tryAddChainNetwork() = %v, want %v", got, tt.want)
 			}
 		})
 	}

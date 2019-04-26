@@ -29,28 +29,6 @@ func NewHeaders(date time.Time, from, to Address, replyTo *Address, subject stri
 	}, nil
 }
 
-// type Headers map[string][]string
-
-// func (h Headers) Address() (*Address, error) {
-// 	return nil, nil
-// }
-
-// // Date header value
-// func (h Headers) Date() (*time.Time, error) {
-// 	dateStrings, ok := h["date"]
-// 	if !ok {
-// 		return nil, errors.Errorf("data header missing")
-// 	}
-// 	if len(dateStrings) == 0 {
-// 		return nil, errors.Errorf("data string is empty")
-// 	}
-// 	t, err := mail.ParseDate(dateStrings[0])
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return &t, nil
-// }
-
 // Headers for the message
 type Headers struct {
 	From    Address

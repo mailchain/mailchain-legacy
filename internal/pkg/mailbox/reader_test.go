@@ -40,7 +40,7 @@ func TestReadMessage(t *testing.T) {
 		decrypterLocationRet   []interface{}
 		decrypterContentsCalls int
 		decrypterFile          string
-		decrypterContentsError []interface{}
+		decrypterContentsError error
 	}{
 		{"invalid protobuf prefix",
 			testutil.MustHexDecodeString("08010f7365637265742d6c6f636174696f6e1a221620aff34d74dcb62c288b1a2f41a4852e82aff6c95e5c40c891299b3488b4340769"),
@@ -72,6 +72,36 @@ func TestReadMessage(t *testing.T) {
 			"",
 			nil,
 		},
+		{"no-message-at-location",
+			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a221620aff34d74dcb62c288b1a2f41a4852e82aff6c95e5c40c891299b3488b4340769"),
+			"002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
+			"could not get message from `location`: open TestReadMessage/no_message_at_location-2204f3d89e5a: no such file or directory",
+			1,
+			[]interface{}{[]byte("file://TestReadMessage/no_message_at_location-2204f3d89e5a"), nil},
+			0,
+			"no_message_at_location.golden.eml",
+			nil,
+		},
+		{"decrypt-message-failed",
+			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a221620aff34d74dcb62c288b1a2f41a4852e82aff6c95e5c40c891299b3488b4340769"),
+			"002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
+			"could not decrypt message: failed to decrypt",
+			1,
+			[]interface{}{[]byte("test://TestReadMessage/success-2204f3d89e5a"), nil},
+			1,
+			"simple.golden.eml",
+			errors.New("failed to decrypt"),
+		},
+		{"failed-create-hash",
+			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a221620aff34d74dcb62c288b1a2f41a4852e82aff6c95e5c40c891299b3488b4340769"),
+			"002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
+			"message-hash invalid",
+			1,
+			[]interface{}{[]byte("test://TestReadMessage/success-2204f3d89e5a"), nil},
+			1,
+			"alternative.golden.eml",
+			nil,
+		},
 		{"success",
 			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a221620aff34d74dcb62c288b1a2f41a4852e82aff6c95e5c40c891299b3488b4340769"),
 			"002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
@@ -88,7 +118,7 @@ func TestReadMessage(t *testing.T) {
 			decrypter := mocks.NewMockDecrypter(mockCtrl)
 			decrypter.EXPECT().Decrypt(gomock.Any()).Return(tc.decrypterLocationRet...).Times(tc.decrypterLocationCalls)
 			decrypted, _ := ioutil.ReadFile("./testdata/" + tc.decrypterFile)
-			decrypter.EXPECT().Decrypt(gomock.Any()).Return(decrypted, nil).Times(tc.decrypterContentsCalls)
+			decrypter.EXPECT().Decrypt(gomock.Any()).Return(decrypted, tc.decrypterContentsError).Times(tc.decrypterContentsCalls)
 			actual, err := mailbox.ReadMessage(tc.txData, decrypter)
 			_ = actual
 			if tc.err == "" {

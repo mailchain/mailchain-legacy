@@ -55,7 +55,7 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 	}
 	rawMsg, err := decrypter.Decrypt(toDecrypt)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not decrypt transaction data")
+		return nil, errors.WithMessage(err, "could not decrypt message")
 	}
 	messageHash, err := crypto.CreateMessageHash(rawMsg)
 	if err != nil {

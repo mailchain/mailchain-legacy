@@ -1,0 +1,81 @@
+# This is an example goreleaser.yaml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+env:
+- GO111MODULE=on
+before:
+  hooks:
+    # you may remove this if you don't use vgo
+    - go mod download
+    - go install github.com/golang/mock/mockgen
+    # you may remove this if you don't need go generate
+    - go generate ./...
+builds:
+- id: mailchain-darwin-amd64
+  ldflags: -s -w -X github.com/mailchain/mailchain/pkg/version.Version={{.Version}} -X github.com/mailchain/mailchain/pkg/version.BuildDate={{.Date}} -X github.com/mailchain/mailchain/pkg/version.CommitHash={{ .ShortCommit }}
+  binary: mailchain
+  env:
+  - CGO_ENABLED=1  
+  - CC=o64-clang 
+  - CXX=o64-clang++
+  main: ./cmd/mailchain/main.go 
+  goos:
+    - darwin
+  goarch:
+    - amd64
+- id: mailchain-linux-amd64
+  ldflags: -s -w -X github.com/mailchain/mailchain/pkg/version.Version={{.Version}} -X github.com/mailchain/mailchain/pkg/version.BuildDate={{.Date}} -X github.com/mailchain/mailchain/pkg/version.CommitHash={{ .ShortCommit }}
+  binary: mailchain
+  env:
+  - CGO_ENABLED=1
+  main: ./cmd/mailchain/main.go
+  goos:
+    - linux
+  goarch:
+    - amd64    
+- id: mailchain-windows-amd64
+  ldflags: -s -w -X github.com/mailchain/mailchain/pkg/version.Version={{.Version}} -X github.com/mailchain/mailchain/pkg/version.BuildDate={{.Date}} -X github.com/mailchain/mailchain/pkg/version.CommitHash={{ .ShortCommit }}
+  binary: mailchain
+  env:
+    - CGO_ENABLED=1
+    - CC=x86_64-w64-mingw32-gcc
+    - CXX=x86_64-w64-mingw32-g++
+  main: ./cmd/mailchain/main.go
+  goos:
+    - windows
+  goarch:
+    - amd64
+archives:
+- format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
+  name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+  replacements:
+    amd64: 64bit
+    386: 32bit
+    arm: ARM
+    arm64: ARM64
+    darwin: macOS
+    linux: Linux
+    windows: Windows
+    openbsd: OpenBSD
+    netbsd: NetBSD
+    freebsd: FreeBSD
+    dragonfly: DragonFlyBSD
+  files:
+    - Readme.MD
+    - LICENSE 
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+    - '^dev:'
+    - 'README'    
+    - Merge pull request
+    - Merge branch    

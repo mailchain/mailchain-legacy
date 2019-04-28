@@ -19,3 +19,4 @@ repos:
   hooks:
   - id: generate-api-docs
   - id: add-license
+  - id: generate-mermaid-diagrams

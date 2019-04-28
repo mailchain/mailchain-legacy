@@ -1,7 +1,7 @@
 # Mailchain
 
-![Travis](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)
-![Coveralls](https://img.shields.io/coveralls/github/mailchain/mailchain.svg?style=for-the-badge)
+![https://travis-ci.com/mailchain/mailchain](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)
+![https://coveralls.io/github/mailchain/mailchain](https://img.shields.io/coveralls/github/mailchain/mailchain.svg?style=for-the-badge)
 
 Mailchain is an email-like application. Using blockchain encryption and decentralized storage it delivers a simple, secure, email-like experience to blockchain users. Using Mailchain, Ethereum users can now send and receive rich-media HTML messages with attachments via an Ethereum address.
 

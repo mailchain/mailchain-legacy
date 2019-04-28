@@ -10,7 +10,7 @@ sequenceDiagram
     MC->>MC: Create message hash - SHA3-256
     MC->>MC: Encrypt message with Recipient Public Key
     MC->>MC: Create encrypted message hash - Murmur3
-    
+     
     MC->>SS: PUT: Store encrypted message
     activate SS
     SS->>MC: 201: Created

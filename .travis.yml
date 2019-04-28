@@ -10,13 +10,12 @@ before_install:
   - go get github.com/mattn/goveralls
 install: true
 script:
-  - make build
-  - make unit-test
   - go test -covermode=count -coverprofile=coverage.out ./...
   - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
+  - git diff
 deploy:
   - provider: script
     skip_cleanup: true
-    script: docker run --rm --privileged -v $TRAVIS_BUILD_DIR:/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo goreleaser --rm-dist
+    script: git diff && docker run --rm --privileged -v $TRAVIS_BUILD_DIR:/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo goreleaser --rm-dist
     on:
       tags: true

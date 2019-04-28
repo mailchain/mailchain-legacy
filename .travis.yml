@@ -16,7 +16,7 @@ script:
   - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
 deploy:
   - provider: script
-    script: docker run --rm --privileged -v $TRAVIS_BUILD_DIR -v /var/run/docker.sock:/var/run/docker.sock -w $TRAVIS_BUILD_DIR mailchain/goreleaser-xcgo goreleaser --rm-dist
+    skip_cleanup: true
+    script: docker run --rm --privileged -v $TRAVIS_BUILD_DIR:/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo goreleaser --rm-dist
     on:
       tags: true
-      branch: master

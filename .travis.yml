@@ -14,3 +14,9 @@ script:
   - make unit-test
   - go test -covermode=count -coverprofile=coverage.out ./...
   - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
+deploy:
+  - provider: script
+    script: make release
+    on:
+      tags: true
+      branch: master

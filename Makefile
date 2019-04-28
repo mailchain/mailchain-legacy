@@ -35,10 +35,7 @@ openapi:
 	cat  ./docs/openapi/spec.json >>  ./internal/pkg/http/rest/spec/openapi.go
 	echo '`' >>  ./internal/pkg/http/rest/spec/openapi.go
 	echo '}' >>  ./internal/pkg/http/rest/spec/openapi.go
-	addlicense -l apache -c Finobo ./internal/pkg/http/rest/spec/openapi.go
-
-release:
-	docker run --rm --privileged -v $PWD:/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo goreleaser --rm-dist
+	addlicense -l apache -c Finobo ./internal/pkg/http/rest/spec/openapi.go	
 
 snapshot:
 	docker run --rm --privileged -v $PWD:/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo goreleaser --snapshot --rm-dist

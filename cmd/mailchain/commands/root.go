@@ -15,11 +15,7 @@
 package commands
 
 import (
-	"fmt"
-
-	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/spf13/cobra"
-	"github.com/ttacon/chalk"
 )
 
 func rootCmd() (*cobra.Command, error) {
@@ -31,20 +27,12 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 	}
 	var cfgFile string
 	var logLevel string
+
 	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.mailchain/.mailchain.yaml)")
 	cmd.PersistentFlags().StringVar(&logLevel, "log-level", "warn", "log level [Panic,Fatal,Error,Warn,Info,Debug]")
 
 	// TODO: this should not be persistent flags
 	cmd.PersistentFlags().Bool("empty-passphrase", false, "no passphrase and no prompt")
-
-	err := config.Init(cfgFile, logLevel)
-	if err != nil {
-		fmt.Println(err)
-
-		fmt.Printf("Run %s to configure create or specify with %s\n",
-			chalk.Bold.TextStyle("`mailchain init`"),
-			chalk.Bold.TextStyle("`--config`"))
-	}
 
 	account, err := accountCmd()
 	if err != nil {
@@ -62,5 +50,6 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 	}
 	cmd.AddCommand(serve)
 
+	cmd.AddCommand(versionCmd())
 	return cmd, nil
 }

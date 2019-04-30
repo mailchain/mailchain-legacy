@@ -14,10 +14,11 @@ matrix:
 env:
   - GO111MODULE=on
 dist: xenial
-before_install:
+after_install:
   - go get github.com/mattn/goveralls
 install: true
 script:
+  - go test ./...
   - go test -covermode=count -coverprofile=coverage.out ./...
   - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
 deploy:

@@ -2,6 +2,11 @@
 # Make sure to check the documentation at http://goreleaser.com
 env:
 - GO111MODULE=on
+before:
+  hooks:
+    - go mod download
+    - go install github.com/golang/mock/mockgen
+    - go generate ./...
 builds:
 - id: mailchain-darwin-amd64
   ldflags: -s -w -X github.com/mailchain/mailchain/pkg/version.Version={{.Version}} -X github.com/mailchain/mailchain/pkg/version.BuildDate={{.Date}} -X github.com/mailchain/mailchain/pkg/version.CommitHash={{ .ShortCommit }}

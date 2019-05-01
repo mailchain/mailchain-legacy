@@ -1,21 +1,32 @@
 language: go
 go_import_path: github.com/mailchain/mailchain
-go:
-  - 1.11.x
-  - 1.12.x
+matrix:
+  include:
+    # "1.x" always refers to the latest Go version, inc. the patch release.
+    # e.g. "1.x" is 1.11 until 1.11.1 is available.
+    - go: 1.x
+      env: 
+      - LATEST=true
+      - GO111MODULE=on
+    - go: 1.11.x
+    - go: 1.12.x
+    - go: tip
+  allow_failures:
+    - go: tip
 env:
   - GO111MODULE=on
 dist: xenial
-before_install:
-  - go get github.com/mattn/goveralls
-install: true
+install:
+  - go get -v ./...
 script:
+  - go get github.com/mattn/goveralls
   - go test -covermode=count -coverprofile=coverage.out ./...
   - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
-  - git diff
 deploy:
   - provider: script
-    skip_cleanup: true
-    script: git diff && docker run --rm --privileged -v $TRAVIS_BUILD_DIR:/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo goreleaser --rm-dist
+    script: docker run --rm --privileged -v $TRAVIS_BUILD_DIR:/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo goreleaser --rm-dist
     on:
       tags: true
+      repo: mailchain/mailchain
+      branch: master
+      condition: $LATEST = true

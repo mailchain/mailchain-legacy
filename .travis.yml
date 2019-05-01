@@ -2,13 +2,10 @@ language: go
 go_import_path: github.com/mailchain/mailchain
 matrix:
   include:
-    # "1.x" always refers to the latest Go version, inc. the patch release.
-    # e.g. "1.x" is 1.11 until 1.11.1 is available.
-    - go: 1.x
-      env: LATEST=true
+    - go: tip
     - go: 1.11.x
     - go: 1.12.x
-    - go: tip
+      env: LATEST=true
   allow_failures:
     - go: tip
 env:

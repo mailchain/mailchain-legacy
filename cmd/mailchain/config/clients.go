@@ -25,8 +25,8 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func getEtherRPC2Client(network string) (*ethrpc.EthRPC2, error) {
-	address := viper.GetString(fmt.Sprintf("clients.ethereum-rpc2.%s.address", network))
+func getEtherRPC2Client(vpr *viper.Viper, network string) (*ethrpc.EthRPC2, error) {
+	address := vpr.GetString(fmt.Sprintf("clients.ethereum-rpc2.%s.address", network))
 	if address == "" {
 		return nil, errors.Errorf("`clients.ethereum-rpc2.%s.address` must not be empty", network)
 	}

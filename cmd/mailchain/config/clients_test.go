@@ -198,3 +198,52 @@ func Test_getEtherscanClient(t *testing.T) {
 		})
 	}
 }
+
+func Test_getEtherRPC2Client(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		vpr     *viper.Viper
+		network string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantNil bool
+		wantErr bool
+	}{
+		{
+			"success",
+			args{
+				func() *viper.Viper {
+					v := viper.New()
+					v.Set("clients.ethereum-rpc2.mainnet.address", "http://localhost:123423")
+					return v
+				}(),
+				"mainnet",
+			},
+			false,
+			false,
+		},
+		{
+			"error",
+			args{
+				viper.New(),
+				"mainnet",
+			},
+			true,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := getEtherRPC2Client(tt.args.vpr, tt.args.network)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("getEtherRPC2Client() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.wantNil, (got == nil)) {
+				t.Errorf("getEtherRPC2Client() = %v, want %v", got, tt.wantNil)
+			}
+		})
+	}
+}

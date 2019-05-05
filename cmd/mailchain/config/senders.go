@@ -34,10 +34,10 @@ func SetSender(vpr *viper.Viper, chain, network, sender string) error {
 }
 
 // GetSenders in configured state
-func GetSenders() (map[string]mailbox.Sender, error) {
+func GetSenders(vpr *viper.Viper) (map[string]mailbox.Sender, error) {
 	senders := make(map[string]mailbox.Sender)
 	for chain := range viper.GetStringMap("chains") {
-		chSenders, err := getChainSenders(chain)
+		chSenders, err := getChainSenders(vpr, chain)
 		if err != nil {
 			return nil, err
 		}
@@ -48,10 +48,10 @@ func GetSenders() (map[string]mailbox.Sender, error) {
 	return senders, nil
 }
 
-func getChainSenders(chain string) (map[string]mailbox.Sender, error) {
+func getChainSenders(vpr *viper.Viper, chain string) (map[string]mailbox.Sender, error) {
 	senders := make(map[string]mailbox.Sender)
 	for network := range viper.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
-		sender, err := getSender(chain, network)
+		sender, err := getSender(vpr, chain, network)
 		if err != nil {
 			return nil, err
 		}
@@ -61,10 +61,10 @@ func getChainSenders(chain string) (map[string]mailbox.Sender, error) {
 	return senders, nil
 }
 
-func getSender(chain, network string) (mailbox.Sender, error) {
+func getSender(vpr *viper.Viper, chain, network string) (mailbox.Sender, error) {
 	switch viper.GetString(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network)) {
 	case names.EthereumRPC2:
-		return getEtherRPC2Client(network)
+		return getEtherRPC2Client(vpr, network)
 	default:
 		return nil, errors.Errorf("unsupported receiver")
 	}

@@ -35,10 +35,10 @@ func SetReceiver(vpr *viper.Viper, chain, network, receiver string) error {
 }
 
 // GetReceivers in configured state
-func GetReceivers() (map[string]mailbox.Receiver, error) {
+func GetReceivers(vpr *viper.Viper) (map[string]mailbox.Receiver, error) {
 	receivers := make(map[string]mailbox.Receiver)
 	for chain := range viper.GetStringMap("chains") {
-		chRcvrs, err := getChainReceivers(chain)
+		chRcvrs, err := getChainReceivers(vpr, chain)
 		if err != nil {
 			return nil, err
 		}
@@ -49,10 +49,10 @@ func GetReceivers() (map[string]mailbox.Receiver, error) {
 	return receivers, nil
 }
 
-func getChainReceivers(chain string) (map[string]mailbox.Receiver, error) {
+func getChainReceivers(vpr *viper.Viper, chain string) (map[string]mailbox.Receiver, error) {
 	receivers := make(map[string]mailbox.Receiver)
 	for network := range viper.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
-		receiver, err := getReceiver(chain, network)
+		receiver, err := getReceiver(vpr, chain, network)
 		if err != nil {
 			return nil, err
 		}
@@ -62,10 +62,10 @@ func getChainReceivers(chain string) (map[string]mailbox.Receiver, error) {
 	return receivers, nil
 }
 
-func getReceiver(chain, network string) (mailbox.Receiver, error) {
+func getReceiver(vpr *viper.Viper, chain, network string) (mailbox.Receiver, error) {
 	switch viper.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) {
 	case names.Etherscan:
-		return getEtherscanClient()
+		return getEtherscanClient(vpr)
 	default:
 		return nil, errors.Errorf("unsupported receiver")
 	}

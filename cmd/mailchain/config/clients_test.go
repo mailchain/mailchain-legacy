@@ -17,10 +17,11 @@ package config
 import (
 	"testing"
 
+	"github.com/mailchain/mailchain/internal/pkg/clients/etherscan"
 	"github.com/matryer/is"
 	"github.com/pkg/errors"
-
 	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_setEtherscan(t *testing.T) {
@@ -145,6 +146,55 @@ func Test_setEthRPC(t *testing.T) {
 			}
 
 			is.Equal(tt.expected, tt.args.vpr.Get("clients.ethereum-rpc2.mainnet"))
+		})
+	}
+}
+
+func Test_getEtherscanClient(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		vpr *viper.Viper
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *etherscan.APIClient
+		wantErr bool
+	}{
+		{
+			"success",
+			args{
+				func() *viper.Viper {
+					v := viper.New()
+					v.Set("clients.etherscan.api-key", "apikey-value")
+					return v
+				}(),
+			},
+			func() *etherscan.APIClient {
+				v, _ := etherscan.NewAPIClient("apikey-value")
+				return v
+			}(),
+			false,
+		},
+		{
+			"error",
+			args{
+				viper.New(),
+			},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := getEtherscanClient(tt.args.vpr)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("getEtherscanClient() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("getEtherscanClient() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }

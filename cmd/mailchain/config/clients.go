@@ -33,8 +33,8 @@ func getEtherRPC2Client(network string) (*ethrpc.EthRPC2, error) {
 	return ethrpc.New(address)
 }
 
-func getEtherscanClient() (*etherscan.APIClient, error) {
-	apiKey := viper.GetString("clients.etherscan.api-key")
+func getEtherscanClient(vpr *viper.Viper) (*etherscan.APIClient, error) {
+	apiKey := vpr.GetString("clients.etherscan.api-key")
 	if apiKey == "" {
 		return nil, errors.Errorf("`clients.etherscan.api-key` must not be empty")
 	}

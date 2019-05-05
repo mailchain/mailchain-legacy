@@ -40,12 +40,12 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/spec.json", spec.Get()).Methods("GET")
 	router.HandleFunc("/api/docs", spec.DocsGet()).Methods("GET")
-
-	receivers, err := config.GetReceivers()
+	vpr := viper.GetViper()
+	receivers, err := config.GetReceivers(vpr)
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure receivers")
 	}
-	pubKeyFinders, err := config.GetPublicKeyFinders()
+	pubKeyFinders, err := config.GetPublicKeyFinders(vpr)
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure receivers")
 	}

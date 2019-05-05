@@ -68,7 +68,7 @@ func setEthRPC(network string) error {
 
 func setEtherscan(vpr *viper.Viper, requiredInput func(label string) (string, error)) error {
 	client := names.Etherscan
-	if viper.GetString(fmt.Sprintf("clients.%s.api-key", client)) != "" {
+	if vpr.GetString(fmt.Sprintf("clients.%s.api-key", client)) != "" {
 		fmt.Printf("%s already configured\n", client)
 		return nil
 	}

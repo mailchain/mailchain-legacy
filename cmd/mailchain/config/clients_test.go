@@ -17,12 +17,14 @@ package config
 import (
 	"testing"
 
+	"github.com/matryer/is"
+	"github.com/pkg/errors"
+
 	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
 )
 
 func Test_setEtherscan(t *testing.T) {
-	assert := assert.New(t)
+	is := is.New(t)
 	type args struct {
 		vpr           *viper.Viper
 		requiredInput func(label string) (string, error)
@@ -34,24 +36,50 @@ func Test_setEtherscan(t *testing.T) {
 		expected map[string]interface{}
 	}{
 		{
-			"api-key-set",
+			"set-api-key",
 			args{
-				viper.New(), func(label string) (string, error) {
+				viper.New(),
+				func(label string) (string, error) {
 					return "api-key-value", nil
 				},
 			},
 			false,
 			map[string]interface{}{"api-key": "api-key-value"},
 		},
-
-		// TODO: Add test cases.
+		{
+			"error",
+			args{
+				viper.New(),
+				func(label string) (string, error) {
+					return "", errors.Errorf("failed")
+				},
+			},
+			true,
+			nil,
+		},
+		{
+			"already-specified",
+			args{
+				func() *viper.Viper {
+					v := viper.New()
+					v.Set("clients.etherscan.api-key", "already-set")
+					return v
+				}(),
+				func(label string) (string, error) {
+					return "api-key-value", nil
+				},
+			},
+			false,
+			map[string]interface{}{"api-key": "already-set"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := setEtherscan(tt.args.vpr, tt.args.requiredInput); (err != nil) != tt.wantErr {
 				t.Errorf("setEtherscan() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			assert.Equal(tt.expected, tt.args.vpr.Get("clients.etherscan"))
+
+			is.Equal(tt.expected, tt.args.vpr.Get("clients.etherscan"))
 		})
 	}
 }

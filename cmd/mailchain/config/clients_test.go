@@ -83,3 +83,68 @@ func Test_setEtherscan(t *testing.T) {
 		})
 	}
 }
+
+func Test_setEthRPC(t *testing.T) {
+	is := is.New(t)
+	type args struct {
+		vpr           *viper.Viper
+		requiredInput func(label string) (string, error)
+		network       string
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wantErr  bool
+		expected map[string]interface{}
+	}{
+		{
+			"set-address",
+			args{
+				viper.New(),
+				func(label string) (string, error) {
+					return "address-value", nil
+				},
+				"mainnet",
+			},
+			false,
+			map[string]interface{}{"address": "address-value"},
+		},
+		{
+			"error",
+			args{
+				viper.New(),
+				func(label string) (string, error) {
+					return "", errors.Errorf("failed")
+				},
+				"mainnet",
+			},
+			true,
+			nil,
+		},
+		{
+			"already-specified",
+			args{
+				func() *viper.Viper {
+					v := viper.New()
+					v.Set("clients.ethereum-rpc2.mainnet.address", "already-set")
+					return v
+				}(),
+				func(label string) (string, error) {
+					return "api-key-value", nil
+				},
+				"mainnet",
+			},
+			false,
+			map[string]interface{}{"address": "already-set"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := setEthRPC(tt.args.vpr, tt.args.requiredInput, tt.args.network); (err != nil) != tt.wantErr {
+				t.Errorf("setEthRPC() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			is.Equal(tt.expected, tt.args.vpr.Get("clients.ethereum-rpc2.mainnet"))
+		})
+	}
+}

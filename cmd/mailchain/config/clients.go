@@ -44,7 +44,7 @@ func getEtherscanClient() (*etherscan.APIClient, error) {
 func setClient(vpr *viper.Viper, client, network string) error {
 	switch client {
 	case names.EthereumRPC2:
-		return setEthRPC(network)
+		return setEthRPC(vpr, prompts.RequiredInput, network)
 	case names.Etherscan:
 		return setEtherscan(vpr, prompts.RequiredInput)
 	default:
@@ -52,17 +52,17 @@ func setClient(vpr *viper.Viper, client, network string) error {
 	}
 }
 
-func setEthRPC(network string) error {
+func setEthRPC(vpr *viper.Viper, requiredInput func(label string) (string, error), network string) error {
 	client := names.EthereumRPC2
-	if viper.GetString(fmt.Sprintf("clients.%s.%s.address", client, network)) != "" {
+	if vpr.GetString(fmt.Sprintf("clients.%s.%s.address", client, network)) != "" {
 		fmt.Printf("%s already configured\n", client)
 		return nil
 	}
-	address, err := prompts.RequiredInput("Address")
+	address, err := requiredInput("Address")
 	if err != nil {
 		return err
 	}
-	viper.Set(fmt.Sprintf("clients.%s.%s.address", client, network), address)
+	vpr.Set(fmt.Sprintf("clients.%s.%s.address", client, network), address)
 	return nil
 }
 

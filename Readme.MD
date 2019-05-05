@@ -31,7 +31,7 @@ The basic message flow is as follows:
 
 ## Getting started
 
-1. Navigate to https://github.com/mailchain/mailchain/releases to download te latest mailchain build.
+1. Navigate to https://github.com/mailchain/mailchain/releases/latest to download the latest mailchain build.
 
 ### Checksums
 
@@ -55,7 +55,7 @@ Blockchains store transactions which act as notifications of a message being sen
 
 *For example: In the case of Ethereum the data will be prefixed with 0x and added to the input field.* 
 
-An explaination of the Ethereum implementation can be count in [examples/ethereum_implementation.md](examples/ethereum_implementation.md) file.
+An explaination of the Ethereum implementation can be count in [internal/pkg/chains/ethereum/README.md](internal/pkg/chains/ethereum/README.md) file.
 
 #### Format
 

@@ -42,7 +42,7 @@ func selectReceiver(chain, network, receiver string) (string, error) {
 	}
 	receiver, skipped, err := prompts.SelectItemSkipable(
 		"Receiver",
-		[]string{names.Etherscan},
+		[]string{names.EtherscanNoAuth, names.Etherscan},
 		viper.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) != "")
 	if err != nil || skipped {
 		return "", err

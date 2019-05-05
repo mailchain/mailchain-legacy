@@ -42,7 +42,7 @@ func selectPublicKeyFinder(chain, network, pkFinder string) (string, error) {
 	}
 	pkFinder, skipped, err := prompts.SelectItemSkipable(
 		"Public Key Finder",
-		[]string{names.Etherscan},
+		[]string{names.EtherscanNoAuth, names.Etherscan},
 		viper.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) != "")
 	if err != nil || skipped {
 		return "", err

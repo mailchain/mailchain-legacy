@@ -47,6 +47,8 @@ func setClient(vpr *viper.Viper, client, network string) error {
 		return setEthRPC(vpr, prompts.RequiredInput, network)
 	case names.Etherscan:
 		return setEtherscan(vpr, prompts.RequiredInput)
+	case names.EtherscanNoAuth:
+		return nil
 	default:
 		return errors.Errorf("unsupported client type")
 	}

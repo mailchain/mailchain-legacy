@@ -72,7 +72,6 @@ The message lifecycle for Ethereum is outlined below:
         Chain prefix | e.g. `0x` for Ethereum
         Protocol prefix | e.g. `mailchain`
         Multiformatdata | e.g. the `data_protobuf`
-        Chain suffix | not used
 
     1. The resulting transaction data is then hex-encoded:
         ```

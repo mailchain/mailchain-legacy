@@ -56,7 +56,7 @@ An explaination of the Ethereum implementation can be count in [internal/pkg/cha
 
 #### Format
 
-tx_data is formatted as follows `tx_data = encoded(ChainPrefix + Prefix + MultiFormatData + ChainSuffix)`. All values are stored are bytes that are then `encoded` to be stored on the chain. The `ChainPrefix` and `ChainSuffix` allow for any blockchain protocol-specific formatting to be applied.
+tx_data is formatted as follows `tx_data = encoded(ChainPrefix + Prefix + MultiFormatData)`. All values are stored are bytes that are then `encoded` to be stored on the chain. The `ChainPrefix` allows for any blockchain protocol-specific formatting to be applied.
 
 [MultiFormat](https://github.com/multiformats/multiformats) is used referenced in Mailchain to increase flexibility and conform to existing efforts to build a standard way of expressing format.
 
@@ -98,7 +98,6 @@ message Data {
 | Data.Hash                      | `[]byte{MultiFormat....}`                                       | MultiFormat representation of encrypted message contents.
 | Data.Hash[0]                   | `byte{0x22}`                                                    | Hash function used. *Default: [SHA3-256](https://en.wikipedia.org/wiki/SHA-3)*
 | Data.Hash[1:]                  | `[]byte{hash...}`                                               | Hash of plain message contents.
-| ChainSuffix                    | `nil` (Ethereum)                                                | Optional - dependent on chain
 
 ### Storage
 

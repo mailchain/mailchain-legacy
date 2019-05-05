@@ -3,10 +3,7 @@
 ![https://travis-ci.com/mailchain/mailchain](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)
 ![https://coveralls.io/github/mailchain/mailchain](https://img.shields.io/coveralls/github/mailchain/mailchain.svg?style=for-the-badge)
 
-## About Mailchain ###
-Extract from the [Mailchain specification](https://github.com/mailchain/mailchain-specification):
-
-### Introduction ###
+## Introduction ##
 Mailchain enables blockchain-based email-like messaging with plain or rich text and attachment capabilities. Using blockchain protocols and decentralized storage, Mailchain delivers a simple, secure, messaging experience.
 
 Account holders or owners of a public address often need to communicate in the context of the account or public address. Communication may relate to transactions, account actions or some type of notification.
@@ -17,7 +14,7 @@ The majority of blockchain protocols provide no standard way to handle messaging
 
 This proposal outlines how Mailchain gives users the ability to send and receive rich-media HTML messages between public addresses through a simple, email-like interface. All message contents and attachments are encrypted so only the intended recipient of the message can decrypt and view messages.
 
-### Mailchain Message Lifecycle ###
+## Mailchain Message Lifecycle ##
 
 Mailchain is a simple, secure and practical standard which can be implemented across different blockchains. It uses underlying native blockchain protocol capabilities including addressing, immutability, data transmission, and cryptography.
 

@@ -41,12 +41,12 @@ func getEtherscanClient() (*etherscan.APIClient, error) {
 	return etherscan.NewAPIClient(apiKey)
 }
 
-func setClient(client, network string) error {
+func setClient(vpr *viper.Viper, client, network string) error {
 	switch client {
 	case names.EthereumRPC2:
 		return setEthRPC(network)
 	case names.Etherscan:
-		return setEtherscan()
+		return setEtherscan(vpr, prompts.RequiredInput)
 	default:
 		return errors.Errorf("unsupported client type")
 	}
@@ -66,17 +66,17 @@ func setEthRPC(network string) error {
 	return nil
 }
 
-func setEtherscan() error {
+func setEtherscan(vpr *viper.Viper, requiredInput func(label string) (string, error)) error {
 	client := names.Etherscan
 	if viper.GetString(fmt.Sprintf("clients.%s.api-key", client)) != "" {
 		fmt.Printf("%s already configured\n", client)
 		return nil
 	}
-	apiKey, err := prompts.RequiredInput("Api Key")
+	apiKey, err := requiredInput("Api Key")
 	if err != nil {
 		return err
 	}
-	viper.Set(fmt.Sprintf("clients.%s.api-key", client), apiKey)
+	vpr.Set(fmt.Sprintf("clients.%s.api-key", client), apiKey)
 	fmt.Printf("%s configured\n", client)
 
 	return nil

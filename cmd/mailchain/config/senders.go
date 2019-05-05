@@ -24,9 +24,9 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SetSender(chain, network, sender string) error {
+func SetSender(vpr *viper.Viper, chain, network, sender string) error {
 	viper.Set(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network), sender)
-	if err := setClient(sender, network); err != nil {
+	if err := setClient(vpr, sender, network); err != nil {
 		return err
 	}
 	fmt.Printf("%s used for sending messages\n", sender)

@@ -30,7 +30,7 @@ func PublicKeyFinder(cmd *cobra.Command, chain, network, pkFinder string) (strin
 	if err != nil {
 		return "", err
 	}
-	if err := config.SetPubKeyFinder(chain, network, pkFinder); err != nil {
+	if err := config.SetPubKeyFinder(viper.GetViper(), chain, network, pkFinder); err != nil {
 		return "", err
 	}
 	return pkFinder, nil

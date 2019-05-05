@@ -25,9 +25,9 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SetPubKeyFinder(chain, network, pubkey string) error {
+func SetPubKeyFinder(vpr *viper.Viper, chain, network, pubkey string) error {
 	viper.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkey)
-	if err := setClient(pubkey, network); err != nil {
+	if err := setClient(vpr, pubkey, network); err != nil {
 		return err
 	}
 	fmt.Printf("%s used for looking up public key\n", pubkey)

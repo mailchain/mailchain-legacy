@@ -3,7 +3,6 @@
 ![https://travis-ci.com/mailchain/mailchain](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)
 ![https://coveralls.io/github/mailchain/mailchain](https://img.shields.io/coveralls/github/mailchain/mailchain.svg?style=for-the-badge)
 
-
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 ## Introduction

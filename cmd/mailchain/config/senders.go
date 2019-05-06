@@ -29,7 +29,7 @@ func SetSender(v *viper.Viper, chain, network, sender string) error {
 		return err
 	}
 	v.Set(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network), sender)
-	fmt.Printf("%s used for sending messages\n", sender)
+	fmt.Printf("%q used for sending messages\n", sender)
 	return nil
 }
 

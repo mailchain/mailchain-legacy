@@ -24,20 +24,20 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SetSender(chain, network, sender string) error {
-	viper.Set(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network), sender)
-	if err := setClient(sender, network); err != nil {
+func SetSender(v *viper.Viper, chain, network, sender string) error {
+	if err := setClient(v, sender, network); err != nil {
 		return err
 	}
-	fmt.Printf("%s used for sending messages\n", sender)
+	v.Set(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network), sender)
+	fmt.Printf("%q used for sending messages\n", sender)
 	return nil
 }
 
 // GetSenders in configured state
-func GetSenders() (map[string]mailbox.Sender, error) {
+func GetSenders(v *viper.Viper) (map[string]mailbox.Sender, error) {
 	senders := make(map[string]mailbox.Sender)
-	for chain := range viper.GetStringMap("chains") {
-		chSenders, err := getChainSenders(chain)
+	for chain := range v.GetStringMap("chains") {
+		chSenders, err := getChainSenders(v, chain)
 		if err != nil {
 			return nil, err
 		}
@@ -48,10 +48,10 @@ func GetSenders() (map[string]mailbox.Sender, error) {
 	return senders, nil
 }
 
-func getChainSenders(chain string) (map[string]mailbox.Sender, error) {
+func getChainSenders(v *viper.Viper, chain string) (map[string]mailbox.Sender, error) {
 	senders := make(map[string]mailbox.Sender)
-	for network := range viper.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
-		sender, err := getSender(chain, network)
+	for network := range v.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
+		sender, err := getSender(v, chain, network)
 		if err != nil {
 			return nil, err
 		}
@@ -61,11 +61,11 @@ func getChainSenders(chain string) (map[string]mailbox.Sender, error) {
 	return senders, nil
 }
 
-func getSender(chain, network string) (mailbox.Sender, error) {
-	switch viper.GetString(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network)) {
+func getSender(v *viper.Viper, chain, network string) (mailbox.Sender, error) {
+	switch v.GetString(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network)) {
 	case names.EthereumRPC2:
-		return getEtherRPC2Client(network)
+		return getEtherRPC2Client(v, network)
 	default:
-		return nil, errors.Errorf("unsupported receiver")
+		return nil, errors.Errorf("unsupported sender")
 	}
 }

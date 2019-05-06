@@ -25,20 +25,20 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SetPubKeyFinder(chain, network, pubkey string) error {
-	viper.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkey)
-	if err := setClient(pubkey, network); err != nil {
+func SetPubKeyFinder(v *viper.Viper, chain, network, pubkeyFinder string) error {
+	if err := setClient(v, pubkeyFinder, network); err != nil {
 		return err
 	}
-	fmt.Printf("%s used for looking up public key\n", pubkey)
+	v.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkeyFinder)
+	fmt.Printf("%s used for looking up public key\n", pubkeyFinder)
 	return nil
 }
 
 // GetPublicKeyFinders in configured state
-func GetPublicKeyFinders() (map[string]mailbox.PubKeyFinder, error) {
+func GetPublicKeyFinders(v *viper.Viper) (map[string]mailbox.PubKeyFinder, error) {
 	finders := make(map[string]mailbox.PubKeyFinder)
-	for chain := range viper.GetStringMap("chains") {
-		chFinders, err := getChainFinders(chain)
+	for chain := range v.GetStringMap("chains") {
+		chFinders, err := getChainFinders(v, chain)
 		if err != nil {
 			return nil, err
 		}
@@ -49,10 +49,10 @@ func GetPublicKeyFinders() (map[string]mailbox.PubKeyFinder, error) {
 	return finders, nil
 }
 
-func getChainFinders(chain string) (map[string]mailbox.PubKeyFinder, error) {
+func getChainFinders(v *viper.Viper, chain string) (map[string]mailbox.PubKeyFinder, error) {
 	finders := make(map[string]mailbox.PubKeyFinder)
-	for network := range viper.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
-		finder, err := getFinder(chain, network)
+	for network := range v.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
+		finder, err := getFinder(v, chain, network)
 		if err != nil {
 			return nil, err
 		}
@@ -62,10 +62,12 @@ func getChainFinders(chain string) (map[string]mailbox.PubKeyFinder, error) {
 	return finders, nil
 }
 
-func getFinder(chain, network string) (mailbox.PubKeyFinder, error) {
-	switch viper.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) {
+func getFinder(v *viper.Viper, chain, network string) (mailbox.PubKeyFinder, error) {
+	switch v.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) {
 	case names.Etherscan:
-		return getEtherscanClient()
+		return getEtherscanClient(v)
+	case names.EtherscanNoAuth:
+		return getEtherscanNoAuthClient()
 	default:
 		return nil, errors.Errorf("unsupported pubkey finder")
 	}

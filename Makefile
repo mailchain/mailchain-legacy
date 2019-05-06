@@ -9,7 +9,7 @@ clean:
 build:
 	$(GO) build $(PKGS)
 
-test: genmock unit-test
+test: generate unit-test
 unit-test:
 	$(GO) test $(PKGS)
 

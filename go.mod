@@ -2,7 +2,6 @@ module github.com/mailchain/mailchain
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
-	github.com/Netflix/go-expect v0.0.0-20180928190340-9d1f4485533b // indirect
 	github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf // indirect
 	github.com/allegro/bigcache v1.2.0 // indirect
 	github.com/andreburgaud/crypt2go v0.0.0-20170529041511-18fdff33d8fa

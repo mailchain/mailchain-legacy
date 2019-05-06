@@ -15,6 +15,7 @@
 package names
 
 const (
-	Etherscan    = "etherscan"
-	EthereumRPC2 = "ethereum-rpc2"
+	Etherscan       = "etherscan"
+	EtherscanNoAuth = "etherscan-no-auth"
+	EthereumRPC2    = "ethereum-rpc2"
 )

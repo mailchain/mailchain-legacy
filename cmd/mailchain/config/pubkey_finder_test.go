@@ -262,3 +262,58 @@ func TestGetPublicKeyFinders(t *testing.T) {
 		})
 	}
 }
+
+func TestSetPubKeyFinder(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		vpr          *viper.Viper
+		chain        string
+		network      string
+		pubkeyFinder string
+	}
+	type checks struct {
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wantErr  bool
+		expected map[string]interface{}
+	}{
+		{
+			"success",
+			args{
+				func() *viper.Viper {
+					v := viper.New()
+					return v
+				}(),
+				"ethereum",
+				"mainnet",
+				"etherscan-no-auth",
+			},
+			false,
+			map[string]interface{}{"pubkey-finder": "etherscan-no-auth"},
+		},
+		{
+			"error",
+			args{
+				func() *viper.Viper {
+					v := viper.New()
+					return v
+				}(),
+				"ethereum",
+				"mainnet",
+				"invalid",
+			},
+			true,
+			map[string]interface{}{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := SetPubKeyFinder(tt.args.vpr, tt.args.chain, tt.args.network, tt.args.pubkeyFinder); (err != nil) != tt.wantErr {
+				t.Errorf("SetPubKeyFinder() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			assert.EqualValues(tt.expected, tt.args.vpr.GetStringMap("chains.ethereum.networks.mainnet"))
+		})
+	}
+}

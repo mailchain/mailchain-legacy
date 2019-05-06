@@ -26,10 +26,10 @@ import (
 )
 
 func SetPubKeyFinder(vpr *viper.Viper, chain, network, pubkeyFinder string) error {
-	vpr.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkeyFinder)
 	if err := setClient(vpr, pubkeyFinder, network); err != nil {
 		return err
 	}
+	vpr.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkeyFinder)
 	fmt.Printf("%s used for looking up public key\n", pubkeyFinder)
 	return nil
 }

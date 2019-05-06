@@ -120,7 +120,7 @@ func Test_setEthRPC(t *testing.T) {
 				"mainnet",
 			},
 			true,
-			nil,
+			map[string]interface{}{},
 		},
 		{
 			"already-specified",
@@ -145,7 +145,7 @@ func Test_setEthRPC(t *testing.T) {
 				t.Errorf("setEthRPC() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			is.Equal(tt.expected, tt.args.vpr.Get("clients.ethereum-rpc2.mainnet"))
+			is.Equal(tt.expected, tt.args.vpr.GetStringMap("clients.ethereum-rpc2.mainnet"))
 		})
 	}
 }

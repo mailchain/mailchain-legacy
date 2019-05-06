@@ -30,7 +30,7 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 	if !c.isNetworkSupported(network) {
 		return nil, errors.Errorf("network not supported")
 	}
-	txResult, err := c.getTranscationsByAddress(network, address)
+	txResult, err := c.getTransactionsByAddress(network, address)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

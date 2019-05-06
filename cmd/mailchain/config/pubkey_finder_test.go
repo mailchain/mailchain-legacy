@@ -20,9 +20,9 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/internal/pkg/clients/etherscan"
-
 	"github.com/mailchain/mailchain/internal/pkg/mailbox"
 	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_getFinder(t *testing.T) {
@@ -96,6 +96,90 @@ func Test_getFinder(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("getFinder() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_getChainFinders(t *testing.T) {
+	assert := assert.New(t)
+	// is := is.New(t)
+	type args struct {
+		vpr   *viper.Viper
+		chain string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    map[string]mailbox.PubKeyFinder
+		wantErr bool
+	}{
+		{
+			"empty",
+			args{
+				viper.New(),
+				"ethereum",
+			},
+			make(map[string]mailbox.PubKeyFinder),
+			false,
+		},
+		{
+			"single",
+			args{
+				func() *viper.Viper {
+					v := viper.New()
+					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan-no-auth")
+					return v
+				}(),
+				"ethereum",
+			},
+			func() map[string]mailbox.PubKeyFinder {
+				c, _ := etherscan.NewAPIClient("")
+				return map[string]mailbox.PubKeyFinder{"ethereum.mainnet": c}
+			}(),
+			false,
+		},
+		{
+			"multi",
+			args{
+				func() *viper.Viper {
+					v := viper.New()
+					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan-no-auth")
+					v.Set("chains.ethereum.networks.ropsten.pubkey-finder", "etherscan-no-auth")
+					return v
+				}(),
+				"ethereum",
+			},
+			func() map[string]mailbox.PubKeyFinder {
+				c, _ := etherscan.NewAPIClient("")
+				return map[string]mailbox.PubKeyFinder{"ethereum.mainnet": c, "ethereum.ropsten": c}
+			}(),
+			false,
+		},
+		{
+			"err",
+			args{
+				func() *viper.Viper {
+					v := viper.New()
+					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan-no-auth")
+					v.Set("chains.ethereum.networks.ropsten.pubkey-finder", "unknown")
+					return v
+				}(),
+				"ethereum",
+			},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := getChainFinders(tt.args.vpr, tt.args.chain)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("getChainFinders() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(got, tt.want) {
+				t.Errorf("getChainFinders() = %v, want %v", got, tt.want)
 			}
 		})
 	}

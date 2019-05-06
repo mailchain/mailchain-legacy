@@ -25,7 +25,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_getFinder(t *testing.T) {
+func Test_getReceiver(t *testing.T) {
+	assert := assert.New(t)
 	type args struct {
 		vpr     *viper.Viper
 		chain   string
@@ -34,7 +35,7 @@ func Test_getFinder(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    mailbox.PubKeyFinder
+		want    mailbox.Receiver
 		wantErr bool
 	}{
 		{
@@ -42,14 +43,14 @@ func Test_getFinder(t *testing.T) {
 			args{
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan")
+					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan")
 					v.Set("clients.etherscan.api-key", "api-key-value")
 					return v
 				}(),
 				"ethereum",
 				"mainnet",
 			},
-			func() mailbox.PubKeyFinder {
+			func() mailbox.Receiver {
 				r, _ := etherscan.NewAPIClient("api-key-value")
 				return r
 			}(),
@@ -60,13 +61,13 @@ func Test_getFinder(t *testing.T) {
 			args{
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan-no-auth")
+					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
 					return v
 				}(),
 				"ethereum",
 				"mainnet",
 			},
-			func() mailbox.PubKeyFinder {
+			func() mailbox.Receiver {
 				r, _ := etherscan.NewAPIClient("")
 				return r
 			}(),
@@ -77,7 +78,7 @@ func Test_getFinder(t *testing.T) {
 			args{
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "unknown")
+					v.Set("chains.ethereum.networks.mainnet.receiver", "unknown")
 					return v
 				}(),
 				"ethereum",
@@ -89,21 +90,19 @@ func Test_getFinder(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getFinder(tt.args.vpr, tt.args.chain, tt.args.network)
+			got, err := getReceiver(tt.args.vpr, tt.args.chain, tt.args.network)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("getFinder() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("getReceiver() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("getFinder() = %v, want %v", got, tt.want)
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("getReceiver() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_getChainFinders(t *testing.T) {
-	assert := assert.New(t)
-	// is := is.New(t)
+func Test_getChainReceivers(t *testing.T) {
 	type args struct {
 		vpr   *viper.Viper
 		chain string
@@ -111,7 +110,7 @@ func Test_getChainFinders(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    map[string]mailbox.PubKeyFinder
+		want    map[string]mailbox.Receiver
 		wantErr bool
 	}{
 		{
@@ -120,7 +119,7 @@ func Test_getChainFinders(t *testing.T) {
 				viper.New(),
 				"ethereum",
 			},
-			make(map[string]mailbox.PubKeyFinder),
+			make(map[string]mailbox.Receiver),
 			false,
 		},
 		{
@@ -128,14 +127,14 @@ func Test_getChainFinders(t *testing.T) {
 			args{
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan-no-auth")
+					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
 					return v
 				}(),
 				"ethereum",
 			},
-			func() map[string]mailbox.PubKeyFinder {
+			func() map[string]mailbox.Receiver {
 				c, _ := etherscan.NewAPIClient("")
-				return map[string]mailbox.PubKeyFinder{"ethereum.mainnet": c}
+				return map[string]mailbox.Receiver{"ethereum.mainnet": c}
 			}(),
 			false,
 		},
@@ -144,15 +143,15 @@ func Test_getChainFinders(t *testing.T) {
 			args{
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan-no-auth")
-					v.Set("chains.ethereum.networks.ropsten.pubkey-finder", "etherscan-no-auth")
+					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
+					v.Set("chains.ethereum.networks.ropsten.receiver", "etherscan-no-auth")
 					return v
 				}(),
 				"ethereum",
 			},
-			func() map[string]mailbox.PubKeyFinder {
+			func() map[string]mailbox.Receiver {
 				c, _ := etherscan.NewAPIClient("")
-				return map[string]mailbox.PubKeyFinder{"ethereum.mainnet": c, "ethereum.ropsten": c}
+				return map[string]mailbox.Receiver{"ethereum.mainnet": c, "ethereum.ropsten": c}
 			}(),
 			false,
 		},
@@ -161,8 +160,8 @@ func Test_getChainFinders(t *testing.T) {
 			args{
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan-no-auth")
-					v.Set("chains.ethereum.networks.ropsten.pubkey-finder", "unknown")
+					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
+					v.Set("chains.ethereum.networks.ropsten.receiver", "unknown")
 					return v
 				}(),
 				"ethereum",
@@ -173,27 +172,26 @@ func Test_getChainFinders(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getChainFinders(tt.args.vpr, tt.args.chain)
+			got, err := getChainReceivers(tt.args.vpr, tt.args.chain)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("getChainFinders() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("getChainReceivers() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(got, tt.want) {
-				t.Errorf("getChainFinders() = %v, want %v", got, tt.want)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getChainReceivers() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestGetPublicKeyFinders(t *testing.T) {
-	assert := assert.New(t)
+func TestGetReceivers(t *testing.T) {
 	type args struct {
 		vpr *viper.Viper
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    map[string]mailbox.PubKeyFinder
+		want    map[string]mailbox.Receiver
 		wantErr bool
 	}{
 		{
@@ -201,7 +199,7 @@ func TestGetPublicKeyFinders(t *testing.T) {
 			args{
 				viper.New(),
 			},
-			make(map[string]mailbox.PubKeyFinder),
+			make(map[string]mailbox.Receiver),
 			false,
 		},
 		{
@@ -209,13 +207,13 @@ func TestGetPublicKeyFinders(t *testing.T) {
 			args{
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan-no-auth")
+					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
 					return v
 				}(),
 			},
-			func() map[string]mailbox.PubKeyFinder {
+			func() map[string]mailbox.Receiver {
 				c, _ := etherscan.NewAPIClient("")
-				return map[string]mailbox.PubKeyFinder{"ethereum.mainnet": c}
+				return map[string]mailbox.Receiver{"ethereum.mainnet": c}
 			}(),
 			false,
 		},
@@ -224,14 +222,14 @@ func TestGetPublicKeyFinders(t *testing.T) {
 			args{
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan-no-auth")
-					v.Set("chains.ethereum.networks.ropsten.pubkey-finder", "etherscan-no-auth")
+					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
+					v.Set("chains.ethereum.networks.ropsten.receiver", "etherscan-no-auth")
 					return v
 				}(),
 			},
-			func() map[string]mailbox.PubKeyFinder {
+			func() map[string]mailbox.Receiver {
 				c, _ := etherscan.NewAPIClient("")
-				return map[string]mailbox.PubKeyFinder{"ethereum.mainnet": c, "ethereum.ropsten": c}
+				return map[string]mailbox.Receiver{"ethereum.mainnet": c, "ethereum.ropsten": c}
 			}(),
 			false,
 		},
@@ -240,8 +238,8 @@ func TestGetPublicKeyFinders(t *testing.T) {
 			args{
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan-no-auth")
-					v.Set("chains.ethereum.networks.ropsten.pubkey-finder", "unknown")
+					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
+					v.Set("chains.ethereum.networks.ropsten.receiver", "unknown")
 					return v
 				}(),
 			},
@@ -251,25 +249,25 @@ func TestGetPublicKeyFinders(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetPublicKeyFinders(tt.args.vpr)
+			got, err := GetReceivers(tt.args.vpr)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetPublicKeyFinders() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("GetReceivers() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
-				t.Errorf("GetPublicKeyFinders() = %v, want %v", got, tt.want)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetReceivers() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestSetPubKeyFinder(t *testing.T) {
+func TestSetReceiver(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
-		vpr          *viper.Viper
-		chain        string
-		network      string
-		pubkeyFinder string
+		v        *viper.Viper
+		chain    string
+		network  string
+		receiver string
 	}
 	tests := []struct {
 		name     string
@@ -289,7 +287,7 @@ func TestSetPubKeyFinder(t *testing.T) {
 				"etherscan-no-auth",
 			},
 			false,
-			map[string]interface{}{"pubkey-finder": "etherscan-no-auth"},
+			map[string]interface{}{"receiver": "etherscan-no-auth"},
 		},
 		{
 			"error",
@@ -308,10 +306,10 @@ func TestSetPubKeyFinder(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := SetPubKeyFinder(tt.args.vpr, tt.args.chain, tt.args.network, tt.args.pubkeyFinder); (err != nil) != tt.wantErr {
-				t.Errorf("SetPubKeyFinder() error = %v, wantErr %v", err, tt.wantErr)
+			if err := SetReceiver(tt.args.v, tt.args.chain, tt.args.network, tt.args.receiver); (err != nil) != tt.wantErr {
+				t.Errorf("SetReceiver() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if !assert.EqualValues(tt.expected, tt.args.vpr.GetStringMap("chains.ethereum.networks.mainnet")) {
+			if !assert.EqualValues(tt.expected, tt.args.v.GetStringMap("chains.ethereum.networks.mainnet")) {
 				t.Errorf("getChainFinders() = expected")
 			}
 		})

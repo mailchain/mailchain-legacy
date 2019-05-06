@@ -22,8 +22,8 @@ import (
 )
 
 // GetInboxStore create all the clients based on configuration
-func GetInboxStore() (stores.Inbox, error) {
-	if viper.GetString("storage.inbox") == "leveldb" {
+func GetInboxStore(vpr *viper.Viper) (stores.Inbox, error) {
+	if vpr.GetString("storage.inbox") == "leveldb" {
 		return leveldb.New(viper.GetString("stores.leveldb.path"), 256, 0)
 	}
 	return nil, errors.New("unsupported inbox type")

@@ -2,7 +2,6 @@ module github.com/mailchain/mailchain
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
-	github.com/Netflix/go-expect v0.0.0-20180928190340-9d1f4485533b // indirect
 	github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf // indirect
 	github.com/allegro/bigcache v1.2.0 // indirect
 	github.com/andreburgaud/crypt2go v0.0.0-20170529041511-18fdff33d8fa
@@ -21,6 +20,7 @@ require (
 	github.com/imdario/mergo v0.3.7
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/manifoldco/promptui v0.3.2
+	github.com/matryer/is v1.2.0
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/multiformats/go-multihash v0.0.1

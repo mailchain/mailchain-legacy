@@ -1,5 +1,8 @@
 # Example Implementation in Ethereum
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+
 Mailchain standardizes messaging in order for Ethereum DApps and Ethereum users to be able to communicate between one another [see Use Cases for examples of why communication is needed].
 
 The message lifecycle for Ethereum is outlined below:

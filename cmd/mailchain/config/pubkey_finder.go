@@ -25,19 +25,19 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SetPubKeyFinder(vpr *viper.Viper, chain, network, pubkey string) error {
-	viper.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkey)
-	if err := setClient(vpr, pubkey, network); err != nil {
+func SetPubKeyFinder(vpr *viper.Viper, chain, network, pubkeyFinder string) error {
+	viper.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkeyFinder)
+	if err := setClient(vpr, pubkeyFinder, network); err != nil {
 		return err
 	}
-	fmt.Printf("%s used for looking up public key\n", pubkey)
+	fmt.Printf("%s used for looking up public key\n", pubkeyFinder)
 	return nil
 }
 
 // GetPublicKeyFinders in configured state
 func GetPublicKeyFinders(vpr *viper.Viper) (map[string]mailbox.PubKeyFinder, error) {
 	finders := make(map[string]mailbox.PubKeyFinder)
-	for chain := range viper.GetStringMap("chains") {
+	for chain := range vpr.GetStringMap("chains") {
 		chFinders, err := getChainFinders(vpr, chain)
 		if err != nil {
 			return nil, err

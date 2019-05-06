@@ -257,24 +257,18 @@ func TestSetSender(t *testing.T) {
 		{
 			"success",
 			args{
-				func() *viper.Viper {
-					v := viper.New()
-					return v
-				}(),
+				viper.New(),
 				"ethereum",
 				"mainnet",
-				"ethereum-rpc2",
+				"etherscan-no-auth",
 			},
 			false,
-			map[string]interface{}{"sender": "ethereum-rpc2"},
+			map[string]interface{}{"sender": "etherscan-no-auth"},
 		},
 		{
 			"error",
 			args{
-				func() *viper.Viper {
-					v := viper.New()
-					return v
-				}(),
+				viper.New(),
 				"ethereum",
 				"mainnet",
 				"invalid",

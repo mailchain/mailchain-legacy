@@ -66,6 +66,8 @@ func getReceiver(vpr *viper.Viper, chain, network string) (mailbox.Receiver, err
 	switch viper.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) {
 	case names.Etherscan:
 		return getEtherscanClient(vpr)
+	case names.EtherscanNoAuth:
+		return getEtherscanNoAuthClient()
 	default:
 		return nil, errors.Errorf("unsupported receiver")
 	}

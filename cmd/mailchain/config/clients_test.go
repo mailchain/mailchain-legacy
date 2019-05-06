@@ -247,3 +247,33 @@ func Test_getEtherRPC2Client(t *testing.T) {
 		})
 	}
 }
+
+func Test_getEtherscanNoAuthClient(t *testing.T) {
+	assert := assert.New(t)
+	tests := []struct {
+		name    string
+		want    *etherscan.APIClient
+		wantErr bool
+	}{
+		{
+			"success",
+			func() *etherscan.APIClient {
+				r, _ := etherscan.NewAPIClient("")
+				return r
+			}(),
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := getEtherscanNoAuthClient()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("getEtherscanNoAuthClient() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("getEtherscanNoAuthClient() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

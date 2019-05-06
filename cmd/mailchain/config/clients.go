@@ -41,6 +41,10 @@ func getEtherscanClient(vpr *viper.Viper) (*etherscan.APIClient, error) {
 	return etherscan.NewAPIClient(apiKey)
 }
 
+func getEtherscanNoAuthClient() (*etherscan.APIClient, error) {
+	return etherscan.NewAPIClient("")
+}
+
 func setClient(vpr *viper.Viper, client, network string) error {
 	switch client {
 	case names.EthereumRPC2:

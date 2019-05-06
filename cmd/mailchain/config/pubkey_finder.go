@@ -26,7 +26,7 @@ import (
 )
 
 func SetPubKeyFinder(vpr *viper.Viper, chain, network, pubkeyFinder string) error {
-	viper.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkeyFinder)
+	vpr.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkeyFinder)
 	if err := setClient(vpr, pubkeyFinder, network); err != nil {
 		return err
 	}
@@ -66,6 +66,8 @@ func getFinder(vpr *viper.Viper, chain, network string) (mailbox.PubKeyFinder, e
 	switch vpr.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) {
 	case names.Etherscan:
 		return getEtherscanClient(vpr)
+	case names.EtherscanNoAuth:
+		return getEtherscanNoAuthClient()
 	default:
 		return nil, errors.Errorf("unsupported pubkey finder")
 	}

@@ -26,13 +26,13 @@ func Network(cmd *cobra.Command, args []string, chain, network string) (string, 
 	if err != nil {
 		return "", err
 	}
-	if _, err := Receiver(cmd, chain, network, names.Empty); err != nil {
+	if _, err := Receiver(cmd, chain, network, names.EtherscanNoAuth); err != nil {
 		return "", err
 	}
 	if _, err := Sender(cmd, chain, network, names.Empty); err != nil {
 		return "", err
 	}
-	if _, err := PublicKeyFinder(cmd, chain, network, names.Empty); err != nil {
+	if _, err := PublicKeyFinder(cmd, chain, network, names.EtherscanNoAuth); err != nil {
 		return "", err
 	}
 	return network, nil

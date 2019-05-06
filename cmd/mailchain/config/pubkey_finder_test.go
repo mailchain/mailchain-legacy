@@ -103,7 +103,6 @@ func Test_getFinder(t *testing.T) {
 
 func Test_getChainFinders(t *testing.T) {
 	assert := assert.New(t)
-	// is := is.New(t)
 	type args struct {
 		vpr   *viper.Viper
 		chain string

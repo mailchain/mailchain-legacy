@@ -18,14 +18,13 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/internal/pkg/clients/etherscan"
-	"github.com/matryer/is"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_setEtherscan(t *testing.T) {
-	is := is.New(t)
+	assert := assert.New(t)
 	type args struct {
 		vpr           *viper.Viper
 		requiredInput func(label string) (string, error)
@@ -56,7 +55,7 @@ func Test_setEtherscan(t *testing.T) {
 				},
 			},
 			true,
-			nil,
+			map[string]interface{}{},
 		},
 		{
 			"already-specified",
@@ -80,13 +79,13 @@ func Test_setEtherscan(t *testing.T) {
 				t.Errorf("setEtherscan() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			is.Equal(tt.expected, tt.args.vpr.Get("clients.etherscan"))
+			assert.Equal(tt.expected, tt.args.vpr.GetStringMap("clients.etherscan"))
 		})
 	}
 }
 
 func Test_setEthRPC(t *testing.T) {
-	is := is.New(t)
+	assert := assert.New(t)
 	type args struct {
 		vpr           *viper.Viper
 		requiredInput func(label string) (string, error)
@@ -145,7 +144,7 @@ func Test_setEthRPC(t *testing.T) {
 				t.Errorf("setEthRPC() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			is.Equal(tt.expected, tt.args.vpr.GetStringMap("clients.ethereum-rpc2.mainnet"))
+			assert.EqualValues(tt.expected, tt.args.vpr.GetStringMap("clients.ethereum-rpc2.mainnet"))
 		})
 	}
 }

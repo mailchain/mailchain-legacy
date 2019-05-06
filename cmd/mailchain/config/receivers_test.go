@@ -310,7 +310,7 @@ func TestSetReceiver(t *testing.T) {
 				t.Errorf("SetReceiver() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			if !assert.EqualValues(tt.expected, tt.args.v.GetStringMap("chains.ethereum.networks.mainnet")) {
-				t.Errorf("getChainFinders() = expected")
+				t.Errorf("SetReceiver() = expected")
 			}
 		})
 	}

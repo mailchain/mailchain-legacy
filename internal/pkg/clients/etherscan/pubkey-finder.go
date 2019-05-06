@@ -29,7 +29,7 @@ func (c APIClient) PublicKeyFromAddress(ctx context.Context, network string, add
 		return nil, errors.Errorf("network not supported")
 	}
 
-	txResult, err := c.getTranscationsByAddress(network, address)
+	txResult, err := c.getTransactionsByAddress(network, address)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -39,7 +39,7 @@ func (c APIClient) PublicKeyFromAddress(ctx context.Context, network string, add
 		return nil, errors.WithStack(err)
 	}
 
-	tx, err := c.getTranscationByHash(network, hash)
+	tx, err := c.getTransactionByHash(network, hash)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

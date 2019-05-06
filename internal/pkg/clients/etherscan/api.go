@@ -52,8 +52,8 @@ func (c APIClient) isNetworkSupported(network string) bool {
 	return ok
 }
 
-// GetTranscationsByAddress get transactions from address via etherscan
-func (c APIClient) getTranscationByHash(network string, hash common.Hash) (*types.Transaction, error) {
+// GetTransactionByHash get transaction details from transaction hash via etherscan
+func (c APIClient) getTransactionByHash(network string, hash common.Hash) (*types.Transaction, error) {
 	config, ok := c.networkConfigs[network]
 	if !ok {
 		return nil, errors.Errorf("network not supported")
@@ -88,8 +88,8 @@ func (c APIClient) getTranscationByHash(network string, hash common.Hash) (*type
 	return ts, nil
 }
 
-// GetTranscationsByAddress get transactions from address via etherscan
-func (c APIClient) getTranscationsByAddress(network string, address []byte) (*txList, error) {
+// GetTransactionsByAddress get transactions from address via etherscan
+func (c APIClient) getTransactionsByAddress(network string, address []byte) (*txList, error) {
 	config, ok := c.networkConfigs[network]
 	if !ok {
 		return nil, errors.Errorf("network not supported")

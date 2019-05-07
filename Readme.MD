@@ -3,7 +3,29 @@
 ![https://travis-ci.com/mailchain/mailchain](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)
 ![https://coveralls.io/github/mailchain/mailchain](https://img.shields.io/coveralls/github/mailchain/mailchain.svg?style=for-the-badge)
 
-## Introduction ##
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+* [Mailchain](#mailchain)
+	* [Introduction](#introduction)
+	* [Mailchain Message Lifecycle ##](#mailchain-message-lifecycle)
+	* [Getting started](#getting-started)
+		* [Checksums](#checksums)
+	* [Spec](#spec)
+		* [Blockchain Transaction Data](#blockchain-transaction-data)
+			* [Format](#format)
+				* [Summary of format fields](#summary-of-format-fields)
+		* [Storage](#storage)
+		* [MultiCipher](#multicipher)
+			* [AES-256-CBC](#aes-256-cbc)
+	* [License](#license)
+
+<!-- /code_chunk_output -->
+
+
+## Introduction
 Mailchain enables blockchain-based email-like messaging with plain or rich text and attachment capabilities. Using blockchain protocols and decentralized storage, Mailchain delivers a simple, secure, messaging experience.
 
 Account holders or owners of a public address often need to communicate in the context of the account or public address. Communication may relate to transactions, account actions or some type of notification.

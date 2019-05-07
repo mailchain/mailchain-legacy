@@ -1,5 +1,19 @@
 # Example Implementation in Ethereum
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+* [Example Implementation in Ethereum](#example-implementation-in-ethereum)
+	* [Message Preparation](#message-preparation)
+	* [Message Sending - GAS required](#message-sending-gas-required)
+	* [Retrieve Messages (GAS NOT required)](#retrieve-messages-gas-not-required)
+	* [Reading Messages (GAS NOT required)](#reading-messages-gas-not-required)
+	* [Key Storage](#key-storage)
+	* [GAS Handling](#gas-handling)
+
+<!-- /code_chunk_output -->
+
 Mailchain standardizes messaging in order for Ethereum DApps and Ethereum users to be able to communicate between one another [see Use Cases for examples of why communication is needed].
 
 The message lifecycle for Ethereum is outlined below:

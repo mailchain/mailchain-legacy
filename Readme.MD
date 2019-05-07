@@ -4,6 +4,27 @@
 [![Coverage Status](https://coveralls.io/repos/github/mailchain/mailchain/badge.svg?branch=master)](https://coveralls.io/github/mailchain/mailchain?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mailchain/mailchain)](https://goreportcard.com/report/github.com/mailchain/mailchain)
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+* [Mailchain](#mailchain)
+	* [Introduction](#introduction)
+	* [Mailchain Message Lifecycle ##](#mailchain-message-lifecycle)
+	* [Getting started](#getting-started)
+		* [Checksums](#checksums)
+	* [Spec](#spec)
+		* [Blockchain Transaction Data](#blockchain-transaction-data)
+			* [Format](#format)
+				* [Summary of format fields](#summary-of-format-fields)
+		* [Storage](#storage)
+		* [MultiCipher](#multicipher)
+			* [AES-256-CBC](#aes-256-cbc)
+	* [License](#license)
+
+<!-- /code_chunk_output -->
+
+
 ## Introduction
 
 Mailchain enables blockchain-based email-like messaging with plain or rich text and attachment capabilities. Using blockchain protocols and decentralized storage, Mailchain delivers a simple, secure, messaging experience.

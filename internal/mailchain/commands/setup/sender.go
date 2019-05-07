@@ -30,7 +30,7 @@ func Sender(cmd *cobra.Command, chain, network, sender string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err := config.SetSender(chain, network, sender); err != nil {
+	if err := config.SetSender(viper.GetViper(), chain, network, sender); err != nil {
 		return "", err
 	}
 	return sender, nil

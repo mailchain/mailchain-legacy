@@ -30,7 +30,7 @@ func Receiver(cmd *cobra.Command, chain, network, receiver string) (string, erro
 	if err != nil {
 		return "", err
 	}
-	if err := config.SetReceiver(chain, network, receiver); err != nil {
+	if err := config.SetReceiver(viper.GetViper(), chain, network, receiver); err != nil {
 		return "", err
 	}
 	return receiver, nil
@@ -42,7 +42,7 @@ func selectReceiver(chain, network, receiver string) (string, error) {
 	}
 	receiver, skipped, err := prompts.SelectItemSkipable(
 		"Receiver",
-		[]string{names.Etherscan},
+		[]string{names.EtherscanNoAuth, names.Etherscan},
 		viper.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) != "")
 	if err != nil || skipped {
 		return "", err

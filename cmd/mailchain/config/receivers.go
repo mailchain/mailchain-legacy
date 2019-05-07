@@ -25,20 +25,20 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SetReceiver(chain, network, receiver string) error {
-	viper.Set(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network), receiver)
-	if err := setClient(receiver, network); err != nil {
+func SetReceiver(v *viper.Viper, chain, network, receiver string) error {
+	if err := setClient(v, receiver, network); err != nil {
 		return err
 	}
+	v.Set(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network), receiver)
 	fmt.Printf("%s used for receiving messages\n", receiver)
 	return nil
 }
 
 // GetReceivers in configured state
-func GetReceivers() (map[string]mailbox.Receiver, error) {
+func GetReceivers(v *viper.Viper) (map[string]mailbox.Receiver, error) {
 	receivers := make(map[string]mailbox.Receiver)
-	for chain := range viper.GetStringMap("chains") {
-		chRcvrs, err := getChainReceivers(chain)
+	for chain := range v.GetStringMap("chains") {
+		chRcvrs, err := getChainReceivers(v, chain)
 		if err != nil {
 			return nil, err
 		}
@@ -49,10 +49,10 @@ func GetReceivers() (map[string]mailbox.Receiver, error) {
 	return receivers, nil
 }
 
-func getChainReceivers(chain string) (map[string]mailbox.Receiver, error) {
+func getChainReceivers(v *viper.Viper, chain string) (map[string]mailbox.Receiver, error) {
 	receivers := make(map[string]mailbox.Receiver)
-	for network := range viper.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
-		receiver, err := getReceiver(chain, network)
+	for network := range v.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
+		receiver, err := getReceiver(v, chain, network)
 		if err != nil {
 			return nil, err
 		}
@@ -62,10 +62,12 @@ func getChainReceivers(chain string) (map[string]mailbox.Receiver, error) {
 	return receivers, nil
 }
 
-func getReceiver(chain, network string) (mailbox.Receiver, error) {
-	switch viper.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) {
+func getReceiver(v *viper.Viper, chain, network string) (mailbox.Receiver, error) {
+	switch v.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) {
 	case names.Etherscan:
-		return getEtherscanClient()
+		return getEtherscanClient(v)
+	case names.EtherscanNoAuth:
+		return getEtherscanNoAuthClient()
 	default:
 		return nil, errors.Errorf("unsupported receiver")
 	}

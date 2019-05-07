@@ -1,8 +1,8 @@
 # Mailchain
 
-![https://travis-ci.com/mailchain/mailchain](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)
-![https://coveralls.io/github/mailchain/mailchain](https://img.shields.io/coveralls/github/mailchain/mailchain.svg?style=for-the-badge)
-
+[![Build Status](https://travis-ci.com/mailchain/mailchain.svg?branch=master&style=for-the-badge)](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)
+[![Coverage Status](https://coveralls.io/repos/github/mailchain/mailchain/badge.svg?branch=master)](https://coveralls.io/github/mailchain/mailchain?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mailchain/mailchain)](https://goreportcard.com/report/github.com/mailchain/mailchain)
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
@@ -26,6 +26,7 @@
 
 
 ## Introduction
+
 Mailchain enables blockchain-based email-like messaging with plain or rich text and attachment capabilities. Using blockchain protocols and decentralized storage, Mailchain delivers a simple, secure, messaging experience.
 
 Account holders or owners of a public address often need to communicate in the context of the account or public address. Communication may relate to transactions, account actions or some type of notification.
@@ -36,7 +37,7 @@ The majority of blockchain protocols provide no standard way to handle messaging
 
 This proposal outlines how Mailchain gives users the ability to send and receive rich-media HTML messages between public addresses through a simple, email-like interface. All message contents and attachments are encrypted so only the intended recipient of the message can decrypt and view messages.
 
-## Mailchain Message Lifecycle ##
+## Mailchain Message Lifecycle
 
 Mailchain is a simple, secure and practical standard which can be implemented across different blockchains. It uses underlying native blockchain protocol capabilities including addressing, immutability, data transmission, and cryptography.
 
@@ -138,4 +139,5 @@ To be supported, the encryption method should use the elliptic curve of the priv
 Advanced Encryption Standard, with a 256 bit key length, operating in the Chain Block Cipher mode (AES-256-CBC).
 
 ## License
+
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmailchain%2Fmailchain.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmailchain%2Fmailchain?ref=badge_large)

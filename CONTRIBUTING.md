@@ -12,7 +12,7 @@ We :heart: your input! We want to make contributing to this project as easy and 
 
 There are 2 important documents to read to understand how we are building Mailchain.
 
-1. We use [tenants](https://github.com/mailchain/mailchain-specification/blob/master/mailchain_tenets.md) to guide the way we make decisions.
+1. We use [Tenets](https://github.com/mailchain/mailchain-specification/blob/master/mailchain_tenets.md) to guide the way we make decisions.
 2. Please read the [spec](https://github.com/mailchain/mailchain-specification) to understand Mailchain requirements, important if you are making changes to the way Mailchain works.
 
 ## We Develop with Github

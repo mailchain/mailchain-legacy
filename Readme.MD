@@ -10,7 +10,7 @@
 
 * [Mailchain](#mailchain)
 	* [Introduction](#introduction)
-	* [Mailchain Message Lifecycle ##](#mailchain-message-lifecycle)
+	* [Mailchain Message Lifecycle](#mailchain-message-lifecycle)
 	* [Getting started](#getting-started)
 		* [Checksums](#checksums)
 	* [Spec](#spec)

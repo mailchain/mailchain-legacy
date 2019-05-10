@@ -33,7 +33,7 @@ import (
 )
 
 // Get returns a handler get spec
-func Get(inbox stores.Inbox, receivers map[string]mailbox.Receiver, ks keystore.Store,
+func Get(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
 	// Get swagger:route GET /ethereum/{network}/address/{address}/messages Messages Ethereum GetMessages
 	//

@@ -22,7 +22,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetInboxStore(t *testing.T) {
+func TestGetStateStore(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
 		vpr *viper.Viper
@@ -30,7 +30,7 @@ func TestGetInboxStore(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    stores.Inbox
+		want    stores.State
 		wantErr bool
 	}{
 		// {
@@ -51,7 +51,7 @@ func TestGetInboxStore(t *testing.T) {
 			args{
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("storage.inbox", "invalid")
+					v.Set("storage.state", "invalid")
 					return v
 				}(),
 			},
@@ -61,13 +61,13 @@ func TestGetInboxStore(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetInboxStore(tt.args.vpr)
+			got, err := GetStateStore(tt.args.vpr)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetInboxStore() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("GetStateStore() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !assert.Equal(tt.want, got) {
-				t.Errorf("GetInboxStore() = %v, want %v", got, tt.want)
+				t.Errorf("GetStateStore() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -15,8 +15,9 @@ repos:
   hooks:
   - id: checkmake
 - repo: https://github.com/mailchain/pre-commit
-  sha: v0.0.6
+  sha: v0.0.7
   hooks:
-  - id: generate-api-docs
+  # - id: generate-api-docs
   - id: add-license
   - id: generate-mermaid-diagrams
+  - id: go-mod-tidy

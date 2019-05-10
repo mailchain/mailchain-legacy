@@ -58,7 +58,7 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config store")
 	}
-	mailboxStore, err := config.GetInboxStore(vpr)
+	mailboxStore, err := config.GetStateStore(vpr)
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config mailbox store")
 	}

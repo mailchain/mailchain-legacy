@@ -21,7 +21,7 @@ import (
 )
 
 // Put returns a handler put spec
-func Put(store stores.Inbox) func(w http.ResponseWriter, r *http.Request) {
+func Put(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 	// Put swagger:route PUT /messages/{message_id}/read Messages PutRead
 	//
 	// Put inputs.

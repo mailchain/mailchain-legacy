@@ -43,8 +43,8 @@ func initCmd() *cobra.Command {
 				return nil
 			}
 			// Configure default keystore
-			viper.Set("storage.mailbox", defaults.MailboxType)
-			viper.Set(fmt.Sprintf("stores.%s.path", defaults.MailboxType), defaults.MailboxPath)
+			viper.Set("storage.state", defaults.MailboxStateType)
+			viper.Set(fmt.Sprintf("stores.%s.path", defaults.MailboxStateType), defaults.MailboxStatePath)
 
 			viper.Set("server.port", defaults.Port)
 

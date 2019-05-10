@@ -21,10 +21,10 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-// GetInboxStore create all the clients based on configuration
-func GetInboxStore(vpr *viper.Viper) (stores.Inbox, error) {
-	if vpr.GetString("storage.inbox") == "leveldb" {
+// GetStateStore create all the clients based on configuration
+func GetStateStore(vpr *viper.Viper) (stores.State, error) {
+	if vpr.GetString("storage.state") == "leveldb" {
 		return leveldb.New(viper.GetString("stores.leveldb.path"), 256, 0)
 	}
-	return nil, errors.New("unsupported inbox type")
+	return nil, errors.New("unsupported mailbox state type")
 }

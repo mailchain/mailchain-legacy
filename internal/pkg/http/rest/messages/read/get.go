@@ -26,7 +26,7 @@ import (
 )
 
 // Get returns a handler get spec
-func Get(store stores.Inbox) func(w http.ResponseWriter, r *http.Request) {
+func Get(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 	// Get swagger:route GET /messages/{message_id}/read Messages GetRead
 	//
 	// Get message read status.

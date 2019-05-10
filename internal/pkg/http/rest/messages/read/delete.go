@@ -21,7 +21,7 @@ import (
 )
 
 // Delete returns a handler
-func Delete(store stores.Inbox) func(w http.ResponseWriter, r *http.Request) {
+func Delete(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 	// Delete swagger:route Delete /messages/{message_id}/read Messages DeleteRead
 	//
 	// Mark message as unread

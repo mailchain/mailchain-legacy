@@ -23,8 +23,8 @@ import (
 )
 
 func InitConfig(cmd *cobra.Command, args []string) error {
-	cfgFile, _ := cmd.PersistentFlags().GetString("config")
-	logLevel, _ := cmd.PersistentFlags().GetString("log-level")
+	cfgFile, _ := cmd.Flags().GetString("config")
+	logLevel, _ := cmd.Flags().GetString("log-level")
 
 	if err := config.Init(cfgFile, logLevel); err != nil {
 		fmt.Println(err)

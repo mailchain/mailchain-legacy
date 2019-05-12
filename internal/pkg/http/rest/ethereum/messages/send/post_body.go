@@ -16,12 +16,8 @@ package send
 
 import (
 	"bytes"
-	"net/http"
-	"strings"
-	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys/secp256k1"
 	"github.com/mailchain/mailchain/internal/pkg/encoding"
@@ -40,34 +36,33 @@ type PostRequestBody struct {
 	network   string
 }
 
-func (p *PostRequestBody) asMessage() (*mail.Message, error) {
-	return mail.NewMessage(time.Now(), *p.from, *p.to, p.replyTo, p.Message.Subject, []byte(p.Message.Body))
-}
-
-func (p *PostRequestBody) checkForEmpties() error {
-	if p.Message.Headers == nil {
+func checkForEmpties(msg PostMessage) error {
+	if msg.Headers == nil {
 		return errors.Errorf("headers must not be nil")
 	}
-	if p.Message.Body == "" {
+	if msg.Body == "" {
 		return errors.Errorf("`body` can not be empty")
 	}
-	if p.Message.Subject == "" {
+	if msg.Subject == "" {
 		return errors.Errorf("`subject` can not be empty")
 	}
 
-	if p.Message.PublicKey == "" {
+	if msg.PublicKey == "" {
 		return errors.Errorf("`public-key` can not be empty")
 	}
 
 	return nil
 }
 
-func (p *PostRequestBody) isValid(r *http.Request) error {
-	if err := p.checkForEmpties(); err != nil {
+func isValid(p *PostRequestBody, network string) error {
+	if p == nil {
+		return errors.New("PostRequestBody must not be nil")
+	}
+	if err := checkForEmpties(p.Message); err != nil {
 		return err
 	}
 	var err error
-	p.network = strings.ToLower(mux.Vars(r)["network"])
+	p.network = network
 	chain := encoding.Ethereum
 
 	p.to, err = mail.ParseAddress(p.Message.Headers.To, chain, p.network)
@@ -90,21 +85,15 @@ func (p *PostRequestBody) isValid(r *http.Request) error {
 		}
 	}
 
-	if p.Message.Headers.ReplyTo != "" {
-		p.replyTo, err = mail.ParseAddress(p.Message.Headers.ReplyTo, chain, p.network)
-		if err != nil {
-			return errors.WithMessage(err, "`reply-to` is invalid")
-		}
-	}
-
 	// TODO: be more general when getting key from hex
 	p.publicKey, err = secp256k1.PublicKeyFromHex(p.Message.PublicKey)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
 	}
-
-	if bytes.Equal(p.publicKey.Address(), common.HexToAddress(p.to.ChainAddress).Bytes()) {
-		return errors.WithMessage(err, "`public-key` does not match to address")
+	pkAddress := p.publicKey.Address()
+	toAddress := common.HexToAddress(p.to.ChainAddress).Bytes()
+	if !bytes.Equal(pkAddress, toAddress) {
+		return errors.Errorf("`public-key` does not match to address")
 	}
 
 	return nil

@@ -16,8 +16,9 @@ package secp256k1
 
 import (
 	"crypto/ecdsa"
+	"encoding/hex"
+	"strings"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
@@ -49,18 +50,17 @@ func PublicKeyFromBytes(pk []byte) (*PublicKey, error) {
 }
 
 // PublicKeyFromHex create a public key from hex
-func PublicKeyFromHex(hex string) (*PublicKey, error) {
-	keyBytes, err := hexutil.Decode(hex)
+func PublicKeyFromHex(input string) (*PublicKey, error) {
+	input = strings.TrimPrefix(input, "0x")
+	keyBytes, err := hex.DecodeString(input)
 	if err != nil {
 		return nil, err
 	}
-
-	publicKey, err := PublicKeyFromBytes(keyBytes)
+	pk, err := crypto.DecompressPubkey(keyBytes)
 	if err != nil {
-		return nil, errors.WithMessage(err, "can not unmarshal public-key")
+		return nil, errors.WithMessage(err, "could not decompress pk")
 	}
-
-	return publicKey, nil
+	return &PublicKey{ecdsa: *pk}, nil
 }
 
 // TODO: hang off object instead

@@ -19,12 +19,14 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/internal/pkg/http/rest/errs"
 	"github.com/mailchain/mailchain/internal/pkg/keystore"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"
+	"github.com/mailchain/mailchain/internal/pkg/mail"
 	"github.com/mailchain/mailchain/internal/pkg/mailbox"
 	"github.com/mailchain/mailchain/internal/pkg/stores"
 	"github.com/pkg/errors"
@@ -61,14 +63,13 @@ func Post(sent stores.Sent, senders map[string]mailbox.Sender, ks keystore.Store
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Message.Headers.From))
 			return
 		}
-		network := strings.ToLower(mux.Vars(r)["network"])
-		sender, ok := senders[fmt.Sprintf("ethereum.%s", network)]
+		sender, ok := senders[fmt.Sprintf("ethereum.%s", req.network)]
 		if !ok {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender for chain.network configured"))
 			return
 		}
 
-		msg, err := req.asMessage()
+		msg, err := bodyToMessage(req)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
@@ -106,17 +107,21 @@ type PostRequest struct {
 	PostRequestBody PostRequestBody
 }
 
+func bodyToMessage(p *PostRequestBody) (*mail.Message, error) {
+	return mail.NewMessage(time.Now(), *p.from, *p.to, p.replyTo, p.Message.Subject, []byte(p.Message.Body))
+}
+
 // parsePostRequest post all the details for the message
 func parsePostRequest(r *http.Request) (*PostRequestBody, error) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
-	var req PostRequestBody
-	if err := decoder.Decode(&req); err != nil {
+	var req *PostRequestBody
+	if err := decoder.Decode(req); err != nil {
 		return nil, errors.WithMessage(err, "'message' is invalid")
 	}
 
-	return &req, req.isValid(r)
+	return req, isValid(req, strings.ToLower(mux.Vars(r)["network"]))
 }
 
 // swagger:model PostMessagesResponseHeaders

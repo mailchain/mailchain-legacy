@@ -59,7 +59,7 @@ rm -r "$tmp"
 
 echo "Mailchain was successfully installed 🎉"
 echo ""
-echo "Add the mailchain CLI to your path with:"
+echo "Add the mailchain application to your path with:"
 echo ""
 echo "  export PATH=\$PATH:\$HOME/.mailchain/bin"
 echo ""

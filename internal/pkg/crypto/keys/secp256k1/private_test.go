@@ -61,7 +61,7 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			pk := secp256k1.PrivateKeyFromECDSA(tt.fields.ecdsa)
-			if got := pk.PublicKey(); !assert.Equal(got.Bytes(), tt.want) {
+			if got := pk.PublicKey(); !assert.Equal(tt.want, got.Bytes()) {
 				t.Errorf("PrivateKey.PublicKey() = %v, want %v", got, tt.want)
 			}
 		})

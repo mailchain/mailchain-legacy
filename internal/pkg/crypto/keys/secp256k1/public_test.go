@@ -49,6 +49,22 @@ func TestPublicKeyFromHex(t *testing.T) {
 			testutil.CharlottePublicKey.Bytes(),
 			false,
 		},
+		{
+			"success-no-fixed-prefix",
+			args{
+				"bdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d",
+			},
+			testutil.CharlottePublicKey.Bytes(),
+			false,
+		},
+		{
+			"success-fixed-prefix",
+			args{
+				"0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d",
+			},
+			testutil.CharlottePublicKey.Bytes(),
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

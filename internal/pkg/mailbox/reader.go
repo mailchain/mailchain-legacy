@@ -104,7 +104,7 @@ func getAnyMessage(location string) ([]byte, error) {
 	}
 
 	switch parsed.Scheme {
-	case "http":
+	case "http", "https":
 		return getHTTPMessage(location)
 	case "file":
 		return ioutil.ReadFile(parsed.Host + parsed.Path)

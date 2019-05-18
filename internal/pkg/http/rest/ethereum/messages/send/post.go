@@ -116,12 +116,12 @@ func parsePostRequest(r *http.Request) (*PostRequestBody, error) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
-	var req *PostRequestBody
-	if err := decoder.Decode(req); err != nil {
+	var req PostRequestBody
+	if err := decoder.Decode(&req); err != nil {
 		return nil, errors.WithMessage(err, "'message' is invalid")
 	}
 
-	return req, isValid(req, strings.ToLower(mux.Vars(r)["network"]))
+	return &req, isValid(&req, strings.ToLower(mux.Vars(r)["network"]))
 }
 
 // swagger:model PostMessagesResponseHeaders

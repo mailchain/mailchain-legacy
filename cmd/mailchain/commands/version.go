@@ -26,7 +26,7 @@ func versionCmd() *cobra.Command {
 		Use:   "version",
 		Short: "Version of the mailchain application",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Printf("Version: %s\n", version.Version)
+			fmt.Printf("Version: v%s\n", version.Version)
 
 			return nil
 		},

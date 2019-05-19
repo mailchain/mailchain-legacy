@@ -44,7 +44,10 @@ builds:
 #     - amd64
 
 archives:
-- format: binary
+- format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
   name_template: "{{.ProjectName}}-v{{.Version}}-{{.Os}}-{{.Arch}}"
   replacements:
     amd64: 64bit
@@ -59,7 +62,8 @@ archives:
     freebsd: FreeBSD
     dragonfly: DragonFlyBSD
   files:
-  - none*
+  - Readme.MD
+  - LICENSE   
 checksum:
   name_template: 'checksums.txt'
 snapshot:

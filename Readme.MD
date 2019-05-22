@@ -4,27 +4,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/mailchain/mailchain/badge.svg?branch=master)](https://coveralls.io/github/mailchain/mailchain?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mailchain/mailchain)](https://goreportcard.com/report/github.com/mailchain/mailchain)
 
-<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
-
-<!-- code_chunk_output -->
-
-* [Mailchain](#mailchain)
-	* [Introduction](#introduction)
-	* [Mailchain Message Lifecycle](#mailchain-message-lifecycle)
-	* [Getting started](#getting-started)
-		* [Checksums](#checksums)
-	* [Spec](#spec)
-		* [Blockchain Transaction Data](#blockchain-transaction-data)
-			* [Format](#format)
-				* [Summary of format fields](#summary-of-format-fields)
-		* [Storage](#storage)
-		* [MultiCipher](#multicipher)
-			* [AES-256-CBC](#aes-256-cbc)
-	* [License](#license)
-
-<!-- /code_chunk_output -->
-
-
 ## Introduction
 
 Mailchain enables blockchain-based email-like messaging with plain or rich text and attachment capabilities. Using blockchain protocols and decentralized storage, Mailchain delivers a simple, secure, messaging experience.
@@ -51,9 +30,11 @@ The basic message flow is as follows:
 
 ## Getting started
 
-1. Navigate to https://github.com/mailchain/mailchain/releases/latest to download the latest mailchain build.
+Please visit https://docs.mailchain.xyz for instructions on how to get started.
 
-### Checksums
+---
+
+## Checksums
 
 To check the application you downloaded matches the build SHA256 checksum.
 
@@ -75,7 +56,7 @@ Blockchains store transactions which act as notifications of a message being sen
 
 *For example: In the case of Ethereum the data will be prefixed with 0x and added to the input field.* 
 
-An explaination of the Ethereum implementation can be count in [internal/pkg/chains/ethereum/README.md](internal/pkg/chains/ethereum/README.md) file.
+An explaination of the Ethereum implementation can be found in [internal/pkg/chains/ethereum/README.md](internal/pkg/chains/ethereum/README.md) file.
 
 #### Format
 

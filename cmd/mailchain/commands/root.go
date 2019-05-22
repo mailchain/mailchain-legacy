@@ -25,11 +25,8 @@ func rootCmd() (*cobra.Command, error) {
 		Long: `Decentralized Mailchain client, run it locally.
 Complete documentation is available at https://github.com/mailchain/mailchain`,
 	}
-	var cfgFile string
-	var logLevel string
-
-	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.mailchain/.mailchain.yaml)")
-	cmd.PersistentFlags().StringVar(&logLevel, "log-level", "warn", "log level [Panic,Fatal,Error,Warn,Info,Debug]")
+	cmd.PersistentFlags().String("config", "", "config file (default is $HOME/.mailchain/.mailchain.yaml)")
+	cmd.PersistentFlags().String("log-level", "warn", "log level [Panic,Fatal,Error,Warn,Info,Debug]")
 
 	// TODO: this should not be persistent flags
 	cmd.PersistentFlags().Bool("empty-passphrase", false, "no passphrase and no prompt")

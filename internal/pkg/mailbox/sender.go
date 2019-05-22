@@ -66,7 +66,7 @@ func SendMessage(ctx context.Context, msg *mail.Message, recipientKey keys.Publi
 	}
 	encryptedLocation, err := encryptLocation(recipientKey, location)
 	if err != nil {
-		return errors.WithMessage(err, "could not create transaction data")
+		return errors.WithMessage(err, "could not encrypt transaction data")
 	}
 
 	data := &mail.Data{
@@ -104,11 +104,7 @@ func prefixedBytes(data proto.Message) ([]byte, error) {
 // encryptLocation is encrypted with supplied public key and location string
 func encryptLocation(pk keys.PublicKey, location string) ([]byte, error) {
 	// TODO: encryptLocation hard coded to aes256cbc
-	encryptedLocation, err := aes256cbc.Encrypt(pk, []byte(location))
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not encrypt data")
-	}
-	return encryptedLocation, nil
+	return aes256cbc.Encrypt(pk, []byte(location))
 }
 
 // encryptMailMessage is encrypted with supplied public key and location string

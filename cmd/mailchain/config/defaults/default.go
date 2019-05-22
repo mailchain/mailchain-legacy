@@ -18,8 +18,8 @@ const (
 	KeystorePath = "./.mailchain/.keystore"
 	KeystoreType = "nacl-filestore"
 
-	MailboxType = "leveldb"
-	MailboxPath = "./.mailchain/.mailbox"
+	MailboxStateType = "leveldb"
+	MailboxStatePath = "./.mailchain/.mailbox"
 
 	ConfigPathFirst  = "./.mailchain"
 	ConfigPathSecond = "$HOME/.mailchain"

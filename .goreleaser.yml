@@ -5,8 +5,8 @@ env:
 before:
   hooks:
     - go mod download
-    - go install github.com/golang/mock/mockgen
-    - go generate ./...
+    # - go install github.com/golang/mock/mockgen
+    # - go generate ./...
 builds:
 - id: mailchain-darwin-amd64
   ldflags: -s -w -X github.com/mailchain/mailchain/pkg/version.Version={{.Version}} -X github.com/mailchain/mailchain/pkg/version.BuildDate={{.Date}} -X github.com/mailchain/mailchain/pkg/version.CommitHash={{ .ShortCommit }}
@@ -30,24 +30,25 @@ builds:
     - linux
   goarch:
     - amd64    
-- id: mailchain-windows-amd64
-  ldflags: -s -w -X github.com/mailchain/mailchain/pkg/version.Version={{.Version}} -X github.com/mailchain/mailchain/pkg/version.BuildDate={{.Date}} -X github.com/mailchain/mailchain/pkg/version.CommitHash={{ .ShortCommit }}
-  binary: mailchain
-  env:
-    - CGO_ENABLED=1
-    - CC=x86_64-w64-mingw32-gcc
-    - CXX=x86_64-w64-mingw32-g++
-  main: ./cmd/mailchain/main.go
-  goos:
-    - windows
-  goarch:
-    - amd64
+# - id: mailchain-windows-amd64
+#   ldflags: -s -w -X github.com/mailchain/mailchain/pkg/version.Version={{.Version}} -X github.com/mailchain/mailchain/pkg/version.BuildDate={{.Date}} -X github.com/mailchain/mailchain/pkg/version.CommitHash={{ .ShortCommit }}
+#   binary: mailchain
+#   env:
+#     - CGO_ENABLED=1
+#     - CC=x86_64-w64-mingw32-gcc
+#     - CXX=x86_64-w64-mingw32-g++
+#   main: ./cmd/mailchain/main.go
+#   goos:
+#     - windows
+#   goarch:
+#     - amd64
+
 archives:
 - format: tar.gz
   format_overrides:
     - goos: windows
       format: zip
-  name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+  name_template: "{{.ProjectName}}-v{{.Version}}-{{.Os}}-{{.Arch}}"
   replacements:
     amd64: 64bit
     386: 32bit
@@ -61,8 +62,8 @@ archives:
     freebsd: FreeBSD
     dragonfly: DragonFlyBSD
   files:
-    - Readme.MD
-    - LICENSE 
+  - Readme.MD
+  - LICENSE   
 checksum:
   name_template: 'checksums.txt'
 snapshot:

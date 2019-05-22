@@ -45,7 +45,7 @@ func MailchainHome() string {
 func Init(cfgFile, logLevel string) error {
 	lvl, err := log.ParseLevel(strings.ToLower(logLevel))
 	if err != nil {
-		log.Warningf("Invalid 'log-level' %v, default to [Warning]", logLevel)
+		log.Warningf("Invalid 'log-level' %q, default to [Warning]", logLevel)
 		lvl = log.WarnLevel
 	}
 	log.SetLevel(lvl)

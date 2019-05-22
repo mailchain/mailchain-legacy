@@ -16,8 +16,9 @@ package secp256k1
 
 import (
 	"crypto/ecdsa"
+	"encoding/hex"
+	"strings"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
@@ -40,8 +41,8 @@ func (pk PublicKey) Address() []byte {
 }
 
 // PublicKeyFromBytes create a public key from []byte
-func PublicKeyFromBytes(pk []byte) (*PublicKey, error) {
-	rpk, err := crypto.UnmarshalPubkey(pk)
+func PublicKeyFromBytes(keyBytes []byte) (*PublicKey, error) {
+	rpk, err := crypto.UnmarshalPubkey(keyBytes)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert pk")
 	}
@@ -49,18 +50,27 @@ func PublicKeyFromBytes(pk []byte) (*PublicKey, error) {
 }
 
 // PublicKeyFromHex create a public key from hex
-func PublicKeyFromHex(hex string) (*PublicKey, error) {
-	keyBytes, err := hexutil.Decode(hex)
+func PublicKeyFromHex(input string) (*PublicKey, error) {
+	input = strings.TrimPrefix(input, "0x")
+	keyBytes, err := hex.DecodeString(input)
 	if err != nil {
 		return nil, err
 	}
-
-	publicKey, err := PublicKeyFromBytes(keyBytes)
-	if err != nil {
-		return nil, errors.WithMessage(err, "can not unmarshal public-key")
+	switch len(keyBytes) {
+	case 64:
+		pub := make([]byte, 65)
+		pub[0] = byte(4)
+		copy(pub[1:], keyBytes)
+		return PublicKeyFromBytes(pub)
+	case 33:
+		pk, err := crypto.DecompressPubkey(keyBytes)
+		if err != nil {
+			return nil, errors.WithMessage(err, "could not decompress pk")
+		}
+		return &PublicKey{ecdsa: *pk}, nil
+	default:
+		return nil, errors.Errorf("invalid key length %v", len(keyBytes))
 	}
-
-	return publicKey, nil
 }
 
 // TODO: hang off object instead

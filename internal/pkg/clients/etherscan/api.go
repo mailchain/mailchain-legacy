@@ -32,6 +32,7 @@ func NewAPIClient(apiKey string) (*APIClient, error) {
 			encoding.Ropsten: {url: "https://api-ropsten.etherscan.io/api"},
 			encoding.Kovan:   {url: "https://api-kovan.etherscan.io/api"},
 			encoding.Rinkeby: {url: "https://api-rinkeby.etherscan.io/api"},
+			encoding.Goerli:  {url: "https://api-goerli.etherscan.io/api"},
 		},
 	}, nil
 }

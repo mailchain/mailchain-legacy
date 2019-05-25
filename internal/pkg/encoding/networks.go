@@ -15,7 +15,7 @@
 package encoding
 
 func EthereumNetworks() []string {
-	return []string{Mainnet, Kovan, Rinkeby, Ropsten}
+	return []string{Mainnet, Kovan, Rinkeby, Ropsten, Goerli}
 }
 
 const Mainnet = "mainnet"
@@ -25,4 +25,5 @@ const (
 	Kovan   = "kovan"
 	Rinkeby = "rinkeby"
 	Ropsten = "ropsten"
+	Goerli  = "goerli"
 )

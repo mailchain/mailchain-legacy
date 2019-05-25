@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus" //nolint:depguard
 	// TODO: pass stdout and stderr as params
 )
@@ -29,6 +30,9 @@ type ErrorWriter func(w http.ResponseWriter, code int, err error)
 
 // errorf writes a swagger-compliant error response.
 func JSONWriter(w http.ResponseWriter, code int, err error) {
+	if err == nil {
+		err = errors.Errorf("no error specified")
+	}
 	var out struct {
 		Code    int    `json:"code"`
 		Message string `json:"message"`
@@ -36,14 +40,15 @@ func JSONWriter(w http.ResponseWriter, code int, err error) {
 	out.Code = code
 	out.Message = fmt.Sprint(err)
 
-	b, err := json.Marshal(out)
-	if err != nil {
-		http.Error(w, `{"code": 500, "message": "Could not format JSON for original message."}`, 500)
-		return
-	}
+	// this can not fail as the error is a string
+	b, _ := json.Marshal(out)
 	http.Error(w, string(b), code)
 
 	switch out.Code {
+	case http.StatusPreconditionFailed,
+		http.StatusMethodNotAllowed,
+		http.StatusNotFound:
+		logrus.Warnf("status %v: %v", out.Code, err)
 	case http.StatusInternalServerError,
 		http.StatusNotImplemented,
 		http.StatusBadGateway,
@@ -55,8 +60,8 @@ func JSONWriter(w http.ResponseWriter, code int, err error) {
 		http.StatusLoopDetected,
 		http.StatusNotExtended,
 		http.StatusNetworkAuthenticationRequired:
-		logrus.Error(err)
+		logrus.Errorf("status %v: %+v", out.Code, err)
 	default:
-		logrus.Error(err)
+		logrus.Errorf("unknown status %v: %+v", out.Code, err)
 	}
 }

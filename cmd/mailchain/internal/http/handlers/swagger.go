@@ -30,10 +30,4 @@
 //
 //
 // swagger:meta
-package rest
-
-import (
-	// blank imports to support doc creations
-	_ "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
-	_ "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/spec"
-	)
+package handlers

@@ -19,8 +19,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/rest/params"
 	"github.com/mailchain/mailchain/internal/pkg/http/rest/errs"
-	"github.com/mailchain/mailchain/internal/pkg/http/rest/params"
 	"github.com/mailchain/mailchain/internal/pkg/mail"
 	"github.com/mailchain/mailchain/internal/pkg/stores"
 	"github.com/pkg/errors"

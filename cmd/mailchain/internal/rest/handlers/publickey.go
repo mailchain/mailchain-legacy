@@ -42,7 +42,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 	//   422: ValidationError
 	return func(w http.ResponseWriter, hr *http.Request) {
 		ctx := hr.Context()
-		address, network, err := parseGetRequest(hr)
+		address, network, err := parseGetPublicKey(hr)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
@@ -63,7 +63,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 			return
 		}
 
-		js, err := json.Marshal(getBody{
+		js, err := json.Marshal(GetPublicKeyResponseBody{
 			PublicKey: hexutil.Encode(publicKey),
 		})
 		if err != nil {
@@ -96,8 +96,8 @@ type getPublicKey struct {
 	Network string `json:"network"`
 }
 
-// parseGetRequest get all the details for the get request
-func parseGetRequest(r *http.Request) (address []byte, network string, err error) {
+// parseGetPublicKey get all the details for the get request
+func parseGetPublicKey(r *http.Request) (address []byte, network string, err error) {
 	addr := strings.ToLower(mux.Vars(r)["address"])
 	if addr == "" {
 		return nil, "", errors.Errorf("'address' must not be empty")
@@ -121,7 +121,7 @@ type getPublicKeyResponse struct {
 // GetBody body response
 //
 // swagger:model GetPublicKeyResponseBody
-type getBody struct {
+type GetPublicKeyResponseBody struct {
 	// The public key
 	//
 	// Required: true

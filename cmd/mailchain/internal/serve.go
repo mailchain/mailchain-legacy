@@ -21,8 +21,6 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
-	"github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/messages/send"
-	"github.com/mailchain/mailchain/internal/pkg/http/rest/messages/read"
 	"github.com/mailchain/mailchain/internal/pkg/http/rest/spec"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/scrypt"
@@ -77,10 +75,10 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	r.HandleFunc(
 		"/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/messages",
 		handlers.GetMessages(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")
-	r.HandleFunc("/api/ethereum/{network}/messages/send", send.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
-	r.HandleFunc("/api/messages/{message_id}/read", read.GetRead(mailboxStore)).Methods("GET")
-	r.HandleFunc("/api/messages/{message_id}/read", read.PutRead(mailboxStore)).Methods("PUT")
-	r.HandleFunc("/api/messages/{message_id}/read", read.DeleteRead(mailboxStore)).Methods("DELETE")
+	r.HandleFunc("/api/ethereum/{network}/messages/send", handlers.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
+	r.HandleFunc("/api/messages/{message_id}/read", handlers.GetRead(mailboxStore)).Methods("GET")
+	r.HandleFunc("/api/messages/{message_id}/read", handlers.PutRead(mailboxStore)).Methods("PUT")
+	r.HandleFunc("/api/messages/{message_id}/read", handlers.DeleteRead(mailboxStore)).Methods("DELETE")
 
 	_ = r.Walk(gorillaWalkFn)
 	return r, nil

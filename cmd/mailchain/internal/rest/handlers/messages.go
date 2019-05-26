@@ -46,7 +46,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 	//   422: ValidationError
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		req, err := parseGetRequest(r)
+		req, err := parseGetMessagesRequest(r)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
@@ -133,7 +133,7 @@ type getMessagesRequest struct {
 }
 
 // ParseGetRequest get all the details for the get request
-func parseGetRequest(r *http.Request) (*getMessagesRequest, error) {
+func parseGetMessagesRequest(r *http.Request) (*getMessagesRequest, error) {
 	addr := strings.ToLower(mux.Vars(r)["address"])
 	if addr == "" {
 		return nil, errors.Errorf("'address' must not be empty")

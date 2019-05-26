@@ -25,8 +25,13 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Get returns a handler get spec
-func Get(store stores.State) func(w http.ResponseWriter, r *http.Request) {
+// GetRead returns a handler get spec
+func GetRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
+	// swagger:response GetReadResponse
+	type getReadResponse struct {
+		// in: body
+		Body getBody
+	}
 	// Get swagger:route GET /messages/{message_id}/read Messages GetRead
 	//
 	// Get message read status.
@@ -51,7 +56,7 @@ func Get(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		js, err := json.Marshal(GetBody{
+		js, err := json.Marshal(getBody{
 			Read: read,
 		})
 		if err != nil {
@@ -64,14 +69,8 @@ func Get(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// swagger:response GetReadResponse
-type GetReadResponse struct {
-	// in: body
-	Body GetBody
-}
-
 // swagger:model GetReadResponseBody
-type GetBody struct {
+type getBody struct {
 	// Read
 	//
 	// Required: true

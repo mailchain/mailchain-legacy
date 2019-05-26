@@ -75,11 +75,11 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 		Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase(passphrase)},
 	}
 	router.HandleFunc("/api/addresses", addresses.Get(keystore)).Methods("GET")
-	router.HandleFunc("/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/public-key", publickey.Get(pubKeyFinders)).Methods("GET")
+	router.HandleFunc("/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/public-key", publickey.GetPublicKey(pubKeyFinders)).Methods("GET")
 	router.HandleFunc(
 		"/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/messages",
-		messages.Get(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")
-	router.HandleFunc("/api/ethereum/{network}/messages/send", send.Post(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
+		messages.GetMessages(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")
+	router.HandleFunc("/api/ethereum/{network}/messages/send", send.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
 	router.HandleFunc("/api/messages/{message_id}/read", read.Get(mailboxStore)).Methods("GET")
 	router.HandleFunc("/api/messages/{message_id}/read", read.Put(mailboxStore)).Methods("PUT")
 	router.HandleFunc("/api/messages/{message_id}/read", read.Delete(mailboxStore)).Methods("DELETE")

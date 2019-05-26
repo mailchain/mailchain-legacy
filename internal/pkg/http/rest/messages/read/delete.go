@@ -20,8 +20,17 @@ import (
 	"github.com/mailchain/mailchain/internal/pkg/stores"
 )
 
-// Delete returns a handler
-func Delete(store stores.State) func(w http.ResponseWriter, r *http.Request) {
+// DeleteRead returns a handler
+func DeleteRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
+	// DeleteRequest open api documentation
+	// swagger:parameters DeleteRead
+	type deleteRequest struct {
+		// Unique id of the message
+		//
+		// in: path
+		// required: true
+		MessageID string `json:"message_id"`
+	}
 	// Delete swagger:route Delete /messages/{message_id}/read Messages DeleteRead
 	//
 	// Mark message as unread
@@ -33,14 +42,4 @@ func Delete(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		doRead(store.DeleteMessageRead, w, r)
 	}
-}
-
-// DeleteRequest open api documentation
-// swagger:parameters DeleteRead
-type DeleteRequest struct {
-	// Unique id of the message
-	//
-	// in: path
-	// required: true
-	MessageID string `json:"message_id"`
 }

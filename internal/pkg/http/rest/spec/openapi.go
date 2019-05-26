@@ -319,7 +319,7 @@ func spec() string {
           "readOnly": true
         }
       },
-      "x-go-name": "GetHeaders",
+      "x-go-name": "getHeaders",
       "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/messages"
     },
     "GetMessagesResponseMessage": {
@@ -360,7 +360,7 @@ func spec() string {
           "example": "Hello world"
         }
       },
-      "x-go-name": "GetMessage",
+      "x-go-name": "getMessage",
       "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/messages"
     },
     "GetPublicKeyResponseBody": {
@@ -377,7 +377,7 @@ func spec() string {
           "example": "0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463"
         }
       },
-      "x-go-name": "GetBody",
+      "x-go-name": "getBody",
       "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/publickey"
     },
     "GetReadResponseBody": {
@@ -393,7 +393,7 @@ func spec() string {
           "example": true
         }
       },
-      "x-go-name": "GetBody",
+      "x-go-name": "getBody",
       "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/messages/read"
     },
     "PostMessagesResponseHeaders": {

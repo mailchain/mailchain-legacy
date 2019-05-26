@@ -32,8 +32,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Post handler http
-func Post(sent stores.Sent, senders map[string]mailbox.Sender, ks keystore.Store,
+// SendMessage handler http
+func SendMessage(sent stores.Sent, senders map[string]mailbox.Sender, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
 	// Post swagger:route POST /ethereum/{network}/messages/send Send Ethereum SendMessage
 	//

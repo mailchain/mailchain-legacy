@@ -20,8 +20,17 @@ import (
 	"github.com/mailchain/mailchain/internal/pkg/stores"
 )
 
-// Put returns a handler put spec
-func Put(store stores.State) func(w http.ResponseWriter, r *http.Request) {
+// PutRead returns a handler put spec
+func PutRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
+	// PutRequest open api documentation
+	// swagger:parameters PutRead
+	type putRequest struct {
+		// Unique id of the message
+		//
+		// in: path
+		// required: true
+		MessageID string `json:"message_id"`
+	}
 	// Put swagger:route PUT /messages/{message_id}/read Messages PutRead
 	//
 	// Put inputs.
@@ -34,14 +43,4 @@ func Put(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		doRead(store.PutMessageRead, w, r)
 	}
-}
-
-// PutRequest open api documentation
-// swagger:parameters PutRead
-type PutRequest struct {
-	// Unique id of the message
-	//
-	// in: path
-	// required: true
-	MessageID string `json:"message_id"`
 }

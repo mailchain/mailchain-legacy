@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/internal/pkg/http/rest/errs"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/rest/errs"
 	"github.com/mailchain/mailchain/internal/pkg/mailbox"
 	"github.com/pkg/errors"
 )

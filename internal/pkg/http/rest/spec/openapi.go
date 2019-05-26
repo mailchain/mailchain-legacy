@@ -16,7 +16,7 @@ package spec
 
 // nolint: lll
 func spec() string {
-	return `
+  return `
 {
   "consumes": [
     "application/json"
@@ -48,16 +48,10 @@ func spec() string {
             "$ref": "#/responses/GetAddressesResponse"
           },
           "404": {
-            "description": "NotFoundError",
-            "schema": {
-              "$ref": "#/definitions/NotFoundError"
-            }
+            "$ref": "#/responses/NotFoundError"
           },
           "422": {
-            "description": "ValidationError",
-            "schema": {
-              "$ref": "#/definitions/ValidationError"
-            }
+            "$ref": "#/responses/ValidationError"
           }
         }
       }
@@ -71,21 +65,42 @@ func spec() string {
         ],
         "summary": "Get Messages.",
         "operationId": "GetMessages",
+        "parameters": [
+          {
+            "pattern": "0x[a-fA-F0-9]{40}",
+            "type": "string",
+            "example": "0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae",
+            "x-go-name": "Address",
+            "description": "address to query",
+            "name": "address",
+            "in": "path",
+            "required": true
+          },
+          {
+            "enum": [
+              "mainnet",
+              "ropsten",
+              "rinkeby",
+              "local"
+            ],
+            "type": "string",
+            "example": "ropsten",
+            "x-go-name": "Network",
+            "description": "Network",
+            "name": "network",
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "$ref": "#/responses/GetMessagesResponse"
           },
           "404": {
-            "description": "NotFoundError",
-            "schema": {
-              "$ref": "#/definitions/NotFoundError"
-            }
+            "$ref": "#/responses/NotFoundError"
           },
           "422": {
-            "description": "ValidationError",
-            "schema": {
-              "$ref": "#/definitions/ValidationError"
-            }
+            "$ref": "#/responses/ValidationError"
           }
         }
       }
@@ -131,16 +146,10 @@ func spec() string {
             "$ref": "#/responses/GetPublicKeyResponse"
           },
           "404": {
-            "description": "NotFoundError",
-            "schema": {
-              "$ref": "#/definitions/NotFoundError"
-            }
+            "$ref": "#/responses/NotFoundError"
           },
           "422": {
-            "description": "ValidationError",
-            "schema": {
-              "$ref": "#/definitions/ValidationError"
-            }
+            "$ref": "#/responses/ValidationError"
           }
         }
       }
@@ -182,22 +191,13 @@ func spec() string {
         ],
         "responses": {
           "200": {
-            "description": "StatusOK",
-            "schema": {
-              "$ref": "#/definitions/StatusOK"
-            }
+            "$ref": "#/responses/StatusOK"
           },
           "404": {
-            "description": "NotFoundError",
-            "schema": {
-              "$ref": "#/definitions/NotFoundError"
-            }
+            "$ref": "#/responses/NotFoundError"
           },
           "422": {
-            "description": "ValidationError",
-            "schema": {
-              "$ref": "#/definitions/ValidationError"
-            }
+            "$ref": "#/responses/ValidationError"
           }
         }
       }
@@ -214,16 +214,10 @@ func spec() string {
             "$ref": "#/responses/GetReadResponse"
           },
           "404": {
-            "description": "NotFoundError",
-            "schema": {
-              "$ref": "#/definitions/NotFoundError"
-            }
+            "$ref": "#/responses/NotFoundError"
           },
           "422": {
-            "description": "ValidationError",
-            "schema": {
-              "$ref": "#/definitions/ValidationError"
-            }
+            "$ref": "#/responses/ValidationError"
           }
         }
       },
@@ -246,22 +240,13 @@ func spec() string {
         ],
         "responses": {
           "200": {
-            "description": "StatusOK",
-            "schema": {
-              "$ref": "#/definitions/StatusOK"
-            }
+            "$ref": "#/responses/StatusOK"
           },
           "404": {
-            "description": "NotFoundError",
-            "schema": {
-              "$ref": "#/definitions/NotFoundError"
-            }
+            "$ref": "#/responses/NotFoundError"
           },
           "422": {
-            "description": "ValidationError",
-            "schema": {
-              "$ref": "#/definitions/ValidationError"
-            }
+            "$ref": "#/responses/ValidationError"
           }
         }
       },
@@ -283,58 +268,19 @@ func spec() string {
         ],
         "responses": {
           "200": {
-            "description": "StatusOK",
-            "schema": {
-              "$ref": "#/definitions/StatusOK"
-            }
+            "$ref": "#/responses/StatusOK"
           },
           "404": {
-            "description": "NotFoundError",
-            "schema": {
-              "$ref": "#/definitions/NotFoundError"
-            }
+            "$ref": "#/responses/NotFoundError"
           },
           "422": {
-            "description": "ValidationError",
-            "schema": {
-              "$ref": "#/definitions/ValidationError"
-            }
+            "$ref": "#/responses/ValidationError"
           }
         }
       }
     }
   },
   "definitions": {
-    "GetMessagesRequest": {
-      "description": "GetMessagesRequest get mailchain messages",
-      "type": "object",
-      "required": [
-        "address",
-        "network"
-      ],
-      "properties": {
-        "address": {
-          "description": "address to query\n\nin: path",
-          "type": "string",
-          "pattern": "0x[a-fA-F0-9]{40}",
-          "x-go-name": "Address",
-          "example": "0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae"
-        },
-        "network": {
-          "description": "Network",
-          "type": "string",
-          "enum": [
-            "mainnet",
-            "ropsten",
-            "rinkeby",
-            "local"
-          ],
-          "x-go-name": "Network",
-          "example": "ropsten"
-        }
-      },
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/messages"
-    },
     "GetMessagesResponseHeaders": {
       "type": "object",
       "properties": {
@@ -417,46 +363,6 @@ func spec() string {
       "x-go-name": "GetMessage",
       "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/messages"
     },
-    "GetPublicKey": {
-      "description": "GetPublicKey pubic key from address request",
-      "type": "object",
-      "required": [
-        "address",
-        "network"
-      ],
-      "properties": {
-        "address": {
-          "description": "address to query to get public key for\n\nin: path",
-          "type": "string",
-          "pattern": "0x[a-fA-F0-9]{40}",
-          "x-go-name": "Address",
-          "example": "0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae"
-        },
-        "network": {
-          "description": "Network for the message to send",
-          "type": "string",
-          "enum": [
-            "mainnet",
-            "ropsten",
-            "rinkeby",
-            "local"
-          ],
-          "x-go-name": "Network",
-          "example": "ropsten"
-        }
-      },
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/publickey"
-    },
-    "GetPublicKeyResponse": {
-      "description": "GetPublicKeyResponse public key from address response",
-      "type": "object",
-      "properties": {
-        "Body": {
-          "$ref": "#/definitions/GetPublicKeyResponseBody"
-        }
-      },
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/publickey"
-    },
     "GetPublicKeyResponseBody": {
       "description": "GetBody body response",
       "type": "object",
@@ -474,15 +380,6 @@ func spec() string {
       "x-go-name": "GetBody",
       "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/publickey"
     },
-    "GetReadResponse": {
-      "type": "object",
-      "properties": {
-        "Body": {
-          "$ref": "#/definitions/GetReadResponseBody"
-        }
-      },
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/messages/read"
-    },
     "GetReadResponseBody": {
       "type": "object",
       "required": [
@@ -498,40 +395,6 @@ func spec() string {
       },
       "x-go-name": "GetBody",
       "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/messages/read"
-    },
-    "GetResponse": {
-      "description": "GetResponse Holds the response messages",
-      "type": "object",
-      "properties": {
-        "messages": {
-          "description": "in: body",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/GetMessagesResponseMessage"
-          },
-          "x-go-name": "Messages"
-        }
-      },
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/messages"
-    },
-    "NotFoundError": {
-      "type": "object",
-      "title": "Description of an error.",
-      "properties": {
-        "code": {
-          "description": "Code describing the error",
-          "type": "string",
-          "x-go-name": "Code",
-          "example": "404"
-        },
-        "message": {
-          "description": "Description of the error",
-          "type": "string",
-          "x-go-name": "Message",
-          "example": "Not found."
-        }
-      },
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/spec"
     },
     "PostMessagesResponseHeaders": {
       "type": "object",
@@ -593,32 +456,6 @@ func spec() string {
       "x-go-name": "PostMessage",
       "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/messages/send"
     },
-    "PostRequest": {
-      "description": "PostRequest get mailchain inputs",
-      "type": "object",
-      "required": [
-        "network",
-        "PostRequestBody"
-      ],
-      "properties": {
-        "PostRequestBody": {
-          "$ref": "#/definitions/SendMessageRequestBody"
-        },
-        "network": {
-          "description": "Network",
-          "type": "string",
-          "enum": [
-            "mainnet",
-            "ropsten",
-            "rinkeby",
-            "local"
-          ],
-          "x-go-name": "Network",
-          "example": "ropsten"
-        }
-      },
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/messages/send"
-    },
     "SendMessageRequestBody": {
       "type": "object",
       "required": [
@@ -631,30 +468,6 @@ func spec() string {
       },
       "x-go-name": "PostRequestBody",
       "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/messages/send"
-    },
-    "StatusOK": {
-      "type": "object",
-      "title": "StatusOK Description of an StatusOK.",
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/spec"
-    },
-    "ValidationError": {
-      "type": "object",
-      "title": "Description of an error.",
-      "properties": {
-        "code": {
-          "description": "Code describing the error",
-          "type": "string",
-          "x-go-name": "Code",
-          "example": "422"
-        },
-        "message": {
-          "description": "Description of the error",
-          "type": "string",
-          "x-go-name": "Message",
-          "example": "Response to invalid input"
-        }
-      },
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/spec"
     }
   },
   "responses": {
@@ -685,6 +498,39 @@ func spec() string {
     "GetReadResponse": {
       "schema": {
         "$ref": "#/definitions/GetReadResponseBody"
+      }
+    },
+    "NotFoundError": {
+      "description": "Description of an error.",
+      "headers": {
+        "code": {
+          "type": "string",
+          "example": "404",
+          "description": "Code describing the error"
+        },
+        "message": {
+          "type": "string",
+          "example": "Not found.",
+          "description": "Description of the error"
+        }
+      }
+    },
+    "StatusOK": {
+      "description": "StatusOK Description of an StatusOK."
+    },
+    "ValidationError": {
+      "description": "Description of an error.",
+      "headers": {
+        "code": {
+          "type": "string",
+          "example": "422",
+          "description": "Code describing the error"
+        },
+        "message": {
+          "type": "string",
+          "example": "Response to invalid input",
+          "description": "Description of the error"
+        }
       }
     }
   }

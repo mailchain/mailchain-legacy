@@ -15,6 +15,6 @@
 package spec
 
 // StatusOK Description of an StatusOK.
-// swagger:model StatusOK
+// swagger:response StatusOK
 type StatusOK struct {
 }

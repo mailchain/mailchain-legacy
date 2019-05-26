@@ -113,7 +113,7 @@ func Get(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.
 }
 
 // GetMessagesRequest get mailchain messages
-// swagger:parameters GetMessagesRequest
+// swagger:parameters GetMessages
 type GetMessagesRequest struct {
 	// address to query
 	//

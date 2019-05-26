@@ -15,7 +15,7 @@
 package spec
 
 // Description of an error.
-// swagger:model ValidationError
+// swagger:response ValidationError
 type ValidationError struct {
 	// Code describing the error
 	// example: 422
@@ -27,7 +27,7 @@ type ValidationError struct {
 }
 
 // Description of an error.
-// swagger:model NotFoundError
+// swagger:response NotFoundError
 type NotFoundError struct {
 	// Code describing the error
 	// example: 404

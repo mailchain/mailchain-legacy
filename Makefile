@@ -24,19 +24,27 @@ generate:
 	sh ./scripts/generate.sh
 
 openapi:
-	swagger generate spec -m -b ./internal/pkg/http/rest -o ./docs/openapi/spec.json
+	go mod vendor
+	rm -rf vendor/github.com/ethereum
+	docker run --rm -i \
+	-e GOPATH=/go \
+	-v $(CURDIR):/go/src/github.com/mailchain/mailchain \
+	-w /go/src/github.com/mailchain/mailchain \
+	mailchain/goswagger-tool swagger generate spec -b ./internal/pkg/http/rest -o ./docs/openapi/spec.json
+
 	echo "" >>  ./docs/openapi/spec.json
 
 	echo "package spec" >  ./internal/pkg/http/rest/spec/openapi.go
 	echo "" >>  ./internal/pkg/http/rest/spec/openapi.go
 	echo "// nolint: lll" >>  ./internal/pkg/http/rest/spec/openapi.go
 	echo 'func spec() string {' >>  ./internal/pkg/http/rest/spec/openapi.go
-	echo '\treturn `' >>  ./internal/pkg/http/rest/spec/openapi.go
+	echo '  return `' >>  ./internal/pkg/http/rest/spec/openapi.go
 	cat  ./docs/openapi/spec.json >>  ./internal/pkg/http/rest/spec/openapi.go
 	echo '`' >>  ./internal/pkg/http/rest/spec/openapi.go
 	echo '}' >>  ./internal/pkg/http/rest/spec/openapi.go
 	addlicense -l apache -c Finobo ./internal/pkg/http/rest/spec/openapi.go	
-
+	rm -rf vendor
+	
 snapshot:
 	docker run --rm --privileged -v $PWD:/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo goreleaser --snapshot --rm-dist
 

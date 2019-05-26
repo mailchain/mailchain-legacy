@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package path
+package params
 
 import (
 	"net/http"
@@ -21,6 +21,6 @@ import (
 	"github.com/mailchain/mailchain/internal/pkg/mail"
 )
 
-func MessageID(r *http.Request) (mail.ID, error) {
+func PathMessageID(r *http.Request) (mail.ID, error) {
 	return mail.FromHexString(mux.Vars(r)["message_id"])
 }

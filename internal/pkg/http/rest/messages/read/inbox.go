@@ -18,13 +18,13 @@ import (
 	"net/http"
 
 	"github.com/mailchain/mailchain/internal/pkg/http/rest/errs"
-	"github.com/mailchain/mailchain/internal/pkg/http/rest/params/path"
+	"github.com/mailchain/mailchain/internal/pkg/http/rest/params"
 	"github.com/mailchain/mailchain/internal/pkg/mail"
 	"github.com/pkg/errors"
 )
 
 func doRead(inboxFunc func(messageID mail.ID) error, w http.ResponseWriter, r *http.Request) {
-	messageID, err := path.MessageID(r)
+	messageID, err := params.PathMessageID(r)
 	if err != nil {
 		errs.JSONWriter(w, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
 		return

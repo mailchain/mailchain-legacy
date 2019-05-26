@@ -34,10 +34,6 @@ package rest
 
 import (
 	// blank imports to support doc creations
-	_ "github.com/mailchain/mailchain/internal/pkg/http/rest/addresses"
-	_ "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/messages"
-	_ "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/publickey"
-	_ "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/messages/send"
-	_ "github.com/mailchain/mailchain/internal/pkg/http/rest/messages/read"
-	_ "github.com/mailchain/mailchain/internal/pkg/http/rest/spec"
-)
+	_ "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
+	_ "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/spec"
+	)

@@ -21,7 +21,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
-	"github.com/mailchain/mailchain/internal/pkg/http/rest/spec"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/rest/spec"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/scrypt"
 	"github.com/pkg/errors"

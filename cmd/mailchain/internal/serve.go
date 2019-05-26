@@ -21,7 +21,6 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
-	"github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/publickey"
 	"github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/messages/send"
 	"github.com/mailchain/mailchain/internal/pkg/http/rest/messages/read"
 	"github.com/mailchain/mailchain/internal/pkg/http/rest/spec"
@@ -74,7 +73,7 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 		Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase(passphrase)},
 	}
 	r.HandleFunc("/api/addresses", handlers.GetAddresses(keystore)).Methods("GET")
-	r.HandleFunc("/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/public-key", publickey.GetPublicKey(pubKeyFinders)).Methods("GET")
+	r.HandleFunc("/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/public-key", handlers.GetPublicKey(pubKeyFinders)).Methods("GET")
 	r.HandleFunc(
 		"/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/messages",
 		handlers.GetMessages(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")

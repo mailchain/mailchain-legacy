@@ -48,3 +48,19 @@ func TestApplyDefaultAndPassword(t *testing.T) {
 	assert.Equal(8, opts.R)
 	assert.Equal(32, len(opts.Salt))
 }
+
+func TestApplyFromEncryptedKey(t *testing.T) {
+	assert := assert.New(t)
+
+	opts := &DeriveOpts{}
+	apply(opts, []DeriveOptionsBuilder{DefaultDeriveOptions(), FromEncryptedKey(32,
+		1<<18,
+		1,
+		8,
+		[]byte("salt-value"))})
+	assert.Equal(32, opts.Len)
+	assert.Equal(262144, opts.N)
+	assert.Equal(1, opts.P)
+	assert.Equal(8, opts.R)
+	assert.Equal([]byte("salt-value"), opts.Salt)
+}

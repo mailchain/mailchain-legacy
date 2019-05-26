@@ -18,5 +18,5 @@ vendor/
 coverage.out
 
 dist
-
+debug
 .mailchain

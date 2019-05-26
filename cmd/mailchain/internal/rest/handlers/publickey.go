@@ -115,7 +115,7 @@ func parseGetPublicKey(r *http.Request) (address []byte, network string, err err
 // swagger:response GetPublicKeyResponse
 type getPublicKeyResponse struct {
 	// in: body
-	Body getBody
+	Body GetPublicKeyResponseBody
 }
 
 // GetBody body response

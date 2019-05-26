@@ -32,8 +32,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Get returns a handler get spec
-func Get(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.Store,
+// GetMessages returns a handler get spec
+func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
 	// Get swagger:route GET /ethereum/{network}/address/{address}/messages Messages Ethereum GetMessages
 	//
@@ -76,19 +76,19 @@ func Get(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not get `decrypter`"))
 			return
 		}
-		messages := []GetMessage{}
+		messages := []getMessage{}
 		for _, transactionData := range encryptedSlice { // TODO: thats an arbitrary limit
 			message, err := mailbox.ReadMessage(transactionData, decrypter)
 			if err != nil {
-				messages = append(messages, GetMessage{
+				messages = append(messages, getMessage{
 					Status: err.Error(),
 				})
 				continue
 			}
 			readStatus, _ := inbox.GetReadStatus(message.ID)
-			messages = append(messages, GetMessage{
+			messages = append(messages, getMessage{
 				Body: string(message.Body),
-				Headers: &GetHeaders{
+				Headers: &getHeaders{
 					To:        message.Headers.To.String(),
 					From:      message.Headers.From.String(),
 					Date:      message.Headers.Date,
@@ -101,7 +101,7 @@ func Get(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.
 
 		}
 
-		js, err := json.Marshal(GetResponse{Messages: messages})
+		js, err := json.Marshal(getResponse{Messages: messages})
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, err)
 			return
@@ -114,7 +114,7 @@ func Get(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.
 
 // GetMessagesRequest get mailchain messages
 // swagger:parameters GetMessages
-type GetMessagesRequest struct {
+type getMessagesRequest struct {
 	// address to query
 	//
 	// in: path
@@ -133,7 +133,7 @@ type GetMessagesRequest struct {
 }
 
 // ParseGetRequest get all the details for the get request
-func parseGetRequest(r *http.Request) (*GetMessagesRequest, error) {
+func parseGetRequest(r *http.Request) (*getMessagesRequest, error) {
 	addr := strings.ToLower(mux.Vars(r)["address"])
 	if addr == "" {
 		return nil, errors.Errorf("'address' must not be empty")
@@ -143,7 +143,7 @@ func parseGetRequest(r *http.Request) (*GetMessagesRequest, error) {
 	// 	return nil, errors.Errorf("'address' is invalid")
 	// }
 
-	req := &GetMessagesRequest{
+	req := &getMessagesRequest{
 		Address: addr,
 		Network: strings.ToLower(mux.Vars(r)["network"]),
 	}
@@ -153,16 +153,16 @@ func parseGetRequest(r *http.Request) (*GetMessagesRequest, error) {
 // GetResponse Holds the response messages
 //
 // swagger:response GetMessagesResponse
-type GetResponse struct {
+type getResponse struct {
 	// in: body
-	Messages []GetMessage `json:"messages"`
+	Messages []getMessage `json:"messages"`
 }
 
 // swagger:model GetMessagesResponseMessage
-type GetMessage struct {
+type getMessage struct {
 	// Headers
 	// readOnly: true
-	Headers *GetHeaders `json:"headers,omitempty"`
+	Headers *getHeaders `json:"headers,omitempty"`
 	// Body of the mail message
 	// readOnly: true
 	// example: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac.
@@ -183,7 +183,7 @@ type GetMessage struct {
 }
 
 // swagger:model GetMessagesResponseHeaders
-type GetHeaders struct {
+type getHeaders struct {
 	// When the message was created, this can be different to the transaction data of the message.
 	// readOnly: true
 	// example: 12 Mar 19 20:23 UTC

@@ -28,8 +28,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Get returns a handler get spec
-func Get(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseWriter, r *http.Request) {
+// GetPublicKey returns a handler get spec
+func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseWriter, r *http.Request) {
 	// Get swagger:route GET /ethereum/{network}/address/{address}/public-key PublicKey Ethereum GetPublicKey
 	//
 	// Get public key from an address.
@@ -63,7 +63,7 @@ func Get(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseWriter, r 
 			return
 		}
 
-		js, err := json.Marshal(GetBody{
+		js, err := json.Marshal(getBody{
 			PublicKey: hexutil.Encode(publicKey),
 		})
 		if err != nil {
@@ -78,7 +78,7 @@ func Get(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseWriter, r 
 
 // GetPublicKey pubic key from address request
 // swagger:parameters GetPublicKey
-type GetPublicKey struct {
+type getPublicKey struct {
 	// address to query to get public key for
 	//
 	// in: path
@@ -113,15 +113,15 @@ func parseGetRequest(r *http.Request) (address []byte, network string, err error
 // GetPublicKeyResponse public key from address response
 //
 // swagger:response GetPublicKeyResponse
-type GetPublicKeyResponse struct {
+type getPublicKeyResponse struct {
 	// in: body
-	Body GetBody
+	Body getBody
 }
 
 // GetBody body response
 //
 // swagger:model GetPublicKeyResponseBody
-type GetBody struct {
+type getBody struct {
 	// The public key
 	//
 	// Required: true

@@ -12,40 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// nolint: dupl
 package setup
 
 import (
-	"fmt"
-
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/internal/mailchain/commands/prompts"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prompts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func Receiver(cmd *cobra.Command, chain, network, receiver string) (string, error) {
-	receiver, err := selectReceiver(chain, network, receiver)
+func SentStorage(cmd *cobra.Command, sentStorageType string) (string, error) {
+	sentStorageType, err := selectSentStorage(sentStorageType)
 	if err != nil {
 		return "", err
 	}
-	if err := config.SetReceiver(viper.GetViper(), chain, network, receiver); err != nil {
+	if err := config.SetSentStorage(sentStorageType); err != nil {
 		return "", err
 	}
-	return receiver, nil
+	return sentStorageType, nil
 }
 
-func selectReceiver(chain, network, receiver string) (string, error) {
-	if receiver != names.Empty {
-		return receiver, nil
+func selectSentStorage(sentStorageType string) (string, error) {
+	if sentStorageType != names.Empty {
+		return sentStorageType, nil
 	}
-	receiver, skipped, err := prompts.SelectItemSkipable(
-		"Receiver",
-		[]string{names.EtherscanNoAuth, names.Etherscan},
-		viper.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) != "")
+	sentStorageType, skipped, err := prompts.SelectItemSkipable(
+		"Sent Store",
+		[]string{names.S3},
+		viper.GetString("storage.sent") != "")
 	if err != nil || skipped {
 		return "", err
 	}
-	return receiver, nil
+	return sentStorageType, nil
 }

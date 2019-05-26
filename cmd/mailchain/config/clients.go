@@ -18,7 +18,7 @@ import (
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/internal/mailchain/commands/prompts"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prompts"
 	"github.com/mailchain/mailchain/internal/pkg/clients/etherscan"
 	"github.com/mailchain/mailchain/internal/pkg/clients/ethrpc"
 	"github.com/pkg/errors"

@@ -18,8 +18,8 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/internal/mailchain/commands/prerun"
-	"github.com/mailchain/mailchain/internal/mailchain/commands/setup"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prerun"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/setup"
 	"github.com/spf13/cobra"
 )
 

@@ -15,34 +15,38 @@
 package setup
 
 import (
+	"fmt"
+
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/internal/mailchain/commands/prompts"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prompts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SentStorage(cmd *cobra.Command, sentStorageType string) (string, error) {
-	sentStorageType, err := selectSentStorage(sentStorageType)
+func Keystore(cmd *cobra.Command, keystoreType string) (string, error) {
+	keystoreType, err := selectKeystore(keystoreType)
 	if err != nil {
 		return "", err
 	}
-	if err := config.SetSentStorage(sentStorageType); err != nil {
+	if err := config.SetKeystore(cmd, keystoreType); err != nil {
 		return "", err
 	}
-	return sentStorageType, nil
+
+	return keystoreType, nil
 }
 
-func selectSentStorage(sentStorageType string) (string, error) {
-	if sentStorageType != names.Empty {
-		return sentStorageType, nil
+func selectKeystore(keystoreType string) (string, error) {
+	if keystoreType != names.Empty {
+		return keystoreType, nil
 	}
-	sentStorageType, skipped, err := prompts.SelectItemSkipable(
-		"Sent Store",
-		[]string{names.S3},
-		viper.GetString("storage.sent") != "")
+	keystoreType, skipped, err := prompts.SelectItemSkipable(
+		"Key Store",
+		[]string{names.KeystoreNACLFilestore},
+		viper.GetString("storage.keys") != "")
 	if err != nil || skipped {
 		return "", err
 	}
-	return sentStorageType, nil
+	fmt.Printf("%q used for storing keys\n", keystoreType)
+	return keystoreType, nil
 }

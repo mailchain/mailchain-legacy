@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package commands
+package internal
 
 import (
 	"net/http"
@@ -80,9 +80,9 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 		"/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/messages",
 		messages.GetMessages(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")
 	router.HandleFunc("/api/ethereum/{network}/messages/send", send.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
-	router.HandleFunc("/api/messages/{message_id}/read", read.Get(mailboxStore)).Methods("GET")
-	router.HandleFunc("/api/messages/{message_id}/read", read.Put(mailboxStore)).Methods("PUT")
-	router.HandleFunc("/api/messages/{message_id}/read", read.Delete(mailboxStore)).Methods("DELETE")
+	router.HandleFunc("/api/messages/{message_id}/read", read.GetRead(mailboxStore)).Methods("GET")
+	router.HandleFunc("/api/messages/{message_id}/read", read.PutRead(mailboxStore)).Methods("PUT")
+	router.HandleFunc("/api/messages/{message_id}/read", read.DeleteRead(mailboxStore)).Methods("DELETE")
 
 	_ = router.Walk(gorillaWalkFn)
 	return router, nil

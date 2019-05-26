@@ -20,13 +20,12 @@ import (
 	"net/http"
 
 	"github.com/mailchain/mailchain/internal/pkg/http/rest/errs"
-
 	"github.com/mailchain/mailchain/internal/pkg/keystore"
 	"github.com/pkg/errors"
 )
 
-// Get returns a handler get spec
-func Get(ks keystore.Store) func(w http.ResponseWriter, r *http.Request) {
+// GetAddresses returns a handler get spec
+func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request) {
 	// Get swagger:route GET /addresses Addresses GetAddresses
 	//
 	// Get addresses.

@@ -37,9 +37,9 @@ import (
 )
 
 func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
-	router := mux.NewRouter()
-	router.HandleFunc("/api/spec.json", spec.Get()).Methods("GET")
-	router.HandleFunc("/api/docs", spec.DocsGet()).Methods("GET")
+	r := mux.NewRouter()
+	r.HandleFunc("/api/spec.json", spec.Get()).Methods("GET")
+	r.HandleFunc("/api/docs", spec.DocsGet()).Methods("GET")
 	vpr := viper.GetViper()
 	receivers, err := config.GetReceivers(vpr)
 	if err != nil {
@@ -74,18 +74,18 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	deriveKeyOptions := multi.OptionsBuilders{
 		Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase(passphrase)},
 	}
-	router.HandleFunc("/api/addresses", addresses.Get(keystore)).Methods("GET")
-	router.HandleFunc("/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/public-key", publickey.GetPublicKey(pubKeyFinders)).Methods("GET")
-	router.HandleFunc(
+	r.HandleFunc("/api/addresses", addresses.GetAddresses(keystore)).Methods("GET")
+	r.HandleFunc("/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/public-key", publickey.GetPublicKey(pubKeyFinders)).Methods("GET")
+	r.HandleFunc(
 		"/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/messages",
 		messages.GetMessages(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")
-	router.HandleFunc("/api/ethereum/{network}/messages/send", send.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
-	router.HandleFunc("/api/messages/{message_id}/read", read.GetRead(mailboxStore)).Methods("GET")
-	router.HandleFunc("/api/messages/{message_id}/read", read.PutRead(mailboxStore)).Methods("PUT")
-	router.HandleFunc("/api/messages/{message_id}/read", read.DeleteRead(mailboxStore)).Methods("DELETE")
+	r.HandleFunc("/api/ethereum/{network}/messages/send", send.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
+	r.HandleFunc("/api/messages/{message_id}/read", read.GetRead(mailboxStore)).Methods("GET")
+	r.HandleFunc("/api/messages/{message_id}/read", read.PutRead(mailboxStore)).Methods("PUT")
+	r.HandleFunc("/api/messages/{message_id}/read", read.DeleteRead(mailboxStore)).Methods("DELETE")
 
-	_ = router.Walk(gorillaWalkFn)
-	return router, nil
+	_ = r.Walk(gorillaWalkFn)
+	return r, nil
 }
 
 func SetupFlags(cmd *cobra.Command) error {

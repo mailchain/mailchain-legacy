@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/errs"
+	"github.com/mailchain/mailchain/http/errs"
 	"github.com/mailchain/mailchain/internal/pkg/mailbox"
 	"github.com/pkg/errors"
 )
@@ -78,7 +78,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 
 // GetPublicKey pubic key from address request
 // swagger:parameters GetPublicKey
-type getPublicKey struct {
+type GetPublicKeyRequest struct {
 	// address to query to get public key for
 	//
 	// in: path

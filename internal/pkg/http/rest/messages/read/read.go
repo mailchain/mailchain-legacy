@@ -20,10 +20,35 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/internal/pkg/http/rest/errs"
+	"github.com/mailchain/mailchain/internal/pkg/http/rest/params"
 	"github.com/mailchain/mailchain/internal/pkg/mail"
 	"github.com/mailchain/mailchain/internal/pkg/stores"
 	"github.com/pkg/errors"
 )
+
+// DeleteRead returns a handler
+func DeleteRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
+	// DeleteRequest open api documentation
+	// swagger:parameters DeleteRead
+	type deleteRequest struct {
+		// Unique id of the message
+		//
+		// in: path
+		// required: true
+		MessageID string `json:"message_id"`
+	}
+	// Delete swagger:route Delete /messages/{message_id}/read Messages DeleteRead
+	//
+	// Mark message as unread
+	//
+	// Responses:
+	//   200: StatusOK
+	//   404: NotFoundError
+	//   422: ValidationError
+	return func(w http.ResponseWriter, r *http.Request) {
+		doRead(store.DeleteMessageRead, w, r)
+	}
+}
 
 // GetRead returns a handler get spec
 func GetRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
@@ -69,6 +94,31 @@ func GetRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// PutRead returns a handler put spec
+func PutRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
+	// PutRequest open api documentation
+	// swagger:parameters PutRead
+	type putRequest struct {
+		// Unique id of the message
+		//
+		// in: path
+		// required: true
+		MessageID string `json:"message_id"`
+	}
+	// Put swagger:route PUT /messages/{message_id}/read Messages PutRead
+	//
+	// Put inputs.
+	//
+	// Put encrypted input of all mailchain messages.
+	// Responses:
+	//   200: StatusOK
+	//   404: NotFoundError
+	//   422: ValidationError
+	return func(w http.ResponseWriter, r *http.Request) {
+		doRead(store.PutMessageRead, w, r)
+	}
+}
+
 // swagger:model GetReadResponseBody
 type getBody struct {
 	// Read
@@ -76,4 +126,19 @@ type getBody struct {
 	// Required: true
 	// example: true
 	Read bool `json:"read"`
+}
+
+func doRead(inboxFunc func(messageID mail.ID) error, w http.ResponseWriter, r *http.Request) {
+	messageID, err := params.PathMessageID(r)
+	if err != nil {
+		errs.JSONWriter(w, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
+		return
+	}
+
+	if err := inboxFunc(messageID); err != nil {
+		errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

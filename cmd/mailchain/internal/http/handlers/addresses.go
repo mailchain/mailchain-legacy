@@ -19,7 +19,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/rest/errs"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/errs"
 	"github.com/mailchain/mailchain/internal/pkg/keystore"
 	"github.com/pkg/errors"
 )

@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package spec
+package handlers
 
 import (
 	"net/http"
 )
 
-// DocsGet returns a handler get spec
-func DocsGet() func(w http.ResponseWriter, r *http.Request) {
+// GetDocs returns a handler get spec
+func GetDocs() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		_, _ = w.Write([]byte(`

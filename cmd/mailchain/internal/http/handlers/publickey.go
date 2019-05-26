@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/rest/errs"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/errs"
 	"github.com/mailchain/mailchain/internal/pkg/mailbox"
 	"github.com/pkg/errors"
 )
@@ -113,7 +113,7 @@ func parseGetPublicKey(r *http.Request) (address []byte, network string, err err
 // GetPublicKeyResponse public key from address response
 //
 // swagger:response GetPublicKeyResponse
-type getPublicKeyResponse struct {
+type GetPublicKeyResponse struct {
 	// in: body
 	Body GetPublicKeyResponseBody
 }

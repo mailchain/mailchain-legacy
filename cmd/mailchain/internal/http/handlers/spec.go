@@ -12,9 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package spec
+package handlers
 
-// StatusOK Description of an StatusOK.
-// swagger:response StatusOK
-type StatusOK struct {
+import "net/http"
+
+// GetSpec returns a handler get spec
+func GetSpec() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(spec()))
+	}
 }

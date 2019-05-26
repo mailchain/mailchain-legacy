@@ -12,28 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package spec
+package handlers
 
-// Description of an error.
-// swagger:response ValidationError
-type ValidationError struct {
-	// Code describing the error
-	// example: 422
-	Code string `json:"code"`
-
-	// Description of the error
-	// example: Response to invalid input
-	Message string `json:"message"`
-}
-
-// Description of an error.
-// swagger:response NotFoundError
-type NotFoundError struct {
-	// Code describing the error
-	// example: 404
-	Code string `json:"code"`
-
-	// Description of the error
-	// example: Not found.
-	Message string `json:"message"`
+// StatusOK Description of an StatusOK.
+// swagger:response StatusOK
+type StatusOK struct {
 }

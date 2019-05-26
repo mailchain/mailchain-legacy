@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package spec
+package handlers
 
 // nolint: lll
 func spec() string {
-  return `
+	return `
 {
   "consumes": [
     "application/json"

@@ -12,14 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package spec
+package handlers
 
-import "net/http"
+// Description of an error.
+// swagger:response ValidationError
+type ValidationError struct {
+	// Code describing the error
+	// example: 422
+	Code string `json:"code"`
 
-// Get returns a handler get spec
-func Get() func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(spec()))
-	}
+	// Description of the error
+	// example: Response to invalid input
+	Message string `json:"message"`
+}
+
+// Description of an error.
+// swagger:response NotFoundError
+type NotFoundError struct {
+	// Code describing the error
+	// example: 404
+	Code string `json:"code"`
+
+	// Description of the error
+	// example: Not found.
+	Message string `json:"message"`
 }

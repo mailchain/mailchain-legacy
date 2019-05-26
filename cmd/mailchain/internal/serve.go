@@ -20,8 +20,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/rest/spec"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/scrypt"
 	"github.com/pkg/errors"
@@ -34,8 +33,8 @@ import (
 
 func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	r := mux.NewRouter()
-	r.HandleFunc("/api/spec.json", spec.Get()).Methods("GET")
-	r.HandleFunc("/api/docs", spec.DocsGet()).Methods("GET")
+	r.HandleFunc("/api/spec.json", handlers.GetSpec()).Methods("GET")
+	r.HandleFunc("/api/docs", handlers.GetDocs()).Methods("GET")
 	vpr := viper.GetViper()
 	receivers, err := config.GetReceivers(vpr)
 	if err != nil {
@@ -75,7 +74,8 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	r.HandleFunc(
 		"/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/messages",
 		handlers.GetMessages(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")
-	r.HandleFunc("/api/ethereum/{network}/messages/send", handlers.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
+	r.HandleFunc("/api/ethereum/{network}/messages/send",
+		handlers.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
 	r.HandleFunc("/api/messages/{message_id}/read", handlers.GetRead(mailboxStore)).Methods("GET")
 	r.HandleFunc("/api/messages/{message_id}/read", handlers.PutRead(mailboxStore)).Methods("PUT")
 	r.HandleFunc("/api/messages/{message_id}/read", handlers.DeleteRead(mailboxStore)).Methods("DELETE")

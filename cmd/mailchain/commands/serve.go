@@ -18,8 +18,8 @@ import (
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prerun"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/http"
 	"github.com/spf13/cobra"
 	"github.com/ttacon/chalk"
 )
@@ -30,7 +30,7 @@ func serveCmd() (*cobra.Command, error) {
 		Short:             "Serve the mailchain application",
 		PersistentPreRunE: prerun.InitConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			router, err := internal.CreateRouter(cmd)
+			router, err := http.CreateRouter(cmd)
 			if err != nil {
 				return err
 			}
@@ -39,12 +39,12 @@ func serveCmd() (*cobra.Command, error) {
 				"Find out more by visiting the docs http://127.0.0.1:%d/api/docs",
 				config.GetServerPort())))
 
-			internal.CreateNegroni(router).Run(fmt.Sprintf(":%d", config.GetServerPort()))
+			http.CreateNegroni(router).Run(fmt.Sprintf(":%d", config.GetServerPort()))
 			return nil
 		},
 	}
 
-	if err := internal.SetupFlags(cmd); err != nil {
+	if err := http.SetupFlags(cmd); err != nil {
 		return nil, err
 	}
 	return cmd, nil

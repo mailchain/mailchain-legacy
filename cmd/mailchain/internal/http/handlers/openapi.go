@@ -16,7 +16,7 @@ package handlers
 
 // nolint: lll
 func spec() string {
-	return `
+  return `
 {
   "consumes": [
     "application/json"
@@ -320,7 +320,7 @@ func spec() string {
         }
       },
       "x-go-name": "getHeaders",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetMessagesResponseMessage": {
       "type": "object",
@@ -361,7 +361,7 @@ func spec() string {
         }
       },
       "x-go-name": "getMessage",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetPublicKeyResponseBody": {
       "description": "GetBody body response",
@@ -377,7 +377,7 @@ func spec() string {
           "example": "0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetReadResponseBody": {
       "type": "object",
@@ -393,7 +393,7 @@ func spec() string {
         }
       },
       "x-go-name": "getBody",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "PostMessagesResponseHeaders": {
       "type": "object",
@@ -420,7 +420,7 @@ func spec() string {
         }
       },
       "x-go-name": "PostHeaders",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "PostMessagesResponseMessage": {
       "type": "object",
@@ -453,7 +453,7 @@ func spec() string {
         }
       },
       "x-go-name": "PostMessage",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "SendMessageRequestBody": {
       "type": "object",
@@ -466,7 +466,7 @@ func spec() string {
         }
       },
       "x-go-name": "PostRequestBody",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     }
   },
   "responses": {

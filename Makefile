@@ -39,15 +39,15 @@ openapi:
 
 	echo "" >>  ./docs/openapi/spec.json
 
-	echo "package handlers" >  ./cmd/mailchain/internal/http/openapi.go
-	echo "" >>  ./cmd/mailchain/internal/http/openapi.go
-	echo "// nolint: lll" >>  ./cmd/mailchain/internal/http/openapi.go
-	echo 'func spec() string {' >>  ./cmd/mailchain/internal/http/openapi.go
-	echo '  return `' >>  ./cmd/mailchain/internal/http/openapi.go
-	cat  ./docs/openapi/spec.json >>  ./cmd/mailchain/internal/http/openapi.go
-	echo '`' >>  ./cmd/mailchain/internal/http/openapi.go
-	echo '}' >>  ./cmd/mailchain/internal/http/openapi.go
-	addlicense -l apache -c Finobo ./cmd/mailchain/internal/http/openapi.go	
+	echo "package handlers" >  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo "" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo "// nolint: lll" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo 'func spec() string {' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo '  return `' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	cat  ./docs/openapi/spec.json >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo '`' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo '}' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	addlicense -l apache -c Finobo ./cmd/mailchain/internal/http/handlers/openapi.go	
 	rm -rf vendor
 	
 snapshot:

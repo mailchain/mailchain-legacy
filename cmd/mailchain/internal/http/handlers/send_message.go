@@ -19,11 +19,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/gorilla/mux"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/crypto/keys"
 	"github.com/mailchain/mailchain/internal/crypto/keys/secp256k1"
@@ -125,7 +124,7 @@ func parsePostRequest(r *http.Request) (*PostRequestBody, error) {
 		return nil, errors.WithMessage(err, "'message' is invalid")
 	}
 
-	return &req, isValid(&req, strings.ToLower(mux.Vars(r)["network"]))
+	return &req, isValid(&req, params.PathNetwork(r))
 }
 
 // swagger:model PostMessagesResponseHeaders

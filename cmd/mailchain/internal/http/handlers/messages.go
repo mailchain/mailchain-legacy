@@ -23,6 +23,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/mux"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
@@ -145,7 +146,7 @@ func parseGetMessagesRequest(r *http.Request) (*GetMessagesRequest, error) {
 
 	req := &GetMessagesRequest{
 		Address: addr,
-		Network: strings.ToLower(mux.Vars(r)["network"]),
+		Network: params.PathNetwork(r),
 	}
 	return req, nil
 }

@@ -16,11 +16,31 @@ package params
 
 import (
 	"net/http"
+	"strings"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/internal/mail"
+	"github.com/pkg/errors"
 )
 
 func PathMessageID(r *http.Request) (mail.ID, error) {
 	return mail.FromHexString(mux.Vars(r)["message_id"])
+}
+
+func PathNetwork(r *http.Request) string {
+	return strings.ToLower(mux.Vars(r)["network"])
+}
+
+func PathAddress(r *http.Request) ([]byte, error) {
+	addr := strings.ToLower(mux.Vars(r)["address"])
+	if addr == "" {
+		return nil, errors.Errorf("'address' must not be empty")
+	}
+	// TODO: should validate address
+	// if !ethereum.IsAddressValid(addr) {
+	// 	return nil, "", errors.Errorf("'address' is invalid")
+	// }
+	// TODO: generic address parsing
+	return common.HexToAddress(addr).Bytes(), nil
 }

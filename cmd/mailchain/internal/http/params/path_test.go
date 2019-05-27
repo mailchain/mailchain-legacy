@@ -63,3 +63,91 @@ func TestPathMessageID(t *testing.T) {
 		})
 	}
 }
+
+func TestPathNetwork(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		r *http.Request
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"success",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("GET", "/", nil)
+					req = mux.SetURLVars(req, map[string]string{
+						"network": "ethereum",
+					})
+					return req
+				}(),
+			},
+			"ethereum",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := PathNetwork(tt.args.r)
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("PathNetwork() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPathAddress(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		r *http.Request
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			"success",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("GET", "/", nil)
+					req = mux.SetURLVars(req, map[string]string{
+						"address": "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					})
+					return req
+				}(),
+			},
+			[]byte{0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61},
+			false,
+		},
+		{
+			"success",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("GET", "/", nil)
+					req = mux.SetURLVars(req, map[string]string{
+						"address": "",
+					})
+					return req
+				}(),
+			},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := PathAddress(tt.args.r)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("PathAddress() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("PathAddress() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

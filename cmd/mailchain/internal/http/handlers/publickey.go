@@ -18,11 +18,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/gorilla/mux"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/pkg/errors"
@@ -63,16 +61,10 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 			return
 		}
 
-		js, err := json.Marshal(GetPublicKeyResponseBody{
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(GetPublicKeyResponseBody{
 			PublicKey: hexutil.Encode(publicKey),
 		})
-		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, err)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write(js)
 	}
 }
 
@@ -98,16 +90,12 @@ type GetPublicKeyRequest struct {
 
 // parseGetPublicKey get all the details for the get request
 func parseGetPublicKey(r *http.Request) (address []byte, network string, err error) {
-	addr := strings.ToLower(mux.Vars(r)["address"])
-	if addr == "" {
-		return nil, "", errors.Errorf("'address' must not be empty")
+	addr, err := params.PathAddress(r)
+	if err != nil {
+		return nil, "", errors.WithStack(err)
 	}
-	// TODO: should validate address
-	// if !ethereum.IsAddressValid(addr) {
-	// 	return nil, "", errors.Errorf("'address' is invalid")
-	// }
 
-	return common.HexToAddress(addr).Bytes(), strings.ToLower(mux.Vars(r)["network"]), nil
+	return addr, params.PathNetwork(r), nil
 }
 
 // GetPublicKeyResponse public key from address response

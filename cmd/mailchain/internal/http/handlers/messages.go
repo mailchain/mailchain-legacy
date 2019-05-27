@@ -114,7 +114,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 
 // GetMessagesRequest get mailchain messages
 // swagger:parameters GetMessages
-type getMessagesRequest struct {
+type GetMessagesRequest struct {
 	// address to query
 	//
 	// in: path
@@ -133,7 +133,7 @@ type getMessagesRequest struct {
 }
 
 // ParseGetRequest get all the details for the get request
-func parseGetMessagesRequest(r *http.Request) (*getMessagesRequest, error) {
+func parseGetMessagesRequest(r *http.Request) (*GetMessagesRequest, error) {
 	addr := strings.ToLower(mux.Vars(r)["address"])
 	if addr == "" {
 		return nil, errors.Errorf("'address' must not be empty")
@@ -143,7 +143,7 @@ func parseGetMessagesRequest(r *http.Request) (*getMessagesRequest, error) {
 	// 	return nil, errors.Errorf("'address' is invalid")
 	// }
 
-	req := &getMessagesRequest{
+	req := &GetMessagesRequest{
 		Address: addr,
 		Network: strings.ToLower(mux.Vars(r)["network"]),
 	}

@@ -23,7 +23,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/http/errs"
+	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/pkg/encoding"
 	"github.com/mailchain/mailchain/internal/pkg/keystore"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"

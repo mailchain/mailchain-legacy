@@ -20,7 +20,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
-	"github.com/mailchain/mailchain/http/errs"
+	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/pkg/mail"
 	"github.com/mailchain/mailchain/internal/pkg/stores"
 	"github.com/pkg/errors"

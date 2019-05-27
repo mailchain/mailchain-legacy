@@ -16,9 +16,10 @@ package mailbox
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"github.com/mailchain/mailchain/internal/crypto/cipher"
+	"github.com/pkg/errors"
 )
 
 // Receiver gets encrypted data from blockchain.
@@ -34,5 +35,5 @@ var (
 
 // IsNetworkNotSupportedError network not supported errors can be resolved by selecting a different client or configuring the network.
 func IsNetworkNotSupportedError(err error) bool {
-	return err == errNetworkNotSupported
+	return fmt.Sprintf("%v", errors.Cause(err)) == fmt.Sprintf("%v", errors.Cause(errNetworkNotSupported))
 }

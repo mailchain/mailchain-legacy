@@ -53,7 +53,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 
 		publicKey, err := finder.PublicKeyFromAddress(ctx, network, address)
 		if mailbox.IsNetworkNotSupportedError(err) {
-			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("network `%s` not supported", network))
+			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("network %q not supported", network))
 			return
 		}
 		if err != nil {

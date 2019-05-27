@@ -80,12 +80,12 @@ func TestPathNetwork(t *testing.T) {
 				func() *http.Request {
 					req := httptest.NewRequest("GET", "/", nil)
 					req = mux.SetURLVars(req, map[string]string{
-						"network": "ethereum",
+						"network": "mainnet",
 					})
 					return req
 				}(),
 			},
-			"ethereum",
+			"mainnet",
 		},
 	}
 	for _, tt := range tests {

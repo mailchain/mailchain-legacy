@@ -1,3 +1,22 @@
+// Copyright 2019 Finobo
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package handlers
+
+// nolint: lll
+func spec() string {
+	return `
 {
   "consumes": [
     "application/json"
@@ -301,7 +320,7 @@
         }
       },
       "x-go-name": "getHeaders",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
     },
     "GetMessagesResponseMessage": {
       "type": "object",
@@ -342,7 +361,7 @@
         }
       },
       "x-go-name": "getMessage",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
     },
     "GetPublicKeyResponseBody": {
       "description": "GetBody body response",
@@ -358,7 +377,7 @@
           "example": "0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
     },
     "GetReadResponseBody": {
       "type": "object",
@@ -374,7 +393,7 @@
         }
       },
       "x-go-name": "getBody",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
     },
     "PostMessagesResponseHeaders": {
       "type": "object",
@@ -401,7 +420,7 @@
         }
       },
       "x-go-name": "PostHeaders",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
     },
     "PostMessagesResponseMessage": {
       "type": "object",
@@ -434,7 +453,7 @@
         }
       },
       "x-go-name": "PostMessage",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
     },
     "SendMessageRequestBody": {
       "type": "object",
@@ -447,7 +466,7 @@
         }
       },
       "x-go-name": "PostRequestBody",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/rest/handlers"
     }
   },
   "responses": {
@@ -514,4 +533,6 @@
       }
     }
   }
+}
+`
 }

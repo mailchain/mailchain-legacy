@@ -19,7 +19,7 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/internal/mailchain/commands/prompts"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prompts"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/nacl"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"

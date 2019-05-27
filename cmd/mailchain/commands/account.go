@@ -19,7 +19,7 @@ import (
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/mailchain/mailchain/internal/mailchain/commands/prerun"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prerun"
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys/multikey"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/scrypt"

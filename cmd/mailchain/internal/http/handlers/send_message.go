@@ -183,11 +183,9 @@ func checkForEmpties(msg PostMessage) error {
 	if msg.Subject == "" {
 		return errors.Errorf("`subject` can not be empty")
 	}
-
 	if msg.PublicKey == "" {
 		return errors.Errorf("`public-key` can not be empty")
 	}
-
 	return nil
 }
 

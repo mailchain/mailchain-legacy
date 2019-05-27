@@ -24,7 +24,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/http/errs"
+	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
 	"github.com/mailchain/mailchain/internal/pkg/crypto/keys/secp256k1"
 	"github.com/mailchain/mailchain/internal/pkg/encoding"

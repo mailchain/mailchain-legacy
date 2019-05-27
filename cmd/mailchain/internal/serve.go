@@ -21,8 +21,8 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
-	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"
-	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/scrypt"
+	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
+	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus" // nolint:depguard

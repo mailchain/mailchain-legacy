@@ -19,8 +19,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/pkg/clients/etherscan"
-	"github.com/mailchain/mailchain/internal/pkg/mailbox"
+	"github.com/mailchain/mailchain/internal/clients/etherscan"
+	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

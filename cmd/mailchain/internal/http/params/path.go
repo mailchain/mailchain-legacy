@@ -18,7 +18,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/internal/pkg/mail"
+	"github.com/mailchain/mailchain/internal/mail"
 )
 
 func PathMessageID(r *http.Request) (mail.ID, error) {

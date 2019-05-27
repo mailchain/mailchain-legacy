@@ -24,11 +24,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/pkg/encoding"
-	"github.com/mailchain/mailchain/internal/pkg/keystore"
-	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"
-	"github.com/mailchain/mailchain/internal/pkg/mailbox"
-	"github.com/mailchain/mailchain/internal/pkg/stores"
+	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/keystore"
+	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
+	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/internal/stores"
 	"github.com/pkg/errors"
 )
 

@@ -24,7 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/pkg/mailbox"
+	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/pkg/errors"
 )
 

@@ -20,7 +20,7 @@ import (
 	"net/http"
 
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/pkg/keystore"
+	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
 )
 
@@ -46,14 +46,8 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 			addresses = append(addresses, hex.EncodeToString(x))
 		}
 
-		js, err := json.Marshal(GetAddressesResponse{Addresses: addresses})
-		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, err)
-			return
-		}
-
+		_ = json.NewEncoder(w).Encode(GetAddressesResponse{Addresses: addresses})
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write(js)
 	}
 
 }

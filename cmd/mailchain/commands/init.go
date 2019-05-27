@@ -22,7 +22,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/setup"
-	"github.com/mailchain/mailchain/internal/pkg/encoding"
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"

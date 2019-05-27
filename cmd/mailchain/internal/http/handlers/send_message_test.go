@@ -18,7 +18,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/pkg/testutil"
+	"github.com/mailchain/mailchain/internal/testutil"
 )
 
 func Test_checkForEmpties(t *testing.T) {

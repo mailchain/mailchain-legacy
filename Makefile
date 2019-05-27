@@ -20,8 +20,13 @@ proto:
 	rm -f ./internal/pkg/mail/*.pb.go
 	protoc ./internal/pkg/mail/data.proto -I. --go_out=:.
 
-generate:
+.PHONY: go-generate
+go-generate:
 	sh ./scripts/generate.sh
+
+.PHONY: generate
+generate: go-generate license	
+
 
 openapi:
 	go mod vendor

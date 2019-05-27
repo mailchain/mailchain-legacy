@@ -19,12 +19,11 @@
 package mocks
 
 import (
-	io "io"
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
 	cipher "github.com/mailchain/mailchain/internal/crypto/cipher"
 	keys "github.com/mailchain/mailchain/internal/crypto/keys"
+	io "io"
+	reflect "reflect"
 )
 
 // MockDecrypter is a mock of Decrypter interface

@@ -17,7 +17,7 @@ package config
 import (
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/pkg/stores"
+	"github.com/mailchain/mailchain/internal/stores"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

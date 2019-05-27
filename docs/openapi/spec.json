@@ -300,8 +300,8 @@
           "readOnly": true
         }
       },
-      "x-go-name": "GetHeaders",
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/messages"
+      "x-go-name": "getHeaders",
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetMessagesResponseMessage": {
       "type": "object",
@@ -341,8 +341,8 @@
           "example": "Hello world"
         }
       },
-      "x-go-name": "GetMessage",
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/messages"
+      "x-go-name": "getMessage",
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetPublicKeyResponseBody": {
       "description": "GetBody body response",
@@ -358,8 +358,7 @@
           "example": "0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463"
         }
       },
-      "x-go-name": "GetBody",
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/address/publickey"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetReadResponseBody": {
       "type": "object",
@@ -374,8 +373,8 @@
           "example": true
         }
       },
-      "x-go-name": "GetBody",
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/messages/read"
+      "x-go-name": "getBody",
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "PostMessagesResponseHeaders": {
       "type": "object",
@@ -402,7 +401,7 @@
         }
       },
       "x-go-name": "PostHeaders",
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/messages/send"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "PostMessagesResponseMessage": {
       "type": "object",
@@ -435,7 +434,7 @@
         }
       },
       "x-go-name": "PostMessage",
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/messages/send"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "SendMessageRequestBody": {
       "type": "object",
@@ -448,7 +447,7 @@
         }
       },
       "x-go-name": "PostRequestBody",
-      "x-go-package": "github.com/mailchain/mailchain/internal/pkg/http/rest/ethereum/messages/send"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     }
   },
   "responses": {

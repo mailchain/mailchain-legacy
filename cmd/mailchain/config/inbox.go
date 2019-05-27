@@ -15,8 +15,8 @@
 package config
 
 import (
-	"github.com/mailchain/mailchain/internal/pkg/stores"
-	"github.com/mailchain/mailchain/internal/pkg/stores/leveldb"
+	"github.com/mailchain/mailchain/internal/stores"
+	"github.com/mailchain/mailchain/internal/stores/leveldb"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
 )

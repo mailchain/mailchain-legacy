@@ -13,12 +13,12 @@
 // limitations under the License.
 
 package commands
-
+ 
 import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/internal/mailchain/commands/setup"
-	"github.com/mailchain/mailchain/internal/pkg/encoding"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/setup"
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/spf13/cobra"
 )
 

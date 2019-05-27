@@ -20,8 +20,13 @@ proto:
 	rm -f ./internal/pkg/mail/*.pb.go
 	protoc ./internal/pkg/mail/data.proto -I. --go_out=:.
 
-generate:
+.PHONY: go-generate
+go-generate:
 	sh ./scripts/generate.sh
+
+.PHONY: generate
+generate: go-generate license	
+
 
 openapi:
 	go mod vendor
@@ -30,23 +35,23 @@ openapi:
 	-e GOPATH=/go \
 	-v $(CURDIR):/go/src/github.com/mailchain/mailchain \
 	-w /go/src/github.com/mailchain/mailchain \
-	mailchain/goswagger-tool swagger generate spec -b ./internal/pkg/http/rest -o ./docs/openapi/spec.json
+	mailchain/goswagger-tool swagger generate spec -b ./cmd/mailchain/internal/http/handlers -o ./docs/openapi/spec.json
 
 	echo "" >>  ./docs/openapi/spec.json
 
-	echo "package spec" >  ./internal/pkg/http/rest/spec/openapi.go
-	echo "" >>  ./internal/pkg/http/rest/spec/openapi.go
-	echo "// nolint: lll" >>  ./internal/pkg/http/rest/spec/openapi.go
-	echo 'func spec() string {' >>  ./internal/pkg/http/rest/spec/openapi.go
-	echo '  return `' >>  ./internal/pkg/http/rest/spec/openapi.go
-	cat  ./docs/openapi/spec.json >>  ./internal/pkg/http/rest/spec/openapi.go
-	echo '`' >>  ./internal/pkg/http/rest/spec/openapi.go
-	echo '}' >>  ./internal/pkg/http/rest/spec/openapi.go
-	addlicense -l apache -c Finobo ./internal/pkg/http/rest/spec/openapi.go	
+	echo "package handlers" >  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo "" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo "// nolint: lll" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo 'func spec() string {' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo '  return `' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	cat  ./docs/openapi/spec.json >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo '`' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo '}' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	addlicense -l apache -c Finobo ./cmd/mailchain/internal/http/handlers/openapi.go	
 	rm -rf vendor
 	
 snapshot:
-	docker run --rm --privileged -v $PWD:/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo goreleaser --snapshot --rm-dist
+	docker run --rm --privileged -v $(CURDIR):/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo goreleaser --snapshot --rm-dist
 
 lint: 
 	golangci-lint run --fix

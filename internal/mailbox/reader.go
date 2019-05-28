@@ -23,7 +23,7 @@ import (
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
-	"github.com/mailchain/mailchain/internal/stores"
+	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 )
 

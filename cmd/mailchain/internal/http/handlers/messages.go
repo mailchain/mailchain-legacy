@@ -29,7 +29,7 @@ import (
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/mailbox"
-	"github.com/mailchain/mailchain/internal/stores"
+	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 )
 

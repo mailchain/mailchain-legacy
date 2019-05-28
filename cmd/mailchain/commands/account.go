@@ -150,7 +150,7 @@ func getKeyType(cmd *cobra.Command) (string, error) {
 	}
 	if keyType != "" {
 		return keyType, nil
-	}
+	} 
 	chain, err := cmd.Flags().GetString("chain")
 	if err != nil {
 		return "", errors.WithMessage(err, "failed to get `chain`")

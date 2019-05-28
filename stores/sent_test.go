@@ -24,7 +24,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/internal/mail"
-	"github.com/mailchain/mailchain/internal/stores"
+	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/internal/testutil/mocks"
 	"github.com/pkg/errors"

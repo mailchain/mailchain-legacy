@@ -27,25 +27,35 @@ func TestCompress(t *testing.T) {
 	cases := []struct {
 		name     string
 		original []byte
-		expected []byte
-		err      error
+		want     []byte
+		wantErr  bool
 	}{
 		{"no prefix:022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292",
 			testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
 			testutil.MustHexDecodeString("022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
-			nil,
+			false,
 		},
 		{"with prefix:022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292",
 			testutil.MustHexDecodeString("042c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
 			testutil.MustHexDecodeString("022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
+			false,
+		},
+		{"err-invalid-key-length",
+			testutil.MustHexDecodeString("042c8432ca28ce929b86a47f2d40413d161f1f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
 			nil,
+			true,
 		},
 	}
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			actual, err := compress(tc.original)
-			assert.EqualValues(hex.EncodeToString(tc.expected), hex.EncodeToString(actual))
-			assert.Equal(tc.err, err)
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := compress(tt.original)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("compress() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("compress() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
@@ -66,10 +76,10 @@ func TestDecompress(t *testing.T) {
 			testutil.MustHexDecodeString("04a34d6aef3eb42335fb3cacb59478c0b44c0bbeb8bb4ca427dbc7044157a5d24b4adf14868d8449c9b3e50d3d6338f3e5a2d3445abe679cddbe75cb893475806f"),
 		},
 	}
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			actual := decompress(tc.original)
-			assert.EqualValues(hex.EncodeToString(tc.expected), hex.EncodeToString(actual))
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := decompress(tt.original)
+			assert.EqualValues(hex.EncodeToString(tt.expected), hex.EncodeToString(actual))
 		})
 	}
 }

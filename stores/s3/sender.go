@@ -38,17 +38,16 @@ func NewSentStore(region, bucket, id, secret string) (*SentStore, error) {
 	if id != "" && secret != "" {
 		creds = credentials.NewStaticCredentials(id, secret, "")
 	}
-
-	ses, err := session.NewSession(&aws.Config{
+	ses := session.Must(session.NewSession(&aws.Config{
 		Region:      aws.String(region),
 		Credentials: creds,
-	})
+	}))
 
 	// S3 service client the Upload manager will use.
 	return &SentStore{
 		uploader: s3manager.NewUploaderWithClient(s3.New(ses)).Upload, // Create an uploader with S3 client and default options
 		bucket:   bucket,
-	}, errors.WithMessage(err, "could not create session")
+	}, nil
 }
 
 // SentStore handles storing messages in S3

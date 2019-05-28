@@ -51,10 +51,7 @@ func SendMessage(ctx context.Context, msg *mail.Message, recipientKey keys.Publi
 	if err != nil {
 		return errors.WithMessage(err, "could not encode message")
 	}
-	msgHash, err := crypto.CreateMessageHash(encodedMsg)
-	if err != nil {
-		return errors.WithMessage(err, "could not create message hash")
-	}
+	msgHash := crypto.CreateMessageHash(encodedMsg)
 
 	encrypted, err := encryptMailMessage(recipientKey, encodedMsg)
 	if err != nil {

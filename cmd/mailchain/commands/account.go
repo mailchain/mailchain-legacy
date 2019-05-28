@@ -20,9 +20,9 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prerun"
-	"github.com/mailchain/mailchain/internal/pkg/crypto/keys/multikey"
-	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"
-	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/scrypt"
+	"github.com/mailchain/mailchain/internal/crypto/keys/multikey"
+	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
+	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/ttacon/chalk"
@@ -150,7 +150,7 @@ func getKeyType(cmd *cobra.Command) (string, error) {
 	}
 	if keyType != "" {
 		return keyType, nil
-	}
+	} 
 	chain, err := cmd.Flags().GetString("chain")
 	if err != nil {
 		return "", errors.WithMessage(err, "failed to get `chain`")

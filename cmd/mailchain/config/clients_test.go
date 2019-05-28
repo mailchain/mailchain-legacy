@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package config
+package config 
 
 import (
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/pkg/clients/etherscan"
+	"github.com/mailchain/mailchain/internal/clients/etherscan"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

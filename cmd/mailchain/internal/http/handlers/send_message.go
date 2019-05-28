@@ -19,20 +19,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/gorilla/mux"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/pkg/crypto/keys"
-	"github.com/mailchain/mailchain/internal/pkg/crypto/keys/secp256k1"
-	"github.com/mailchain/mailchain/internal/pkg/encoding"
-	"github.com/mailchain/mailchain/internal/pkg/keystore"
-	"github.com/mailchain/mailchain/internal/pkg/keystore/kdf/multi"
-	"github.com/mailchain/mailchain/internal/pkg/mail"
-	"github.com/mailchain/mailchain/internal/pkg/mailbox"
-	"github.com/mailchain/mailchain/internal/pkg/stores"
+	"github.com/mailchain/mailchain/internal/crypto/keys"
+	"github.com/mailchain/mailchain/internal/crypto/keys/secp256k1"
+	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/keystore"
+	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
+	"github.com/mailchain/mailchain/internal/mail"
+	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 )
 
@@ -125,7 +124,7 @@ func parsePostRequest(r *http.Request) (*PostRequestBody, error) {
 		return nil, errors.WithMessage(err, "'message' is invalid")
 	}
 
-	return &req, isValid(&req, strings.ToLower(mux.Vars(r)["network"]))
+	return &req, isValid(&req, params.PathNetwork(r))
 }
 
 // swagger:model PostMessagesResponseHeaders
@@ -184,11 +183,9 @@ func checkForEmpties(msg PostMessage) error {
 	if msg.Subject == "" {
 		return errors.Errorf("`subject` can not be empty")
 	}
-
 	if msg.PublicKey == "" {
 		return errors.Errorf("`public-key` can not be empty")
 	}
-
 	return nil
 }
 

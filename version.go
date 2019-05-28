@@ -12,24 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package commands
+package mailchain
 
-import (
-	"fmt"
-
-	"github.com/mailchain/mailchain"
-	"github.com/spf13/cobra"
+// nolint: gochecknoglobals
+var (
+	Version = "dev"
+	Commit  = "none"
+	Date    = "unknown"
 )
-
-func versionCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "version",
-		Short: "Version of the mailchain application",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Printf("Version: v%s\n", mailchain.Version)
-
-			return nil
-		},
-	}
-	return cmd
-}

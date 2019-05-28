@@ -17,7 +17,7 @@ package commands
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/pkg/version"
+	"github.com/mailchain/mailchain"
 	"github.com/spf13/cobra"
 )
 
@@ -26,11 +26,10 @@ func versionCmd() *cobra.Command {
 		Use:   "version",
 		Short: "Version of the mailchain application",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Printf("Version: v%s\n", version.Version)
+			fmt.Printf("Version: v%s\n", mailchain.Version)
 
 			return nil
 		},
 	}
-
 	return cmd
 }

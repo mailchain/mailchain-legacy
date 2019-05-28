@@ -22,7 +22,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/mail"
-	"github.com/mailchain/mailchain/internal/stores"
+	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 )
 

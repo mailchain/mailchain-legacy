@@ -16,9 +16,6 @@ package mailbox
 
 import (
 	"bytes"
-	"io/ioutil"
-	"net/url"
-	"strings"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/mailchain/mailchain/internal/crypto"
@@ -26,8 +23,8 @@ import (
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
+	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
-	"gopkg.in/resty.v1"
 )
 
 // ReadMessage gets the messages, decrypts and checks to see if it's valid
@@ -49,7 +46,7 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 	if err != nil {
 		return nil, err
 	}
-	toDecrypt, err := getMessage(decryptedLocation)
+	toDecrypt, err := stores.GetMessage(decryptedLocation)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not get message from `location`")
 	}
@@ -74,52 +71,4 @@ func decryptLocation(d *mail.Data, decrypter cipher.Decrypter) (string, error) {
 		return "", errors.WithMessage(err, "could not decrypt location")
 	}
 	return string(decryptedLocation), nil
-}
-
-// getMessage get the message contents from the location and perform location hash check
-func getMessage(location string) ([]byte, error) {
-	msg, err := getAnyMessage(location)
-	if err != nil {
-		return nil, err
-	}
-
-	hash, err := crypto.CreateLocationHash(msg)
-	if err != nil {
-		return nil, err
-	}
-	parts := strings.Split(location, "-")
-	if len(parts) < 1 {
-		return nil, errors.Errorf("could not safely extract hash from location")
-	}
-	if hash.String() != parts[len(parts)-1] {
-		return nil, errors.Errorf("hash does not match contents")
-	}
-	return msg, nil
-}
-
-func getAnyMessage(location string) ([]byte, error) {
-	parsed, err := url.Parse(location)
-	if err != nil {
-		return nil, err
-	}
-
-	switch parsed.Scheme {
-	case "http", "https":
-		return getHTTPMessage(location)
-	case "file":
-		return ioutil.ReadFile(parsed.Host + parsed.Path)
-	case "test":
-		return []byte(parsed.Host), nil
-	default:
-		return nil, errors.Errorf("unsupported scheme")
-	}
-}
-func getHTTPMessage(location string) ([]byte, error) {
-	res, err := resty.R().Get(location)
-	if err != nil {
-		return nil, errors.Wrap(err, "could not get message from `location`")
-	}
-	msg := res.Body()
-
-	return msg, nil
 }

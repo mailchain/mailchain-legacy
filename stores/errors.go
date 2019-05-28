@@ -15,8 +15,9 @@
 package stores
 
 import (
-	"errors"
+	"fmt"
 
+	"github.com/pkg/errors"
 	ldberr "github.com/syndtr/goleveldb/leveldb/errors"
 )
 
@@ -25,9 +26,9 @@ var (
 )
 
 func IsNotFoundError(err error) bool {
-	switch err {
-	case errNotFound,
-		ldberr.ErrNotFound:
+	switch fmt.Sprintf("%v", errors.Cause(err)) {
+	case fmt.Sprintf("%v", errors.Cause(errNotFound)),
+		fmt.Sprintf("%v", errors.Cause(ldberr.ErrNotFound)):
 		return true
 	default:
 		return false

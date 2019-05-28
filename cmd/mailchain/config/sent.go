@@ -17,8 +17,8 @@ package config
 import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prompts"
-	"github.com/mailchain/mailchain/internal/stores"
-	"github.com/mailchain/mailchain/internal/stores/s3"
+	"github.com/mailchain/mailchain/stores"
+	"github.com/mailchain/mailchain/stores/s3"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
 )

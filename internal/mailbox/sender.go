@@ -15,6 +15,7 @@
 package mailbox
 
 import (
+	"bytes"
 	"context"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -25,7 +26,7 @@ import (
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
-	"github.com/mailchain/mailchain/internal/stores"
+	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 )
 
@@ -60,7 +61,7 @@ func SendMessage(ctx context.Context, msg *mail.Message, recipientKey keys.Publi
 		return errors.WithStack(err)
 	}
 
-	location, err := stores.PutMessage(sent, msg.ID, encrypted)
+	location, err := stores.PutMessage(sent, msg.ID, bytes.NewReader(encrypted))
 	if err != nil {
 		return errors.WithStack(err)
 	}

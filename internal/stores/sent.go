@@ -12,10 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:generate mockgen -source=sent.go -package=mocks -destination=$PACKAGE_PATH/internal/testutil/mocks/sent.go
+
 package stores
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
 
 	"github.com/mailchain/mailchain/internal/crypto"
 	"github.com/mailchain/mailchain/internal/mail"
@@ -25,16 +29,23 @@ import (
 // The Sent saves the message. This should not be used directly but as the first argument of storing.PutMessage.
 type Sent interface {
 	// PutMessage should write the message contents to the underlying storage service. Return the final location or any error.
-	PutMessage(path string, msg []byte) (location string, err error)
+	PutMessage(path string, msg io.Reader, headers map[string]string) (string, error)
 }
 
 // PutMessage does the pre work before saving the message as implemented by store.
-func PutMessage(sent Sent, messageID mail.ID, msg []byte) (location string, err error) {
-	hash, err := crypto.CreateLocationHash(msg)
+func PutMessage(sent Sent, messageID mail.ID, msg io.Reader) (location string, err error) {
+	if sent == nil {
+		return "", errors.Errorf("'sent' must not be nil")
+	}
+	if msg == nil {
+		return "", errors.Errorf("'msg' must not be nil")
+	}
+	contents, err := ioutil.ReadAll(msg)
 	if err != nil {
 		return "", err
 	}
-	location, err = sent.PutMessage(fmt.Sprintf("%s-%s", messageID.HexString(), hash.String()), msg)
+	hash := crypto.CreateLocationHash(contents)
+	location, err = sent.PutMessage(fmt.Sprintf("%s-%s", messageID.HexString(), hash.String()), msg, nil)
 	if err != nil {
 		return "", errors.Wrap(err, "could not store message")
 	}

@@ -15,13 +15,15 @@
 package s3
 
 import (
-	"bytes"
+	"io"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/mailchain/mailchain"
 	"github.com/pkg/errors"
 )
 
@@ -42,32 +44,35 @@ func NewSentStore(region, bucket, id, secret string) (*SentStore, error) {
 		Region:      aws.String(region),
 		Credentials: creds,
 	})
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not create session")
-	}
 
 	// S3 service client the Upload manager will use.
-	s3Svc := s3.New(ses)
-
 	return &SentStore{
-		uploader: s3manager.NewUploaderWithClient(s3Svc), // Create an uploader with S3 client and default options
-		s3:       s3Svc,
+		uploader: s3manager.NewUploaderWithClient(s3.New(ses)), // Create an uploader with S3 client and default options
 		bucket:   bucket,
-	}, err
+	}, errors.WithMessage(err, "could not create session")
 }
 
 // SentStore handles storing messages in S3
 type SentStore struct {
 	uploader *s3manager.Uploader
-	s3       *s3.S3
 	bucket   string
 }
 
-func (h SentStore) PutMessage(path string, msg []byte) (string, error) {
+func (h SentStore) PutMessage(path string, msg io.Reader, headers map[string]string) (string, error) {
+	metadata := map[string]*string{
+		"Version": aws.String(mailchain.Version),
+	}
+	for k, v := range headers {
+		metadata[k] = aws.String(v)
+	}
+	retainUntil := time.Now().AddDate(1, 0, 0)
 	upParams := &s3manager.UploadInput{
-		Bucket: &h.bucket,
-		Key:    &path,
-		Body:   bytes.NewReader(msg),
+		Bucket:                    &h.bucket,
+		Key:                       &path,
+		Body:                      msg,
+		ObjectLockRetainUntilDate: &retainUntil,
+		ObjectLockMode:            aws.String("GOVERNANCE"),
+		Metadata:                  metadata,
 	}
 	// Perform an upload.
 	result, err := h.uploader.Upload(upParams)

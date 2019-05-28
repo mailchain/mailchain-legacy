@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package crypto_test
+package crypto
 
 import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/crypto"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
@@ -44,7 +43,7 @@ func TestCreateLocationHash(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, err := crypto.CreateLocationHash(tc.original)
+			actual, err := createLocationHash(tc.original)
 			assert.EqualValues(hex.EncodeToString(tc.expected), hex.EncodeToString(actual))
 			assert.Equal(tc.err, err)
 		})

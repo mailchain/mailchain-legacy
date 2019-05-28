@@ -19,7 +19,12 @@ import (
 	"github.com/pkg/errors"
 )
 
-func CreateLocationHash(encryptedData []byte) (multihash.Multihash, error) {
+func CreateLocationHash(encryptedData []byte) multihash.Multihash {
+	hash, _ := createLocationHash(encryptedData)
+	return hash
+}
+
+func createLocationHash(encryptedData []byte) (multihash.Multihash, error) {
 	hash, err := multihash.Sum(encryptedData, multihash.MURMUR3, -1)
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to create hash")

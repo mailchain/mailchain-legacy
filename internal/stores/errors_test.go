@@ -15,22 +15,48 @@
 package stores
 
 import (
-	"fmt"
+	"testing"
 
 	"github.com/pkg/errors"
 	ldberr "github.com/syndtr/goleveldb/leveldb/errors"
 )
 
-var (
-	errNotFound = errors.New("not found")
-)
-
-func IsNotFoundError(err error) bool {
-	switch fmt.Sprintf("%v", errors.Cause(err)) {
-	case fmt.Sprintf("%v", errors.Cause(errNotFound)),
-		fmt.Sprintf("%v", errors.Cause(ldberr.ErrNotFound)):
-		return true
-	default:
-		return false
+func TestIsNotFoundError(t *testing.T) {
+	type args struct {
+		err error
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			"ErrNotFound-not-found",
+			args{
+				errors.Errorf("not found"),
+			},
+			true,
+		},
+		{
+			"ErrNotFound-leveldb-with-stack",
+			args{
+				errors.WithStack(ldberr.ErrNotFound),
+			},
+			true,
+		},
+		{
+			"unknown error",
+			args{
+				errors.Errorf("unknown error"),
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsNotFoundError(tt.args.err); got != tt.want {
+				t.Errorf("IsNotFoundError() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

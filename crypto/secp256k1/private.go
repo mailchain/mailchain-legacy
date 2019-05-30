@@ -18,9 +18,9 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 
-	"github.com/ethereum/go-ethereum/crypto"
+	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/pkg/errors"
 )
 
@@ -31,12 +31,21 @@ type PrivateKey struct {
 
 // Bytes returns the byte representation of the private key
 func (pk PrivateKey) Bytes() []byte {
-	return crypto.FromECDSA(&pk.ecdsa)
+	return ethcrypto.FromECDSA(&pk.ecdsa)
 }
 
 // PublicKey return the public key that is derived from the private key
-func (pk PrivateKey) PublicKey() keys.PublicKey {
+func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	return PublicKey{ecdsa: pk.ecdsa.PublicKey}
+}
+
+func (pk PrivateKey) ECIES() *ecies.PrivateKey {
+	return ecies.ImportECDSA(&pk.ecdsa)
+}
+
+func (pk PrivateKey) ECDSA() (*ecdsa.PrivateKey, error) {
+	rpk, err := ethcrypto.ToECDSA(pk.Bytes())
+	return rpk, errors.WithMessage(err, "could not convert private key")
 }
 
 // PrivateKeyFromECDSA get a private key from an ecdsa.PrivateKey
@@ -46,7 +55,7 @@ func PrivateKeyFromECDSA(pk ecdsa.PrivateKey) PrivateKey {
 
 // PrivateKeyFromBytes get a private key from []byte
 func PrivateKeyFromBytes(pk []byte) (*PrivateKey, error) {
-	rpk, err := crypto.ToECDSA(pk)
+	rpk, err := ethcrypto.ToECDSA(pk)
 	if err != nil {
 		return nil, errors.Errorf("could not convert private key")
 	}
@@ -60,22 +69,4 @@ func PrivateKeyFromHex(hexkey string) (*PrivateKey, error) {
 		return nil, errors.New("invalid hex string")
 	}
 	return PrivateKeyFromBytes(b)
-}
-
-// TODO: hang off key object instead
-func PrivateKeyToECIES(pk keys.PrivateKey) (*ecies.PrivateKey, error) {
-	rpk, err := crypto.ToECDSA(pk.Bytes())
-	if err != nil {
-		return nil, errors.Errorf("could not convert private key")
-	}
-	return ecies.ImportECDSA(rpk), nil
-}
-
-// TODO: hang off key object instead
-func PrivateKeyToECDSA(pk keys.PrivateKey) (*ecdsa.PrivateKey, error) {
-	rpk, err := crypto.ToECDSA(pk.Bytes())
-	if err != nil {
-		return nil, errors.Errorf("could not convert private key")
-	}
-	return rpk, nil
 }

@@ -15,8 +15,7 @@
 package s3
 
 import (
-	"io"
-	"strings"
+	"bytes"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -94,7 +93,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 	}
 	type args struct {
 		path    string
-		msg     io.Reader
+		msg     []byte
 		headers map[string]string
 	}
 	tests := []struct {
@@ -108,7 +107,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 			"success-no-headers",
 			fields{
 				func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
-					if !assert.Equal(strings.NewReader("test-data"), input.Body) {
+					if !assert.Equal(bytes.NewReader([]byte("test-data")), input.Body) {
 						t.Errorf("body incorrect")
 					}
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
@@ -124,7 +123,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 			},
 			args{
 				"location-hash",
-				strings.NewReader("test-data"),
+				[]byte("test-data"),
 				nil,
 			},
 			"https://bucket-id/location-hash",
@@ -134,7 +133,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 			"success-has-headers",
 			fields{
 				func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
-					if !assert.Equal(strings.NewReader("test-data"), input.Body) {
+					if !assert.Equal(bytes.NewReader([]byte("test-data")), input.Body) {
 						t.Errorf("body incorrect")
 					}
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
@@ -150,7 +149,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 			},
 			args{
 				"location-hash",
-				strings.NewReader("test-data"),
+				[]byte("test-data"),
 				map[string]string{
 					"key-1": "value-1",
 				},
@@ -162,7 +161,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 			"err-uploader",
 			fields{
 				func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
-					if !assert.Equal(strings.NewReader("test-data"), input.Body) {
+					if !assert.Equal(bytes.NewReader([]byte("test-data")), input.Body) {
 						t.Errorf("body incorrect")
 					}
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
@@ -178,7 +177,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 			},
 			args{
 				"location-hash",
-				strings.NewReader("test-data"),
+				[]byte("test-data"),
 				nil,
 			},
 			"",

@@ -12,63 +12,60 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package aes256cbc
+package crypto_test
 
 import (
 	"encoding/hex"
 	"testing"
 
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCompress(t *testing.T) {
+func TestCreateLocationHash(t *testing.T) {
 	assert := assert.New(t)
 	cases := []struct {
 		name     string
 		original []byte
 		expected []byte
-		err      error
 	}{
-		{"no prefix:022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292",
+		{"2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba",
 			testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
-			testutil.MustHexDecodeString("022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
-			nil,
+			testutil.MustHexDecodeString("2204abd5fcd4"),
 		},
-		{"with prefix:022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292",
-			testutil.MustHexDecodeString("042c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+		{"022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292",
 			testutil.MustHexDecodeString("022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
-			nil,
+			testutil.MustHexDecodeString("2204be6f4863"),
 		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual, err := compress(tc.original)
+			actual := crypto.CreateLocationHash(tc.original)
 			assert.EqualValues(hex.EncodeToString(tc.expected), hex.EncodeToString(actual))
-			assert.Equal(tc.err, err)
 		})
 	}
 }
 
-func TestDecompress(t *testing.T) {
+func TestCreateMessageHash(t *testing.T) {
 	assert := assert.New(t)
 	cases := []struct {
 		name     string
 		original []byte
 		expected []byte
 	}{
+		{"2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba",
+			testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+			testutil.MustHexDecodeString("16202b3cde1b72727d0b38daa592efae7117b86e7c2f5646543e2ae0f86f64b2922a"),
+		},
 		{"022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292",
 			testutil.MustHexDecodeString("022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
-			testutil.MustHexDecodeString("042c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
-		},
-		{"03a34d6aef3eb42335fb3cacb59478c0b44c0bbeb8bb4ca427dbc7044157a5d24b",
-			testutil.MustHexDecodeString("03a34d6aef3eb42335fb3cacb59478c0b44c0bbeb8bb4ca427dbc7044157a5d24b"),
-			testutil.MustHexDecodeString("04a34d6aef3eb42335fb3cacb59478c0b44c0bbeb8bb4ca427dbc7044157a5d24b4adf14868d8449c9b3e50d3d6338f3e5a2d3445abe679cddbe75cb893475806f"),
+			testutil.MustHexDecodeString("1620671f6f840e08b9c6b3e2125e0381dd5da5578a698eb97a357f1015552263aec6"),
 		},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual := decompress(tc.original)
+			actual := crypto.CreateMessageHash(tc.original)
 			assert.EqualValues(hex.EncodeToString(tc.expected), hex.EncodeToString(actual))
 		})
 	}

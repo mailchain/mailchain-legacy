@@ -36,6 +36,5 @@ func (e *encryptedData) verify() error {
 	if len(e.Ciphertext) == 0 {
 		return errors.Errorf("`Ciphertext` must not be empty")
 	}
-
 	return nil
 }

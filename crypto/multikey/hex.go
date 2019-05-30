@@ -15,25 +15,25 @@
 package multikey
 
 import (
-	"github.com/mailchain/mailchain/internal/crypto/keys"
-	"github.com/mailchain/mailchain/internal/crypto/keys/secp256k1"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/pkg/errors"
 )
 
-type keyFunc func(data []byte) (keys.PrivateKey, error)
-
-// PrivateKeyFromBytes use the correct function to get the private key from bytes
-func PrivateKeyFromBytes(keyType string, data []byte) (keys.PrivateKey, error) {
-	table := map[string]keyFunc{
-		encoding.SECP256K1: func(data []byte) (keys.PrivateKey, error) {
-			return secp256k1.PrivateKeyFromBytes(data)
+// PrivateKeyFromHex get private key from hex.
+func PrivateKeyFromHex(hex, keyType string) (crypto.PrivateKey, error) {
+	table := map[string]privateKeyFromHex{
+		encoding.SECP256K1: func(hex string) (crypto.PrivateKey, error) {
+			return secp256k1.PrivateKeyFromHex(hex)
 		},
 	}
 
-	keyFunc, ok := table[keyType]
+	f, ok := table[keyType]
 	if !ok {
-		return nil, errors.Errorf("unsupported curve type")
+		return nil, errors.Errorf("func for key type %v not registered", keyType)
 	}
-	return keyFunc(data)
+	return f(hex)
 }
+
+type privateKeyFromHex func(hex string) (crypto.PrivateKey, error)

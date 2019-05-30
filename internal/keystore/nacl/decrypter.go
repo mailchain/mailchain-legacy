@@ -15,7 +15,7 @@
 package nacl
 
 import (
-	"github.com/mailchain/mailchain/internal/crypto/cipher"
+	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/pkg/errors"

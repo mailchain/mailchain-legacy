@@ -11,36 +11,35 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-package secp256k1_test
+ 
+package secp256k1
 
 import (
-	"crypto/ecdsa"
-	"encoding/hex"
 	"log"
 
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/mailchain/mailchain/crypto"
 )
 
-var privateKeyA *ecdsa.PrivateKey
-var publicKeyA ecdsa.PublicKey
-var privateKeyB *ecdsa.PrivateKey
-var publicKeyB ecdsa.PublicKey
-
-func init() {
-	var err error
-	pkAHex, _ := hex.DecodeString("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-	privateKeyA, err = crypto.ToECDSA(pkAHex)
+func sofiaPrivateKey() crypto.PrivateKey {
+	k, err := PrivateKeyFromHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 	if err != nil {
 		log.Fatal(err)
 	}
-	publicKeyA = privateKeyA.PublicKey
+	return k
+}
 
-	pkBHex, _ := hex.DecodeString("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
-	privateKeyB, err = crypto.ToECDSA(pkBHex)
+func sofiaPublicKey() crypto.PublicKey {
+	return sofiaPrivateKey().PublicKey()
+}
+
+func charlottePrivateKey() crypto.PrivateKey {
+	k, err := PrivateKeyFromHex("DF4BA9F6106AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3")
 	if err != nil {
 		log.Fatal(err)
 	}
+	return k
+}
 
-	publicKeyB = privateKeyB.PublicKey
+func charlottePublicKey() crypto.PublicKey {
+	return charlottePrivateKey().PublicKey()
 }

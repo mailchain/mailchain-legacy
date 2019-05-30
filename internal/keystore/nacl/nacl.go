@@ -17,8 +17,8 @@ package nacl
 import (
 	"crypto/rand"
 
-	"github.com/mailchain/mailchain/internal/crypto/keys"
-	"github.com/mailchain/mailchain/internal/crypto/keys/multikey"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -71,7 +71,7 @@ func deriveKey(ek *keystore.EncryptedKey, deriveKeyOptions multi.OptionsBuilders
 	}
 }
 
-func (fs FileStore) getPrivateKey(address []byte, deriveKeyOptions multi.OptionsBuilders) (keys.PrivateKey, error) {
+func (fs FileStore) getPrivateKey(address []byte, deriveKeyOptions multi.OptionsBuilders) (crypto.PrivateKey, error) {
 	encryptedKey, err := fs.getEncryptedKey(address)
 	if err != nil {
 		return nil, errors.WithStack(err)

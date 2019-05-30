@@ -20,7 +20,6 @@ package mocks
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	io "io"
 	reflect "reflect"
 )
 
@@ -48,7 +47,7 @@ func (m *MockSent) EXPECT() *MockSentMockRecorder {
 }
 
 // PutMessage mocks base method
-func (m *MockSent) PutMessage(path string, msg io.Reader, headers map[string]string) (string, error) {
+func (m *MockSent) PutMessage(path string, msg []byte, headers map[string]string) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "PutMessage", path, msg, headers)
 	ret0, _ := ret[0].(string)

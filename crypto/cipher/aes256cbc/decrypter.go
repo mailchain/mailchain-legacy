@@ -20,20 +20,20 @@ import (
 	"crypto/subtle"
 
 	"github.com/andreburgaud/crypt2go/padding"
-	mc "github.com/mailchain/mailchain/internal/crypto/cipher"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
-	"github.com/mailchain/mailchain/internal/crypto/keys/secp256k1"
+	"github.com/mailchain/mailchain/crypto"
+	mc "github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/pkg/errors"
 )
 
 // NewDecrypter create a new decrypter attaching the private key to it
-func NewDecrypter(privateKey keys.PrivateKey) Decrypter {
+func NewDecrypter(privateKey crypto.PrivateKey) Decrypter {
 	return Decrypter{privateKey: &privateKey}
 }
 
 // Decrypter will decrypt data using AES256CBC method
 type Decrypter struct {
-	privateKey *keys.PrivateKey
+	privateKey *crypto.PrivateKey
 }
 
 // Decrypt data using recipient private key with AES in CBC mode.
@@ -46,19 +46,19 @@ func (d Decrypter) Decrypt(data mc.EncryptedContent) (mc.PlainContent, error) {
 	return decryptEncryptedData(*d.privateKey, encryptedData)
 }
 
-func decryptEncryptedData(privateKey keys.PrivateKey, data *encryptedData) ([]byte, error) {
+func decryptEncryptedData(privateKey crypto.PrivateKey, data *encryptedData) ([]byte, error) {
 	tmpEphemeralPublicKey, err := secp256k1.PublicKeyFromBytes(data.EphemeralPublicKey)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert ephemeralPublicKey")
 	}
-	ephemeralPublicKey, err := secp256k1.PublicKeyToECIES(tmpEphemeralPublicKey)
+	ephemeralPublicKey, err := tmpEphemeralPublicKey.ECIES()
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert to ecies")
 	}
 
-	rpk, err := secp256k1.PrivateKeyToECIES(privateKey)
+	rpk, err := asPrivateECIES(privateKey)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not convert private key")
+		return nil, err
 	}
 
 	sharedSecret, err := deriveSharedSecret(ephemeralPublicKey, rpk)

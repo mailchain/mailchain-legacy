@@ -18,7 +18,7 @@ package cipher
 import (
 	"io"
 
-	"github.com/mailchain/mailchain/internal/crypto/keys"
+	"github.com/mailchain/mailchain/crypto"
 )
 
 // EncryptedContent typed version of byte array that holds encrypted data
@@ -34,5 +34,5 @@ type Decrypter interface {
 
 // Encrypter will encrypt data using public key
 type Encrypter interface {
-	Encrypt(rand io.Reader, pub keys.PublicKey, plain PlainContent) (EncryptedContent, error)
+	Encrypt(rand io.Reader, pub crypto.PublicKey, plain PlainContent) (EncryptedContent, error)
 }

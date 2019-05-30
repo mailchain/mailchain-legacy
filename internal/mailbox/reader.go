@@ -18,8 +18,8 @@ import (
 	"bytes"
 
 	"github.com/gogo/protobuf/proto"
-	"github.com/mailchain/mailchain/internal/crypto"
-	"github.com/mailchain/mailchain/internal/crypto/cipher"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
@@ -54,10 +54,7 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not decrypt message")
 	}
-	messageHash, err := crypto.CreateMessageHash(rawMsg)
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not create message hash")
-	}
+	messageHash := crypto.CreateMessageHash(rawMsg)
 	if !bytes.Equal(messageHash, data.Hash) {
 		return nil, errors.Errorf("message-hash invalid")
 	}

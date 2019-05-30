@@ -20,8 +20,8 @@ package mocks
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	cipher "github.com/mailchain/mailchain/internal/crypto/cipher"
-	keys "github.com/mailchain/mailchain/internal/crypto/keys"
+	crypto "github.com/mailchain/mailchain/crypto"
+	cipher "github.com/mailchain/mailchain/crypto/cipher"
 	multi "github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	mailbox "github.com/mailchain/mailchain/internal/mailbox"
 	reflect "reflect"
@@ -81,7 +81,7 @@ func (mr *MockStoreMockRecorder) GetDecrypter(address, decrypterType, deriveKeyO
 }
 
 // Store mocks base method
-func (m *MockStore) Store(private keys.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) ([]byte, error) {
+func (m *MockStore) Store(private crypto.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Store", private, curveType, deriveKeyOptions)
 	ret0, _ := ret[0].([]byte)

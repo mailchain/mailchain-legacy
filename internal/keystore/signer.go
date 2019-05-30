@@ -16,18 +16,18 @@ package keystore
 
 import (
 	"github.com/mailchain/mailchain/internal/chains/ethereum"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/pkg/errors"
 )
 
-type signerFunc func(pk keys.PrivateKey) (mailbox.Signer, error)
+type signerFunc func(pk crypto.PrivateKey) (mailbox.Signer, error)
 
 // Signer use the correct function to get the decrypter from private key
-func Signer(chain string, pk keys.PrivateKey) (mailbox.Signer, error) {
+func Signer(chain string, pk crypto.PrivateKey) (mailbox.Signer, error) {
 	table := map[string]signerFunc{
-		encoding.Ethereum: func(pk keys.PrivateKey) (mailbox.Signer, error) {
+		encoding.Ethereum: func(pk crypto.PrivateKey) (mailbox.Signer, error) {
 			return ethereum.NewSigner(pk), nil
 		},
 	}

@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -32,7 +32,7 @@ import (
 )
 
 // Store the private key with the storage key and curve type
-func (fs FileStore) Store(private keys.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) ([]byte, error) {
+func (fs FileStore) Store(private crypto.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) ([]byte, error) {
 	storageKey, keyDefFunc, err := multi.DeriveKey(deriveKeyOptions)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not derive storage key")

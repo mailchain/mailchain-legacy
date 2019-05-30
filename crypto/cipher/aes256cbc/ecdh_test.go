@@ -17,33 +17,16 @@ package aes256cbc
 import (
 	"encoding/hex"
 	"log"
+	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/crypto"
+	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
-	"github.com/mailchain/mailchain/internal/crypto/keys/secp256k1"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
-
-func TestDerive(t *testing.T) {
-	assert := assert.New(t)
-	pub, err := secp256k1.PublicKeyToECIES(testutil.CharlottePublicKey)
-	if err != nil {
-		log.Fatal(err)
-	}
-	priv, err := secp256k1.PrivateKeyToECIES(testutil.SofiaPrivateKey)
-	if err != nil {
-		log.Fatal(err)
-	}
-	shared, err := deriveSharedSecret(pub, priv)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	assert.Equal("b6bdfade23178272425d25774a7d0d388fbef9480893fcc3646accc123eacc47", hex.EncodeToString(shared[:]))
-}
 
 func TestGenerateMacKeyAndEncryptionKey(t *testing.T) {
 	assert := assert.New(t)
@@ -71,7 +54,7 @@ func TestGenerateMac(t *testing.T) {
 	macKey := testutil.MustHexDecodeString("2cea25760305bdb3194057646bc46dc2eeee4890b711741c0b525454ac7c5ea8")
 	iv := testutil.MustHexDecodeString("05050505050505050505050505050505")
 	cipherText := testutil.MustHexDecodeString("2ec66aac453ff543f47830d4b8cbc68d9965bf7c6bb69724fd4de26d41001256dfa6f7f0b3956ce21d4717caf75b0c2ad753852f216df6cfbcda4911619c5fc34798a19f81adff902c1ad906ab0edaec")
-	tmpEphemeralPrivateKey, err := crypto.HexToECDSA("0404040404040404040404040404040404040404040404040404040404040404")
+	tmpEphemeralPrivateKey, err := ethcrypto.HexToECDSA("0404040404040404040404040404040404040404040404040404040404040404")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -87,8 +70,8 @@ func TestEncryptDecrypt(t *testing.T) {
 	assert := assert.New(t)
 	cases := []struct {
 		name                string
-		recipientPublicKey  keys.PublicKey
-		recipientPrivateKey keys.PrivateKey
+		recipientPublicKey  crypto.PublicKey
+		recipientPrivateKey crypto.PrivateKey
 		data                []byte
 		err                 error
 	}{
@@ -126,6 +109,87 @@ func TestEncryptDecrypt(t *testing.T) {
 			decrypted, err := decrypter.Decrypt(encrypted)
 			assert.Equal(tc.err, err)
 			assert.Equal(tc.data, []byte(decrypted))
+		})
+	}
+}
+
+func Test_deriveSharedSecret(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		pub     *ecies.PublicKey
+		private *ecies.PrivateKey
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			"success",
+			args{
+				func() *ecies.PublicKey {
+					tp, ok := testutil.CharlottePublicKey.(secp256k1.PublicKey)
+					if !ok {
+						t.Error("failed to cast")
+					}
+					pub, err := tp.ECIES()
+					if err != nil {
+						t.Error(err)
+					}
+					return pub
+				}(),
+				func() *ecies.PrivateKey {
+					pk, ok := testutil.SofiaPrivateKey.(*secp256k1.PrivateKey)
+					if !ok {
+						t.Error("Can not cast")
+					}
+					return pk.ECIES()
+				}(),
+			},
+			testutil.MustHexDecodeString("b6bdfade23178272425d25774a7d0d388fbef9480893fcc3646accc123eacc47"),
+			false,
+		},
+		{
+			"err-scalar-mult",
+			args{
+				func() *ecies.PublicKey {
+					tp, ok := testutil.CharlottePublicKey.(secp256k1.PublicKey)
+					if !ok {
+						t.Error("failed to cast")
+					}
+					pub, err := tp.ECIES()
+					if err != nil {
+						t.Error(err)
+					}
+					pub.X = big.NewInt(0)
+					pub.Y = big.NewInt(0)
+					return pub
+				}(),
+				func() *ecies.PrivateKey {
+					pk, ok := testutil.SofiaPrivateKey.(*secp256k1.PrivateKey)
+					if !ok {
+						t.Error("Can not cast")
+					}
+					p := pk.ECIES()
+					p.D = big.NewInt(0)
+					return p
+				}(),
+			},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := deriveSharedSecret(tt.args.pub, tt.args.private)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("deriveSharedSecret() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("deriveSharedSecret() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }

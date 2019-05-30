@@ -17,9 +17,9 @@ package keystore
 import (
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/crypto/cipher"
-	"github.com/mailchain/mailchain/internal/crypto/cipher/aes256cbc"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
+	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
@@ -29,7 +29,7 @@ func TestDecrypter(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
 		cipherType byte
-		pk         keys.PrivateKey
+		pk         crypto.PrivateKey
 	}
 	tests := []struct {
 		name    string

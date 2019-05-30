@@ -24,8 +24,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
-	"github.com/mailchain/mailchain/internal/crypto/keys/secp256k1"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -169,7 +169,7 @@ type PostRequestBody struct {
 	to        *mail.Address
 	from      *mail.Address
 	replyTo   *mail.Address
-	publicKey keys.PublicKey
+	publicKey crypto.PublicKey
 	network   string
 }
 

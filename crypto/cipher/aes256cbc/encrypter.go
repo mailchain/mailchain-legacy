@@ -22,18 +22,16 @@ import (
 
 	"github.com/andreburgaud/crypt2go/padding"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
-	"github.com/mailchain/mailchain/internal/crypto/keys/secp256k1"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/pkg/errors"
 )
 
 // Encrypt data using recipient public key with AES in CBC mode.  Generate an ephemeral private key and IV.
-func Encrypt(recipientPublicKey keys.PublicKey, message []byte) ([]byte, error) {
-	rpk, err := secp256k1.PublicKeyToECIES(recipientPublicKey)
+func Encrypt(recipientPublicKey crypto.PublicKey, message []byte) ([]byte, error) {
+	epk, err := asPublicECIES(recipientPublicKey)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not convert pk")
+		return nil, errors.WithMessage(err, "could not convert")
 	}
-
 	ephemeral, err := ecies.GenerateKey(rand.Reader, ecies.DefaultCurve, nil)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not generate ephemeral key")
@@ -42,7 +40,7 @@ func Encrypt(recipientPublicKey keys.PublicKey, message []byte) ([]byte, error) 
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not generate iv")
 	}
-	encryptedData, err := encrypt(ephemeral, rpk, message, iv)
+	encryptedData, err := encrypt(ephemeral, epk, message, iv)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not encrypt data")
 	}

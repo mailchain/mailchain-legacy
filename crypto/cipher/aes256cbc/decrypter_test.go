@@ -17,7 +17,7 @@ package aes256cbc
 import (
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/crypto/cipher"
+	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )

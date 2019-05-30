@@ -17,8 +17,8 @@ package mailbox
 import (
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/crypto/cipher/aes256cbc"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
+	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
@@ -26,12 +26,12 @@ import (
 func Test_encryptLocation(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
-		pk       keys.PublicKey
+		pk       crypto.PublicKey
 		location string
 	}
 	type val struct {
 		encryptedLen   int
-		pk             keys.PrivateKey
+		pk             crypto.PrivateKey
 		wantDecryptErr bool
 		location       string
 	}

@@ -18,7 +18,7 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/internal/chains/ethereum"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/internal/testutil"
@@ -29,7 +29,7 @@ func TestSigner(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
 		chain string
-		pk    keys.PrivateKey
+		pk    crypto.PrivateKey
 	}
 	tests := []struct {
 		name    string

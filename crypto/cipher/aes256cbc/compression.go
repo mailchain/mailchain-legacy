@@ -31,13 +31,10 @@ const (
 // compress a 65 byte uncompressed public key
 func compress(publicKey []byte) ([]byte, error) {
 	if len(publicKey) == pubKeyBytesLenUncompressed-1 && publicKey[0] != compressedKeyPrefix {
-		publicKey = append([]byte{4}, publicKey...)
+		publicKey = append([]byte{compressedKeyPrefix}, publicKey...)
 	}
 	if len(publicKey) != pubKeyBytesLenUncompressed {
 		return nil, errors.Errorf("length of uncompressed public key is invalid")
-	}
-	if publicKey[0] != compressedKeyPrefix {
-		return nil, errors.Errorf("missing compression prefix")
 	}
 	x, y := elliptic.Unmarshal(ecies.DefaultCurve, publicKey)
 

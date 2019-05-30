@@ -17,7 +17,7 @@ package multikey
 import (
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/crypto/keys"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
@@ -31,7 +31,7 @@ func TestPrivateKeyFromHex(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    keys.PrivateKey
+		want    crypto.PrivateKey
 		wantErr bool
 	}{
 		{

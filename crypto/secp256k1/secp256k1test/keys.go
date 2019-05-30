@@ -12,32 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package testutil
+package secp256k1test
 
 import (
+	"crypto/ecdsa"
+	"encoding/hex"
 	"log"
 
-	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
-var SofiaPrivateKey crypto.PrivateKey
-var SofiaPublicKey crypto.PublicKey
-var CharlottePrivateKey crypto.PrivateKey
-var CharlottePublicKey crypto.PublicKey
-
-func init() {
-	var err error
-	SofiaPrivateKey, err = secp256k1.PrivateKeyFromHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+func ECDSAPrivateKeyA() ecdsa.PrivateKey {
+	b, _ := hex.DecodeString("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+	key, err := crypto.ToECDSA(b)
 	if err != nil {
 		log.Fatal(err)
 	}
-	SofiaPublicKey = SofiaPrivateKey.PublicKey()
+	return *key
+}
 
-	CharlottePrivateKey, err = secp256k1.PrivateKeyFromHex("DF4BA9F6106AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3")
+func ECDSAPublicKeyA() ecdsa.PublicKey {
+	return ECDSAPrivateKeyA().PublicKey
+}
+
+func ECDSAPrivateKeyB() ecdsa.PrivateKey {
+	b, _ := hex.DecodeString("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
+	key, err := crypto.ToECDSA(b)
 	if err != nil {
 		log.Fatal(err)
 	}
+	return *key
+}
 
-	CharlottePublicKey = CharlottePrivateKey.PublicKey()
+func ECDSAPublicKeyB() ecdsa.PublicKey {
+	return ECDSAPrivateKeyB().PublicKey
 }

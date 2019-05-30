@@ -19,9 +19,8 @@ import (
 	"encoding/hex"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/crypto"
+	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
 	"github.com/pkg/errors"
 )
 
@@ -32,17 +31,17 @@ type PublicKey struct {
 
 // Bytes returns the byte representation of the public key
 func (pk PublicKey) Bytes() []byte {
-	return crypto.CompressPubkey(&pk.ecdsa)
+	return ethcrypto.CompressPubkey(&pk.ecdsa)
 }
 
 // Address returns the byte representation of the address
 func (pk PublicKey) Address() []byte {
-	return crypto.PubkeyToAddress(pk.ecdsa).Bytes()
+	return ethcrypto.PubkeyToAddress(pk.ecdsa).Bytes()
 }
 
 // PublicKeyFromBytes create a public key from []byte
 func PublicKeyFromBytes(keyBytes []byte) (*PublicKey, error) {
-	rpk, err := crypto.UnmarshalPubkey(keyBytes)
+	rpk, err := ethcrypto.UnmarshalPubkey(keyBytes)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert pk")
 	}
@@ -63,7 +62,7 @@ func PublicKeyFromHex(input string) (*PublicKey, error) {
 		copy(pub[1:], keyBytes)
 		return PublicKeyFromBytes(pub)
 	case 33:
-		pk, err := crypto.DecompressPubkey(keyBytes)
+		pk, err := ethcrypto.DecompressPubkey(keyBytes)
 		if err != nil {
 			return nil, errors.WithMessage(err, "could not decompress pk")
 		}
@@ -73,9 +72,8 @@ func PublicKeyFromHex(input string) (*PublicKey, error) {
 	}
 }
 
-// TODO: hang off object instead
-func PublicKeyToECIES(pk keys.PublicKey) (*ecies.PublicKey, error) {
-	rpk, err := crypto.DecompressPubkey(pk.Bytes())
+func (pk PublicKey) ECIES() (*ecies.PublicKey, error) {
+	rpk, err := ethcrypto.DecompressPubkey(pk.Bytes())
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert pk")
 	}

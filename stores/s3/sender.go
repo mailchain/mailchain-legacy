@@ -15,7 +15,7 @@
 package s3
 
 import (
-	"io"
+	"bytes"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -56,7 +56,7 @@ type SentStore struct {
 	bucket   string
 }
 
-func (h SentStore) PutMessage(path string, msg io.Reader, headers map[string]string) (string, error) {
+func (h SentStore) PutMessage(path string, msg []byte, headers map[string]string) (string, error) {
 	metadata := map[string]*string{
 		"Version": aws.String(mailchain.Version),
 	}
@@ -66,7 +66,7 @@ func (h SentStore) PutMessage(path string, msg io.Reader, headers map[string]str
 	params := &s3manager.UploadInput{
 		Bucket:   &h.bucket,
 		Key:      &path,
-		Body:     msg,
+		Body:     bytes.NewReader(msg),
 		Metadata: metadata,
 	}
 	// Perform an upload.

@@ -21,7 +21,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
-	"github.com/mailchain/mailchain/internal/crypto/keys/secp256k1"
+	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
@@ -69,9 +69,13 @@ func TestInternalEncrypt(t *testing.T) {
 	}
 	ephemeralPrivateKey := ecies.ImportECDSA(tmpEphemeralPrivateKey)
 
-	pub, err := secp256k1.PublicKeyToECIES(testutil.SofiaPublicKey)
+	tp, ok := testutil.SofiaPublicKey.(secp256k1.PublicKey)
+	if !ok {
+		t.Error("failed to cast")
+	}
+	pub, err := tp.ECIES()
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
 
 	actual, err := encrypt(ephemeralPrivateKey, pub, []byte("Hi Tim, this is a much longer message to make sure there are no problems"), iv)

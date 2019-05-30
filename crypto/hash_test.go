@@ -18,7 +18,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/crypto"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )

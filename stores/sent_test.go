@@ -17,16 +17,14 @@
 package stores_test
 
 import (
-	"bytes"
-	"io"
 	"io/ioutil"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/internal/mail"
-	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/internal/testutil/mocks"
+	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 )
 
@@ -36,7 +34,7 @@ func TestPutMessage(t *testing.T) {
 	type args struct {
 		sent      stores.Sent
 		messageID mail.ID
-		msg       io.Reader
+		msg       []byte
 	}
 	tests := []struct {
 		name         string
@@ -80,9 +78,9 @@ func TestPutMessage(t *testing.T) {
 					return sent
 				}(),
 				testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
-				func() io.Reader {
+				func() []byte {
 					contents, _ := ioutil.ReadFile("./testdata/simple.golden.eml-22049eeebdc1")
-					return bytes.NewReader(contents)
+					return contents
 				}(),
 			},
 			"",
@@ -101,9 +99,9 @@ func TestPutMessage(t *testing.T) {
 					return sent
 				}(),
 				testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
-				func() io.Reader {
+				func() []byte {
 					contents, _ := ioutil.ReadFile("./testdata/simple.golden.eml-22049eeebdc1")
-					return bytes.NewReader(contents)
+					return contents
 				}(),
 			},
 			"https://location",

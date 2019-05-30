@@ -15,8 +15,8 @@
 package keystore
 
 import (
-	"github.com/mailchain/mailchain/internal/crypto/cipher"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
+	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/mailbox"
 )
@@ -25,7 +25,7 @@ import (
 type Store interface {
 	GetSigner(address []byte, chain string, deriveKeyOptions multi.OptionsBuilders) (mailbox.Signer, error)
 	GetDecrypter(address []byte, decrypterType byte, deriveKeyOptions multi.OptionsBuilders) (cipher.Decrypter, error)
-	Store(private keys.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) (address []byte, err error)
+	Store(private crypto.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) (address []byte, err error)
 	HasAddress(address []byte) bool
 	GetAddresses() ([][]byte, error)
 }

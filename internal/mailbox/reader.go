@@ -18,8 +18,8 @@ import (
 	"bytes"
 
 	"github.com/gogo/protobuf/proto"
-	"github.com/mailchain/mailchain/internal/crypto"
-	"github.com/mailchain/mailchain/internal/crypto/cipher"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"

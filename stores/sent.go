@@ -18,10 +18,8 @@ package stores
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
 
-	"github.com/mailchain/mailchain/internal/crypto"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
@@ -29,22 +27,18 @@ import (
 // The Sent saves the message. This should not be used directly but as the first argument of storing.PutMessage.
 type Sent interface {
 	// PutMessage should write the message contents to the underlying storage service. Return the final location or any error.
-	PutMessage(path string, msg io.Reader, headers map[string]string) (string, error)
+	PutMessage(path string, msg []byte, headers map[string]string) (string, error)
 }
 
 // PutMessage does the pre work before saving the message as implemented by store.
-func PutMessage(sent Sent, messageID mail.ID, msg io.Reader) (location string, err error) {
+func PutMessage(sent Sent, messageID mail.ID, msg []byte) (location string, err error) {
 	if sent == nil {
 		return "", errors.Errorf("'sent' must not be nil")
 	}
 	if msg == nil {
 		return "", errors.Errorf("'msg' must not be nil")
 	}
-	contents, err := ioutil.ReadAll(msg)
-	if err != nil {
-		return "", err
-	}
-	hash := crypto.CreateLocationHash(contents)
+	hash := crypto.CreateLocationHash(msg)
 	location, err = sent.PutMessage(fmt.Sprintf("%s-%s", messageID.HexString(), hash.String()), msg, nil)
 	if err != nil {
 		return "", errors.Wrap(err, "could not store message")

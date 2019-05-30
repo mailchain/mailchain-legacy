@@ -20,7 +20,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/mailchain/mailchain/internal/crypto"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/pkg/errors"
 	"gopkg.in/resty.v1"
 )

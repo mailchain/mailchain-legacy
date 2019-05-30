@@ -15,14 +15,12 @@
 package mailbox
 
 import (
-	"bytes"
 	"context"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gogo/protobuf/proto"
-	"github.com/mailchain/mailchain/internal/crypto"
-	"github.com/mailchain/mailchain/internal/crypto/cipher/aes256cbc"
-	"github.com/mailchain/mailchain/internal/crypto/keys"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
@@ -45,7 +43,7 @@ type SenderOpts interface{}
 // - Encrypt message location
 // - Create transaction data with encrypted location and message hash
 // - Send transaction
-func SendMessage(ctx context.Context, msg *mail.Message, recipientKey keys.PublicKey,
+func SendMessage(ctx context.Context, msg *mail.Message, recipientKey crypto.PublicKey,
 	sender Sender, sent stores.Sent, signer Signer) error {
 	encodedMsg, err := rfc2822.EncodeNewMessage(msg)
 	if err != nil {
@@ -58,7 +56,7 @@ func SendMessage(ctx context.Context, msg *mail.Message, recipientKey keys.Publi
 		return errors.WithStack(err)
 	}
 
-	location, err := stores.PutMessage(sent, msg.ID, bytes.NewReader(encrypted))
+	location, err := stores.PutMessage(sent, msg.ID, encrypted)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -100,13 +98,13 @@ func prefixedBytes(data proto.Message) ([]byte, error) {
 }
 
 // encryptLocation is encrypted with supplied public key and location string
-func encryptLocation(pk keys.PublicKey, location string) ([]byte, error) {
+func encryptLocation(pk crypto.PublicKey, location string) ([]byte, error) {
 	// TODO: encryptLocation hard coded to aes256cbc
 	return aes256cbc.Encrypt(pk, []byte(location))
 }
 
 // encryptMailMessage is encrypted with supplied public key and location string
-func encryptMailMessage(pk keys.PublicKey, encodedMsg []byte) ([]byte, error) {
+func encryptMailMessage(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error) {
 	// TODO: encryptMailMessage hard coded to aes256cbc
 	encryptedData, err := aes256cbc.Encrypt(pk, encodedMsg)
 	if err != nil {

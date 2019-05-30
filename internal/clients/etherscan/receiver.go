@@ -20,7 +20,7 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/mailchain/mailchain/internal/crypto/cipher"
+	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/pkg/errors"
 )

@@ -20,8 +20,8 @@ package mocks
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	cipher "github.com/mailchain/mailchain/internal/crypto/cipher"
-	keys "github.com/mailchain/mailchain/internal/crypto/keys"
+	crypto "github.com/mailchain/mailchain/crypto"
+	cipher "github.com/mailchain/mailchain/crypto/cipher"
 	io "io"
 	reflect "reflect"
 )
@@ -88,7 +88,7 @@ func (m *MockEncrypter) EXPECT() *MockEncrypterMockRecorder {
 }
 
 // Encrypt mocks base method
-func (m *MockEncrypter) Encrypt(rand io.Reader, pub keys.PublicKey, plain cipher.PlainContent) (cipher.EncryptedContent, error) {
+func (m *MockEncrypter) Encrypt(rand io.Reader, pub crypto.PublicKey, plain cipher.PlainContent) (cipher.EncryptedContent, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Encrypt", rand, pub, plain)
 	ret0, _ := ret[0].(cipher.EncryptedContent)

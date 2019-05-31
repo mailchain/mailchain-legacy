@@ -9,7 +9,7 @@ before:
     # - go generate ./...
 builds:
 - id: mailchain-darwin-amd64
-  ldflags: -s -w -X github.com/mailchain/mailchain/pkg/version.Version={{.Version}} -X github.com/mailchain/mailchain/pkg/version.BuildDate={{.Date}} -X github.com/mailchain/mailchain/pkg/version.CommitHash={{ .ShortCommit }}
+  ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
   binary: mailchain
   env:
   - CGO_ENABLED=1  
@@ -21,7 +21,7 @@ builds:
   goarch:
     - amd64
 - id: mailchain-linux-amd64
-  ldflags: -s -w -X github.com/mailchain/mailchain/pkg/version.Version={{.Version}} -X github.com/mailchain/mailchain/pkg/version.BuildDate={{.Date}} -X github.com/mailchain/mailchain/pkg/version.CommitHash={{ .ShortCommit }}
+  ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
   binary: mailchain
   env:
   - CGO_ENABLED=1
@@ -31,7 +31,7 @@ builds:
   goarch:
     - amd64    
 # - id: mailchain-windows-amd64
-#   ldflags: -s -w -X github.com/mailchain/mailchain/pkg/version.Version={{.Version}} -X github.com/mailchain/mailchain/pkg/version.BuildDate={{.Date}} -X github.com/mailchain/mailchain/pkg/version.CommitHash={{ .ShortCommit }}
+#   ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
 #   binary: mailchain
 #   env:
 #     - CGO_ENABLED=1

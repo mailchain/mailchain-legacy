@@ -14,7 +14,7 @@
 
 <!-- /code_chunk_output -->
 
-Mailchain standardizes messaging in order for Ethereum DApps and Ethereum users to be able to communicate between one another [see Use Cases for examples of why communication is needed].
+Mailchain standardizes messaging in order for Ethereum DApps and Ethereum users to be able to communicate between one another [see Use Cases for examples of why communication is needed](https://github.com/mailchain/mailchain-specification/blob/master/mailchain_use_cases.md).
 
 The message lifecycle for Ethereum is outlined below:
 

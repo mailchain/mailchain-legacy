@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package s3
+package s3store
 
 import (
 	"bytes"
@@ -20,11 +20,12 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewSentStore(t *testing.T) {
+func TestNewSent(t *testing.T) {
 	type args struct {
 		region string
 		bucket string
@@ -73,28 +74,28 @@ func TestNewSentStore(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewSentStore(tt.args.region, tt.args.bucket, tt.args.id, tt.args.secret)
+			got, err := NewSent(tt.args.region, tt.args.bucket, tt.args.id, tt.args.secret)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("NewSentStore() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("NewSent() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got == nil != tt.wantNil {
-				t.Errorf("NewSentStore() got == nil = %v, wantNil %v", got == nil, tt.wantNil)
+				t.Errorf("NewSent() got == nil = %v, wantNil %v", got == nil, tt.wantNil)
 			}
 		})
 	}
 }
 
-func TestSentStore_PutMessage(t *testing.T) {
+func TestSent_PutMessage(t *testing.T) {
 	assert := assert.New(t)
 	type fields struct {
 		uploader func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
 		bucket   string
 	}
 	type args struct {
-		path    string
-		msg     []byte
-		headers map[string]string
+		messageID mail.ID
+		msg       []byte
+		headers   map[string]string
 	}
 	tests := []struct {
 		name    string
@@ -113,7 +114,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("location-hash"), input.Key) {
+					if !assert.Equal(aws.String("6c6f636174696f6e-2204f48b7b75"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
@@ -122,7 +123,9 @@ func TestSentStore_PutMessage(t *testing.T) {
 				"bucket-id",
 			},
 			args{
-				"location-hash",
+				func() mail.ID {
+					return []byte("location")
+				}(),
 				[]byte("test-data"),
 				nil,
 			},
@@ -139,7 +142,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("location-hash"), input.Key) {
+					if !assert.Equal(aws.String("6c6f636174696f6e-2204f48b7b75"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
@@ -148,7 +151,9 @@ func TestSentStore_PutMessage(t *testing.T) {
 				"bucket-id",
 			},
 			args{
-				"location-hash",
+				func() mail.ID {
+					return []byte("location")
+				}(),
 				[]byte("test-data"),
 				map[string]string{
 					"key-1": "value-1",
@@ -167,7 +172,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("location-hash"), input.Key) {
+					if !assert.Equal(aws.String("6c6f636174696f6e-2204f48b7b75"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
@@ -176,8 +181,38 @@ func TestSentStore_PutMessage(t *testing.T) {
 				"bucket-id",
 			},
 			args{
-				"location-hash",
+				func() mail.ID {
+					return []byte("location")
+				}(),
 				[]byte("test-data"),
+				nil,
+			},
+			"",
+			true,
+		},
+		{
+			"err-nil-msg",
+			fields{
+				func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
+					if !assert.Equal(bytes.NewReader([]byte("test-data")), input.Body) {
+						t.Errorf("body incorrect")
+					}
+					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
+						t.Errorf("Bucket incorrect")
+					}
+					if !assert.Equal(aws.String("6c6f636174696f6e-2204f48b7b75"), input.Key) {
+						t.Errorf("Key incorrect")
+					}
+
+					return nil, errors.Errorf("failed to upload")
+				},
+				"bucket-id",
+			},
+			args{
+				func() mail.ID {
+					return []byte("location")
+				}(),
+				nil,
 				nil,
 			},
 			"",
@@ -186,17 +221,17 @@ func TestSentStore_PutMessage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			h := SentStore{
+			h := Sent{
 				uploader: tt.fields.uploader,
 				bucket:   tt.fields.bucket,
 			}
-			got, err := h.PutMessage(tt.args.path, tt.args.msg, tt.args.headers)
+			got, err := h.PutMessage(tt.args.messageID, tt.args.msg, tt.args.headers)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("SentStore.PutMessage() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Sent.PutMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("SentStore.PutMessage() = %v, want %v", got, tt.want)
+				t.Errorf("Sent.PutMessage() = %v, want %v", got, tt.want)
 			}
 		})
 	}

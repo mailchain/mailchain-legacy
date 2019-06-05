@@ -14,7 +14,7 @@
 
 package main
  
-import ( 
+import (  
 	"log"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/commands"

@@ -18,7 +18,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prompts"
 	"github.com/mailchain/mailchain/stores"
-	"github.com/mailchain/mailchain/stores/s3"
+	"github.com/mailchain/mailchain/stores/s3store"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
 )
@@ -32,7 +32,7 @@ func GetSentStorage() (stores.Sent, error) {
 }
 
 func getS3Client() (stores.Sent, error) {
-	return s3.NewSentStore(
+	return s3store.NewSent(
 		viper.GetString("stores.s3.region"),
 		viper.GetString("stores.s3.bucket"),
 		viper.GetString("stores.s3.access-key-id"),

@@ -20,6 +20,7 @@ package mocks
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	mail "github.com/mailchain/mailchain/internal/mail"
 	reflect "reflect"
 )
 
@@ -47,16 +48,16 @@ func (m *MockSent) EXPECT() *MockSentMockRecorder {
 }
 
 // PutMessage mocks base method
-func (m *MockSent) PutMessage(path string, msg []byte, headers map[string]string) (string, error) {
+func (m *MockSent) PutMessage(messageID mail.ID, msg []byte, headers map[string]string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PutMessage", path, msg, headers)
+	ret := m.ctrl.Call(m, "PutMessage", messageID, msg, headers)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // PutMessage indicates an expected call of PutMessage
-func (mr *MockSentMockRecorder) PutMessage(path, msg, headers interface{}) *gomock.Call {
+func (mr *MockSentMockRecorder) PutMessage(messageID, msg, headers interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PutMessage", reflect.TypeOf((*MockSent)(nil).PutMessage), path, msg, headers)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PutMessage", reflect.TypeOf((*MockSent)(nil).PutMessage), messageID, msg, headers)
 }

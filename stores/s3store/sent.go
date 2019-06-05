@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package s3
+package s3store
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -23,11 +24,13 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/mailchain/mailchain"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
 
-// NewSentStore creates a new S3 store.
-func NewSentStore(region, bucket, id, secret string) (*SentStore, error) {
+// NewSent creates a new S3 store.
+func NewSent(region, bucket, id, secret string) (*Sent, error) {
 	if region == "" {
 		return nil, errors.Errorf("`region` must be specified")
 	}
@@ -44,19 +47,24 @@ func NewSentStore(region, bucket, id, secret string) (*SentStore, error) {
 	}))
 
 	// S3 service client the Upload manager will use.
-	return &SentStore{
+	return &Sent{
 		uploader: s3manager.NewUploaderWithClient(s3.New(ses)).Upload, // Create an uploader with S3 client and default options
 		bucket:   bucket,
 	}, nil
 }
 
-// SentStore handles storing messages in S3
-type SentStore struct {
+// Sent handles storing messages in S3
+type Sent struct {
 	uploader func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
 	bucket   string
 }
 
-func (h SentStore) PutMessage(path string, msg []byte, headers map[string]string) (string, error) {
+func (h Sent) PutMessage(messageID mail.ID, msg []byte, headers map[string]string) (string, error) {
+	if msg == nil {
+		return "", errors.Errorf("'msg' must not be nil")
+	}
+	hash := crypto.CreateLocationHash(msg)
+	path := fmt.Sprintf("%s-%s", messageID.HexString(), hash.String())
 	metadata := map[string]*string{
 		"Version": aws.String(mailchain.Version),
 	}

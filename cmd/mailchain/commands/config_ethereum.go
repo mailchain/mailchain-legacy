@@ -13,7 +13,7 @@
 // limitations under the License.
 
 package commands
- 
+
 import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"

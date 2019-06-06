@@ -56,7 +56,7 @@ func SendMessage(ctx context.Context, msg *mail.Message, recipientKey crypto.Pub
 		return errors.WithStack(err)
 	}
 
-	location, err := stores.PutMessage(sent, msg.ID, encrypted)
+	location, err := sent.PutMessage(msg.ID, encrypted, nil)
 	if err != nil {
 		return errors.WithStack(err)
 	}

@@ -16,7 +16,7 @@ package config
 
 import (
 	"github.com/mailchain/mailchain/stores"
-	"github.com/mailchain/mailchain/stores/leveldb"
+	"github.com/mailchain/mailchain/stores/ldbstore"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
 )
@@ -24,7 +24,7 @@ import (
 // GetStateStore create all the clients based on configuration
 func GetStateStore(vpr *viper.Viper) (stores.State, error) {
 	if vpr.GetString("storage.state") == "leveldb" {
-		return leveldb.New(viper.GetString("stores.leveldb.path"), 256, 0)
+		return ldbstore.New(viper.GetString("stores.leveldb.path"), 256, 0)
 	}
 	return nil, errors.New("unsupported mailbox state type")
 }

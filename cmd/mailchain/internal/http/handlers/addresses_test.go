@@ -21,8 +21,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/internal/keystore"
+	"github.com/mailchain/mailchain/internal/keystore/keystoretest"
 	"github.com/mailchain/mailchain/internal/testutil"
-	"github.com/mailchain/mailchain/internal/testutil/mocks"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -44,7 +44,7 @@ func TestGetAddresses(t *testing.T) {
 			"err-GetAddresses",
 			args{
 				func() keystore.Store {
-					store := mocks.NewMockStore(mockCtrl)
+					store := keystoretest.NewMockStore(mockCtrl)
 					store.EXPECT().GetAddresses().Return(
 						nil,
 						errors.Errorf("error getting address"),
@@ -60,7 +60,7 @@ func TestGetAddresses(t *testing.T) {
 			"empty-address",
 			args{
 				func() keystore.Store {
-					store := mocks.NewMockStore(mockCtrl)
+					store := keystoretest.NewMockStore(mockCtrl)
 					store.EXPECT().GetAddresses().Return(
 						[][]byte{},
 						nil,
@@ -76,7 +76,7 @@ func TestGetAddresses(t *testing.T) {
 			"single-address",
 			args{
 				func() keystore.Store {
-					store := mocks.NewMockStore(mockCtrl)
+					store := keystoretest.NewMockStore(mockCtrl)
 					store.EXPECT().GetAddresses().Return(
 						[][]byte{testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")},
 						nil,
@@ -92,7 +92,7 @@ func TestGetAddresses(t *testing.T) {
 			"multi-address",
 			args{
 				func() keystore.Store {
-					store := mocks.NewMockStore(mockCtrl)
+					store := keystoretest.NewMockStore(mockCtrl)
 					store.EXPECT().GetAddresses().Return(
 						[][]byte{
 							testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),

@@ -6,7 +6,9 @@ require (
 	github.com/allegro/bigcache v1.2.0 // indirect
 	github.com/andreburgaud/crypt2go v0.0.0-20170529041511-18fdff33d8fa
 	github.com/aristanetworks/goarista v0.0.0-20190409234242-46f4bc7b73ef // indirect
+	github.com/aws/aws-lambda-go v1.11.1
 	github.com/aws/aws-sdk-go v1.19.11
+	github.com/awslabs/aws-lambda-go-api-proxy v0.3.0
 	github.com/btcsuite/btcd v0.0.0-20190410025418-9bfb2ca0346b // indirect
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/ethereum/go-ethereum v1.8.26

@@ -1,4 +1,3 @@
-PKGS := github.com/mailchain/mailchain/...
 GO := go
 
 all : build
@@ -7,11 +6,11 @@ all : build
 clean:
 	$(GO) clean
 build:
-	$(GO) build $(PKGS)
+	$(GO) build ./...
 
 test: generate unit-test
 unit-test:
-	$(GO) test $(PKGS)
+	$(GO) test ./...
 
 license: .FORCE
 	addlicense -l apache -c Finobo ./internal
@@ -22,11 +21,10 @@ proto:
 
 .PHONY: go-generate
 go-generate:
-	sh ./scripts/generate.sh
+	go generate ./...
 
 .PHONY: generate
 generate: go-generate license	
-
 
 openapi:
 	go mod vendor

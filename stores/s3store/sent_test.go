@@ -236,3 +236,44 @@ func TestSent_PutMessage(t *testing.T) {
 		})
 	}
 }
+
+func TestSent_Key(t *testing.T) {
+	type fields struct {
+		uploader func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
+		bucket   string
+	}
+	type args struct {
+		messageID mail.ID
+		msg       []byte
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   string
+	}{
+		{
+			"success",
+			fields{
+				nil, 
+"", 
+			},
+			args{
+				[]byte("messageID"),
+				[]byte("body"),
+			},
+			"6d6573736167654944-2204a9590878",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			h := Sent{
+				uploader: tt.fields.uploader,
+				bucket:   tt.fields.bucket,
+			}
+			if got := h.Key(tt.args.messageID, tt.args.msg); got != tt.want {
+				t.Errorf("Sent.Key() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

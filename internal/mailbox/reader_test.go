@@ -20,9 +20,9 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/internal/testutil"
-	"github.com/mailchain/mailchain/internal/testutil/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -115,7 +115,7 @@ func TestReadMessage(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			decrypter := mocks.NewMockDecrypter(mockCtrl)
+			decrypter := ciphertest.NewMockDecrypter(mockCtrl)
 			decrypter.EXPECT().Decrypt(gomock.Any()).Return(tc.decrypterLocationRet...).Times(tc.decrypterLocationCalls)
 			decrypted, _ := ioutil.ReadFile("./testdata/" + tc.decrypterFile)
 			decrypter.EXPECT().Decrypt(gomock.Any()).Return(decrypted, tc.decrypterContentsError).Times(tc.decrypterContentsCalls)

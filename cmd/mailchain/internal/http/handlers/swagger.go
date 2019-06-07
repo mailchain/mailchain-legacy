@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package rest Mailchain API
+// Package http Mailchain API
 //
 // All the information needed to talk to the API.
 //

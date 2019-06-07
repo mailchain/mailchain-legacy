@@ -11,12 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//go:generate mockgen -source=keystore.go -package=mocks -destination=$PACKAGE_PATH/internal/testutil/mocks/keystore.go
+
+//go:generate mockgen -source=keystore.go -package=keystoretest -destination=./keystoretest/keystore_mock.go
 package keystore
 
 import (
-	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/mailbox"
 )

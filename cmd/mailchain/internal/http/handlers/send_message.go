@@ -23,9 +23,9 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
-	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -38,6 +38,7 @@ import (
 // SendMessage handler http
 func SendMessage(sent stores.Sent, senders map[string]mailbox.Sender, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
+	sendmessage := mailbox.SendMessage()
 	// Post swagger:route POST /ethereum/{network}/messages/send Send Ethereum SendMessage
 	//
 	// Send message.
@@ -84,7 +85,7 @@ func SendMessage(sent stores.Sent, senders map[string]mailbox.Sender, ks keystor
 			return
 		}
 
-		if err := mailbox.SendMessage(ctx, msg, req.publicKey, sender, sent, signer); err != nil {
+		if err := sendmessage(ctx, msg, req.publicKey, sender, sent, signer); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}

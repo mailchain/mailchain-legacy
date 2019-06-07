@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate mockgen -source=sent.go -package=mocks -destination=$PACKAGE_PATH/internal/testutil/mocks/sent.go
+//go:generate mockgen -source=sent.go -package=storestest -destination=./storestest/sent_mock.go
 
 package stores
 
@@ -24,9 +24,7 @@ import (
 type Sent interface {
 	// PutMessage should write the message contents to the underlying storage service. Return the final location or any error.
 	PutMessage(messageID mail.ID, msg []byte, headers map[string]string) (string, error)
-}
-
-type SentStore struct {
+	Key(messageID mail.ID, msg []byte) string
 }
 
 // func (s SentStore) PutMessage(path string, msg []byte, headers map[string]string) (string, error) {

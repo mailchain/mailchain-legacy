@@ -68,12 +68,6 @@ func (h Sent) PutMessage(messageID mail.ID, msg []byte, headers map[string]strin
 	if msg == nil {
 		return "", errors.Errorf("'msg' must not be nil")
 	}
-<<<<<<< HEAD:stores/s3store/sent.go
-	hash := crypto.CreateLocationHash(msg)
-	path := fmt.Sprintf("%s-%s", messageID.HexString(), hash.String())
-=======
-
->>>>>>> 1d03efd14090d6242295fc9bfc71f5b29035d65b:stores/s3store/sent.go
 	metadata := map[string]*string{
 		"Version": aws.String(mailchain.Version),
 	}

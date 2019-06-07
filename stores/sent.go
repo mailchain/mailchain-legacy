@@ -26,3 +26,7 @@ type Sent interface {
 	PutMessage(messageID mail.ID, msg []byte, headers map[string]string) (string, error)
 	Key(messageID mail.ID, msg []byte) string
 }
+
+// func (s SentStore) PutMessage(path string, msg []byte, headers map[string]string) (string, error) {
+
+// }

@@ -255,8 +255,8 @@ func TestSent_Key(t *testing.T) {
 		{
 			"success",
 			fields{
-				nil, 
-"", 
+				nil,
+				"",
 			},
 			args{
 				[]byte("messageID"),

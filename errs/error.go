@@ -24,6 +24,11 @@ import (
 	// TODO: pass stdout and stderr as params
 )
 
+type HTTPError struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
 // A function called whenever an error is encountered
 // type errorHandler func(w http.ResponseWriter, r *http.Request, err string)
 type ErrorWriter func(w http.ResponseWriter, code int, err error)
@@ -33,12 +38,11 @@ func JSONWriter(w http.ResponseWriter, code int, err error) {
 	if err == nil {
 		err = errors.Errorf("no error specified")
 	}
-	var out struct {
-		Code    int    `json:"code"`
-		Message string `json:"message"`
+
+	out := HTTPError{
+		Code:    code,
+		Message: fmt.Sprint(err),
 	}
-	out.Code = code
-	out.Message = fmt.Sprint(err)
 
 	// this can not fail as the error is a string
 	b, _ := json.Marshal(out)

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate mockgen -source=pubkey.go -package=mocks -destination=$PACKAGE_PATH/internal/testutil/mocks/pubkey.go
+//go:generate mockgen -source=pubkey.go -package=mailboxtest -destination=./mailboxtest/pubkey_mock.go
 package mailbox
 
 import (

@@ -59,12 +59,15 @@ type Sent struct {
 	bucket   string
 }
 
+func (h Sent) Key(messageID mail.ID, msg []byte) string {
+	hash := crypto.CreateLocationHash(msg)
+	return fmt.Sprintf("%s-%s", messageID.HexString(), hash.String())
+}
+
 func (h Sent) PutMessage(messageID mail.ID, msg []byte, headers map[string]string) (string, error) {
 	if msg == nil {
 		return "", errors.Errorf("'msg' must not be nil")
 	}
-	hash := crypto.CreateLocationHash(msg)
-	path := fmt.Sprintf("%s-%s", messageID.HexString(), hash.String())
 	metadata := map[string]*string{
 		"Version": aws.String(mailchain.Version),
 	}
@@ -73,7 +76,7 @@ func (h Sent) PutMessage(messageID mail.ID, msg []byte, headers map[string]strin
 	}
 	params := &s3manager.UploadInput{
 		Bucket:   &h.bucket,
-		Key:      &path,
+		Key:      aws.String(h.Key(messageID, msg)),
 		Body:     bytes.NewReader(msg),
 		Metadata: metadata,
 	}

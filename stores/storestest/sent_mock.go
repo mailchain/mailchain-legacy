@@ -5,9 +5,10 @@
 package storestest
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	mail "github.com/mailchain/mailchain/internal/mail"
-	reflect "reflect"
 )
 
 // MockSent is a mock of Sent interface

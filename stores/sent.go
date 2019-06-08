@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate mockgen -source=sent.go -package=storestest -destination=./storestest/sent_mock.go
-
 package stores
 
 import (
 	"github.com/mailchain/mailchain/internal/mail"
 )
+
+//go:generate mockgen -source=sent.go -package=storestest -destination=./storestest/sent_mock.go
 
 // The Sent saves the message. This should not be used directly but as the first argument of storing.PutMessage.
 type Sent interface {

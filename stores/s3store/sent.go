@@ -68,7 +68,6 @@ func (h Sent) PutMessage(messageID mail.ID, msg []byte, headers map[string]strin
 	if msg == nil {
 		return "", errors.Errorf("'msg' must not be nil")
 	}
-
 	metadata := map[string]*string{
 		"Version": aws.String(mailchain.Version),
 	}

@@ -27,7 +27,7 @@ func SentStorage(cmd *cobra.Command, sentStorageType string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err := config.SetSentStorage(sentStorageType); err != nil {
+	if err := config.DefaultSentStore().Set(sentStorageType); err != nil {
 		return "", err
 	}
 	return sentStorageType, nil

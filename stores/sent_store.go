@@ -47,6 +47,11 @@ type SentStore struct {
 	doRequest  func(req *http.Request) (*http.Response, error)
 }
 
+func (s SentStore) Key(messageID mail.ID, msg []byte) string {
+	hash := crypto.CreateLocationHash(msg)
+	return fmt.Sprintf("%s-%s", messageID.HexString(), hash.HexString())
+}
+
 func (s SentStore) PutMessage(messageID mail.ID, msg []byte, headers map[string]string) (string, error) {
 	hash := crypto.CreateLocationHash(msg)
 	url := fmt.Sprintf("%s?hash=%s&message-id=%s", s.domain, hash.HexString(), messageID.HexString())

@@ -50,6 +50,7 @@ func Init(cfgFile, logLevel string) error {
 	}
 	log.SetLevel(lvl)
 	log.SetOutput(os.Stdout)
+
 	viper.SetConfigType(defaults.ConfigFileType)
 	viper.SetEnvPrefix("mc")
 	viper.SetConfigName(defaults.ConfigFileName)   // name of config file (without extension)

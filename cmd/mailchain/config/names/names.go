@@ -15,3 +15,4 @@
 package names
 
 const Empty = "-"
+const Mailchain = "mailchain"

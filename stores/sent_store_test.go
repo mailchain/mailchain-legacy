@@ -261,3 +261,47 @@ func TestSentStore_PutMessage(t *testing.T) {
 		})
 	}
 }
+
+func TestSentStore_Key(t *testing.T) {
+	type fields struct {
+		domain     string
+		newRequest func(method string, url string, body io.Reader) (*http.Request, error)
+		doRequest  func(req *http.Request) (*http.Response, error)
+	}
+	type args struct {
+		messageID mail.ID
+		msg       []byte
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   string
+	}{
+		{
+			"success",
+			fields{
+				"",
+				nil,
+				nil,
+			},
+			args{
+				testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				[]byte("message"),
+			},
+			"002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471-220455078214",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := SentStore{
+				domain:     tt.fields.domain,
+				newRequest: tt.fields.newRequest,
+				doRequest:  tt.fields.doRequest,
+			}
+			if got := s.Key(tt.args.messageID, tt.args.msg); got != tt.want {
+				t.Errorf("SentStore.Key() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

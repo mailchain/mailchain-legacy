@@ -49,7 +49,7 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 		return nil, errors.WithMessage(err, "Could not configure senders")
 	}
 
-	sentStorage, err := config.GetSentStorage()
+	sentStorage, err := config.DefaultSentStore().Get()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config store")
 	}

@@ -16,7 +16,7 @@ package setup
 
 import (
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prompts"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/spf13/cobra"
 )

@@ -19,7 +19,7 @@ import (
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prerun"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
 	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
@@ -150,7 +150,7 @@ func getKeyType(cmd *cobra.Command) (string, error) {
 	}
 	if keyType != "" {
 		return keyType, nil
-	} 
+	}
 	chain, err := cmd.Flags().GetString("chain")
 	if err != nil {
 		return "", errors.WithMessage(err, "failed to get `chain`")

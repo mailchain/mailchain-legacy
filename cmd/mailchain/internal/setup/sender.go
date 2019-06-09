@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// nolint: dupl
 package setup
 
 import (
@@ -19,34 +20,32 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prompts"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func Keystore(cmd *cobra.Command, keystoreType string) (string, error) {
-	keystoreType, err := selectKeystore(keystoreType)
+func Sender(cmd *cobra.Command, chain, network, sender string) (string, error) {
+	sender, err := selectSender(chain, network, sender)
 	if err != nil {
 		return "", err
 	}
-	if err := config.SetKeystore(cmd, keystoreType); err != nil {
+	if err := config.SetSender(viper.GetViper(), chain, network, sender); err != nil {
 		return "", err
 	}
-
-	return keystoreType, nil
+	return sender, nil
 }
 
-func selectKeystore(keystoreType string) (string, error) {
-	if keystoreType != names.Empty {
-		return keystoreType, nil
+func selectSender(chain, network, sender string) (string, error) {
+	if sender != names.Empty {
+		return sender, nil
 	}
-	keystoreType, skipped, err := prompts.SelectItemSkipable(
-		"Key Store",
-		[]string{names.KeystoreNACLFilestore},
-		viper.GetString("storage.keys") != "")
+	sender, skipped, err := prompts.SelectItemSkipable(
+		"Sender",
+		[]string{names.EthereumRPC2},
+		viper.GetString(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network)) != "")
 	if err != nil || skipped {
 		return "", err
 	}
-	fmt.Printf("%q used for storing keys\n", keystoreType)
-	return keystoreType, nil
+	return sender, nil
 }

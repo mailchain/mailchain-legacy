@@ -12,37 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// nolint: dupl
 package setup
 
 import (
+	"fmt"
+
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prompts"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SentStorage(cmd *cobra.Command, sentStorageType string) (string, error) {
-	sentStorageType, err := selectSentStorage(sentStorageType)
+func PublicKeyFinder(cmd *cobra.Command, chain, network, pkFinder string) (string, error) {
+	pkFinder, err := selectPublicKeyFinder(chain, network, pkFinder)
 	if err != nil {
 		return "", err
 	}
-	if err := config.DefaultSentStore().Set(sentStorageType); err != nil {
+	if err := config.SetPubKeyFinder(viper.GetViper(), chain, network, pkFinder); err != nil {
 		return "", err
 	}
-	return sentStorageType, nil
+	return pkFinder, nil
 }
 
-func selectSentStorage(sentStorageType string) (string, error) {
-	if sentStorageType != names.Empty {
-		return sentStorageType, nil
+func selectPublicKeyFinder(chain, network, pkFinder string) (string, error) {
+	if pkFinder != names.Empty {
+		return pkFinder, nil
 	}
-	sentStorageType, skipped, err := prompts.SelectItemSkipable(
-		"Sent Store",
-		[]string{names.S3},
-		viper.GetString("storage.sent") != "")
+	pkFinder, skipped, err := prompts.SelectItemSkipable(
+		"Public Key Finder",
+		[]string{names.EtherscanNoAuth, names.Etherscan},
+		viper.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) != "")
 	if err != nil || skipped {
 		return "", err
 	}
-	return sentStorageType, nil
+	return pkFinder, nil
 }

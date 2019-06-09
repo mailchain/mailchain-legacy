@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// nolint: dupl
 package setup
 
 import (
@@ -20,32 +19,34 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prompts"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func PublicKeyFinder(cmd *cobra.Command, chain, network, pkFinder string) (string, error) {
-	pkFinder, err := selectPublicKeyFinder(chain, network, pkFinder)
+func Keystore(cmd *cobra.Command, keystoreType string) (string, error) {
+	keystoreType, err := selectKeystore(keystoreType)
 	if err != nil {
 		return "", err
 	}
-	if err := config.SetPubKeyFinder(viper.GetViper(), chain, network, pkFinder); err != nil {
+	if err := config.SetKeystore(cmd, keystoreType); err != nil {
 		return "", err
 	}
-	return pkFinder, nil
+
+	return keystoreType, nil
 }
 
-func selectPublicKeyFinder(chain, network, pkFinder string) (string, error) {
-	if pkFinder != names.Empty {
-		return pkFinder, nil
+func selectKeystore(keystoreType string) (string, error) {
+	if keystoreType != names.Empty {
+		return keystoreType, nil
 	}
-	pkFinder, skipped, err := prompts.SelectItemSkipable(
-		"Public Key Finder",
-		[]string{names.EtherscanNoAuth, names.Etherscan},
-		viper.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) != "")
+	keystoreType, skipped, err := prompts.SelectItemSkipable(
+		"Key Store",
+		[]string{names.KeystoreNACLFilestore},
+		viper.GetString("storage.keys") != "")
 	if err != nil || skipped {
 		return "", err
 	}
-	return pkFinder, nil
+	fmt.Printf("%q used for storing keys\n", keystoreType)
+	return keystoreType, nil
 }

@@ -19,32 +19,37 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func Keystore(cmd *cobra.Command, keystoreType string) (string, error) {
-	keystoreType, err := selectKeystore(keystoreType)
+type Keystore struct {
+	keystoreSetter     config.KeystoreSetter
+	viper              *viper.Viper
+	selectItemSkipable func(label string, items []string, skipable bool) (selected string, skipped bool, err error)
+}
+
+func (k Keystore) Select(cmd *cobra.Command, keystoreType string) (string, error) {
+	keystoreType, err := k.selectKeystore(keystoreType)
 	if err != nil {
 		return "", err
 	}
 	keystorePath, _ := cmd.Flags().GetString("keystore-path")
-	if err := config.DefaultKeystore().Set(keystoreType, keystorePath); err != nil {
+	if err := k.keystoreSetter.Set(keystoreType, keystorePath); err != nil {
 		return "", err
 	}
 
 	return keystoreType, nil
 }
 
-func selectKeystore(keystoreType string) (string, error) {
+func (k Keystore) selectKeystore(keystoreType string) (string, error) {
 	if keystoreType != names.RequiresValue {
 		return keystoreType, nil
 	}
-	keystoreType, skipped, err := prompts.SelectItemSkipable(
+	keystoreType, skipped, err := k.selectItemSkipable(
 		"Key Store",
 		[]string{names.KeystoreNACLFilestore},
-		viper.GetString("storage.keys") != "")
+		k.viper.GetString("storage.keys") != "")
 	if err != nil || skipped {
 		return "", err
 	}

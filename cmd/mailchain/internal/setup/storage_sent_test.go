@@ -24,7 +24,6 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts/promptstest"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestSentStorage_selectSentStorage(t *testing.T) {
@@ -236,31 +235,6 @@ func TestSentStorage_Select(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("SentStorage.Select() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestDefaultSentStorage(t *testing.T) {
-	assert := assert.New(t)
-	tests := []struct {
-		name string
-	}{
-		{
-			"success",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := DefaultSentStorage()
-			if !assert.NotNil(got) {
-				t.Error("want got != nil")
-			}
-			if !assert.NotNil(got.selectItemSkipable) {
-				t.Error("want got.selectItemSkipable != nil")
-			}
-			if !assert.NotNil(got.sentStoreSetter) {
-				t.Error("want got.requiredInput != nil")
 			}
 		})
 	}

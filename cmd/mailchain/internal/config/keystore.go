@@ -21,8 +21,17 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/internal/keystore/nacl"
 	"github.com/pkg/errors"
-	// nolint: depguard
+	"github.com/spf13/viper" // nolint: depguard
 )
+
+type KeystoreSetter interface {
+	Set(keystoreType, keystorePath string) error
+}
+
+type Keystore struct {
+	viper                    *viper.Viper
+	requiredInputWithDefault func(label string, defaultValue string) (string, error)
+}
 
 // GetKeystore create new keystore from config
 func (k Keystore) Get() (*nacl.FileStore, error) {

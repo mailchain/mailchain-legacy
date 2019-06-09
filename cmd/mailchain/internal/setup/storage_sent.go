@@ -15,32 +15,47 @@
 package setup
 
 import (
-	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SentStorage(cmd *cobra.Command, sentStorageType string) (string, error) {
-	sentStorageType, err := selectSentStorage(sentStorageType)
+func DefaultSentStorage() SentStorage {
+	return SentStorage{
+		sentStoreSetter:    config.DefaultSentStore(),
+		selectItemSkipable: prompts.SelectItemSkipable,
+	}
+}
+
+type SentStorage struct {
+	sentStoreSetter    config.SentStoreSetter
+	viper              *viper.Viper
+	selectItemSkipable func(label string, items []string, skipable bool) (selected string, skipped bool, err error)
+}
+
+func (s SentStorage) Select(sentStorageType string) (string, error) {
+	sentStorageType, err := s.selectSentStorage(sentStorageType)
 	if err != nil {
 		return "", err
 	}
-	if err := config.DefaultSentStore().Set(sentStorageType); err != nil {
+	if sentStorageType == "" {
+		return "", nil
+	}
+	if err := s.sentStoreSetter.Set(sentStorageType); err != nil {
 		return "", err
 	}
 	return sentStorageType, nil
 }
 
-func selectSentStorage(sentStorageType string) (string, error) {
-	if sentStorageType != names.Empty {
+func (s SentStorage) selectSentStorage(sentStorageType string) (string, error) {
+	if sentStorageType != names.RequiresValue {
 		return sentStorageType, nil
 	}
-	sentStorageType, skipped, err := prompts.SelectItemSkipable(
+	sentStorageType, skipped, err := s.selectItemSkipable(
 		"Sent Store",
 		[]string{names.S3},
-		viper.GetString("storage.sent") != "")
+		s.viper.GetString("storage.sent") != "")
 	if err != nil || skipped {
 		return "", err
 	}

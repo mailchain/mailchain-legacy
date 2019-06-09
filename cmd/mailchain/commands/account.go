@@ -18,7 +18,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/config"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
 	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"

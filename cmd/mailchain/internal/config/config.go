@@ -19,7 +19,7 @@ import (
 	"os/user"
 	"strings"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus" // nolint: depguard
 	"github.com/spf13/cobra"

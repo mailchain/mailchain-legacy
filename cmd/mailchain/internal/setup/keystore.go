@@ -17,8 +17,8 @@ package setup
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
@@ -37,9 +37,9 @@ func Keystore(cmd *cobra.Command, keystoreType string) (string, error) {
 }
 
 func selectKeystore(keystoreType string) (string, error) {
-	if keystoreType != names.Empty {
+	if keystoreType != names.RequiresValue {
 		return keystoreType, nil
-	}
+	} 
 	keystoreType, skipped, err := prompts.SelectItemSkipable(
 		"Key Store",
 		[]string{names.KeystoreNACLFilestore},

@@ -15,8 +15,8 @@
 package commands
 
 import (
-	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/spf13/cobra"
@@ -29,7 +29,7 @@ func cfgChainEthereum() *cobra.Command {
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			chain := encoding.Ethereum
-			network, err := setup.Network(cmd, args, chain, names.Empty)
+			network, err := setup.Network(cmd, args, chain, names.RequiresValue)
 			if err != nil {
 				return err
 			}

@@ -18,7 +18,7 @@ package config
 import (
 	"reflect"
 	"testing"
-
+ 
 	"github.com/mailchain/mailchain/internal/clients/etherscan"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/spf13/viper"

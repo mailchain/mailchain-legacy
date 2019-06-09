@@ -17,7 +17,6 @@ package config
 import (
 	"testing"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prompts"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/s3store"
 	"github.com/pkg/errors"
@@ -313,8 +312,7 @@ func TestDefaultSentStore(t *testing.T) {
 		{
 			"success",
 			SentStore{
-				viper:         viper.GetViper(),
-				requiredInput: prompts.RequiredInput,
+				viper: viper.GetViper(),
 			},
 		},
 	}
@@ -323,6 +321,12 @@ func TestDefaultSentStore(t *testing.T) {
 			got := DefaultSentStore()
 			if !assert.EqualValues(tt.want.viper, got.viper) {
 				t.Errorf("DefaultSentStore().viper = %v, want %v", got.viper, tt.want.viper)
+			}
+			if !assert.NotNil(got) {
+				t.Error("want got != nil")
+			}
+			if !assert.NotNil(got.requiredInput) {
+				t.Error("want got.requiredInput != nil")
 			}
 		})
 	}

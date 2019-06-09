@@ -18,8 +18,8 @@ package setup
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
@@ -37,7 +37,7 @@ func PublicKeyFinder(cmd *cobra.Command, chain, network, pkFinder string) (strin
 }
 
 func selectPublicKeyFinder(chain, network, pkFinder string) (string, error) {
-	if pkFinder != names.Empty {
+	if pkFinder != names.RequiresValue {
 		return pkFinder, nil
 	}
 	pkFinder, skipped, err := prompts.SelectItemSkipable(

@@ -18,8 +18,8 @@ package setup
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
@@ -37,7 +37,7 @@ func Receiver(cmd *cobra.Command, chain, network, receiver string) (string, erro
 }
 
 func selectReceiver(chain, network, receiver string) (string, error) {
-	if receiver != names.Empty {
+	if receiver != names.RequiresValue {
 		return receiver, nil
 	}
 	receiver, skipped, err := prompts.SelectItemSkipable(

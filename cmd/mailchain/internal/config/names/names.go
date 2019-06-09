@@ -14,5 +14,5 @@
 
 package names
 
-const Empty = "-"
+const RequiresValue = "-"
 const Mailchain = "mailchain"

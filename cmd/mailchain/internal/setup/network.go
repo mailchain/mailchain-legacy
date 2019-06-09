@@ -15,7 +15,7 @@
 package setup
 
 import (
-	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/spf13/cobra"
@@ -29,7 +29,7 @@ func Network(cmd *cobra.Command, args []string, chain, network string) (string, 
 	if _, err := Receiver(cmd, chain, network, names.EtherscanNoAuth); err != nil {
 		return "", err
 	}
-	if _, err := Sender(cmd, chain, network, names.Empty); err != nil {
+	if _, err := Sender(cmd, chain, network, names.RequiresValue); err != nil {
 		return "", err
 	}
 	if _, err := PublicKeyFinder(cmd, chain, network, names.EtherscanNoAuth); err != nil {
@@ -46,7 +46,7 @@ func chainNetworks(chain string) []string {
 	}
 }
 func selectNetwork(cmd *cobra.Command, args []string, network string, networks []string) (string, error) {
-	if network != names.Empty {
+	if network != names.RequiresValue {
 		return network, nil
 	}
 	flg, _ := cmd.Flags().GetString("network")

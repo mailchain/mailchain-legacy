@@ -17,8 +17,8 @@ package config
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
-	"github.com/mailchain/mailchain/cmd/mailchain/config/names"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/mailchain/mailchain/internal/keystore/nacl"
 	"github.com/manifoldco/promptui"

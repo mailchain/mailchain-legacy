@@ -17,7 +17,7 @@ package prerun
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/config"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/ttacon/chalk"
 )

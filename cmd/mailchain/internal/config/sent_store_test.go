@@ -302,32 +302,3 @@ func TestSentStore_Get(t *testing.T) {
 		})
 	}
 }
-
-func TestDefaultSentStore(t *testing.T) {
-	assert := assert.New(t)
-	tests := []struct {
-		name string
-		want SentStore
-	}{
-		{
-			"success",
-			SentStore{
-				viper: viper.GetViper(),
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := DefaultSentStore()
-			if !assert.EqualValues(tt.want.viper, got.viper) {
-				t.Errorf("DefaultSentStore().viper = %v, want %v", got.viper, tt.want.viper)
-			}
-			if !assert.NotNil(got) {
-				t.Error("want got != nil")
-			}
-			if !assert.NotNil(got.requiredInput) {
-				t.Error("want got.requiredInput != nil")
-			}
-		})
-	}
-}

@@ -23,41 +23,41 @@ import (
 	"github.com/mailchain/mailchain/internal/keystore/nacl"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper" // nolint: depguard
+	"github.com/spf13/cobra" // nolint: depguard
 	"github.com/ttacon/chalk"
 )
 
 // GetKeystore create new keystore from config
-func GetKeystore() (*nacl.FileStore, error) {
-	if viper.GetString("storage.keys") == names.KeystoreNACLFilestore {
-		fs := nacl.NewFileStore(viper.GetString(fmt.Sprintf("stores.%s.path", names.KeystoreNACLFilestore)))
+func (k Keystore) Get() (*nacl.FileStore, error) {
+	if k.viper.GetString("storage.keys") == names.KeystoreNACLFilestore {
+		fs := nacl.NewFileStore(k.viper.GetString(fmt.Sprintf("stores.%s.path", names.KeystoreNACLFilestore)))
 		return &fs, nil
 	}
 
 	return nil, errors.Errorf("unknown keystore type")
 }
 
-func SetKeystore(cmd *cobra.Command, keystoreType string) error {
-	viper.Set("storage.keys", keystoreType)
+// TODO  cmd
+func (k Keystore) Set(cmd *cobra.Command, keystoreType string) error {
+	k.viper.Set("storage.keys", keystoreType)
 	switch keystoreType {
 	case names.KeystoreNACLFilestore:
 		// NACL only needs to set the path
-		return setKeystorePath(cmd, keystoreType)
+		return k.setKeystorePath(cmd, keystoreType)
 	default:
 		return errors.Errorf("unsupported key store type")
 	}
 }
 
-func setKeystorePath(cmd *cobra.Command, keystoreType string) error {
+func (k Keystore) setKeystorePath(cmd *cobra.Command, keystoreType string) error {
 	if keystorePath, _ := cmd.Flags().GetString("keystore-path"); keystorePath != "" {
-		viper.Set(fmt.Sprintf("stores.%s.path", keystoreType), keystorePath)
+		k.viper.Set(fmt.Sprintf("stores.%s.path", keystoreType), keystorePath)
 	}
 	keystorePath, err := prompts.RequiredInputWithDefault("path", defaults.KeystorePath)
 	if err != nil {
 		return err
 	}
-	viper.Set(fmt.Sprintf("stores.%s.path", keystoreType), keystorePath)
+	k.viper.Set(fmt.Sprintf("stores.%s.path", keystoreType), keystorePath)
 	return nil
 }
 

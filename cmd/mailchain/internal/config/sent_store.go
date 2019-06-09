@@ -16,28 +16,10 @@ package config
 
 import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/s3store"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper" // nolint: depguard
 )
-
-type SentStoreSetter interface {
-	Set(sentType string) error
-}
-
-type SentStore struct {
-	viper         *viper.Viper
-	requiredInput func(label string) (string, error)
-}
-
-func DefaultSentStore() *SentStore {
-	return &SentStore{
-		viper:         viper.GetViper(),
-		requiredInput: prompts.RequiredInput,
-	}
-}
 
 // GetSentStore create all the clients based on configuration
 func (s SentStore) Get() (stores.Sent, error) {

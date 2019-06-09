@@ -29,7 +29,7 @@ func Keystore(cmd *cobra.Command, keystoreType string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err := config.SetKeystore(cmd, keystoreType); err != nil {
+	if err := config.DefaultKeystore().Set(cmd, keystoreType); err != nil {
 		return "", err
 	}
 
@@ -39,7 +39,7 @@ func Keystore(cmd *cobra.Command, keystoreType string) (string, error) {
 func selectKeystore(keystoreType string) (string, error) {
 	if keystoreType != names.RequiresValue {
 		return keystoreType, nil
-	} 
+	}
 	keystoreType, skipped, err := prompts.SelectItemSkipable(
 		"Key Store",
 		[]string{names.KeystoreNACLFilestore},

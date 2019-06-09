@@ -19,12 +19,9 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/mailchain/mailchain/internal/keystore/nacl"
-	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra" // nolint: depguard
-	"github.com/ttacon/chalk"
+	// nolint: depguard
 )
 
 // GetKeystore create new keystore from config
@@ -37,72 +34,30 @@ func (k Keystore) Get() (*nacl.FileStore, error) {
 	return nil, errors.Errorf("unknown keystore type")
 }
 
-// TODO  cmd
-func (k Keystore) Set(cmd *cobra.Command, keystoreType string) error {
-	k.viper.Set("storage.keys", keystoreType)
+func (k Keystore) Set(keystoreType, keystorePath string) error {
+	var err error
 	switch keystoreType {
 	case names.KeystoreNACLFilestore:
 		// NACL only needs to set the path
-		return k.setKeystorePath(cmd, keystoreType)
+		err = k.setKeystorePath(keystoreType, keystorePath)
 	default:
-		return errors.Errorf("unsupported key store type")
+		err = errors.Errorf("unsupported key store type")
 	}
+	if err == nil {
+		k.viper.Set("storage.keys", keystoreType)
+	}
+
+	return err
 }
 
-func (k Keystore) setKeystorePath(cmd *cobra.Command, keystoreType string) error {
-	if keystorePath, _ := cmd.Flags().GetString("keystore-path"); keystorePath != "" {
-		k.viper.Set(fmt.Sprintf("stores.%s.path", keystoreType), keystorePath)
-	}
-	keystorePath, err := prompts.RequiredInputWithDefault("path", defaults.KeystorePath)
-	if err != nil {
-		return err
+func (k Keystore) setKeystorePath(keystoreType, keystorePath string) error {
+	if keystorePath == "" {
+		res, err := k.requiredInputWithDefault("path", defaults.KeystorePath)
+		if err != nil {
+			return err
+		}
+		keystorePath = res
 	}
 	k.viper.Set(fmt.Sprintf("stores.%s.path", keystoreType), keystorePath)
 	return nil
-}
-
-// Passphrase is extracted from the command
-func Passphrase(cmd *cobra.Command) (string, error) {
-	passphrase, err := cmd.Flags().GetString("passphrase")
-	if err != nil {
-		return "", errors.WithMessage(err, "could not get `passphrase`")
-	}
-	if passphrase != "" {
-		return passphrase, nil
-	}
-	emptyPassphrase, err := cmd.Flags().GetBool("empty-passphrase")
-	if err != nil {
-		return "", errors.WithMessage(err, "could not get `empty-passphrase`")
-	}
-	if emptyPassphrase {
-		return "", nil
-	}
-	fmt.Println(chalk.Yellow, "Note: To derive a storage key passphrase is required. The passphrase must be secure and not guessable.")
-	return passphraseFromPrompt()
-}
-
-func passphraseFromPrompt() (string, error) {
-	prompt := promptui.Prompt{
-		Label: "Passphrase",
-		Mask:  '*',
-	}
-	password, err := prompt.Run()
-	if err != nil {
-		return "", errors.Errorf("failed read passphrase")
-	}
-
-	confirmPrompt := promptui.Prompt{
-		Label: "Repeat passphrase: ",
-		Mask:  '*',
-	}
-	confirm, err := confirmPrompt.Run()
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		return "", errors.Errorf("failed read passphrase confirmation")
-	}
-	if password != confirm {
-		return "", errors.Errorf("Passphrases do not match")
-	}
-
-	return password, nil
 }

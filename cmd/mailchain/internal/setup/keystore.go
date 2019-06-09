@@ -29,7 +29,8 @@ func Keystore(cmd *cobra.Command, keystoreType string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err := config.DefaultKeystore().Set(cmd, keystoreType); err != nil {
+	keystorePath, _ := cmd.Flags().GetString("keystore-path")
+	if err := config.DefaultKeystore().Set(keystoreType, keystorePath); err != nil {
 		return "", err
 	}
 

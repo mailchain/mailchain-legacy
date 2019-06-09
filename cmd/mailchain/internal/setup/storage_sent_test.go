@@ -65,7 +65,7 @@ func TestSentStorage_selectSentStorage(t *testing.T) {
 					v.Set("storage.sent", "already-set")
 					return v
 				}(),
-				promptstest.MustSelectItemSkipable(t, []string{"mailchain", "s3"}, "already-set", true, nil),
+				promptstest.MockSelectItemSkipable(t, []string{"mailchain", "s3"}, "already-set", true, nil),
 			},
 			args{
 				names.RequiresValue,
@@ -82,7 +82,7 @@ func TestSentStorage_selectSentStorage(t *testing.T) {
 					v.Set("storage.sent", "already-set")
 					return v
 				}(),
-				promptstest.MustSelectItemSkipable(t, []string{"mailchain", "s3"}, "new-value", false, nil),
+				promptstest.MockSelectItemSkipable(t, []string{"mailchain", "s3"}, "new-value", false, nil),
 			},
 			args{
 				names.RequiresValue,
@@ -99,7 +99,7 @@ func TestSentStorage_selectSentStorage(t *testing.T) {
 					v.Set("storage.sent", "already-set")
 					return v
 				}(),
-				promptstest.MustSelectItemSkipable(t, []string{"mailchain", "s3"}, "", false, errors.Errorf("failed to select")),
+				promptstest.MockSelectItemSkipable(t, []string{"mailchain", "s3"}, "", false, errors.Errorf("failed to select")),
 			},
 			args{
 				names.RequiresValue,
@@ -174,7 +174,7 @@ func TestSentStorage_Select(t *testing.T) {
 					v.Set("storage.sent", "already-set")
 					return v
 				}(),
-				promptstest.MustSelectItemSkipable(t, []string{"mailchain", "s3"}, "already-set", true, nil),
+				promptstest.MockSelectItemSkipable(t, []string{"mailchain", "s3"}, "already-set", true, nil),
 			},
 			args{
 				names.RequiresValue,
@@ -193,7 +193,7 @@ func TestSentStorage_Select(t *testing.T) {
 					v := viper.New()
 					return v
 				}(),
-				promptstest.MustSelectItemSkipable(t, []string{"mailchain", "s3"}, "", true, errors.Errorf("failed to skip")),
+				promptstest.MockSelectItemSkipable(t, []string{"mailchain", "s3"}, "", true, errors.Errorf("failed to skip")),
 			},
 			args{
 				names.RequiresValue,
@@ -213,7 +213,7 @@ func TestSentStorage_Select(t *testing.T) {
 					v := viper.New()
 					return v
 				}(),
-				promptstest.MustSelectItemSkipable(t, []string{"mailchain", "s3"}, "new-setting", false, nil),
+				promptstest.MockSelectItemSkipable(t, []string{"mailchain", "s3"}, "new-setting", false, nil),
 			},
 			args{
 				names.RequiresValue,

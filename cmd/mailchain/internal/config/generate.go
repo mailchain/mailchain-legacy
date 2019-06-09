@@ -1,3 +1,3 @@
 package config
 
-//go:generate mockgen -source=stores_sent.go -package=configtest -destination=./configtest/stores_sent_mock.go
+//go:generate mockgen -source=sent_store.go -package=configtest -destination=./configtest/sent_store_mock.go

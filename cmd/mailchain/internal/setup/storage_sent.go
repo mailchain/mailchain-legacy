@@ -54,7 +54,7 @@ func (s SentStorage) selectSentStorage(sentStorageType string) (string, error) {
 	}
 	sentStorageType, skipped, err := s.selectItemSkipable(
 		"Sent Store",
-		[]string{names.S3},
+		[]string{names.Mailchain, names.S3},
 		s.viper.GetString("storage.sent") != "")
 	if err != nil || skipped {
 		return "", err

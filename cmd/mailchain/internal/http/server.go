@@ -36,7 +36,7 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	r.HandleFunc("/api/spec.json", handlers.GetSpec()).Methods("GET")
 	r.HandleFunc("/api/docs", handlers.GetDocs()).Methods("GET")
 	vpr := viper.GetViper()
-	receivers, err := config.GetReceivers(vpr)
+	receivers, err := config.DefaultReceiver().GetReceivers()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure receivers")
 	}
@@ -44,7 +44,7 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure receivers")
 	}
-	senders, err := config.GetSenders(vpr)
+	senders, err := config.DefaultSender().GetSenders()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure senders")
 	}

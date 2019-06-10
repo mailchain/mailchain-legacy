@@ -30,7 +30,7 @@ func Receiver(cmd *cobra.Command, chain, network, receiver string) (string, erro
 	if err != nil {
 		return "", err
 	}
-	if err := config.SetReceiver(viper.GetViper(), chain, network, receiver); err != nil {
+	if err := config.DefaultReceiver().Set(chain, network, receiver); err != nil {
 		return "", err
 	}
 	return receiver, nil

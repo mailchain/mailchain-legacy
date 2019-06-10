@@ -406,14 +406,13 @@ func TestSender_GetSenders(t *testing.T) {
 				func() *viper.Viper {
 					v := viper.New()
 					v.Set("chains.ethereum.networks.mainnet.sender", "ethereum-rpc2")
-					v.Set("chains.ethereum.networks.ropsten.sender", "unknown")
 					v.Set("clients.ethereum-rpc2.mainnet.address", server.URL)
 					v.Set("clients.ethereum-rpc2.ropsten.address", server.URL)
 					return v
 				}(),
 				func() ClientsGetter {
 					g := configtest.NewMockClientsGetter(mockCtrl)
-					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc.New(server.URL))
+					g.EXPECT().GetEtherRPC2Client("mainnet").Return(nil, errors.Errorf("failed"))
 					return g
 				}(),
 				nil,

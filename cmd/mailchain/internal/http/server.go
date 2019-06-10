@@ -18,8 +18,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/config/defaults"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
@@ -36,15 +36,15 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	r.HandleFunc("/api/spec.json", handlers.GetSpec()).Methods("GET")
 	r.HandleFunc("/api/docs", handlers.GetDocs()).Methods("GET")
 	vpr := viper.GetViper()
-	receivers, err := config.GetReceivers(vpr)
+	receivers, err := config.DefaultReceiver().GetReceivers()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure receivers")
 	}
-	pubKeyFinders, err := config.GetPublicKeyFinders(vpr)
+	pubKeyFinders, err := config.DefaultPubKeyFinder().GetFinders()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure receivers")
 	}
-	senders, err := config.GetSenders(vpr)
+	senders, err := config.DefaultSender().GetSenders()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure senders")
 	}
@@ -57,7 +57,7 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config mailbox store")
 	}
-	keystore, err := config.GetKeystore()
+	keystore, err := config.DefaultKeystore().Get()
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not create `keystore`")
 	}

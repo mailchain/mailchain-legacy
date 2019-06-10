@@ -15,7 +15,7 @@
 package commands
 
 import (
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prerun"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
 	"github.com/spf13/cobra"
 )
 

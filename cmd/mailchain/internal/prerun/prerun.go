@@ -12,30 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package commands
+package prerun
 
 import (
+	"fmt"
+
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/spf13/cobra"
+	"github.com/ttacon/chalk"
 )
 
-func cfgChainEthereum() *cobra.Command {
-	return &cobra.Command{
-		Use:      "ethereum",
-		Short:    "setup ethereum",
-		PostRunE: config.WriteConfig,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			chain := encoding.Ethereum
-			network, err := setup.Network(cmd, args, chain, names.RequiresValue)
-			if err != nil {
-				return err
-			}
+func InitConfig(cmd *cobra.Command, args []string) error {
+	cfgFile, _ := cmd.Flags().GetString("config")
+	logLevel, _ := cmd.Flags().GetString("log-level")
 
-			cmd.Printf("%s configured\n", network)
-			return nil
-		},
+	if err := config.Init(cfgFile, logLevel); err != nil {
+		fmt.Println(err)
+
+		fmt.Printf(
+			"Run %s to configure create or specify with %s\n",
+			chalk.Bold.TextStyle("`mailchain init`"),
+			chalk.Bold.TextStyle("`--config`"))
+		return err
 	}
+	return nil
 }

@@ -18,8 +18,8 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/commands/prerun"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
 	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
@@ -90,7 +90,7 @@ func accountAddCmd() (*cobra.Command, error) {
 				return errors.WithMessage(err, "could not create `random salt`")
 			}
 			// TODO: currently this only does scrypt need flag + config etc
-			ks, err := config.GetKeystore()
+			ks, err := config.DefaultKeystore().Get()
 			if err != nil {
 				return errors.WithMessage(err, "could not create `keystore`")
 			}
@@ -127,7 +127,7 @@ func accountListCmd() *cobra.Command {
 		Use:   "list",
 		Short: "List accounts",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ks, err := config.GetKeystore()
+			ks, err := config.DefaultKeystore().Get()
 			if err != nil {
 				return errors.WithMessage(err, "could not create `keystore`")
 			}
@@ -150,7 +150,7 @@ func getKeyType(cmd *cobra.Command) (string, error) {
 	}
 	if keyType != "" {
 		return keyType, nil
-	} 
+	}
 	chain, err := cmd.Flags().GetString("chain")
 	if err != nil {
 		return "", errors.WithMessage(err, "failed to get `chain`")

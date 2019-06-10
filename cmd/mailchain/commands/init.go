@@ -59,7 +59,7 @@ func initCmd() *cobra.Command {
 				return err
 			}
 
-			if _, err := setup.Keystore(cmd, names.RequiresValue); err != nil {
+			if _, err := setup.DefaultKeystore().Select(cmd, names.RequiresValue); err != nil {
 				return err
 			}
 

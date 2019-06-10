@@ -64,3 +64,68 @@ func TestDefaultKeystore(t *testing.T) {
 		})
 	}
 }
+
+func TestDefaultClients(t *testing.T) {
+	assert := assert.New(t)
+	tests := []struct {
+		name string
+		want *Clients
+	}{
+		{
+			"success",
+			&Clients{
+				viper: viper.GetViper(),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := DefaultClients()
+			if !assert.EqualValues(tt.want.viper, got.viper) {
+				t.Errorf("DefaultClients().viper = %v, want %v", got.viper, tt.want.viper)
+			}
+			if !assert.NotNil(got) {
+				t.Error("want got != nil")
+			}
+			if !assert.NotNil(got.requiredInput) {
+				t.Error("want got.requiredInput != nil")
+			}
+		})
+	}
+}
+
+func TestDefaultPubKeyFinder(t *testing.T) {
+	assert := assert.New(t)
+	tests := []struct {
+		name string
+		want *PubKeyFinder
+	}{
+		{
+			"success",
+			&PubKeyFinder{
+				viper: viper.New(),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := DefaultPubKeyFinder()
+			if !assert.NotNil(got) {
+				t.Error("want got != nil")
+			}
+
+			if !assert.EqualValues(tt.want.viper, got.viper) {
+				t.Errorf("DefaultPubKeyFinder().viper = %v, want %v", got.viper, tt.want.viper)
+			}
+			if !assert.NotNil(got.mapMerge) {
+				t.Error("want got.mapMerge != nil")
+			}
+			if !assert.IsType(&Clients{}, got.clientGetter) {
+				t.Error("invalid clientGetter type")
+			}
+			if !assert.IsType(&Clients{}, got.clientSetter) {
+				t.Error("invalid clientGetter type")
+			}
+		})
+	}
+}

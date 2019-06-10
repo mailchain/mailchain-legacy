@@ -18,54 +18,39 @@ import (
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/mailchain/mailchain/internal/clients/etherscan"
 	"github.com/mailchain/mailchain/internal/clients/ethrpc"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-//go:generate mockgen -source=clients.go -package=configtest -destination=./configtest/clients_mock.go
-type ClientsSetter interface {
-	SetClient(client, network string) error
-}
-
-type ClientsGetter interface {
-	GetEtherRPC2Client(network string) (*ethrpc.EthRPC2, error)
-	GetEtherscanClient() (*etherscan.APIClient, error)
-	GetEtherscanNoAuthClient() (*etherscan.APIClient, error)
-}
-
-type Clients struct {
-	viper         *viper.Viper
-	requiredInput func(label string) (string, error)
-}
-
-func (c Clients) GetEtherRPC2Client(network string) (*ethrpc.EthRPC2, error) {
-	address := c.viper.GetString(fmt.Sprintf("clients.ethereum-rpc2.%s.address", network))
+func getEtherRPC2Client(vpr *viper.Viper, network string) (*ethrpc.EthRPC2, error) {
+	address := vpr.GetString(fmt.Sprintf("clients.ethereum-rpc2.%s.address", network))
 	if address == "" {
 		return nil, errors.Errorf("`clients.ethereum-rpc2.%s.address` must not be empty", network)
 	}
 	return ethrpc.New(address)
 }
 
-func (c Clients) GetEtherscanClient() (*etherscan.APIClient, error) {
-	apiKey := c.viper.GetString("clients.etherscan.api-key")
+func getEtherscanClient(vpr *viper.Viper) (*etherscan.APIClient, error) {
+	apiKey := vpr.GetString("clients.etherscan.api-key")
 	if apiKey == "" {
 		return nil, errors.Errorf("`clients.etherscan.api-key` must not be empty")
 	}
 	return etherscan.NewAPIClient(apiKey)
 }
 
-func (c Clients) GetEtherscanNoAuthClient() (*etherscan.APIClient, error) {
+func getEtherscanNoAuthClient() (*etherscan.APIClient, error) {
 	return etherscan.NewAPIClient("")
 }
 
-func (c Clients) SetClient(client, network string) error {
+func setClient(vpr *viper.Viper, client, network string) error {
 	switch client {
 	case names.EthereumRPC2:
-		return c.setEthRPC(network)
+		return setEthRPC(vpr, prompts.RequiredInput, network)
 	case names.Etherscan:
-		return c.setEtherscan()
+		return setEtherscan(vpr, prompts.RequiredInput)
 	case names.EtherscanNoAuth:
 		return nil
 	default:
@@ -73,31 +58,31 @@ func (c Clients) SetClient(client, network string) error {
 	}
 }
 
-func (c Clients) setEthRPC(network string) error {
+func setEthRPC(vpr *viper.Viper, requiredInput func(label string) (string, error), network string) error {
 	client := names.EthereumRPC2
-	if c.viper.GetString(fmt.Sprintf("clients.%s.%s.address", client, network)) != "" {
+	if vpr.GetString(fmt.Sprintf("clients.%s.%s.address", client, network)) != "" {
 		fmt.Printf("%s already configured\n", client)
 		return nil
 	}
-	address, err := c.requiredInput("Address")
+	address, err := requiredInput("Address")
 	if err != nil {
 		return err
 	}
-	c.viper.Set(fmt.Sprintf("clients.%s.%s.address", client, network), address)
+	vpr.Set(fmt.Sprintf("clients.%s.%s.address", client, network), address)
 	return nil
 }
 
-func (c Clients) setEtherscan() error {
+func setEtherscan(vpr *viper.Viper, requiredInput func(label string) (string, error)) error {
 	client := names.Etherscan
-	if c.viper.GetString(fmt.Sprintf("clients.%s.api-key", client)) != "" {
+	if vpr.GetString(fmt.Sprintf("clients.%s.api-key", client)) != "" {
 		fmt.Printf("%s already configured\n", client)
 		return nil
 	}
-	apiKey, err := c.requiredInput("Api Key")
+	apiKey, err := requiredInput("Api Key")
 	if err != nil {
 		return err
 	}
-	c.viper.Set(fmt.Sprintf("clients.%s.api-key", client), apiKey)
+	vpr.Set(fmt.Sprintf("clients.%s.api-key", client), apiKey)
 	fmt.Printf("%s configured\n", client)
 
 	return nil

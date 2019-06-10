@@ -40,7 +40,7 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure receivers")
 	}
-	pubKeyFinders, err := config.GetPublicKeyFinders(vpr)
+	pubKeyFinders, err := config.DefaultPubKeyFinder().GetFinders()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure receivers")
 	}

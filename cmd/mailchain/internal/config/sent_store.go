@@ -19,7 +19,7 @@ import (
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/s3store"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
+	"github.com/spf13/viper" // nolint: depguard
 )
 
 //go:generate mockgen -source=sent_store.go -package=configtest -destination=./configtest/sent_store_mock.go

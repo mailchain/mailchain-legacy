@@ -25,34 +25,41 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SetPubKeyFinder(v *viper.Viper, chain, network, pubkeyFinder string) error {
-	if err := setClient(v, pubkeyFinder, network); err != nil {
+type PubKeyFinder struct {
+	viper        *viper.Viper
+	clientGetter ClientsGetter
+	clientSetter ClientsSetter
+	mapMerge     func(dst interface{}, src interface{}, opts ...func(*mergo.Config)) error
+}
+
+func (p PubKeyFinder) Set(chain, network, pubkeyFinder string) error {
+	if err := p.clientSetter.SetClient(pubkeyFinder, network); err != nil {
 		return err
 	}
-	v.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkeyFinder)
+	p.viper.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkeyFinder)
 	fmt.Printf("%s used for looking up public key\n", pubkeyFinder)
 	return nil
 }
 
-// GetPublicKeyFinders in configured state
-func GetPublicKeyFinders(v *viper.Viper) (map[string]mailbox.PubKeyFinder, error) {
+// GetFinders in configured state
+func (p PubKeyFinder) GetFinders() (map[string]mailbox.PubKeyFinder, error) {
 	finders := make(map[string]mailbox.PubKeyFinder)
-	for chain := range v.GetStringMap("chains") {
-		chFinders, err := getChainFinders(v, chain)
+	for chain := range p.viper.GetStringMap("chains") {
+		chFinders, err := p.getChainFinders(chain)
 		if err != nil {
 			return nil, err
 		}
-		if err := mergo.Merge(&finders, chFinders); err != nil {
+		if err := p.mapMerge(&finders, chFinders); err != nil {
 			return nil, err
 		}
 	}
 	return finders, nil
 }
 
-func getChainFinders(v *viper.Viper, chain string) (map[string]mailbox.PubKeyFinder, error) {
+func (p PubKeyFinder) getChainFinders(chain string) (map[string]mailbox.PubKeyFinder, error) {
 	finders := make(map[string]mailbox.PubKeyFinder)
-	for network := range v.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
-		finder, err := getFinder(v, chain, network)
+	for network := range p.viper.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
+		finder, err := p.getFinder(chain, network)
 		if err != nil {
 			return nil, err
 		}
@@ -62,12 +69,12 @@ func getChainFinders(v *viper.Viper, chain string) (map[string]mailbox.PubKeyFin
 	return finders, nil
 }
 
-func getFinder(v *viper.Viper, chain, network string) (mailbox.PubKeyFinder, error) {
-	switch v.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) {
+func (p PubKeyFinder) getFinder(chain, network string) (mailbox.PubKeyFinder, error) {
+	switch p.viper.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) {
 	case names.Etherscan:
-		return getEtherscanClient(v)
+		return p.clientGetter.GetEtherscanClient()
 	case names.EtherscanNoAuth:
-		return getEtherscanNoAuthClient()
+		return p.clientGetter.GetEtherscanNoAuthClient()
 	default:
 		return nil, errors.Errorf("unsupported pubkey finder")
 	}

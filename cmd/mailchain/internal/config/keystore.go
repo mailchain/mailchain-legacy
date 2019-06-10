@@ -24,6 +24,8 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
+//go:generate mockgen -source=keystore.go -package=configtest -destination=./configtest/keystore_mock.go
+
 type KeystoreSetter interface {
 	Set(keystoreType, keystorePath string) error
 }

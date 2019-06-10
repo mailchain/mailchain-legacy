@@ -241,13 +241,13 @@ func TestPubKeyFinder_getChainFinders(t *testing.T) {
 			fields{
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan-no-auth")
+					// v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "etherscan-no-auth")
 					v.Set("chains.ethereum.networks.ropsten.pubkey-finder", "unknown")
 					return v
 				}(),
 				func() ClientsGetter {
 					g := configtest.NewMockClientsGetter(mockCtrl)
-					g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
+					// g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
 					return g
 				}(),
 				nil,

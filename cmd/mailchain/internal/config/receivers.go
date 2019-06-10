@@ -25,34 +25,41 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
-func SetReceiver(v *viper.Viper, chain, network, receiver string) error {
-	if err := setClient(v, receiver, network); err != nil {
+type Receiver struct {
+	viper        *viper.Viper
+	clientGetter ClientsGetter
+	clientSetter ClientsSetter
+	mapMerge     func(dst interface{}, src interface{}, opts ...func(*mergo.Config)) error
+}
+
+func (r Receiver) Set(chain, network, receiver string) error {
+	if err := r.clientSetter.SetClient(receiver, network); err != nil {
 		return err
 	}
-	v.Set(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network), receiver)
+	r.viper.Set(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network), receiver)
 	fmt.Printf("%s used for receiving messages\n", receiver)
 	return nil
 }
 
 // GetReceivers in configured state
-func GetReceivers(v *viper.Viper) (map[string]mailbox.Receiver, error) {
+func (r Receiver) GetReceivers() (map[string]mailbox.Receiver, error) {
 	receivers := make(map[string]mailbox.Receiver)
-	for chain := range v.GetStringMap("chains") {
-		chRcvrs, err := getChainReceivers(v, chain)
+	for chain := range r.viper.GetStringMap("chains") {
+		chRcvrs, err := r.getChainReceivers(chain)
 		if err != nil {
 			return nil, err
 		}
-		if err := mergo.Merge(&receivers, chRcvrs); err != nil {
+		if err := r.mapMerge(&receivers, chRcvrs); err != nil {
 			return nil, err
 		}
 	}
 	return receivers, nil
 }
 
-func getChainReceivers(v *viper.Viper, chain string) (map[string]mailbox.Receiver, error) {
+func (r Receiver) getChainReceivers(chain string) (map[string]mailbox.Receiver, error) {
 	receivers := make(map[string]mailbox.Receiver)
-	for network := range v.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
-		receiver, err := getReceiver(v, chain, network)
+	for network := range r.viper.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
+		receiver, err := r.getReceiver(chain, network)
 		if err != nil {
 			return nil, err
 		}
@@ -62,12 +69,12 @@ func getChainReceivers(v *viper.Viper, chain string) (map[string]mailbox.Receive
 	return receivers, nil
 }
 
-func getReceiver(v *viper.Viper, chain, network string) (mailbox.Receiver, error) {
-	switch v.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) {
+func (r Receiver) getReceiver(chain, network string) (mailbox.Receiver, error) {
+	switch r.viper.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) {
 	case names.Etherscan:
-		return getEtherscanClient(v)
+		return r.clientGetter.GetEtherscanClient()
 	case names.EtherscanNoAuth:
-		return getEtherscanNoAuthClient()
+		return r.clientGetter.GetEtherscanNoAuthClient()
 	default:
 		return nil, errors.Errorf("unsupported receiver")
 	}

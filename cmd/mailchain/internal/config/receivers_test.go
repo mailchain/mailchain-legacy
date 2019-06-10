@@ -16,71 +16,121 @@
 package config
 
 import (
+	"net/http/httptest"
 	"reflect"
+	"sort"
 	"testing"
- 
+
+	"github.com/golang/mock/gomock"
+	"github.com/imdario/mergo"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/configtest"
 	"github.com/mailchain/mailchain/internal/clients/etherscan"
 	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_getReceiver(t *testing.T) {
+func sortReceiverMapKeys(m map[string]mailbox.Receiver) []string {
+	ss := reflectAsString(reflect.ValueOf(m).MapKeys())
+	sort.Strings(ss)
+	return ss
+}
+
+func TestReceiver_getReceiver(t *testing.T) {
 	assert := assert.New(t)
+	server := httptest.NewServer(nil)
+	defer server.Close()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type fields struct {
+		viper        *viper.Viper
+		clientGetter ClientsGetter
+		clientSetter ClientsSetter
+		mapMerge     func(dst interface{}, src interface{}, opts ...func(*mergo.Config)) error
+	}
 	type args struct {
-		vpr     *viper.Viper
 		chain   string
 		network string
 	}
 	tests := []struct {
 		name    string
+		fields  fields
 		args    args
 		want    mailbox.Receiver
 		wantErr bool
 	}{
 		{
 			"etherscan",
-			args{
+			fields{
 				func() *viper.Viper {
 					v := viper.New()
 					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan")
-					v.Set("clients.etherscan.api-key", "api-key-value")
+					v.Set("clients.etherscan.mainnet.address", server.URL)
 					return v
 				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					g.EXPECT().GetEtherscanClient().Return(etherscan.NewAPIClient(server.URL))
+					return g
+				}(),
+				nil,
+				nil,
+			},
+			args{
 				"ethereum",
 				"mainnet",
 			},
 			func() mailbox.Receiver {
-				r, _ := etherscan.NewAPIClient("api-key-value")
-				return r
+				e, _ := etherscan.NewAPIClient(server.URL)
+				return e
 			}(),
 			false,
 		},
 		{
 			"etherscan-no-auth",
-			args{
+			fields{
 				func() *viper.Viper {
 					v := viper.New()
 					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
+					v.Set("clients.etherscan.mainnet.address", server.URL)
 					return v
 				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
+					return g
+				}(),
+				nil,
+				nil,
+			},
+			args{
 				"ethereum",
 				"mainnet",
 			},
 			func() mailbox.Receiver {
-				r, _ := etherscan.NewAPIClient("")
-				return r
+				e, _ := etherscan.NewAPIClient("")
+				return e
 			}(),
 			false,
 		},
 		{
 			"error",
-			args{
+			fields{
 				func() *viper.Viper {
 					v := viper.New()
 					v.Set("chains.ethereum.networks.mainnet.receiver", "unknown")
 					return v
 				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					// g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
+					return g
+				}(),
+				nil,
+				nil,
+			},
+			args{
 				"ethereum",
 				"mainnet",
 			},
@@ -90,80 +140,150 @@ func Test_getReceiver(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getReceiver(tt.args.vpr, tt.args.chain, tt.args.network)
+			s := Receiver{
+				viper:        tt.fields.viper,
+				clientGetter: tt.fields.clientGetter,
+				clientSetter: tt.fields.clientSetter,
+				mapMerge:     tt.fields.mapMerge,
+			}
+			got, err := s.getReceiver(tt.args.chain, tt.args.network)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("getReceiver() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Receiver.getReceiver() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
-				t.Errorf("getReceiver() = %v, want %v", got, tt.want)
+			if !assert.IsType(tt.want, got) {
+				t.Errorf("Receiver.getReceiver() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_getChainReceivers(t *testing.T) {
+func TestReceiver_getChainReceivers(t *testing.T) {
+	assert := assert.New(t)
+	server := httptest.NewServer(nil)
+	defer server.Close()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type fields struct {
+		viper        *viper.Viper
+		clientGetter ClientsGetter
+		clientSetter ClientsSetter
+		mapMerge     func(dst interface{}, src interface{}, opts ...func(*mergo.Config)) error
+	}
 	type args struct {
-		vpr   *viper.Viper
 		chain string
 	}
 	tests := []struct {
 		name    string
+		fields  fields
 		args    args
 		want    map[string]mailbox.Receiver
 		wantErr bool
 	}{
 		{
 			"empty",
+			fields{
+				func() *viper.Viper {
+					v := viper.New()
+					return v
+				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					return g
+				}(),
+				nil,
+				nil,
+			},
 			args{
-				viper.New(),
 				"ethereum",
 			},
-			make(map[string]mailbox.Receiver),
+			nil,
 			false,
 		},
 		{
 			"single",
-			args{
+			fields{
 				func() *viper.Viper {
 					v := viper.New()
 					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
+					v.Set("clients.etherscan.mainnet.address", server.URL)
 					return v
 				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
+					return g
+				}(),
+				nil,
+				nil,
+			},
+			args{
 				"ethereum",
 			},
-			func() map[string]mailbox.Receiver {
-				c, _ := etherscan.NewAPIClient("")
-				return map[string]mailbox.Receiver{"ethereum.mainnet": c}
-			}(),
+			map[string]mailbox.Receiver{
+				"ethereum.mainnet": func() mailbox.Receiver {
+					e, _ := etherscan.NewAPIClient("")
+					return e
+				}(),
+			},
 			false,
 		},
 		{
 			"multi",
-			args{
+			fields{
 				func() *viper.Viper {
 					v := viper.New()
 					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
 					v.Set("chains.ethereum.networks.ropsten.receiver", "etherscan-no-auth")
+					v.Set("clients.etherscan.mainnet.address", server.URL)
+					v.Set("clients.etherscan.ropsten.address", server.URL)
 					return v
 				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
+					g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
+					return g
+				}(),
+				nil,
+				nil,
+			},
+			args{
 				"ethereum",
 			},
-			func() map[string]mailbox.Receiver {
-				c, _ := etherscan.NewAPIClient("")
-				return map[string]mailbox.Receiver{"ethereum.mainnet": c, "ethereum.ropsten": c}
-			}(),
+			map[string]mailbox.Receiver{
+				"ethereum.mainnet": func() mailbox.Receiver {
+					e, _ := etherscan.NewAPIClient("")
+					return e
+				}(),
+				"ethereum.ropsten": func() mailbox.Receiver {
+					e, _ := etherscan.NewAPIClient("")
+					return e
+				}(),
+			},
 			false,
 		},
 		{
 			"err",
-			args{
+			fields{
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
+					// v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan")
 					v.Set("chains.ethereum.networks.ropsten.receiver", "unknown")
+					v.Set("clients.etherscan.mainnet.address", server.URL)
+					v.Set("clients.etherscan.ropsten.address", server.URL)
 					return v
 				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					// g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
+					// g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient("")"failed"))
+					return g
+				}(),
+				nil,
+				nil,
+			},
+			args{
 				"ethereum",
 			},
 			nil,
@@ -172,76 +292,165 @@ func Test_getChainReceivers(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getChainReceivers(tt.args.vpr, tt.args.chain)
+			s := Receiver{
+				viper:        tt.fields.viper,
+				clientGetter: tt.fields.clientGetter,
+				clientSetter: tt.fields.clientSetter,
+				mapMerge:     tt.fields.mapMerge,
+			}
+			got, err := s.getChainReceivers(tt.args.chain)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("getChainReceivers() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Receiver.getChainReceivers() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("getChainReceivers() = %v, want %v", got, tt.want)
+
+			if !assert.EqualValues(sortReceiverMapKeys(tt.want), sortReceiverMapKeys(got)) {
+				t.Errorf("Receiver.getChainReceivers() missing keys = %s, want %s", sortReceiverMapKeys(tt.want), sortReceiverMapKeys(got))
+			}
+
+			for x := range tt.want {
+				if !assert.IsType(tt.want[x], got[x]) {
+					t.Errorf("Receiver.getChainReceivers().[%s] = %v, want %v", x, got, tt.want)
+				}
 			}
 		})
 	}
 }
 
-func TestGetReceivers(t *testing.T) {
-	type args struct {
-		vpr *viper.Viper
+func TestReceiver_GetReceiver(t *testing.T) {
+	assert := assert.New(t)
+	server := httptest.NewServer(nil)
+	defer server.Close()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type fields struct {
+		viper        *viper.Viper
+		clientGetter ClientsGetter
+		clientSetter ClientsSetter
+		mapMerge     func(dst interface{}, src interface{}, opts ...func(*mergo.Config)) error
 	}
 	tests := []struct {
 		name    string
-		args    args
+		fields  fields
 		want    map[string]mailbox.Receiver
 		wantErr bool
 	}{
 		{
 			"empty",
-			args{
-				viper.New(),
+			fields{
+				func() *viper.Viper {
+					v := viper.New()
+					return v
+				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					return g
+				}(),
+				nil,
+				mergo.Merge,
 			},
-			make(map[string]mailbox.Receiver),
+			nil,
 			false,
 		},
 		{
 			"single",
-			args{
+			fields{
 				func() *viper.Viper {
 					v := viper.New()
 					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
+					v.Set("clients.etherscan.mainnet.address", server.URL)
 					return v
 				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
+					return g
+				}(),
+				nil,
+				mergo.Merge,
 			},
-			func() map[string]mailbox.Receiver {
-				c, _ := etherscan.NewAPIClient("")
-				return map[string]mailbox.Receiver{"ethereum.mainnet": c}
-			}(),
+			map[string]mailbox.Receiver{
+				"ethereum.mainnet": func() mailbox.Receiver {
+					e, _ := etherscan.NewAPIClient("")
+					return e
+				}(),
+			},
 			false,
 		},
 		{
 			"multi",
-			args{
+			fields{
 				func() *viper.Viper {
 					v := viper.New()
 					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
 					v.Set("chains.ethereum.networks.ropsten.receiver", "etherscan-no-auth")
+					v.Set("clients.etherscan.mainnet.address", server.URL)
+					v.Set("clients.etherscan.ropsten.address", server.URL)
 					return v
 				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
+					g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
+					return g
+				}(),
+				nil,
+				mergo.Merge,
 			},
-			func() map[string]mailbox.Receiver {
-				c, _ := etherscan.NewAPIClient("")
-				return map[string]mailbox.Receiver{"ethereum.mainnet": c, "ethereum.ropsten": c}
-			}(),
+			map[string]mailbox.Receiver{
+				"ethereum.mainnet": func() mailbox.Receiver {
+					e, _ := etherscan.NewAPIClient("")
+					return e
+				}(),
+				"ethereum.ropsten": func() mailbox.Receiver {
+					e, _ := etherscan.NewAPIClient("")
+					return e
+				}(),
+			},
 			false,
 		},
 		{
-			"err",
-			args{
+			"err-mergo",
+			fields{
 				func() *viper.Viper {
 					v := viper.New()
 					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
-					v.Set("chains.ethereum.networks.ropsten.receiver", "unknown")
+					v.Set("chains.ethereum.networks.ropsten.receiver", "etherscan-no-auth")
+					v.Set("clients.etherscan.mainnet.address", server.URL)
+					v.Set("clients.etherscan.ropsten.address", server.URL)
 					return v
 				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
+					g.EXPECT().GetEtherscanNoAuthClient().Return(etherscan.NewAPIClient(""))
+					return g
+				}(),
+				nil,
+				func(dst interface{}, src interface{}, opts ...func(*mergo.Config)) error {
+					return errors.Errorf("merge failed")
+				},
+			},
+			nil,
+			true,
+		},
+		{
+			"err",
+			fields{
+				func() *viper.Viper {
+					v := viper.New()
+					v.Set("chains.ethereum.networks.mainnet.receiver", "etherscan-no-auth")
+					v.Set("clients.etherscan.mainnet.address", server.URL)
+					v.Set("clients.etherscan.ropsten.address", server.URL)
+					return v
+				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					g.EXPECT().GetEtherscanNoAuthClient().Return(nil, errors.Errorf("failed"))
+					return g
+				}(),
+				nil,
+				mergo.Merge,
 			},
 			nil,
 			true,
@@ -249,68 +458,100 @@ func TestGetReceivers(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetReceivers(tt.args.vpr)
+			s := Receiver{
+				viper:        tt.fields.viper,
+				clientGetter: tt.fields.clientGetter,
+				clientSetter: tt.fields.clientSetter,
+				mapMerge:     tt.fields.mapMerge,
+			}
+			got, err := s.GetReceivers()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetReceivers() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Receiver.GetReceivers() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetReceivers() = %v, want %v", got, tt.want)
+
+			if !assert.EqualValues(sortReceiverMapKeys(tt.want), sortReceiverMapKeys(got)) {
+				t.Errorf("Receiver.GetReceivers() missing keys = %s, want %s", sortReceiverMapKeys(tt.want), sortReceiverMapKeys(got))
+			}
+
+			for x := range tt.want {
+				if !assert.IsType(tt.want[x], got[x]) {
+					t.Errorf("Receiver.GetReceivers().[%s] = %v, want %v", x, got, tt.want)
+				}
 			}
 		})
 	}
 }
 
-func TestSetReceiver(t *testing.T) {
-	assert := assert.New(t)
+func TestReceiver_Set(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type fields struct {
+		viper        *viper.Viper
+		clientGetter ClientsGetter
+		clientSetter ClientsSetter
+		mapMerge     func(dst interface{}, src interface{}, opts ...func(*mergo.Config)) error
+	}
 	type args struct {
-		v        *viper.Viper
 		chain    string
 		network  string
 		receiver string
 	}
 	tests := []struct {
-		name     string
-		args     args
-		wantErr  bool
-		expected map[string]interface{}
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
 	}{
 		{
 			"success",
-			args{
-				func() *viper.Viper {
-					v := viper.New()
-					return v
+			fields{
+				viper.New(),
+				nil,
+				func() ClientsSetter {
+					g := configtest.NewMockClientsSetter(mockCtrl)
+					g.EXPECT().SetClient("etherscan-no-auth", "mainnet").Return(nil)
+					return g
 				}(),
+				nil,
+			},
+			args{
 				"ethereum",
 				"mainnet",
 				"etherscan-no-auth",
 			},
 			false,
-			map[string]interface{}{"receiver": "etherscan-no-auth"},
 		},
 		{
 			"error",
-			args{
-				func() *viper.Viper {
-					v := viper.New()
-					return v
+			fields{
+				viper.New(),
+				nil,
+				func() ClientsSetter {
+					g := configtest.NewMockClientsSetter(mockCtrl)
+					g.EXPECT().SetClient("etherscan-no-auth", "mainnet").Return(errors.Errorf("failed"))
+					return g
 				}(),
+				nil,
+			},
+			args{
 				"ethereum",
 				"mainnet",
-				"invalid",
+				"etherscan-no-auth",
 			},
 			true,
-			map[string]interface{}{},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := SetReceiver(tt.args.v, tt.args.chain, tt.args.network, tt.args.receiver); (err != nil) != tt.wantErr {
-				t.Errorf("SetReceiver() error = %v, wantErr %v", err, tt.wantErr)
+			s := Receiver{
+				viper:        tt.fields.viper,
+				clientGetter: tt.fields.clientGetter,
+				clientSetter: tt.fields.clientSetter,
+				mapMerge:     tt.fields.mapMerge,
 			}
-			if !assert.EqualValues(tt.expected, tt.args.v.GetStringMap("chains.ethereum.networks.mainnet")) {
-				t.Errorf("SetReceiver() = expected")
+			if err := s.Set(tt.args.chain, tt.args.network, tt.args.receiver); (err != nil) != tt.wantErr {
+				t.Errorf("Receiver.Set() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

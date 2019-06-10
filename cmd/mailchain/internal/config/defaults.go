@@ -36,3 +36,23 @@ func DefaultPubKeyFinder() *PubKeyFinder {
 		mapMerge:     mergo.Merge,
 	}
 }
+
+func DefaultReceiver() *Receiver {
+	clients := DefaultClients()
+	return &Receiver{
+		viper:        viper.GetViper(),
+		clientGetter: clients,
+		clientSetter: clients,
+		mapMerge:     mergo.Merge,
+	}
+}
+
+func DefaultSender() *Sender {
+	clients := DefaultClients()
+	return &Sender{
+		viper:        viper.GetViper(),
+		clientGetter: clients,
+		clientSetter: clients,
+		mapMerge:     mergo.Merge,
+	}
+}

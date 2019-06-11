@@ -30,12 +30,12 @@ import (
 	"github.com/ttacon/chalk"
 )
 
-func initCmd() *cobra.Command {
+func initCmd(viper *viper.Viper) *cobra.Command {
 	return &cobra.Command{
 		Use:   "init",
 		Short: "Initialize mailchain configuration",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cancel, err := ensureConfigFileRemoved(cmd)
+			cancel, err := ensureConfigFileRemoved(cmd, viper)
 			if err != nil {
 				return err
 			}
@@ -74,11 +74,11 @@ func initCmd() *cobra.Command {
 	}
 }
 
-func ensureConfigFileRemoved(cmd *cobra.Command) (cancel bool, err error) {
+func ensureConfigFileRemoved(cmd *cobra.Command, v *viper.Viper) (cancel bool, err error) {
 	cfgFile, _ := cmd.PersistentFlags().GetString("config")
 	logLevel, _ := cmd.PersistentFlags().GetString("log-level")
 
-	switch e := config.Init(cfgFile, logLevel).(type) {
+	switch e := config.Init(v, cfgFile, logLevel).(type) {
 	case viper.ConfigFileNotFoundError:
 		// Do nothing
 	case nil:
@@ -102,7 +102,7 @@ func ensureConfigFileRemoved(cmd *cobra.Command) (cancel bool, err error) {
 		}
 		viper.Reset()
 
-		err = config.Init(cfgFile, logLevel)
+		err = config.Init(v, cfgFile, logLevel)
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			return false, errors.WithMessage(err, "failed to re-init config")
 		}

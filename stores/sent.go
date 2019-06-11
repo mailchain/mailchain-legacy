@@ -15,6 +15,7 @@
 package stores
 
 import (
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/internal/mail"
 )
 
@@ -28,5 +29,8 @@ type Sent interface {
 }
 
 func SentStoreNames() []string {
-	return nil
+	return []string{
+		mailchain.Mailchain,
+		mailchain.StoreS3,
+	}
 }

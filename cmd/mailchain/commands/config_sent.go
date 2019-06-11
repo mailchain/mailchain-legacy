@@ -18,28 +18,28 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mailchain/mailchain"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
+	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper" // nolint: depguard
 )
 
-func cfgStorageSent() *cobra.Command {
-	v := []string{"test", "dfdffd", "other"}
+func cfgStorageSent(viper *viper.Viper, sentSelector setup.SimpleSelector) *cobra.Command {
+	validArgs := stores.SentStoreNames()
+
 	cmd := &cobra.Command{
 		Use:                   "sent STORE",
 		Short:                 "Configure sent storage",
 		Long:                  `Mailchain stores the sent messages so that the recipient can download them.`,
 		DisableFlagsInUseLine: true,
-		Example:               fmt.Sprintf("  mailchain config storage sent mailchain\n\nValid arguments:\n  - %s", strings.Join(v, "\n  - ")),
+		Example:               fmt.Sprintf("  mailchain config storage sent mailchain\n\nValid arguments:\n  - %s", strings.Join(validArgs, "\n  - ")),
 		Args:                  cobra.OnlyValidArgs,
-		ValidArgs:             v,
-		PersistentPreRunE:     prerun.InitConfig,
+		ValidArgs:             validArgs,
+		PersistentPreRunE:     prerunInitConfig(viper),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store := args[0]
-			senderStoreType, err := setup.DefaultSentStorage().Select(store)
+			senderStoreType, err := sentSelector.Select(store)
 			if err != nil {
 				return errors.WithStack(err)
 			}
@@ -49,22 +49,4 @@ func cfgStorageSent() *cobra.Command {
 		},
 	}
 	return cmd
-}
-
-func cfgSentStorageS3() *cobra.Command {
-	return &cobra.Command{
-		Use:      "s3",
-		Short:    "Configure s3 sender storage",
-		PreRunE:  prerun.InitConfig,
-		PostRunE: config.WriteConfig,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			senderStoreType, err := setup.DefaultSentStorage().Select(mailchain.StoreS3)
-			if err != nil {
-				return errors.WithStack(err)
-			}
-
-			cmd.Printf("Sent store %q configured\n", senderStoreType)
-			return nil
-		},
-	}
 }

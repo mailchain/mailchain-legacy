@@ -19,16 +19,16 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/ttacon/chalk"
 )
 
-func serveCmd() (*cobra.Command, error) {
+func serveCmd(viper *viper.Viper) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:               "serve",
 		Short:             "Serve the mailchain application",
-		PersistentPreRunE: prerun.InitConfig,
+		PersistentPreRunE: prerunInitConfig(viper),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			router, err := http.CreateRouter(cmd)
 			if err != nil {

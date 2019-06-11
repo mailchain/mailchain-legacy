@@ -14,9 +14,11 @@
 
 package commands
 
+import "github.com/spf13/viper"
+
 // Execute run the command
-func Execute() error {
-	root, err := rootCmd()
+func Execute(viper *viper.Viper) error {
+	root, err := rootCmd(viper)
 	if err != nil {
 		return err
 	}

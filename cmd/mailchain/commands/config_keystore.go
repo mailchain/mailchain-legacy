@@ -18,17 +18,17 @@ import (
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-func cfgKeystore() *cobra.Command {
+func cfgKeystore(viper *viper.Viper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "keys",
 		Short: "setup keystore",
 		// Long:  ``,
-		PreRunE:  prerun.InitConfig,
+		PreRunE:  prerunInitConfig(viper),
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			keystoreType, err := setup.DefaultKeystore().Select(cmd, mailchain.RequiresValue)
@@ -39,15 +39,15 @@ func cfgKeystore() *cobra.Command {
 			return cmd.Usage()
 		},
 	}
-	cmd.AddCommand(cfgKeystoreNaclFilestore())
+	cmd.AddCommand(cfgKeystoreNaclFilestore(viper))
 	return cmd
 }
 
-func cfgKeystoreNaclFilestore() *cobra.Command {
+func cfgKeystoreNaclFilestore(viper *viper.Viper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:      "nacl-filestore",
 		Short:    "setup nacl filestore",
-		PreRunE:  prerun.InitConfig,
+		PreRunE:  prerunInitConfig(viper),
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			keystoreType, err := setup.DefaultKeystore().Select(cmd, mailchain.StoreNACLFilestore)

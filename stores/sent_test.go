@@ -12,50 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package config
+package stores
 
 import (
+	"reflect"
 	"testing"
-
-	"github.com/spf13/viper"
 )
 
-func TestInit(t *testing.T) {
-	type args struct {
-		viper    *viper.Viper
-		cfgFile  string
-		logLevel string
-	}
+func TestSentStoreNames(t *testing.T) {
 	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
+		name string
+		want []string
 	}{
 		{
 			"success",
-			args{viper.New(), "./testdata/.empty.yaml", "DEBUG"},
-			false,
-		},
-		{
-			"err-invalid-file",
-			args{viper.New(), "./testdata/.invalid.yaml", "DEBUG"},
-			true,
-		},
-		{
-			"err-no-file",
-			args{viper.New(), "./testdata/.no-file.yaml", "DEBUG"},
-			true,
-		},
-		{
-			"invalid-level",
-			args{viper.New(), "./testdata/.empty.yaml", "INVALID"},
-			false,
+			[]string{"mailchain", "s3"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Init(tt.args.viper, tt.args.cfgFile, tt.args.logLevel); (err != nil) != tt.wantErr {
-				t.Errorf("Init() error = %v, wantErr %v", err, tt.wantErr)
+			if got := SentStoreNames(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("SentStoreNames() = %v, want %v", got, tt.want)
 			}
 		})
 	}

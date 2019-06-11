@@ -46,3 +46,41 @@ func (mr *MockChainNetworkExistingSelectorMockRecorder) Select(chain, network, r
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Select", reflect.TypeOf((*MockChainNetworkExistingSelector)(nil).Select), chain, network, receiver)
 }
+
+// MockSimpleSelector is a mock of SimpleSelector interface
+type MockSimpleSelector struct {
+	ctrl     *gomock.Controller
+	recorder *MockSimpleSelectorMockRecorder
+}
+
+// MockSimpleSelectorMockRecorder is the mock recorder for MockSimpleSelector
+type MockSimpleSelectorMockRecorder struct {
+	mock *MockSimpleSelector
+}
+
+// NewMockSimpleSelector creates a new mock instance
+func NewMockSimpleSelector(ctrl *gomock.Controller) *MockSimpleSelector {
+	mock := &MockSimpleSelector{ctrl: ctrl}
+	mock.recorder = &MockSimpleSelectorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockSimpleSelector) EXPECT() *MockSimpleSelectorMockRecorder {
+	return m.recorder
+}
+
+// Select mocks base method
+func (m *MockSimpleSelector) Select(existingSentStorageType string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Select", existingSentStorageType)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Select indicates an expected call of Select
+func (mr *MockSimpleSelectorMockRecorder) Select(existingSentStorageType interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Select", reflect.TypeOf((*MockSimpleSelector)(nil).Select), existingSentStorageType)
+}

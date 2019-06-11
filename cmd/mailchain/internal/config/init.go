@@ -42,7 +42,7 @@ func MailchainHome() string {
 }
 
 // Init reads in config file and ENV variables if set.
-func Init(cfgFile, logLevel string) error {
+func Init(viper *viper.Viper, cfgFile, logLevel string) error {
 	lvl, err := log.ParseLevel(strings.ToLower(logLevel))
 	if err != nil {
 		log.Warningf("Invalid 'log-level' %q, default to [Warning]", logLevel)

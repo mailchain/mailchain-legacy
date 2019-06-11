@@ -32,17 +32,17 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 	// TODO: this should not be persistent flags
 	cmd.PersistentFlags().Bool("empty-passphrase", false, "no passphrase and no prompt")
 
-	account, err := accountCmd(viper)
+	prerun := prerunInitConfig(viper)
+	account, err := accountCmd(prerun)
 	if err != nil {
 		return nil, err
 	}
 	cmd.AddCommand(account)
+	cmd.AddCommand(configCmd(prerun))
 
-	cfg := cfgCmd(viper)
-	cmd.AddCommand(cfg)
 	cmd.AddCommand(initCmd(viper))
 
-	serve, err := serveCmd(viper)
+	serve, err := serveCmd(prerun)
 	if err != nil {
 		return nil, err
 	}

@@ -15,14 +15,14 @@
 package commands
 
 import (
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/spf13/cobra"
 )
 
-func cfgChainEthereum() *cobra.Command {
+func configChainEthereum() *cobra.Command {
 	return &cobra.Command{
 		Use:      "ethereum",
 		Short:    "setup ethereum",

@@ -25,11 +25,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_cfgStorageSent(t *testing.T) {
+func Test_configStorageSent(t *testing.T) {
 	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
+		viper        *viper.Viper
 		sentSelector setup.SimpleSelector
 	}
 	tests := []struct {
@@ -42,6 +43,7 @@ func Test_cfgStorageSent(t *testing.T) {
 		{
 			"success",
 			args{
+				viper.New(),
 				nil,
 			},
 			[]string{},
@@ -51,7 +53,7 @@ func Test_cfgStorageSent(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := cfgStorageSent(tt.args.sentSelector)
+			got := cfgStorageSent(tt.args.viper, tt.args.sentSelector)
 			if !assert.NotNil(got) {
 				t.Error("cfgStorageSent() is nil")
 			}

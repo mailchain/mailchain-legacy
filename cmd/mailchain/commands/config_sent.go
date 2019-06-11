@@ -22,10 +22,10 @@ import (
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper" // nolint: depguard
+	// nolint: depguard
 )
 
-func cfgStorageSent(viper *viper.Viper, sentSelector setup.SimpleSelector) *cobra.Command {
+func configStorageSent(sentSelector setup.SimpleSelector) *cobra.Command {
 	validArgs := stores.SentStoreNames()
 
 	cmd := &cobra.Command{
@@ -36,7 +36,6 @@ func cfgStorageSent(viper *viper.Viper, sentSelector setup.SimpleSelector) *cobr
 		Example:               fmt.Sprintf("  mailchain config storage sent mailchain\n\nValid arguments:\n  - %s", strings.Join(validArgs, "\n  - ")),
 		Args:                  cobra.OnlyValidArgs,
 		ValidArgs:             validArgs,
-		PersistentPreRunE:     prerunInitConfig(viper),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store := args[0]
 			senderStoreType, err := sentSelector.Select(store)

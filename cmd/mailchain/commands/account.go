@@ -24,12 +24,11 @@ import (
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/ttacon/chalk"
 )
 
 // account represents the say command
-func accountCmd(viper *viper.Viper) (*cobra.Command, error) {
+func accountCmd(preRun func(cmd *cobra.Command, args []string) error) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "account",
 		Short: "Manage Accounts",
@@ -43,7 +42,7 @@ It is safe to transfer the entire directory or the individual keys therein
 between ethereum nodes by simply copying.
 
 Make sure you backup your keys regularly.`,
-		PersistentPreRunE: prerunInitConfig(viper),
+		PersistentPreRunE: preRun,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
 		},

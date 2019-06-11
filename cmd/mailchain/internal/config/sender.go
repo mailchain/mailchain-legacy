@@ -24,6 +24,12 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
+//go:generate mockgen -source=sender.go -package=configtest -destination=./configtest/sender_mock.go
+
+type SenderSetter interface {
+	Set(chain, network, sender string) error
+}
+
 type Sender struct {
 	viper        *viper.Viper
 	clientGetter ClientsGetter

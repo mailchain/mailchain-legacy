@@ -18,32 +18,31 @@ package setup
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper" // nolint: depguard
 )
 
-func Receiver(cmd *cobra.Command, chain, network, receiver string) (string, error) {
-	receiver, err := selectReceiver(chain, network, receiver)
+func (r Receiver) Select(chain, network, receiver string) (string, error) {
+	receiver, err := r.selectReceiver(chain, network, receiver)
 	if err != nil {
 		return "", err
 	}
-	if err := config.DefaultReceiver().Set(chain, network, receiver); err != nil {
+	if receiver == "" {
+		return "", nil
+	}
+	if err := r.setter.Set(chain, network, receiver); err != nil {
 		return "", err
 	}
 	return receiver, nil
 }
 
-func selectReceiver(chain, network, receiver string) (string, error) {
-	if receiver != names.RequiresValue {
-		return receiver, nil
+func (r Receiver) selectReceiver(chain, network, existingReceiver string) (string, error) {
+	if existingReceiver != names.RequiresValue {
+		return existingReceiver, nil
 	}
-	receiver, skipped, err := prompts.SelectItemSkipable(
+	receiver, skipped, err := r.selectItemSkipable(
 		"Receiver",
 		[]string{names.EtherscanNoAuth, names.Etherscan},
-		viper.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) != "")
+		r.viper.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) != "")
 	if err != nil || skipped {
 		return "", err
 	}

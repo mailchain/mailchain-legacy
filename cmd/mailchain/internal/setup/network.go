@@ -16,45 +16,53 @@ package setup
 
 import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/chains"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
-func Network(cmd *cobra.Command, args []string, chain, network string) (string, error) {
-	network, err := selectNetwork(cmd, args, network, chainNetworks(chain))
+func (n Network) Select(cmd *cobra.Command, args []string, chain, network string) (string, error) {
+	networkNames := chains.NetworkNames(chain)
+	if len(networkNames) == 0 {
+		return "", errors.Errorf("no network found for chain")
+	}
+	selectedNetwork, err := n.selectNetwork(cmd, args, network, networkNames)
 	if err != nil {
 		return "", err
 	}
-	if _, err := Receiver(cmd, chain, network, names.EtherscanNoAuth); err != nil {
+	if _, err := n.receiverSelector.Select(chain, selectedNetwork, names.EtherscanNoAuth); err != nil {
 		return "", err
 	}
-	if _, err := Sender(cmd, chain, network, names.RequiresValue); err != nil {
+	if _, err := n.senderSelector.Select(chain, selectedNetwork, names.RequiresValue); err != nil {
 		return "", err
 	}
-	if _, err := PublicKeyFinder(cmd, chain, network, names.EtherscanNoAuth); err != nil {
+	if _, err := n.pubKeyFinderSelector.Select(chain, selectedNetwork, names.EtherscanNoAuth); err != nil {
 		return "", err
 	}
-	return network, nil
+	return selectedNetwork, nil
 }
-func chainNetworks(chain string) []string {
-	switch chain {
-	case encoding.Ethereum:
-		return encoding.EthereumNetworks()
-	default:
-		return nil
+
+func (n Network) selectNetwork(cmd *cobra.Command, args []string, existingNetwork string, networks []string) (string, error) {
+	if existingNetwork != names.RequiresValue {
+		return existingNetwork, nil
 	}
+	if networkFromCommand := n.networkFromCLI(cmd, args); networkFromCommand != "" {
+		return networkFromCommand, nil
+	}
+
+	return n.selectItem("Network", networks)
 }
-func selectNetwork(cmd *cobra.Command, args []string, network string, networks []string) (string, error) {
-	if network != names.RequiresValue {
-		return network, nil
+
+func (n Network) networkFromCLI(cmd *cobra.Command, args []string) string {
+	if cmd == nil {
+		return ""
 	}
 	flg, _ := cmd.Flags().GetString("network")
 	if flg != "" {
-		return flg, nil
+		return flg
 	}
 	if len(args) == 1 {
-		return args[0], nil
+		return args[0]
 	}
-	return prompts.SelectItem("Network", networks)
+	return ""
 }

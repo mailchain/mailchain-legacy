@@ -15,3 +15,13 @@ func MockSelectItemSkipable(t *testing.T, wantItems []string, returnSelected str
 		return returnSelected, returnSkipped && skipable, returnErr
 	}
 }
+
+func MockSelectItem(t *testing.T, wantItems []string, returnSelected string, returnErr error) func(label string, items []string) (string, error) {
+	return func(label string, items []string) (string, error) {
+		if !assert.EqualValues(t, wantItems, items) {
+			t.Errorf("items = %v, wantItems %v", items, wantItems)
+		}
+
+		return returnSelected, returnErr
+	}
+}

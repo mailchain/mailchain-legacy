@@ -15,7 +15,7 @@
 package setup
 
 import (
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/internal/chains"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -30,20 +30,20 @@ func (n Network) Select(cmd *cobra.Command, args []string, chain, network string
 	if err != nil {
 		return "", err
 	}
-	if _, err := n.receiverSelector.Select(chain, selectedNetwork, names.EtherscanNoAuth); err != nil {
+	if _, err := n.receiverSelector.Select(chain, selectedNetwork, mailchain.ClientEtherscanNoAuth); err != nil {
 		return "", err
 	}
-	if _, err := n.senderSelector.Select(chain, selectedNetwork, names.RequiresValue); err != nil {
+	if _, err := n.senderSelector.Select(chain, selectedNetwork, mailchain.RequiresValue); err != nil {
 		return "", err
 	}
-	if _, err := n.pubKeyFinderSelector.Select(chain, selectedNetwork, names.EtherscanNoAuth); err != nil {
+	if _, err := n.pubKeyFinderSelector.Select(chain, selectedNetwork, mailchain.ClientEtherscanNoAuth); err != nil {
 		return "", err
 	}
 	return selectedNetwork, nil
 }
 
 func (n Network) selectNetwork(cmd *cobra.Command, args []string, existingNetwork string, networks []string) (string, error) {
-	if existingNetwork != names.RequiresValue {
+	if existingNetwork != mailchain.RequiresValue {
 		return existingNetwork, nil
 	}
 	if networkFromCommand := n.networkFromCLI(cmd, args); networkFromCommand != "" {

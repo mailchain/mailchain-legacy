@@ -15,9 +15,9 @@
 package commands
 
 import (
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/spf13/cobra"
@@ -31,7 +31,7 @@ func cfgKeystore() *cobra.Command {
 		PreRunE:  prerun.InitConfig,
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			keystoreType, err := setup.DefaultKeystore().Select(cmd, names.RequiresValue)
+			keystoreType, err := setup.DefaultKeystore().Select(cmd, mailchain.RequiresValue)
 			if err != nil {
 				return err
 			}
@@ -50,7 +50,7 @@ func cfgKeystoreNaclFilestore() *cobra.Command {
 		PreRunE:  prerun.InitConfig,
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			keystoreType, err := setup.DefaultKeystore().Select(cmd, names.KeystoreNACLFilestore)
+			keystoreType, err := setup.DefaultKeystore().Select(cmd, mailchain.StoreNACLFilestore)
 			if err != nil {
 				return err
 			}

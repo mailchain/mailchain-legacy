@@ -18,11 +18,11 @@ package setup
 import (
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/configtest"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts/promptstest"
-	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
@@ -69,12 +69,12 @@ func TestPubKeyFinder_selectPubKeyFinder(t *testing.T) {
 					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "already-set")
 					return v
 				}(),
-				promptstest.MockSelectItemSkipable(t, []string{names.EtherscanNoAuth, names.Etherscan}, "already-set", true, nil),
+				promptstest.MockSelectItemSkipable(t, []string{mailchain.ClientEtherscanNoAuth, mailchain.ClientEtherscan}, "already-set", true, nil),
 			},
 			args{
 				"ethereum",
 				"mainnet",
-				names.RequiresValue,
+				mailchain.RequiresValue,
 			},
 			"",
 			false,
@@ -88,12 +88,12 @@ func TestPubKeyFinder_selectPubKeyFinder(t *testing.T) {
 					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "already-set")
 					return v
 				}(),
-				promptstest.MockSelectItemSkipable(t, []string{names.EtherscanNoAuth, names.Etherscan}, "new-value", false, nil),
+				promptstest.MockSelectItemSkipable(t, []string{mailchain.ClientEtherscanNoAuth, mailchain.ClientEtherscan}, "new-value", false, nil),
 			},
 			args{
 				"ethereum",
 				"mainnet",
-				names.RequiresValue,
+				mailchain.RequiresValue,
 			},
 			"new-value",
 			false,
@@ -107,12 +107,12 @@ func TestPubKeyFinder_selectPubKeyFinder(t *testing.T) {
 					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "already-set")
 					return v
 				}(),
-				promptstest.MockSelectItemSkipable(t, []string{names.EtherscanNoAuth, names.Etherscan}, "", false, errors.Errorf("failed to select")),
+				promptstest.MockSelectItemSkipable(t, []string{mailchain.ClientEtherscanNoAuth, mailchain.ClientEtherscan}, "", false, errors.Errorf("failed to select")),
 			},
 			args{
 				"ethereum",
 				"mainnet",
-				names.RequiresValue,
+				mailchain.RequiresValue,
 			},
 			"",
 			true,
@@ -139,8 +139,8 @@ func TestPubKeyFinder_selectPubKeyFinder(t *testing.T) {
 
 func TestPubKeyFinder_Select(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish() 
-type fields struct {
+	defer mockCtrl.Finish()
+	type fields struct {
 		setter             config.PubKeyFinderSetter
 		viper              *viper.Viper
 		selectItemSkipable func(label string, items []string, skipable bool) (selected string, skipped bool, err error)
@@ -188,12 +188,12 @@ type fields struct {
 					v.Set("chains.ethereum.networks.mainnet.pubkey-finder", "already-set")
 					return v
 				}(),
-				promptstest.MockSelectItemSkipable(t, []string{names.EtherscanNoAuth, names.Etherscan}, "already-set", true, nil),
+				promptstest.MockSelectItemSkipable(t, []string{mailchain.ClientEtherscanNoAuth, mailchain.ClientEtherscan}, "already-set", true, nil),
 			},
 			args{
 				"ethereum",
 				"mainnet",
-				names.RequiresValue,
+				mailchain.RequiresValue,
 			},
 			"",
 			false,
@@ -209,12 +209,12 @@ type fields struct {
 					v := viper.New()
 					return v
 				}(),
-				promptstest.MockSelectItemSkipable(t, []string{names.EtherscanNoAuth, names.Etherscan}, "", true, errors.Errorf("failed to skip")),
+				promptstest.MockSelectItemSkipable(t, []string{mailchain.ClientEtherscanNoAuth, mailchain.ClientEtherscan}, "", true, errors.Errorf("failed to skip")),
 			},
 			args{
 				"ethereum",
 				"mainnet",
-				names.RequiresValue,
+				mailchain.RequiresValue,
 			},
 			"",
 			true,
@@ -231,12 +231,12 @@ type fields struct {
 					v := viper.New()
 					return v
 				}(),
-				promptstest.MockSelectItemSkipable(t, []string{names.EtherscanNoAuth, names.Etherscan}, "new-setting", false, nil),
+				promptstest.MockSelectItemSkipable(t, []string{mailchain.ClientEtherscanNoAuth, mailchain.ClientEtherscan}, "new-setting", false, nil),
 			},
 			args{
 				"ethereum",
 				"mainnet",
-				names.RequiresValue,
+				mailchain.RequiresValue,
 			},
 			"",
 			true,

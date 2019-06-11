@@ -19,7 +19,7 @@ import (
 	"fmt"
 
 	"github.com/imdario/mergo"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
@@ -77,9 +77,9 @@ func (r Receiver) getChainReceivers(chain string) (map[string]mailbox.Receiver, 
 
 func (r Receiver) getReceiver(chain, network string) (mailbox.Receiver, error) {
 	switch r.viper.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) {
-	case names.Etherscan:
+	case mailchain.ClientEtherscan:
 		return r.clientGetter.GetEtherscanClient()
-	case names.EtherscanNoAuth:
+	case mailchain.ClientEtherscanNoAuth:
 		return r.clientGetter.GetEtherscanNoAuthClient()
 	default:
 		return nil, errors.Errorf("unsupported receiver")

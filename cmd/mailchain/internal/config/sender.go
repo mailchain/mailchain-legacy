@@ -18,7 +18,7 @@ import (
 	"fmt"
 
 	"github.com/imdario/mergo"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
@@ -76,7 +76,7 @@ func (s Sender) getChainSenders(chain string) (map[string]mailbox.Sender, error)
 
 func (s Sender) getSender(chain, network string) (mailbox.Sender, error) {
 	switch s.viper.GetString(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network)) {
-	case names.EthereumRPC2:
+	case mailchain.ClientEthereumRPC2:
 		return s.clientGetter.GetEtherRPC2Client(network)
 	default:
 		return nil, errors.Errorf("unsupported sender")

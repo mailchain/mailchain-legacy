@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package names
+package mailchain
 
-const RequiresValue = "-"
-const Mailchain = "mailchain"
+const (
+	StoreNACLFilestore = "nacl-filestore"
+	StoreS3                    = "s3"
+)

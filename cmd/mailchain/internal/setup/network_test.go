@@ -18,7 +18,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts/promptstest"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup/setuptest"
 	"github.com/mailchain/mailchain/internal/encoding"
@@ -140,7 +140,7 @@ func TestNetwork_selectNetwork(t *testing.T) {
 			args{
 				nil,
 				nil,
-				names.RequiresValue,
+				mailchain.RequiresValue,
 				[]string{"mainnet", "testnet"},
 			},
 			"mainnet",
@@ -174,7 +174,7 @@ func TestNetwork_selectNetwork(t *testing.T) {
 			args{
 				&cobra.Command{},
 				[]string{"arg-value"},
-				names.RequiresValue,
+				mailchain.RequiresValue,
 				[]string{"mainnet", "testnet"},
 			},
 			"arg-value",
@@ -233,7 +233,7 @@ func TestNetwork_Select(t *testing.T) {
 				}(),
 				func() ChainNetworkExistingSelector {
 					selector := setuptest.NewMockChainNetworkExistingSelector(mockCtrl)
-					selector.EXPECT().Select("ethereum", "mainnet", names.RequiresValue).Return("etherscan-no-auth", nil)
+					selector.EXPECT().Select("ethereum", "mainnet", mailchain.RequiresValue).Return("etherscan-no-auth", nil)
 					return selector
 				}(),
 				func() ChainNetworkExistingSelector {
@@ -299,7 +299,7 @@ func TestNetwork_Select(t *testing.T) {
 				nil,
 				nil,
 				"ethereum",
-				names.RequiresValue,
+				mailchain.RequiresValue,
 			},
 			"",
 			true,
@@ -342,7 +342,7 @@ func TestNetwork_Select(t *testing.T) {
 				}(),
 				func() ChainNetworkExistingSelector {
 					selector := setuptest.NewMockChainNetworkExistingSelector(mockCtrl)
-					selector.EXPECT().Select("ethereum", "mainnet", names.RequiresValue).Return("", errors.Errorf("failed"))
+					selector.EXPECT().Select("ethereum", "mainnet", mailchain.RequiresValue).Return("", errors.Errorf("failed"))
 					return selector
 				}(),
 				func() ChainNetworkExistingSelector {
@@ -370,7 +370,7 @@ func TestNetwork_Select(t *testing.T) {
 				}(),
 				func() ChainNetworkExistingSelector {
 					selector := setuptest.NewMockChainNetworkExistingSelector(mockCtrl)
-					selector.EXPECT().Select("ethereum", "mainnet", names.RequiresValue).Return("etherscan-no-auth", nil)
+					selector.EXPECT().Select("ethereum", "mainnet", mailchain.RequiresValue).Return("etherscan-no-auth", nil)
 					return selector
 				}(),
 				func() ChainNetworkExistingSelector {

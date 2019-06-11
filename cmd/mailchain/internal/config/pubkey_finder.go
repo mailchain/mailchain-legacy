@@ -19,7 +19,7 @@ import (
 	"fmt"
 
 	"github.com/imdario/mergo"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
@@ -28,7 +28,7 @@ import (
 //go:generate mockgen -source=pubkey_finder.go -package=configtest -destination=./configtest/pubkey_finder_mock.go
 
 type PubKeyFinderSetter interface {
-	Set(chain, network, pubkeyFinder string) error 
+	Set(chain, network, pubkeyFinder string) error
 }
 
 type PubKeyFinder struct {
@@ -77,9 +77,9 @@ func (p PubKeyFinder) getChainFinders(chain string) (map[string]mailbox.PubKeyFi
 
 func (p PubKeyFinder) getFinder(chain, network string) (mailbox.PubKeyFinder, error) {
 	switch p.viper.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) {
-	case names.Etherscan:
+	case mailchain.ClientEtherscan:
 		return p.clientGetter.GetEtherscanClient()
-	case names.EtherscanNoAuth:
+	case mailchain.ClientEtherscanNoAuth:
 		return p.clientGetter.GetEtherscanNoAuthClient()
 	default:
 		return nil, errors.Errorf("unsupported pubkey finder")

@@ -17,7 +17,7 @@ package setup
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain"
 	"github.com/spf13/cobra"
 )
 
@@ -35,12 +35,12 @@ func (k Keystore) Select(cmd *cobra.Command, keystoreType string) (string, error
 }
 
 func (k Keystore) selectKeystore(keystoreType string) (string, error) {
-	if keystoreType != names.RequiresValue {
+	if keystoreType != mailchain.RequiresValue {
 		return keystoreType, nil
 	}
 	keystoreType, skipped, err := k.selectItemSkipable(
 		"Key Store",
-		[]string{names.KeystoreNACLFilestore},
+		[]string{mailchain.StoreNACLFilestore},
 		k.viper.GetString("storage.keys") != "")
 	if err != nil || skipped {
 		return "", err

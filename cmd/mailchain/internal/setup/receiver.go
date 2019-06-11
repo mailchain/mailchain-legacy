@@ -18,7 +18,7 @@ package setup
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain"
 )
 
 func (r Receiver) Select(chain, network, receiver string) (string, error) {
@@ -36,12 +36,12 @@ func (r Receiver) Select(chain, network, receiver string) (string, error) {
 }
 
 func (r Receiver) selectReceiver(chain, network, existingReceiver string) (string, error) {
-	if existingReceiver != names.RequiresValue {
+	if existingReceiver != mailchain.RequiresValue {
 		return existingReceiver, nil
 	}
 	receiver, skipped, err := r.selectItemSkipable(
 		"Receiver",
-		[]string{names.EtherscanNoAuth, names.Etherscan},
+		[]string{mailchain.ClientEtherscanNoAuth, mailchain.ClientEtherscan},
 		r.viper.GetString(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network)) != "")
 	if err != nil || skipped {
 		return "", err

@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package names
+package mailchain
 
 const (
-	KeystoreNACLFilestore = "nacl-filestore"
-	S3                    = "s3"
+	ClientEtherscan       = "etherscan"
+	ClientEtherscanNoAuth = "etherscan-no-auth"
+	ClientEthereumRPC2    = "ethereum-rpc2"
 )

@@ -18,9 +18,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/manifoldco/promptui"
@@ -51,15 +51,15 @@ func initCmd() *cobra.Command {
 			viper.Set("server.cors.allowed-origins", defaults.CORSAllowedOrigins)
 			viper.Set("server.cors.disabled", defaults.CORSDisabled)
 
-			if _, err := setup.DefaultNetwork().Select(cmd, args, encoding.Ethereum, names.RequiresValue); err != nil {
+			if _, err := setup.DefaultNetwork().Select(cmd, args, encoding.Ethereum, mailchain.RequiresValue); err != nil {
 				return err
 			}
 
-			if _, err := setup.DefaultSentStorage().Select(names.RequiresValue); err != nil {
+			if _, err := setup.DefaultSentStorage().Select(mailchain.RequiresValue); err != nil {
 				return err
 			}
 
-			if _, err := setup.DefaultKeystore().Select(cmd, names.RequiresValue); err != nil {
+			if _, err := setup.DefaultKeystore().Select(cmd, mailchain.RequiresValue); err != nil {
 				return err
 			}
 

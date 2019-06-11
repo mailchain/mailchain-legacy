@@ -15,8 +15,11 @@
 package commands
 
 import (
+	"fmt"
+	"strings"
+
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/pkg/errors"
@@ -24,16 +27,27 @@ import (
 )
 
 func cfgStorageSent() *cobra.Command {
+	v := []string{"test", "dfdffd", "other"}
 	cmd := &cobra.Command{
-		Use:               "sent",
-		Short:             "Configure sent storage",
-		Long:              `Mailchain stores the sent messages so that the recipient can download them.`,
-		PersistentPreRunE: prerun.InitConfig,
+		Use:                   "sent STORE",
+		Short:                 "Configure sent storage",
+		Long:                  `Mailchain stores the sent messages so that the recipient can download them.`,
+		DisableFlagsInUseLine: true,
+		Example:               fmt.Sprintf("  mailchain config storage sent mailchain\n\nValid arguments:\n  - %s", strings.Join(v, "\n  - ")),
+		Args:                  cobra.OnlyValidArgs,
+		ValidArgs:             v,
+		PersistentPreRunE:     prerun.InitConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
+			store := args[0]
+			senderStoreType, err := setup.DefaultSentStorage().Select(store)
+			if err != nil {
+				return errors.WithStack(err)
+			}
+
+			cmd.Printf("Sent store %q configured\n", senderStoreType)
+			return nil
 		},
 	}
-	cmd.AddCommand(cfgSentStorageS3())
 	return cmd
 }
 
@@ -44,7 +58,7 @@ func cfgSentStorageS3() *cobra.Command {
 		PreRunE:  prerun.InitConfig,
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			senderStoreType, err := setup.DefaultSentStorage().Select(names.S3)
+			senderStoreType, err := setup.DefaultSentStorage().Select(mailchain.StoreS3)
 			if err != nil {
 				return errors.WithStack(err)
 			}

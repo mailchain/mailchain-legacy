@@ -17,8 +17,8 @@ package config
 import (
 	"fmt"
 
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/internal/keystore/nacl"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
@@ -37,8 +37,8 @@ type Keystore struct {
 
 // GetKeystore create new keystore from config
 func (k Keystore) Get() (*nacl.FileStore, error) {
-	if k.viper.GetString("storage.keys") == names.KeystoreNACLFilestore {
-		fs := nacl.NewFileStore(k.viper.GetString(fmt.Sprintf("stores.%s.path", names.KeystoreNACLFilestore)))
+	if k.viper.GetString("storage.keys") == mailchain.StoreNACLFilestore {
+		fs := nacl.NewFileStore(k.viper.GetString(fmt.Sprintf("stores.%s.path", mailchain.StoreNACLFilestore)))
 		return &fs, nil
 	}
 
@@ -48,7 +48,7 @@ func (k Keystore) Get() (*nacl.FileStore, error) {
 func (k Keystore) Set(keystoreType, keystorePath string) error {
 	var err error
 	switch keystoreType {
-	case names.KeystoreNACLFilestore:
+	case mailchain.StoreNACLFilestore:
 		// NACL only needs to set the path
 		err = k.setKeystorePath(keystoreType, keystorePath)
 	default:

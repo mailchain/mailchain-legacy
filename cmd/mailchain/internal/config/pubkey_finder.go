@@ -25,6 +25,12 @@ import (
 	"github.com/spf13/viper" // nolint: depguard
 )
 
+//go:generate mockgen -source=pubkey_finder.go -package=configtest -destination=./configtest/pubkey_finder_mock.go
+
+type PubKeyFinderSetter interface {
+	Set(chain, network, pubkeyFinder string) error
+}
+
 type PubKeyFinder struct {
 	viper        *viper.Viper
 	clientGetter ClientsGetter

@@ -29,7 +29,7 @@ func cfgChainEthereum() *cobra.Command {
 		PostRunE: config.WriteConfig,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			chain := encoding.Ethereum
-			network, err := setup.Network(cmd, args, chain, names.RequiresValue)
+			network, err := setup.DefaultNetwork().Select(cmd, args, chain, names.RequiresValue)
 			if err != nil {
 				return err
 			}

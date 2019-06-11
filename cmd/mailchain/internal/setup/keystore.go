@@ -17,17 +17,9 @@ package setup
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper" // nolint: depguard
 )
-
-type Keystore struct {
-	keystoreSetter     config.KeystoreSetter
-	viper              *viper.Viper
-	selectItemSkipable func(label string, items []string, skipable bool) (selected string, skipped bool, err error)
-}
 
 func (k Keystore) Select(cmd *cobra.Command, keystoreType string) (string, error) {
 	keystoreType, err := k.selectKeystore(keystoreType)
@@ -35,7 +27,7 @@ func (k Keystore) Select(cmd *cobra.Command, keystoreType string) (string, error
 		return "", err
 	}
 	keystorePath, _ := cmd.Flags().GetString("keystore-path")
-	if err := k.keystoreSetter.Set(keystoreType, keystorePath); err != nil {
+	if err := k.setter.Set(keystoreType, keystorePath); err != nil {
 		return "", err
 	}
 

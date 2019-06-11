@@ -28,7 +28,7 @@ import (
 
 func TestSentStorage_selectSentStorage(t *testing.T) {
 	type fields struct {
-		sentStoreSetter    config.SentStoreSetter
+		setter             config.SentStoreSetter
 		viper              *viper.Viper
 		selectItemSkipable func(label string, items []string, skipable bool) (selected string, skipped bool, err error)
 	}
@@ -110,7 +110,7 @@ func TestSentStorage_selectSentStorage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := SentStorage{
-				sentStoreSetter:    tt.fields.sentStoreSetter,
+				setter:             tt.fields.setter,
 				viper:              tt.fields.viper,
 				selectItemSkipable: tt.fields.selectItemSkipable,
 			}
@@ -130,7 +130,7 @@ func TestSentStorage_Select(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
-		sentStoreSetter    config.SentStoreSetter
+		setter             config.SentStoreSetter
 		viper              *viper.Viper
 		selectItemSkipable func(label string, items []string, skipable bool) (selected string, skipped bool, err error)
 	}
@@ -224,7 +224,7 @@ func TestSentStorage_Select(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := SentStorage{
-				sentStoreSetter:    tt.fields.sentStoreSetter,
+				setter:             tt.fields.setter,
 				viper:              tt.fields.viper,
 				selectItemSkipable: tt.fields.selectItemSkipable,
 			}

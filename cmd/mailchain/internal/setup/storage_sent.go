@@ -15,34 +15,26 @@
 package setup
 
 import (
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
-	"github.com/spf13/viper" // nolint: depguard
 )
 
-type SentStorage struct {
-	sentStoreSetter    config.SentStoreSetter
-	viper              *viper.Viper
-	selectItemSkipable func(label string, items []string, skipable bool) (selected string, skipped bool, err error)
-}
-
-func (s SentStorage) Select(sentStorageType string) (string, error) {
-	sentStorageType, err := s.selectSentStorage(sentStorageType)
+func (s SentStorage) Select(existingSentStorageType string) (string, error) {
+	sentStorageType, err := s.selectSentStorage(existingSentStorageType)
 	if err != nil {
 		return "", err
 	}
 	if sentStorageType == "" {
 		return "", nil
 	}
-	if err := s.sentStoreSetter.Set(sentStorageType); err != nil {
+	if err := s.setter.Set(sentStorageType); err != nil {
 		return "", err
 	}
 	return sentStorageType, nil
 }
 
-func (s SentStorage) selectSentStorage(sentStorageType string) (string, error) {
-	if sentStorageType != names.RequiresValue {
-		return sentStorageType, nil
+func (s SentStorage) selectSentStorage(existingSentStorageType string) (string, error) {
+	if existingSentStorageType != names.RequiresValue {
+		return existingSentStorageType, nil
 	}
 	sentStorageType, skipped, err := s.selectItemSkipable(
 		"Sent Store",

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// nolint: dupl
 package setup
 
 import (
@@ -23,18 +24,19 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts/promptstest"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func TestKeystore_selectKeystore(t *testing.T) {
+func TestReceiver_selectReceiver(t *testing.T) {
 	type fields struct {
-		setter             config.KeystoreSetter
+		setter             config.ReceiverSetter
 		viper              *viper.Viper
 		selectItemSkipable func(label string, items []string, skipable bool) (selected string, skipped bool, err error)
 	}
 	type args struct {
-		keystoreType string
+		chain    string
+		network  string
+		receiver string
 	}
 	tests := []struct {
 		name    string
@@ -51,6 +53,8 @@ func TestKeystore_selectKeystore(t *testing.T) {
 				nil,
 			},
 			args{
+				"ethereum",
+				"mainnet",
 				"value-already-set",
 			},
 			"value-already-set",
@@ -62,12 +66,14 @@ func TestKeystore_selectKeystore(t *testing.T) {
 				nil,
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("storage.keys", "already-set")
+					v.Set("chains.ethereum.networks.mainnet.receiver", "already-set")
 					return v
 				}(),
-				promptstest.MockSelectItemSkipable(t, []string{"nacl-filestore"}, "already-set", true, nil),
+				promptstest.MockSelectItemSkipable(t, []string{names.EtherscanNoAuth, names.Etherscan}, "already-set", true, nil),
 			},
 			args{
+				"ethereum",
+				"mainnet",
 				names.RequiresValue,
 			},
 			"",
@@ -79,12 +85,14 @@ func TestKeystore_selectKeystore(t *testing.T) {
 				nil,
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("storage.keys", "already-set")
+					v.Set("chains.ethereum.networks.mainnet.receiver", "already-set")
 					return v
 				}(),
-				promptstest.MockSelectItemSkipable(t, []string{"nacl-filestore"}, "new-value", false, nil),
+				promptstest.MockSelectItemSkipable(t, []string{names.EtherscanNoAuth, names.Etherscan}, "new-value", false, nil),
 			},
 			args{
+				"ethereum",
+				"mainnet",
 				names.RequiresValue,
 			},
 			"new-value",
@@ -96,12 +104,14 @@ func TestKeystore_selectKeystore(t *testing.T) {
 				nil,
 				func() *viper.Viper {
 					v := viper.New()
-					v.Set("storage.keys", "already-set")
+					v.Set("chains.ethereum.networks.mainnet.receiver", "already-set")
 					return v
 				}(),
-				promptstest.MockSelectItemSkipable(t, []string{"nacl-filestore"}, "", false, errors.Errorf("failed to select")),
+				promptstest.MockSelectItemSkipable(t, []string{names.EtherscanNoAuth, names.Etherscan}, "", false, errors.Errorf("failed to select")),
 			},
 			args{
+				"ethereum",
+				"mainnet",
 				names.RequiresValue,
 			},
 			"",
@@ -110,34 +120,35 @@ func TestKeystore_selectKeystore(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			k := Keystore{
+			r := Receiver{
 				setter:             tt.fields.setter,
 				viper:              tt.fields.viper,
 				selectItemSkipable: tt.fields.selectItemSkipable,
 			}
-			got, err := k.selectKeystore(tt.args.keystoreType)
+			got, err := r.selectReceiver(tt.args.chain, tt.args.network, tt.args.receiver)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Keystore.selectKeystore() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Receiver.selectReceiver() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("Keystore.selectKeystore() = %v, want %v", got, tt.want)
+				t.Errorf("Receiver.selectReceiver() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestKeystore_Select(t *testing.T) {
+func TestReceiver_Select(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
-		setter             config.KeystoreSetter
+		setter             config.ReceiverSetter
 		viper              *viper.Viper
 		selectItemSkipable func(label string, items []string, skipable bool) (selected string, skipped bool, err error)
 	}
 	type args struct {
-		cmd          *cobra.Command
-		keystoreType string
+		chain    string
+		network  string
+		receiver string
 	}
 	tests := []struct {
 		name    string
@@ -149,46 +160,60 @@ func TestKeystore_Select(t *testing.T) {
 		{
 			"success-set",
 			fields{
-				func() config.KeystoreSetter {
-					setter := configtest.NewMockKeystoreSetter(mockCtrl)
-					setter.EXPECT().Set("new-keystore-type-value", "cmd-keystore-path-value").Return(nil)
+				func() config.ReceiverSetter {
+					setter := configtest.NewMockReceiverSetter(mockCtrl)
+					setter.EXPECT().Set("ethereum", "mainnet", "new-set-value").Return(nil)
 					return setter
 				}(),
 				nil,
 				nil,
 			},
 			args{
-				func() *cobra.Command {
-					cmd := &cobra.Command{}
-					cmd.Flags().String("keystore-path", "cmd-keystore-path-value", "")
-
-					return cmd
-				}(),
-				"new-keystore-type-value",
+				"ethereum",
+				"mainnet",
+				"new-set-value",
 			},
-			"new-keystore-type-value",
+			"new-set-value",
+			false,
+		},
+		{
+			"success-skipped",
+			fields{
+				func() config.ReceiverSetter {
+					setter := configtest.NewMockReceiverSetter(mockCtrl)
+					return setter
+				}(),
+				func() *viper.Viper {
+					v := viper.New()
+					v.Set("chains.ethereum.networks.mainnet.receiver", "already-set")
+					return v
+				}(),
+				promptstest.MockSelectItemSkipable(t, []string{names.EtherscanNoAuth, names.Etherscan}, "already-set", true, nil),
+			},
+			args{
+				"ethereum",
+				"mainnet",
+				names.RequiresValue,
+			},
+			"",
 			false,
 		},
 		{
 			"err-select-failed",
 			fields{
-				func() config.KeystoreSetter {
-					setter := configtest.NewMockKeystoreSetter(mockCtrl)
+				func() config.ReceiverSetter {
+					setter := configtest.NewMockReceiverSetter(mockCtrl)
 					return setter
 				}(),
 				func() *viper.Viper {
 					v := viper.New()
 					return v
 				}(),
-				promptstest.MockSelectItemSkipable(t, []string{"nacl-filestore"}, "", true, errors.Errorf("failed to skip")),
+				promptstest.MockSelectItemSkipable(t, []string{names.EtherscanNoAuth, names.Etherscan}, "", true, errors.Errorf("failed to skip")),
 			},
 			args{
-				func() *cobra.Command {
-					cmd := &cobra.Command{}
-					cmd.Flags().String("keystore-path", "cmd-keystore-path-value", "")
-
-					return cmd
-				}(),
+				"ethereum",
+				"mainnet",
 				names.RequiresValue,
 			},
 			"",
@@ -197,24 +222,20 @@ func TestKeystore_Select(t *testing.T) {
 		{
 			"err-setter-failed",
 			fields{
-				func() config.KeystoreSetter {
-					setter := configtest.NewMockKeystoreSetter(mockCtrl)
-					setter.EXPECT().Set("new-setting", "cmd-keystore-path-value").Return(errors.Errorf("set failed"))
+				func() config.ReceiverSetter {
+					setter := configtest.NewMockReceiverSetter(mockCtrl)
+					setter.EXPECT().Set("ethereum", "mainnet", "new-setting").Return(errors.Errorf("failed to error"))
 					return setter
 				}(),
 				func() *viper.Viper {
 					v := viper.New()
 					return v
 				}(),
-				promptstest.MockSelectItemSkipable(t, []string{"nacl-filestore"}, "new-setting", false, nil),
+				promptstest.MockSelectItemSkipable(t, []string{names.EtherscanNoAuth, names.Etherscan}, "new-setting", false, nil),
 			},
 			args{
-				func() *cobra.Command {
-					cmd := &cobra.Command{}
-					cmd.Flags().String("keystore-path", "cmd-keystore-path-value", "")
-
-					return cmd
-				}(),
+				"ethereum",
+				"mainnet",
 				names.RequiresValue,
 			},
 			"",
@@ -223,18 +244,18 @@ func TestKeystore_Select(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			k := Keystore{
+			r := Receiver{
 				setter:             tt.fields.setter,
 				viper:              tt.fields.viper,
 				selectItemSkipable: tt.fields.selectItemSkipable,
 			}
-			got, err := k.Select(tt.args.cmd, tt.args.keystoreType)
+			got, err := r.Select(tt.args.chain, tt.args.network, tt.args.receiver)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Keystore.Select() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Receiver.Select() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("Keystore.Select() = %v, want %v", got, tt.want)
+				t.Errorf("Receiver.Select() = %v, want %v", got, tt.want)
 			}
 		})
 	}

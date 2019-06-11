@@ -18,32 +18,31 @@ package setup
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper" // nolint: depguard
 )
 
-func PublicKeyFinder(cmd *cobra.Command, chain, network, pkFinder string) (string, error) {
-	pkFinder, err := selectPublicKeyFinder(chain, network, pkFinder)
+func (f PubKeyFinder) Select(chain, network, existingPKFinder string) (string, error) {
+	pkFinder, err := f.selectPubKeyFinder(chain, network, existingPKFinder)
 	if err != nil {
 		return "", err
 	}
-	if err := config.DefaultPubKeyFinder().Set(chain, network, pkFinder); err != nil {
+	if pkFinder == "" {
+		return "", nil
+	}
+	if err := f.setter.Set(chain, network, pkFinder); err != nil {
 		return "", err
 	}
 	return pkFinder, nil
 }
 
-func selectPublicKeyFinder(chain, network, pkFinder string) (string, error) {
-	if pkFinder != names.RequiresValue {
-		return pkFinder, nil
+func (f PubKeyFinder) selectPubKeyFinder(chain, network, existingPKFinder string) (string, error) {
+	if existingPKFinder != names.RequiresValue {
+		return existingPKFinder, nil
 	}
-	pkFinder, skipped, err := prompts.SelectItemSkipable(
+	pkFinder, skipped, err := f.selectItemSkipable(
 		"Public Key Finder",
 		[]string{names.EtherscanNoAuth, names.Etherscan},
-		viper.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) != "")
+		f.viper.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) != "")
 	if err != nil || skipped {
 		return "", err
 	}

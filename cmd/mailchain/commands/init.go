@@ -51,7 +51,7 @@ func initCmd() *cobra.Command {
 			viper.Set("server.cors.allowed-origins", defaults.CORSAllowedOrigins)
 			viper.Set("server.cors.disabled", defaults.CORSDisabled)
 
-			if _, err := setup.Network(cmd, args, encoding.Ethereum, names.RequiresValue); err != nil {
+			if _, err := setup.DefaultNetwork().Select(cmd, args, encoding.Ethereum, names.RequiresValue); err != nil {
 				return err
 			}
 

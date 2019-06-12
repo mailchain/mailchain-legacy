@@ -15,40 +15,41 @@
 package commands
 
 import (
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/spf13/cobra"
 )
 
-func cfgCmd() *cobra.Command {
+func configCmd(preRun func(cmd *cobra.Command, args []string) error, postRun func(cmd *cobra.Command, args []string) error) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "config",
-		Short:   "Config mailchain",
-		Aliases: []string{"cfg"},
+		Use:                "config",
+		Short:              "Config mailchain",
+		Aliases:            []string{"cfg"},
+		PersistentPreRunE:  preRun,
+		PersistentPostRunE: postRun,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
 		},
 	}
-	cmd.AddCommand(cfgChainCmd())
-	cmd.AddCommand(cfgStorage())
+	cmd.AddCommand(configChainCmd())
+	cmd.AddCommand(configStorage())
 
 	return cmd
 }
 
-func cfgChainCmd() *cobra.Command {
+func configChainCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "chain",
 		Short: "Select a chain to configure",
 		// Long:  ``,
-		Example:           "",
-		PersistentPreRunE: prerun.InitConfig,
+		Example: "",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
 		},
 	}
-	cmd.AddCommand(cfgChainEthereum())
+	cmd.AddCommand(configChainEthereum())
 	return cmd
 }
-func cfgStorage() *cobra.Command {
+func configStorage() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "storage",
 		Short: "Select a storage backend to configure",
@@ -57,8 +58,8 @@ func cfgStorage() *cobra.Command {
 			return cmd.Usage()
 		},
 	}
-	cmd.AddCommand(cfgKeystore())
-	cmd.AddCommand(cfgStorageSent())
+	cmd.AddCommand(configKeystore())
+	cmd.AddCommand(configStorageSent(setup.DefaultSentStorage()))
 
 	return cmd
 }

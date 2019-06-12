@@ -13,15 +13,16 @@
 // limitations under the License.
 
 package main
- 
-import (  
+
+import (
 	"log"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/commands"
+	"github.com/spf13/viper"
 )
 
 func main() {
-	if err := commands.Execute(); err != nil {
+	if err := commands.Execute(viper.GetViper()); err != nil {
 		log.Fatalln(err)
 	}
 }

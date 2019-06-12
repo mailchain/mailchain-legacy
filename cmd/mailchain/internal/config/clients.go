@@ -17,7 +17,7 @@ package config
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/internal/clients/etherscan"
 	"github.com/mailchain/mailchain/internal/clients/ethrpc"
 	"github.com/pkg/errors"
@@ -62,11 +62,11 @@ func (c Clients) GetEtherscanNoAuthClient() (*etherscan.APIClient, error) {
 
 func (c Clients) SetClient(client, network string) error {
 	switch client {
-	case names.EthereumRPC2:
+	case mailchain.ClientEthereumRPC2:
 		return c.setEthRPC(network)
-	case names.Etherscan:
+	case mailchain.ClientEtherscan:
 		return c.setEtherscan()
-	case names.EtherscanNoAuth:
+	case mailchain.ClientEtherscanNoAuth:
 		return nil
 	default:
 		return errors.Errorf("unsupported client type")
@@ -74,7 +74,7 @@ func (c Clients) SetClient(client, network string) error {
 }
 
 func (c Clients) setEthRPC(network string) error {
-	client := names.EthereumRPC2
+	client := mailchain.ClientEthereumRPC2
 	if c.viper.GetString(fmt.Sprintf("clients.%s.%s.address", client, network)) != "" {
 		fmt.Printf("%s already configured\n", client)
 		return nil
@@ -88,7 +88,7 @@ func (c Clients) setEthRPC(network string) error {
 }
 
 func (c Clients) setEtherscan() error {
-	client := names.Etherscan
+	client := mailchain.ClientEtherscan
 	if c.viper.GetString(fmt.Sprintf("clients.%s.api-key", client)) != "" {
 		fmt.Printf("%s already configured\n", client)
 		return nil

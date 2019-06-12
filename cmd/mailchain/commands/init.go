@@ -18,9 +18,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/manifoldco/promptui"
@@ -30,12 +30,12 @@ import (
 	"github.com/ttacon/chalk"
 )
 
-func initCmd() *cobra.Command {
+func initCmd(viper *viper.Viper) *cobra.Command {
 	return &cobra.Command{
 		Use:   "init",
 		Short: "Initialize mailchain configuration",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cancel, err := ensureConfigFileRemoved(cmd)
+			cancel, err := ensureConfigFileRemoved(cmd, viper)
 			if err != nil {
 				return err
 			}
@@ -51,15 +51,15 @@ func initCmd() *cobra.Command {
 			viper.Set("server.cors.allowed-origins", defaults.CORSAllowedOrigins)
 			viper.Set("server.cors.disabled", defaults.CORSDisabled)
 
-			if _, err := setup.DefaultNetwork().Select(cmd, args, encoding.Ethereum, names.RequiresValue); err != nil {
+			if _, err := setup.DefaultNetwork().Select(cmd, args, encoding.Ethereum, mailchain.RequiresValue); err != nil {
 				return err
 			}
 
-			if _, err := setup.DefaultSentStorage().Select(names.RequiresValue); err != nil {
+			if _, err := setup.DefaultSentStorage().Select(mailchain.Mailchain); err != nil {
 				return err
 			}
 
-			if _, err := setup.DefaultKeystore().Select(cmd, names.RequiresValue); err != nil {
+			if _, err := setup.DefaultKeystore().Select(cmd, mailchain.RequiresValue); err != nil {
 				return err
 			}
 
@@ -74,11 +74,11 @@ func initCmd() *cobra.Command {
 	}
 }
 
-func ensureConfigFileRemoved(cmd *cobra.Command) (cancel bool, err error) {
+func ensureConfigFileRemoved(cmd *cobra.Command, v *viper.Viper) (cancel bool, err error) {
 	cfgFile, _ := cmd.PersistentFlags().GetString("config")
 	logLevel, _ := cmd.PersistentFlags().GetString("log-level")
 
-	switch e := config.Init(cfgFile, logLevel).(type) {
+	switch e := config.Init(v, cfgFile, logLevel).(type) {
 	case viper.ConfigFileNotFoundError:
 		// Do nothing
 	case nil:
@@ -102,7 +102,7 @@ func ensureConfigFileRemoved(cmd *cobra.Command) (cancel bool, err error) {
 		}
 		viper.Reset()
 
-		err = config.Init(cfgFile, logLevel)
+		err = config.Init(v, cfgFile, logLevel)
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			return false, errors.WithMessage(err, "failed to re-init config")
 		}

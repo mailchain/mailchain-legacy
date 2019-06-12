@@ -12,28 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package prerun
+package commands
 
 import (
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper" // nolint: depguard
 	"github.com/ttacon/chalk"
 )
 
-func InitConfig(cmd *cobra.Command, args []string) error {
-	cfgFile, _ := cmd.Flags().GetString("config")
-	logLevel, _ := cmd.Flags().GetString("log-level")
+func prerunInitConfig(viper *viper.Viper) func(cmd *cobra.Command, args []string) error {
+	return func(cmd *cobra.Command, args []string) error {
 
-	if err := config.Init(cfgFile, logLevel); err != nil {
-		fmt.Println(err)
+		cfgFile, _ := cmd.Flags().GetString("config")
+		logLevel, _ := cmd.Flags().GetString("log-level")
 
-		fmt.Printf(
-			"Run %s to configure create or specify with %s\n",
-			chalk.Bold.TextStyle("`mailchain init`"),
-			chalk.Bold.TextStyle("`--config`"))
-		return err
+		if err := config.Init(viper, cfgFile, logLevel); err != nil {
+			fmt.Println(err)
+
+			fmt.Printf(
+				"Run %s to configure create or specify with %s\n",
+				chalk.Bold.TextStyle("`mailchain init`"),
+				chalk.Bold.TextStyle("`--config`"))
+			return err
+		}
+		return nil
 	}
-	return nil
 }

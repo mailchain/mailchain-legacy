@@ -19,7 +19,6 @@ import (
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/prerun"
 	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
@@ -29,7 +28,7 @@ import (
 )
 
 // account represents the say command
-func accountCmd() (*cobra.Command, error) {
+func accountCmd(preRun func(cmd *cobra.Command, args []string) error) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "account",
 		Short: "Manage Accounts",
@@ -43,7 +42,7 @@ It is safe to transfer the entire directory or the individual keys therein
 between ethereum nodes by simply copying.
 
 Make sure you backup your keys regularly.`,
-		PersistentPreRunE: prerun.InitConfig,
+		PersistentPreRunE: preRun,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
 		},

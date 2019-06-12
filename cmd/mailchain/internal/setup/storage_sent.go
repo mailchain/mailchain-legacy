@@ -15,7 +15,7 @@
 package setup
 
 import (
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain"
 )
 
 func (s SentStorage) Select(existingSentStorageType string) (string, error) {
@@ -33,12 +33,12 @@ func (s SentStorage) Select(existingSentStorageType string) (string, error) {
 }
 
 func (s SentStorage) selectSentStorage(existingSentStorageType string) (string, error) {
-	if existingSentStorageType != names.RequiresValue {
+	if existingSentStorageType != mailchain.RequiresValue {
 		return existingSentStorageType, nil
 	}
 	sentStorageType, skipped, err := s.selectItemSkipable(
 		"Sent Store",
-		[]string{names.Mailchain, names.S3},
+		[]string{mailchain.Mailchain, mailchain.StoreS3},
 		s.viper.GetString("storage.sent") != "")
 	if err != nil || skipped {
 		return "", err

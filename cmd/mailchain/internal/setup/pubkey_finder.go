@@ -18,7 +18,7 @@ package setup
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain"
 )
 
 func (f PubKeyFinder) Select(chain, network, existingPKFinder string) (string, error) {
@@ -36,12 +36,12 @@ func (f PubKeyFinder) Select(chain, network, existingPKFinder string) (string, e
 }
 
 func (f PubKeyFinder) selectPubKeyFinder(chain, network, existingPKFinder string) (string, error) {
-	if existingPKFinder != names.RequiresValue {
+	if existingPKFinder != mailchain.RequiresValue {
 		return existingPKFinder, nil
 	}
 	pkFinder, skipped, err := f.selectItemSkipable(
 		"Public Key Finder",
-		[]string{names.EtherscanNoAuth, names.Etherscan},
+		[]string{mailchain.ClientEtherscanNoAuth, mailchain.ClientEtherscan},
 		f.viper.GetString(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network)) != "")
 	if err != nil || skipped {
 		return "", err

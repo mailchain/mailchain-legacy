@@ -5,3 +5,7 @@ package setup
 type ChainNetworkExistingSelector interface {
 	Select(chain, network, receiver string) (string, error)
 }
+
+type SimpleSelector interface {
+	Select(selectorType string) (string, error)
+}

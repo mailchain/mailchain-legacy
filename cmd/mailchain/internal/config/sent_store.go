@@ -15,7 +15,7 @@
 package config
 
 import (
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/s3store"
 	"github.com/pkg/errors"
@@ -36,14 +36,14 @@ type SentStore struct {
 // GetSentStore create all the clients based on configuration
 func (s SentStore) Get() (stores.Sent, error) {
 	switch s.viper.GetString("storage.sent") {
-	case names.S3:
+	case mailchain.StoreS3:
 		return s3store.NewSent(
 			s.viper.GetString("stores.s3.region"),
 			s.viper.GetString("stores.s3.bucket"),
 			s.viper.GetString("stores.s3.access-key-id"),
 			s.viper.GetString("stores.s3.secret-access-key"),
 		)
-	case names.Mailchain, "":
+	case mailchain.Mailchain, "":
 		return stores.NewSentStore(), nil
 	default:
 		return nil, errors.Errorf("unsupported storage client")
@@ -53,9 +53,9 @@ func (s SentStore) Get() (stores.Sent, error) {
 func (s SentStore) Set(sentType string) error {
 	s.viper.Set("storage.sent", sentType)
 	switch sentType {
-	case names.S3:
+	case mailchain.StoreS3:
 		return s.setS3()
-	case names.Mailchain:
+	case mailchain.Mailchain:
 		return nil
 	default:
 		return errors.Errorf("unsupported sender store type")

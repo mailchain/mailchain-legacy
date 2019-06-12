@@ -20,7 +20,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/configtest"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/names"
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts/promptstest"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -68,7 +68,7 @@ func TestKeystore_selectKeystore(t *testing.T) {
 				promptstest.MockSelectItemSkipable(t, []string{"nacl-filestore"}, "already-set", true, nil),
 			},
 			args{
-				names.RequiresValue,
+				mailchain.RequiresValue,
 			},
 			"",
 			false,
@@ -85,7 +85,7 @@ func TestKeystore_selectKeystore(t *testing.T) {
 				promptstest.MockSelectItemSkipable(t, []string{"nacl-filestore"}, "new-value", false, nil),
 			},
 			args{
-				names.RequiresValue,
+				mailchain.RequiresValue,
 			},
 			"new-value",
 			false,
@@ -102,7 +102,7 @@ func TestKeystore_selectKeystore(t *testing.T) {
 				promptstest.MockSelectItemSkipable(t, []string{"nacl-filestore"}, "", false, errors.Errorf("failed to select")),
 			},
 			args{
-				names.RequiresValue,
+				mailchain.RequiresValue,
 			},
 			"",
 			true,
@@ -189,7 +189,7 @@ func TestKeystore_Select(t *testing.T) {
 
 					return cmd
 				}(),
-				names.RequiresValue,
+				mailchain.RequiresValue,
 			},
 			"",
 			true,
@@ -215,7 +215,7 @@ func TestKeystore_Select(t *testing.T) {
 
 					return cmd
 				}(),
-				names.RequiresValue,
+				mailchain.RequiresValue,
 			},
 			"",
 			true,

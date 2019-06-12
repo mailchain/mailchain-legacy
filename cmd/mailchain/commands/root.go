@@ -15,10 +15,12 @@
 package commands
 
 import (
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-func rootCmd() (*cobra.Command, error) {
+func rootCmd(viper *viper.Viper) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "mailchain",
 		Short: "Mailchain node.",
@@ -31,17 +33,17 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 	// TODO: this should not be persistent flags
 	cmd.PersistentFlags().Bool("empty-passphrase", false, "no passphrase and no prompt")
 
-	account, err := accountCmd()
+	prerun := prerunInitConfig(viper)
+	account, err := accountCmd(prerun)
 	if err != nil {
 		return nil, err
 	}
 	cmd.AddCommand(account)
+	cmd.AddCommand(configCmd(prerun, config.WriteConfig(viper)))
 
-	cfg := cfgCmd()
-	cmd.AddCommand(cfg)
-	cmd.AddCommand(initCmd())
+	cmd.AddCommand(initCmd(viper))
 
-	serve, err := serveCmd()
+	serve, err := serveCmd(prerun)
 	if err != nil {
 		return nil, err
 	}

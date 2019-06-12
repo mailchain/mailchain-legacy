@@ -19,12 +19,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func configCmd(preRun func(cmd *cobra.Command, args []string) error) *cobra.Command {
+func configCmd(preRun func(cmd *cobra.Command, args []string) error, postRun func(cmd *cobra.Command, args []string) error) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "config",
-		Short:             "Config mailchain",
-		Aliases:           []string{"cfg"},
-		PersistentPreRunE: preRun,
+		Use:                "config",
+		Short:              "Config mailchain",
+		Aliases:            []string{"cfg"},
+		PersistentPreRunE:  preRun,
+		PersistentPostRunE: postRun,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Usage()
 		},

@@ -15,14 +15,12 @@
 package commands
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	// nolint: depguard
 )
 
 func configStorageSent(sentSelector setup.SimpleSelector) *cobra.Command {
@@ -33,9 +31,12 @@ func configStorageSent(sentSelector setup.SimpleSelector) *cobra.Command {
 		Short:                 "Configure sent storage",
 		Long:                  `Mailchain stores the sent messages so that the recipient can download them.`,
 		DisableFlagsInUseLine: true,
-		Example:               fmt.Sprintf("  mailchain config storage sent mailchain\n\nValid arguments:\n  - %s", strings.Join(validArgs, "\n  - ")),
-		Args:                  cobra.OnlyValidArgs,
-		ValidArgs:             validArgs,
+		Example: `  mailchain config storage sent mailchain
+
+Valid arguments:
+  - ` + strings.Join(validArgs, "\n  - "),
+		Args:      exactAndOnlyValid(1),
+		ValidArgs: validArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store := args[0]
 			senderStoreType, err := sentSelector.Select(store)

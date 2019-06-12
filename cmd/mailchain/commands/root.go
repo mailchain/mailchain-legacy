@@ -15,6 +15,7 @@
 package commands
 
 import (
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -38,7 +39,7 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 		return nil, err
 	}
 	cmd.AddCommand(account)
-	cmd.AddCommand(configCmd(prerun))
+	cmd.AddCommand(configCmd(prerun, config.WriteConfig(viper)))
 
 	cmd.AddCommand(initCmd(viper))
 

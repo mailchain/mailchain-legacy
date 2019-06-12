@@ -55,7 +55,7 @@ func initCmd(viper *viper.Viper) *cobra.Command {
 				return err
 			}
 
-			if _, err := setup.DefaultSentStorage().Select(mailchain.RequiresValue); err != nil {
+			if _, err := setup.DefaultSentStorage().Select(mailchain.Mailchain); err != nil {
 				return err
 			}
 

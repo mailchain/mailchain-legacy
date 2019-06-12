@@ -15,13 +15,13 @@
 package commands
 
 import (
-	"bytes"
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/cmd/mailchain/commands/commandstest"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup/setuptest"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,7 +30,6 @@ func Test_configStorageSent(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
-		viper        *viper.Viper
 		sentSelector setup.SimpleSelector
 	}
 	tests := []struct {
@@ -43,45 +42,48 @@ func Test_configStorageSent(t *testing.T) {
 		{
 			"success",
 			args{
-				viper.New(),
-				nil,
+				func() setup.SimpleSelector {
+					g := setuptest.NewMockSimpleSelector(mockCtrl)
+					g.EXPECT().Select("mailchain").Return("mailchain", nil)
+					return g
+				}(),
 			},
-			[]string{},
-			"out",
+			[]string{"mailchain"},
+			"Sent store \"mailchain\" configured\n",
 			false,
+		},
+		{
+			"err-selector",
+			args{
+				func() setup.SimpleSelector {
+					g := setuptest.NewMockSimpleSelector(mockCtrl)
+					g.EXPECT().Select("mailchain").Return("", errors.Errorf("selector failed"))
+					return g
+				}(),
+			},
+			[]string{"mailchain"},
+			"Error: selector failed",
+			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := cfgStorageSent(tt.args.viper, tt.args.sentSelector)
+			got := configStorageSent(tt.args.sentSelector)
 			if !assert.NotNil(got) {
 				t.Error("cfgStorageSent() is nil")
 			}
-			// cobra.ap
-			_, out, err := executeCommandC(got, tt.cmdArgs)
+			_, out, err := commandstest.ExecuteCommandC(got, tt.cmdArgs)
 			if (err != nil) != tt.wantExecErr {
 				t.Errorf("cfgStorageSent().execute() error = %v, wantExecErr %v", err, tt.wantExecErr)
 				return
 			}
-			if !assert.Equal(tt.wantOutput, out) {
-				t.Errorf("cfgStorageSent().Execute().out = %v, want %v", out, tt.wantOutput)
+			if !commandstest.AssertCommandOutput(t, got, err, out, tt.wantOutput) {
+				t.Errorf("cfgStorageSent().Execute().out != %v", tt.wantOutput)
 			}
-			// viper.GetViper()
-			// viper.
-			viper.Reset()
-			// if ; !reflect.DeepEqual(got, tt.want) {
-			// 	t.Errorf("cfgStorageSent() = %v, want %v", got, tt.want)
+			// //  && !assert.Equal(tt.wantOutput+"\n"+got.UsageString()+"\n", out)
+			// if assert.Contains(out, tt.wantOutput) {
+			// 	t.Errorf("cfgStorageSent().Execute().out = %v, want %v", out, tt.wantOutput)
 			// }
 		})
 	}
-}
-func executeCommandC(root *cobra.Command, args []string) (c *cobra.Command, output string, err error) {
-	// root.
-	buf := new(bytes.Buffer)
-	root.SetOutput(buf)
-	root.SetArgs(args)
-
-	c, err = root.ExecuteC()
-
-	return c, buf.String(), err
 }

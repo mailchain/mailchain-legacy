@@ -68,10 +68,12 @@ func Init(viper *viper.Viper, cfgFile, logLevel string) error {
 	return nil
 }
 
-func WriteConfig(cmd *cobra.Command, args []string) error {
-	if err := viper.WriteConfig(); err != nil {
-		return errors.WithStack(err)
+func WriteConfig(viper *viper.Viper) func(cmd *cobra.Command, args []string) error {
+	return func(cmd *cobra.Command, args []string) error {
+		if err := viper.WriteConfig(); err != nil {
+			return errors.WithStack(err)
+		}
+		cmd.Printf(chalk.Green.Color("Config saved\n"))
+		return nil
 	}
-	cmd.Printf(chalk.Green.Color("Config saved\n"))
-	return nil
 }

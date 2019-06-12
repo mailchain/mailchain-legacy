@@ -50,6 +50,7 @@ func Init(viper *viper.Viper, cfgFile, logLevel string) error {
 	}
 	log.SetLevel(lvl)
 	log.SetOutput(os.Stdout)
+	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
 
 	viper.SetConfigType(defaults.ConfigFileType)
 	viper.SetEnvPrefix("mc")

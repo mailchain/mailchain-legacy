@@ -18,19 +18,21 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/commands/commandstest"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup/setuptest"
-	"github.com/pkg/errors"
+	"github.com/pkg/errors" 
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_configStorageSent(t *testing.T) {
+func Test_configKeystore(t *testing.T) {
 	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
-		sentSelector setup.SimpleSelector
+		keystoreSelector setup.KeystoreSelector
 	}
 	tests := []struct {
 		name        string
@@ -43,27 +45,43 @@ func Test_configStorageSent(t *testing.T) {
 		{
 			"success",
 			args{
-				func() setup.SimpleSelector {
-					g := setuptest.NewMockSimpleSelector(mockCtrl)
-					g.EXPECT().Select("mailchain").Return("mailchain", nil)
+				func() setup.KeystoreSelector {
+					g := setuptest.NewMockKeystoreSelector(mockCtrl)
+					g.EXPECT().Select("nacl-filestore", defaults.KeystorePath).Return("nacl-filestore", nil)
 					return g
 				}(),
 			},
-			[]string{"mailchain"},
+			[]string{"nacl-filestore"},
 			nil,
-			"Sent store \"mailchain\" configured\n",
+			"Key store \"nacl-filestore\" configured\n",
+			false,
+		},
+		{
+			"success-empty-path",
+			args{
+				func() setup.KeystoreSelector {
+					g := setuptest.NewMockKeystoreSelector(mockCtrl)
+					g.EXPECT().Select("nacl-filestore", mailchain.RequiresValue).Return("nacl-filestore", nil)
+					return g 
+				}(),
+			},
+			[]string{"nacl-filestore"},
+			map[string]string{
+				"keystore-path": "",
+			},
+			"Key store \"nacl-filestore\" configured\n",
 			false,
 		},
 		{
 			"err-selector",
 			args{
-				func() setup.SimpleSelector {
-					g := setuptest.NewMockSimpleSelector(mockCtrl)
-					g.EXPECT().Select("mailchain").Return("", errors.Errorf("selector failed"))
+				func() setup.KeystoreSelector {
+					g := setuptest.NewMockKeystoreSelector(mockCtrl)
+					g.EXPECT().Select("nacl-filestore", defaults.KeystorePath).Return("", errors.Errorf("selector failed"))
 					return g
 				}(),
 			},
-			[]string{"mailchain"},
+			[]string{"nacl-filestore"},
 			nil,
 			"Error: selector failed",
 			true,
@@ -71,7 +89,7 @@ func Test_configStorageSent(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := configStorageSent(tt.args.sentSelector)
+			got := configKeystore(tt.args.keystoreSelector)
 			if !assert.NotNil(got) {
 				t.Error("cfgStorageSent() is nil")
 			}

@@ -26,9 +26,6 @@ func configCmd(preRun func(cmd *cobra.Command, args []string) error, postRun fun
 		Aliases:            []string{"cfg"},
 		PersistentPreRunE:  preRun,
 		PersistentPostRunE: postRun,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
 	}
 	cmd.AddCommand(configChainCmd())
 	cmd.AddCommand(configStorage())
@@ -42,9 +39,6 @@ func configChainCmd() *cobra.Command {
 		Short: "Select a chain to configure",
 		// Long:  ``,
 		Example: "",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
 	}
 	cmd.AddCommand(configChainEthereum())
 	return cmd
@@ -54,11 +48,8 @@ func configStorage() *cobra.Command {
 		Use:   "storage",
 		Short: "Select a storage backend to configure",
 		Long:  "Mailchain has multiple storage backends, this command you can configure each of them.",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
 	}
-	cmd.AddCommand(configKeystore())
+	cmd.AddCommand(configKeystore(setup.DefaultKeystore()))
 	cmd.AddCommand(configStorageSent(setup.DefaultSentStorage()))
 
 	return cmd

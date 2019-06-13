@@ -9,3 +9,7 @@ type ChainNetworkExistingSelector interface {
 type SimpleSelector interface {
 	Select(selectorType string) (string, error)
 }
+
+type KeystoreSelector interface {
+	Select(keystoreType, keystorePath string) (string, error)
+}

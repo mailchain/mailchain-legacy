@@ -71,16 +71,54 @@ func (m *MockSimpleSelector) EXPECT() *MockSimpleSelectorMockRecorder {
 }
 
 // Select mocks base method
-func (m *MockSimpleSelector) Select(existingSentStorageType string) (string, error) {
+func (m *MockSimpleSelector) Select(selectorType string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Select", existingSentStorageType)
+	ret := m.ctrl.Call(m, "Select", selectorType)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Select indicates an expected call of Select
-func (mr *MockSimpleSelectorMockRecorder) Select(existingSentStorageType interface{}) *gomock.Call {
+func (mr *MockSimpleSelectorMockRecorder) Select(selectorType interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Select", reflect.TypeOf((*MockSimpleSelector)(nil).Select), existingSentStorageType)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Select", reflect.TypeOf((*MockSimpleSelector)(nil).Select), selectorType)
+}
+
+// MockKeystoreSelector is a mock of KeystoreSelector interface
+type MockKeystoreSelector struct {
+	ctrl     *gomock.Controller
+	recorder *MockKeystoreSelectorMockRecorder
+}
+
+// MockKeystoreSelectorMockRecorder is the mock recorder for MockKeystoreSelector
+type MockKeystoreSelectorMockRecorder struct {
+	mock *MockKeystoreSelector
+}
+
+// NewMockKeystoreSelector creates a new mock instance
+func NewMockKeystoreSelector(ctrl *gomock.Controller) *MockKeystoreSelector {
+	mock := &MockKeystoreSelector{ctrl: ctrl}
+	mock.recorder = &MockKeystoreSelectorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockKeystoreSelector) EXPECT() *MockKeystoreSelectorMockRecorder {
+	return m.recorder
+}
+
+// Select mocks base method
+func (m *MockKeystoreSelector) Select(keystoreType, keystorePath string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Select", keystoreType, keystorePath)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Select indicates an expected call of Select
+func (mr *MockKeystoreSelectorMockRecorder) Select(keystoreType, keystorePath interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Select", reflect.TypeOf((*MockKeystoreSelector)(nil).Select), keystoreType, keystorePath)
 }

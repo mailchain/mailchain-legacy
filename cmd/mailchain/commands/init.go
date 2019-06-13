@@ -59,7 +59,7 @@ func initCmd(viper *viper.Viper) *cobra.Command {
 				return err
 			}
 
-			if _, err := setup.DefaultKeystore().Select(cmd, mailchain.RequiresValue); err != nil {
+			if _, err := setup.DefaultKeystore().Select(mailchain.RequiresValue, mailchain.RequiresValue); err != nil {
 				return err
 			}
 

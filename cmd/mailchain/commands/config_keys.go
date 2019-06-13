@@ -18,35 +18,32 @@ import (
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
+	"github.com/mailchain/mailchain/internal/keystore"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
-func configKeystore() *cobra.Command {
+func configKeystore(keystoreSelector setup.KeystoreSelector) *cobra.Command {
+	validArgs := keystore.KeystoreNames()
 	cmd := &cobra.Command{
-		Use:   "keys",
-		Short: "setup keystore",
-		// Long:  ``,
+		Use:   "keys KEYSTORE",
+		Short: "configure storage for private keys",
+		Long: `Mailchain stores the private keys in an encrypted format. Private Keys are used when 
+  sending messages: creating a transactions
+  reading messages: decrypting a message the sender encrypted with the corresponding public key`,
+		Example:   formatExampleText("mailchain config storage keys mailchain", validArgs),
+		Args:      exactAndOnlyValid(1),
+		ValidArgs: validArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			keystoreType, err := setup.DefaultKeystore().Select(cmd, mailchain.RequiresValue)
-			if err != nil {
-				return err
+			store := args[0]
+			path, _ := cmd.Flags().GetString("keystore-path")
+			if path == "" {
+				path = mailchain.RequiresValue
 			}
-			cmd.Printf("Key store %q configured\n", keystoreType)
-			return cmd.Usage()
-		},
-	}
-	cmd.AddCommand(configKeystoreNaclFilestore())
-	return cmd
-}
 
-func configKeystoreNaclFilestore() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "nacl-filestore",
-		Short: "setup nacl filestore",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			keystoreType, err := setup.DefaultKeystore().Select(cmd, mailchain.StoreNACLFilestore)
+			keystoreType, err := keystoreSelector.Select(store, path)
 			if err != nil {
-				return err
+				return errors.WithStack(err)
 			}
 			cmd.Printf("Key store %q configured\n", keystoreType)
 			return nil

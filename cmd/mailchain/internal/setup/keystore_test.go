@@ -18,12 +18,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/configtest"
-	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts/promptstest"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -35,6 +34,7 @@ func TestKeystore_selectKeystore(t *testing.T) {
 	}
 	type args struct {
 		keystoreType string
+		keystorePath string
 	}
 	tests := []struct {
 		name    string
@@ -51,9 +51,10 @@ func TestKeystore_selectKeystore(t *testing.T) {
 				nil,
 			},
 			args{
-				"value-already-set",
+				"type-value-already-set",
+				"path-value",
 			},
-			"value-already-set",
+			"type-value-already-set",
 			false,
 		},
 		{
@@ -69,6 +70,7 @@ func TestKeystore_selectKeystore(t *testing.T) {
 			},
 			args{
 				mailchain.RequiresValue,
+				"path-value",
 			},
 			"",
 			false,
@@ -86,6 +88,7 @@ func TestKeystore_selectKeystore(t *testing.T) {
 			},
 			args{
 				mailchain.RequiresValue,
+				"path-value",
 			},
 			"new-value",
 			false,
@@ -103,6 +106,7 @@ func TestKeystore_selectKeystore(t *testing.T) {
 			},
 			args{
 				mailchain.RequiresValue,
+				"path-value",
 			},
 			"",
 			true,
@@ -136,8 +140,8 @@ func TestKeystore_Select(t *testing.T) {
 		selectItemSkipable func(label string, items []string, skipable bool) (selected string, skipped bool, err error)
 	}
 	type args struct {
-		cmd          *cobra.Command
 		keystoreType string
+		keystorePath string
 	}
 	tests := []struct {
 		name    string
@@ -151,20 +155,15 @@ func TestKeystore_Select(t *testing.T) {
 			fields{
 				func() config.KeystoreSetter {
 					setter := configtest.NewMockKeystoreSetter(mockCtrl)
-					setter.EXPECT().Set("new-keystore-type-value", "cmd-keystore-path-value").Return(nil)
+					setter.EXPECT().Set("new-keystore-type-value", "keystore-path-value").Return(nil)
 					return setter
 				}(),
 				nil,
 				nil,
 			},
 			args{
-				func() *cobra.Command {
-					cmd := &cobra.Command{}
-					cmd.Flags().String("keystore-path", "cmd-keystore-path-value", "")
-
-					return cmd
-				}(),
 				"new-keystore-type-value",
+				"keystore-path-value",
 			},
 			"new-keystore-type-value",
 			false,
@@ -183,13 +182,8 @@ func TestKeystore_Select(t *testing.T) {
 				promptstest.MockSelectItemSkipable(t, []string{"nacl-filestore"}, "", true, errors.Errorf("failed to skip")),
 			},
 			args{
-				func() *cobra.Command {
-					cmd := &cobra.Command{}
-					cmd.Flags().String("keystore-path", "cmd-keystore-path-value", "")
-
-					return cmd
-				}(),
 				mailchain.RequiresValue,
+				"keystore-path-value",
 			},
 			"",
 			true,
@@ -199,7 +193,7 @@ func TestKeystore_Select(t *testing.T) {
 			fields{
 				func() config.KeystoreSetter {
 					setter := configtest.NewMockKeystoreSetter(mockCtrl)
-					setter.EXPECT().Set("new-setting", "cmd-keystore-path-value").Return(errors.Errorf("set failed"))
+					setter.EXPECT().Set("new-setting", "keystore-path-value").Return(errors.Errorf("set failed"))
 					return setter
 				}(),
 				func() *viper.Viper {
@@ -209,13 +203,8 @@ func TestKeystore_Select(t *testing.T) {
 				promptstest.MockSelectItemSkipable(t, []string{"nacl-filestore"}, "new-setting", false, nil),
 			},
 			args{
-				func() *cobra.Command {
-					cmd := &cobra.Command{}
-					cmd.Flags().String("keystore-path", "cmd-keystore-path-value", "")
-
-					return cmd
-				}(),
 				mailchain.RequiresValue,
+				"keystore-path-value",
 			},
 			"",
 			true,
@@ -228,7 +217,7 @@ func TestKeystore_Select(t *testing.T) {
 				viper:              tt.fields.viper,
 				selectItemSkipable: tt.fields.selectItemSkipable,
 			}
-			got, err := k.Select(tt.args.cmd, tt.args.keystoreType)
+			got, err := k.Select(tt.args.keystoreType, tt.args.keystorePath)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Keystore.Select() error = %v, wantErr %v", err, tt.wantErr)
 				return

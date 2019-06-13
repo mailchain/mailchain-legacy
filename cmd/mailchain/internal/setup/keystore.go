@@ -18,15 +18,13 @@ import (
 	"fmt"
 
 	"github.com/mailchain/mailchain"
-	"github.com/spf13/cobra"
 )
 
-func (k Keystore) Select(cmd *cobra.Command, keystoreType string) (string, error) {
+func (k Keystore) Select(keystoreType, keystorePath string) (string, error) {
 	keystoreType, err := k.selectKeystore(keystoreType)
 	if err != nil {
 		return "", err
 	}
-	keystorePath, _ := cmd.Flags().GetString("keystore-path")
 	if err := k.setter.Set(keystoreType, keystorePath); err != nil {
 		return "", err
 	}

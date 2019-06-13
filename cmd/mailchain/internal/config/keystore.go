@@ -62,7 +62,7 @@ func (k Keystore) Set(keystoreType, keystorePath string) error {
 }
 
 func (k Keystore) setKeystorePath(keystoreType, keystorePath string) error {
-	if keystorePath == "" {
+	if keystorePath == mailchain.RequiresValue {
 		res, err := k.requiredInputWithDefault("path", defaults.KeystorePath)
 		if err != nil {
 			return err

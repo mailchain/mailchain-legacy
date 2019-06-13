@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/spf13/cobra"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_exactAndOnlyValid(t *testing.T) {
@@ -64,6 +65,59 @@ func Test_exactAndOnlyValid(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("exactAndOnlyValid() error = %v, wantErr %v", err, tt.wantErr)
 				return
+			}
+		})
+	}
+}
+
+func Test_formatExampleText(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		exampleText string
+		validArgs   []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"no-args",
+			args{
+				"this is example text",
+				nil,
+			},
+			"  this is example text",
+		},
+		{
+			"single-arg",
+			args{
+				"this is example text",
+				[]string{"arg1"},
+			},
+			`  this is example text
+
+Valid arguments:
+  - arg1`,
+		},
+		{
+			"multi-arg",
+			args{
+				"this is example text",
+				[]string{"arg1", "arg2"},
+			},
+			`  this is example text
+
+Valid arguments:
+  - arg1
+  - arg2`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := formatExampleText(tt.args.exampleText, tt.args.validArgs)
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("formatExampleText() = %v, want %v", got, tt.want)
 			}
 		})
 	}

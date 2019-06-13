@@ -8,14 +8,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func ExecuteCommandC(root *cobra.Command, args []string) (c *cobra.Command, output string, err error) {
+func ExecuteCommandC(root *cobra.Command, args []string, flags map[string]string) (c *cobra.Command, output string, err error) {
 	buf := new(bytes.Buffer)
 	if err := root.ValidateArgs(args); err != nil {
 		return nil, "", err
 	}
 	root.SetOutput(buf)
 	root.SetArgs(args)
-
+	for x := range flags {
+		root.Flags().Set(x, flags[x])
+	}
 	c, err = root.ExecuteC()
 
 	return c, buf.String(), err

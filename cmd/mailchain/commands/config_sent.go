@@ -15,8 +15,6 @@
 package commands
 
 import (
-	"strings"
-
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
@@ -28,15 +26,12 @@ func configStorageSent(sentSelector setup.SimpleSelector) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:                   "sent STORE",
-		Short:                 "Configure sent storage",
+		Short:                 "configure sent storage",
 		Long:                  `Mailchain stores the sent messages so that the recipient can download them.`,
 		DisableFlagsInUseLine: true,
-		Example: `  mailchain config storage sent mailchain
-
-Valid arguments:
-  - ` + strings.Join(validArgs, "\n  - "),
-		Args:      exactAndOnlyValid(1),
-		ValidArgs: validArgs,
+		Example:               formatExampleText("mailchain config storage sent mailchain", validArgs),
+		Args:                  exactAndOnlyValid(1),
+		ValidArgs:             validArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			store := args[0]
 			senderStoreType, err := sentSelector.Select(store)

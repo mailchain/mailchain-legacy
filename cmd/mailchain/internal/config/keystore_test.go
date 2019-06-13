@@ -19,6 +19,7 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts/promptstest"
 	"github.com/mailchain/mailchain/internal/keystore/nacl"
+	"github.com/mailchain/mailchain"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -133,10 +134,10 @@ func TestKeystore_setKeystorePath(t *testing.T) {
 				promptstest.MockRequiredInputWithDefault(t, "path-value", nil),
 			},
 			args{
-				"keystore-type",
-				"",
+				"keystore-type", 
+				mailchain.RequiresValue,
 			},
-			false,
+			false, 
 			map[string]interface{}{
 				"stores": map[string]interface{}{
 					"keystore-type": map[string]interface{}{
@@ -150,7 +151,7 @@ func TestKeystore_setKeystorePath(t *testing.T) {
 			},
 			args{
 				"keystore-type",
-				"",
+				mailchain.RequiresValue,
 			},
 			true,
 			map[string]interface{}{},

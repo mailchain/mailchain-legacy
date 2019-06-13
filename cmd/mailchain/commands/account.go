@@ -43,9 +43,6 @@ between ethereum nodes by simply copying.
 
 Make sure you backup your keys regularly.`,
 		PersistentPreRunE: preRun,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
 	}
 	cmd.PersistentFlags().StringP("key-type", "", "", "Select the chain [secp256k1]")
 

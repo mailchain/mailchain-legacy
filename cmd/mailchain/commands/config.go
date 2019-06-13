@@ -26,9 +26,6 @@ func configCmd(preRun func(cmd *cobra.Command, args []string) error, postRun fun
 		Aliases:            []string{"cfg"},
 		PersistentPreRunE:  preRun,
 		PersistentPostRunE: postRun,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.Usage()
-		},
 	}
 	cmd.AddCommand(configChainCmd())
 	cmd.AddCommand(configStorage())

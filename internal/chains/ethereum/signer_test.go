@@ -21,7 +21,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/testutil"
 )
 
@@ -56,7 +56,7 @@ func TestSigner_Sign(t *testing.T) {
 		privateKey crypto.PrivateKey
 	}
 	type args struct {
-		opts mailbox.SignerOpts
+		opts signer.SignerOpts
 	}
 	tests := []struct {
 		name    string

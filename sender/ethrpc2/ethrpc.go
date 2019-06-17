@@ -12,13 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate mockgen -source=signer.go -package=mailboxtest -destination=./mailboxtest/signer_mock.go
-package mailbox
+package ethrpc2
 
-// Signer return a signed transaction
-type Signer interface {
-	Sign(opts SignerOpts) (signedTransaction interface{}, err error)
+import (
+	"math/big"
+
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
+)
+
+type Options struct {
+	Tx      *types.Transaction
+	ChainID *big.Int
 }
 
-// SignerOpts options related to different signers
-type SignerOpts interface{}
+func New(address string) (*EthRPC2, error) {
+	client, err := ethclient.Dial(address)
+	if err != nil {
+		return nil, err
+	}
+	return &EthRPC2{client: client}, nil
+}
+
+type EthRPC2 struct {
+	client Client
+}

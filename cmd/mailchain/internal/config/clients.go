@@ -19,7 +19,7 @@ import (
 
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/internal/clients/etherscan"
-	"github.com/mailchain/mailchain/internal/clients/ethrpc"
+	"github.com/mailchain/mailchain/sender/ethrpc2"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
 )
@@ -30,7 +30,7 @@ type ClientsSetter interface {
 }
 
 type ClientsGetter interface {
-	GetEtherRPC2Client(network string) (*ethrpc.EthRPC2, error)
+	GetEtherRPC2Client(network string) (*ethrpc2.EthRPC2, error)
 	GetEtherscanClient() (*etherscan.APIClient, error)
 	GetEtherscanNoAuthClient() (*etherscan.APIClient, error)
 }
@@ -40,12 +40,12 @@ type Clients struct {
 	requiredInput func(label string) (string, error)
 }
 
-func (c Clients) GetEtherRPC2Client(network string) (*ethrpc.EthRPC2, error) {
+func (c Clients) GetEtherRPC2Client(network string) (*ethrpc2.EthRPC2, error) {
 	address := c.viper.GetString(fmt.Sprintf("clients.ethereum-rpc2.%s.address", network))
 	if address == "" {
 		return nil, errors.Errorf("`clients.ethereum-rpc2.%s.address` must not be empty", network)
 	}
-	return ethrpc.New(address)
+	return ethrpc2.New(address)
 }
 
 func (c Clients) GetEtherscanClient() (*etherscan.APIClient, error) {

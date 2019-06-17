@@ -12,18 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+//go:generate mockgen -source=signer.go -package=signertest -destination=./signertest/signer_mock.go
+package signer
 
-import (
-	"log"
-
-	"github.com/mailchain/mailchain/cmd/mailchain/commands"
-	"github.com/spf13/viper"
-)
-
-func main() {
-	if err := commands.Execute(viper.GetViper()); err != nil {
-		log.Fatalln(err)
-	}
+// Signer return a signed transaction
+type Signer interface {
+	Sign(opts SignerOpts) (signedTransaction interface{}, err error)
 }
- 
+
+// SignerOpts options related to different signers
+type SignerOpts interface{}

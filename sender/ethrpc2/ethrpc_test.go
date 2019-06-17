@@ -12,59 +12,51 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package keystore
+package ethrpc2
 
 import (
+	"net/http/httptest"
 	"testing"
-
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
-	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/internal/encoding"
-	"github.com/mailchain/mailchain/internal/mailbox/signer"
-	"github.com/mailchain/mailchain/internal/testutil"
-	"github.com/stretchr/testify/assert" 
 )
 
-func TestSigner(t *testing.T) {
-	assert := assert.New(t)
+func TestNew(t *testing.T) {
+	server := httptest.NewServer(nil)
 	type args struct {
-		chain string
-		pk    crypto.PrivateKey
+		address string
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    signer.Signer
+		wantNil bool
 		wantErr bool
 	}{
 		{
-			"ethereum",
+			"success",
 			args{
-				encoding.Ethereum,
-				testutil.CharlottePrivateKey,
+				server.URL,
 			},
-			ethereum.NewSigner(testutil.CharlottePrivateKey),
+			false,
 			false,
 		},
 		{
-			"err",
+			"failed",
 			args{
-				"invalid",
-				testutil.CharlottePrivateKey,
+				"host:23425",
 			},
-			nil,
+			true,
 			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Signer(tt.args.chain, tt.args.pk)
+			got, err := New(tt.args.address)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Signer() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
-				t.Errorf("Signer() = %v, want %v", got, tt.want)
+			if (got == nil) != tt.wantNil {
+				t.Errorf("New() got = %v, wantNil %v", err, tt.wantErr)
+				return
 			}
 		})
 	}

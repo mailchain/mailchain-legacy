@@ -24,8 +24,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/imdario/mergo"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/configtest"
-	"github.com/mailchain/mailchain/internal/clients/ethrpc"
-	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/sender/ethrpc2"
+	"github.com/mailchain/mailchain/sender"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -39,7 +39,7 @@ func reflectAsString(v []reflect.Value) []string {
 	return r
 }
 
-func sortSenderMapKeys(m map[string]mailbox.Sender) []string {
+func sortSenderMapKeys(m map[string]sender.Message) []string {
 	ss := reflectAsString(reflect.ValueOf(m).MapKeys())
 	sort.Strings(ss)
 	return ss
@@ -71,7 +71,7 @@ func TestSender_getSender(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    mailbox.Sender
+		want    sender.Message
 		wantErr bool
 	}{
 		{
@@ -85,7 +85,7 @@ func TestSender_getSender(t *testing.T) {
 				}(),
 				func() ClientsGetter {
 					g := configtest.NewMockClientsGetter(mockCtrl)
-					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc.New(server.URL))
+					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc2.New(server.URL))
 					return g
 				}(),
 				nil,
@@ -95,7 +95,7 @@ func TestSender_getSender(t *testing.T) {
 				"ethereum",
 				"mainnet",
 			},
-			&ethrpc.EthRPC2{},
+			&ethrpc2.EthRPC2{},
 			false,
 		},
 		{
@@ -108,7 +108,7 @@ func TestSender_getSender(t *testing.T) {
 				}(),
 				func() ClientsGetter {
 					g := configtest.NewMockClientsGetter(mockCtrl)
-					// g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc.New(server.URL))
+					// g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc2.New(server.URL))
 					return g
 				}(),
 				nil,
@@ -161,7 +161,7 @@ func TestSender_getChainSenders(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    map[string]mailbox.Sender
+		want    map[string]sender.Message
 		wantErr bool
 	}{
 		{
@@ -195,7 +195,7 @@ func TestSender_getChainSenders(t *testing.T) {
 				}(),
 				func() ClientsGetter {
 					g := configtest.NewMockClientsGetter(mockCtrl)
-					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc.New(server.URL))
+					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc2.New(server.URL))
 					return g
 				}(),
 				nil,
@@ -204,8 +204,8 @@ func TestSender_getChainSenders(t *testing.T) {
 			args{
 				"ethereum",
 			},
-			map[string]mailbox.Sender{
-				"ethereum.mainnet": &ethrpc.EthRPC2{},
+			map[string]sender.Message{
+				"ethereum.mainnet": &ethrpc2.EthRPC2{},
 			},
 			false,
 		},
@@ -222,8 +222,8 @@ func TestSender_getChainSenders(t *testing.T) {
 				}(),
 				func() ClientsGetter {
 					g := configtest.NewMockClientsGetter(mockCtrl)
-					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc.New(server.URL))
-					g.EXPECT().GetEtherRPC2Client("ropsten").Return(ethrpc.New(server.URL))
+					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc2.New(server.URL))
+					g.EXPECT().GetEtherRPC2Client("ropsten").Return(ethrpc2.New(server.URL))
 					return g
 				}(),
 				nil,
@@ -232,9 +232,9 @@ func TestSender_getChainSenders(t *testing.T) {
 			args{
 				"ethereum",
 			},
-			map[string]mailbox.Sender{
-				"ethereum.mainnet": &ethrpc.EthRPC2{},
-				"ethereum.ropsten": &ethrpc.EthRPC2{},
+			map[string]sender.Message{
+				"ethereum.mainnet": &ethrpc2.EthRPC2{},
+				"ethereum.ropsten": &ethrpc2.EthRPC2{},
 			},
 			false,
 		},
@@ -251,7 +251,7 @@ func TestSender_getChainSenders(t *testing.T) {
 				}(),
 				func() ClientsGetter {
 					g := configtest.NewMockClientsGetter(mockCtrl)
-					// g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc.New(server.URL))
+					// g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc2.New(server.URL))
 					// g.EXPECT().GetEtherRPC2Client("ropsten").Return(nil, errors.Errorf("failed"))
 					return g
 				}(),
@@ -307,7 +307,7 @@ func TestSender_GetSenders(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
-		want    map[string]mailbox.Sender
+		want    map[string]sender.Message
 		wantErr bool
 	}{
 		{
@@ -338,14 +338,14 @@ func TestSender_GetSenders(t *testing.T) {
 				}(),
 				func() ClientsGetter {
 					g := configtest.NewMockClientsGetter(mockCtrl)
-					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc.New(server.URL))
+					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc2.New(server.URL))
 					return g
 				}(),
 				nil,
 				mergo.Merge,
 			},
-			map[string]mailbox.Sender{
-				"ethereum.mainnet": &ethrpc.EthRPC2{},
+			map[string]sender.Message{
+				"ethereum.mainnet": &ethrpc2.EthRPC2{},
 			},
 			false,
 		},
@@ -362,16 +362,16 @@ func TestSender_GetSenders(t *testing.T) {
 				}(),
 				func() ClientsGetter {
 					g := configtest.NewMockClientsGetter(mockCtrl)
-					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc.New(server.URL))
-					g.EXPECT().GetEtherRPC2Client("ropsten").Return(ethrpc.New(server.URL))
+					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc2.New(server.URL))
+					g.EXPECT().GetEtherRPC2Client("ropsten").Return(ethrpc2.New(server.URL))
 					return g
 				}(),
 				nil,
 				mergo.Merge,
 			},
-			map[string]mailbox.Sender{
-				"ethereum.mainnet": &ethrpc.EthRPC2{},
-				"ethereum.ropsten": &ethrpc.EthRPC2{},
+			map[string]sender.Message{
+				"ethereum.mainnet": &ethrpc2.EthRPC2{},
+				"ethereum.ropsten": &ethrpc2.EthRPC2{},
 			},
 			false,
 		},
@@ -388,8 +388,8 @@ func TestSender_GetSenders(t *testing.T) {
 				}(),
 				func() ClientsGetter {
 					g := configtest.NewMockClientsGetter(mockCtrl)
-					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc.New(server.URL))
-					g.EXPECT().GetEtherRPC2Client("ropsten").Return(ethrpc.New(server.URL))
+					g.EXPECT().GetEtherRPC2Client("mainnet").Return(ethrpc2.New(server.URL))
+					g.EXPECT().GetEtherRPC2Client("ropsten").Return(ethrpc2.New(server.URL))
 					return g
 				}(),
 				nil,

@@ -19,7 +19,7 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/internal/clients/etherscan"
-	"github.com/mailchain/mailchain/internal/clients/ethrpc"
+	"github.com/mailchain/mailchain/sender/ethrpc2"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -340,7 +340,7 @@ func TestClients_GetEtherRPC2Client(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *ethrpc.EthRPC2
+		want    *ethrpc2.EthRPC2
 		wantErr bool
 	}{
 		{
@@ -356,7 +356,7 @@ func TestClients_GetEtherRPC2Client(t *testing.T) {
 			args{
 				"mainnet",
 			},
-			&ethrpc.EthRPC2{},
+			&ethrpc2.EthRPC2{},
 			false,
 		},
 		{
@@ -368,7 +368,7 @@ func TestClients_GetEtherRPC2Client(t *testing.T) {
 			args{
 				"mainnet",
 			},
-			&ethrpc.EthRPC2{},
+			&ethrpc2.EthRPC2{},
 			true,
 		},
 	}

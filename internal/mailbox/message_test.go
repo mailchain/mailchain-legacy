@@ -26,7 +26,11 @@ import (
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
+	"github.com/mailchain/mailchain/internal/mailbox/signer"
+	"github.com/mailchain/mailchain/internal/mailbox/signer/signertest"
 	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/sender"
+	"github.com/mailchain/mailchain/sender/sendertest"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/storestest"
 	"github.com/pkg/errors"
@@ -204,7 +208,7 @@ func TestSendMessage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := SendMessage(); !assert.NotNil(got) {
-				t.Errorf("SendMessage() = %v", got)
+				t.Errorf("Message() = %v", got)
 			}
 		})
 	}
@@ -247,7 +251,7 @@ func Test_defaultPrefixedBytes(t *testing.T) {
 	}
 }
 
-func Test_sendMessage(t *testing.T) {
+func Test_Message(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	msg := &mail.Message{
@@ -269,9 +273,9 @@ func Test_sendMessage(t *testing.T) {
 		ctx    context.Context
 		msg    *mail.Message
 		pubkey crypto.PublicKey
-		sender Sender
+		sender sender.Message
 		sent   stores.Sent
-		signer Signer
+		signer signer.Signer
 	}
 	tests := []struct {
 		name     string
@@ -296,18 +300,18 @@ func Test_sendMessage(t *testing.T) {
 				context.Background(),
 				msg,
 				testutil.CharlottePublicKey,
-				func() Sender {
-					sender := newMockSender(mockCtrl)
-					sender.EXPECT().Send(gomock.Any(), testutil.MustHexDecodeString(msg.Headers.To.ChainAddress), testutil.MustHexDecodeString(msg.Headers.From.ChainAddress), append(encoding.DataPrefix(), []byte("prefixed-bytes")...), newMockSigner(mockCtrl), nil).Return(nil)
-					return sender
+				func() sender.Message {
+					m := sendertest.NewMockMessage(mockCtrl)
+					m.EXPECT().Send(gomock.Any(), testutil.MustHexDecodeString(msg.Headers.To.ChainAddress), testutil.MustHexDecodeString(msg.Headers.From.ChainAddress), append(encoding.DataPrefix(), []byte("prefixed-bytes")...), signertest.NewMockSigner(mockCtrl), nil).Return(nil)
+					return m
 				}(),
 				func() stores.Sent {
 					sent := storestest.NewMockSent(mockCtrl)
 					sent.EXPECT().PutMessage(msg.ID, []byte("encrypted-message"), nil).Return("https://location-of-file", nil)
 					return sent
 				}(),
-				func() Signer {
-					signer := newMockSigner(mockCtrl)
+				func() signer.Signer {
+					signer := signertest.NewMockSigner(mockCtrl)
 					return signer
 				}(),
 			},
@@ -330,16 +334,16 @@ func Test_sendMessage(t *testing.T) {
 				context.Background(),
 				nil,
 				testutil.CharlottePublicKey,
-				func() Sender {
-					sender := newMockSender(mockCtrl)
+				func() sender.Message {
+					sender := sendertest.NewMockMessage(mockCtrl)
 					return sender
 				}(),
 				func() stores.Sent {
 					sent := storestest.NewMockSent(mockCtrl)
 					return sent
 				}(),
-				func() Signer {
-					signer := newMockSigner(mockCtrl)
+				func() signer.Signer {
+					signer := signertest.NewMockSigner(mockCtrl)
 					return signer
 				}(),
 			},
@@ -362,16 +366,16 @@ func Test_sendMessage(t *testing.T) {
 				context.Background(),
 				msg,
 				testutil.CharlottePublicKey,
-				func() Sender {
-					sender := newMockSender(mockCtrl)
+				func() sender.Message {
+					sender := sendertest.NewMockMessage(mockCtrl)
 					return sender
 				}(),
 				func() stores.Sent {
 					sent := storestest.NewMockSent(mockCtrl)
 					return sent
 				}(),
-				func() Signer {
-					signer := newMockSigner(mockCtrl)
+				func() signer.Signer {
+					signer := signertest.NewMockSigner(mockCtrl)
 					return signer
 				}(),
 			},
@@ -394,8 +398,8 @@ func Test_sendMessage(t *testing.T) {
 				context.Background(),
 				msg,
 				testutil.CharlottePublicKey,
-				func() Sender {
-					sender := newMockSender(mockCtrl)
+				func() sender.Message {
+					sender := sendertest.NewMockMessage(mockCtrl)
 					return sender
 				}(),
 				func() stores.Sent {
@@ -403,8 +407,8 @@ func Test_sendMessage(t *testing.T) {
 					sent.EXPECT().PutMessage(msg.ID, []byte("encrypted-message"), nil).Return("", errors.Errorf("failed to put message"))
 					return sent
 				}(),
-				func() Signer {
-					signer := newMockSigner(mockCtrl)
+				func() signer.Signer {
+					signer := signertest.NewMockSigner(mockCtrl)
 					return signer
 				}(),
 			},
@@ -427,8 +431,8 @@ func Test_sendMessage(t *testing.T) {
 				context.Background(),
 				msg,
 				testutil.CharlottePublicKey,
-				func() Sender {
-					sender := newMockSender(mockCtrl)
+				func() sender.Message {
+					sender := sendertest.NewMockMessage(mockCtrl)
 					return sender
 				}(),
 				func() stores.Sent {
@@ -436,8 +440,8 @@ func Test_sendMessage(t *testing.T) {
 					sent.EXPECT().PutMessage(msg.ID, []byte("encrypted-message"), nil).Return("https://location-of-file", nil)
 					return sent
 				}(),
-				func() Signer {
-					signer := newMockSigner(mockCtrl)
+				func() signer.Signer {
+					signer := signertest.NewMockSigner(mockCtrl)
 					return signer
 				}(),
 			},
@@ -460,8 +464,8 @@ func Test_sendMessage(t *testing.T) {
 				context.Background(),
 				msg,
 				testutil.CharlottePublicKey,
-				func() Sender {
-					sender := newMockSender(mockCtrl)
+				func() sender.Message {
+					sender := sendertest.NewMockMessage(mockCtrl)
 					return sender
 				}(),
 				func() stores.Sent {
@@ -469,8 +473,8 @@ func Test_sendMessage(t *testing.T) {
 					sent.EXPECT().PutMessage(msg.ID, []byte("encrypted-message"), nil).Return("https://location-of-file", nil)
 					return sent
 				}(),
-				func() Signer {
-					signer := newMockSigner(mockCtrl)
+				func() signer.Signer {
+					signer := signertest.NewMockSigner(mockCtrl)
 					return signer
 				}(),
 			},
@@ -493,18 +497,18 @@ func Test_sendMessage(t *testing.T) {
 				context.Background(),
 				msg,
 				testutil.CharlottePublicKey,
-				func() Sender {
-					sender := newMockSender(mockCtrl)
-					sender.EXPECT().Send(gomock.Any(), testutil.MustHexDecodeString(msg.Headers.To.ChainAddress), testutil.MustHexDecodeString(msg.Headers.From.ChainAddress), append(encoding.DataPrefix(), []byte("prefixed-bytes")...), newMockSigner(mockCtrl), nil).Return(errors.Errorf("failed sender"))
-					return sender
+				func() sender.Message {
+					m := sendertest.NewMockMessage(mockCtrl)
+					m.EXPECT().Send(gomock.Any(), testutil.MustHexDecodeString(msg.Headers.To.ChainAddress), testutil.MustHexDecodeString(msg.Headers.From.ChainAddress), append(encoding.DataPrefix(), []byte("prefixed-bytes")...), signertest.NewMockSigner(mockCtrl), nil).Return(errors.Errorf("failed sender"))
+					return m
 				}(),
 				func() stores.Sent {
 					sent := storestest.NewMockSent(mockCtrl)
 					sent.EXPECT().PutMessage(msg.ID, []byte("encrypted-message"), nil).Return("https://location-of-file", nil)
 					return sent
 				}(),
-				func() Signer {
-					signer := newMockSigner(mockCtrl)
+				func() signer.Signer {
+					signer := signertest.NewMockSigner(mockCtrl)
 					return signer
 				}(),
 			},

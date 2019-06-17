@@ -31,12 +31,13 @@ import (
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 )
 
 // SendMessage handler http
-func SendMessage(sent stores.Sent, senders map[string]mailbox.Sender, ks keystore.Store,
+func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
 	sendmessage := mailbox.SendMessage()
 	// Post swagger:route POST /ethereum/{network}/messages/send Send Ethereum SendMessage

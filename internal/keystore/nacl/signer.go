@@ -17,12 +17,12 @@ package nacl
 import (
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
-	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/pkg/errors"
 )
 
 // GetSigner return a transaction signer based on the supplied address.
-func (fs FileStore) GetSigner(address []byte, chain string, deriveKeyOptions multi.OptionsBuilders) (mailbox.Signer, error) {
+func (fs FileStore) GetSigner(address []byte, chain string, deriveKeyOptions multi.OptionsBuilders) (signer.Signer, error) {
 	pk, err := fs.getPrivateKey(address, deriveKeyOptions)
 	if err != nil {
 		return nil, errors.WithStack(err)

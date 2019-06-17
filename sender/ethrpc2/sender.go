@@ -12,44 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package ethrpc
+package ethrpc2
 
 import (
 	"context"
 	"math/big"
 
-	eth "github.com/ethereum/go-ethereum"
+	geth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/mailchain/mailchain/internal/chains/ethereum"
-	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/internal/mailbox/signer"
+	"github.com/mailchain/mailchain/sender"
 	"github.com/pkg/errors"
 )
 
-type Options struct {
-	Tx      *types.Transaction
-	ChainID *big.Int
-}
-
-func New(address string) (*EthRPC2, error) {
-	client, err := ethclient.Dial(address)
-	if err != nil {
-		return nil, err
-	}
-	return &EthRPC2{Client: *client}, nil
-}
-
-type EthRPC2 struct {
-	ethclient.Client
-}
-
-func (e EthRPC2) Send(ctx context.Context, to, from, data []byte, signer mailbox.Signer, opts mailbox.SenderOpts) error {
-	chainID, err := e.NetworkID(ctx)
+func (e EthRPC2) Send(ctx context.Context, to, from, data []byte, signer signer.Signer, opts sender.MessageOpts) error {
+	chainID, err := e.client.NetworkID(ctx)
 	if err != nil {
 		return errors.WithMessage(err, "could not determine chain id")
 	}
-	gasPrice, err := e.SuggestGasPrice(ctx)
+	gasPrice, err := e.client.SuggestGasPrice(ctx)
 	if err != nil {
 		return errors.WithMessage(err, "could not determine gas price")
 	}
@@ -57,7 +40,7 @@ func (e EthRPC2) Send(ctx context.Context, to, from, data []byte, signer mailbox
 	value := big.NewInt(0)
 	addrTo := common.BytesToAddress(to)
 	addrFrom := common.BytesToAddress(from)
-	gas, err := e.EstimateGas(ctx, eth.CallMsg{
+	gas, err := e.client.EstimateGas(ctx, geth.CallMsg{
 		Data:     data,
 		From:     addrFrom,
 		GasPrice: gasPrice,
@@ -67,7 +50,7 @@ func (e EthRPC2) Send(ctx context.Context, to, from, data []byte, signer mailbox
 	if err != nil {
 		return errors.WithMessage(err, "could not estimate gas")
 	}
-	nonce, err := e.NonceAt(ctx, addrFrom, nil) // from address
+	nonce, err := e.client.NonceAt(ctx, addrFrom, nil) // from address
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -81,8 +64,8 @@ func (e EthRPC2) Send(ctx context.Context, to, from, data []byte, signer mailbox
 	}
 	signedTx, ok := rawSignedTx.(*types.Transaction)
 	if !ok {
-		return errors.WithMessage(err, "could not cast transaction")
+		return errors.Errorf("sign did not return an ethereum transaction")
 	}
 
-	return e.SendTransaction(ctx, signedTx)
+	return e.client.SendTransaction(ctx, signedTx)
 }

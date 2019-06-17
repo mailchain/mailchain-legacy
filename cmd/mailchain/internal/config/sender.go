@@ -19,7 +19,7 @@ import (
 
 	"github.com/imdario/mergo"
 	"github.com/mailchain/mailchain"
-	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/sender"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
 )
@@ -47,8 +47,8 @@ func (s Sender) Set(chain, network, sender string) error {
 }
 
 // GetSenders in configured state
-func (s Sender) GetSenders() (map[string]mailbox.Sender, error) {
-	senders := make(map[string]mailbox.Sender)
+func (s Sender) GetSenders() (map[string]sender.Message, error) {
+	senders := make(map[string]sender.Message)
 	for chain := range s.viper.GetStringMap("chains") {
 		chSenders, err := s.getChainSenders(chain)
 		if err != nil {
@@ -61,8 +61,8 @@ func (s Sender) GetSenders() (map[string]mailbox.Sender, error) {
 	return senders, nil
 }
 
-func (s Sender) getChainSenders(chain string) (map[string]mailbox.Sender, error) {
-	senders := make(map[string]mailbox.Sender)
+func (s Sender) getChainSenders(chain string) (map[string]sender.Message, error) {
+	senders := make(map[string]sender.Message)
 	for network := range s.viper.GetStringMap(fmt.Sprintf("chains.%s.networks", chain)) {
 		sender, err := s.getSender(chain, network)
 		if err != nil {
@@ -74,7 +74,7 @@ func (s Sender) getChainSenders(chain string) (map[string]mailbox.Sender, error)
 	return senders, nil
 }
 
-func (s Sender) getSender(chain, network string) (mailbox.Sender, error) {
+func (s Sender) getSender(chain, network string) (sender.Message, error) {
 	switch s.viper.GetString(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network)) {
 	case mailchain.ClientEthereumRPC2:
 		return s.clientGetter.GetEtherRPC2Client(network)

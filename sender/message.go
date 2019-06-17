@@ -12,15 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package params
+package sender
 
 import (
-	"net/http"
+	"context"
 
-	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/internal/mail"
+	"github.com/mailchain/mailchain/internal/mailbox/signer"
 )
 
-func PathMessageID(r *http.Request) (mail.ID, error) {
-	return mail.FromHexString(mux.Vars(r)["message_id"])
+//go:generate mockgen -source=message.go -package=sendertest -destination=./sendertest/message_mock.go
+
+// Message is prepared, signed, and sent.
+type Message interface {
+	Send(ctx context.Context, to []byte, from []byte, data []byte, signer signer.Signer, opts MessageOpts) (err error)
 }
+
+// MessageOpts options for sending a message
+type MessageOpts interface{}

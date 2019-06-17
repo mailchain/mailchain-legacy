@@ -12,13 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate mockgen -source=signer.go -package=mailboxtest -destination=./mailboxtest/signer_mock.go
-package mailbox
+package sender
 
-// Signer return a signed transaction
-type Signer interface {
-	Sign(opts SignerOpts) (signedTransaction interface{}, err error)
+import (
+	"context"
+
+	"github.com/mailchain/mailchain/internal/mailbox/signer"
+)
+
+//go:generate mockgen -source=message.go -package=sendertest -destination=./sendertest/message_mock.go
+
+// Message is prepared, signed, and sent.
+type Message interface {
+	Send(ctx context.Context, to []byte, from []byte, data []byte, signer signer.Signer, opts MessageOpts) (err error)
 }
 
-// SignerOpts options related to different signers
-type SignerOpts interface{}
+// MessageOpts options for sending a message
+type MessageOpts interface{}

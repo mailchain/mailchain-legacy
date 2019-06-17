@@ -7,7 +7,7 @@ package configtest
 import (
 	gomock "github.com/golang/mock/gomock"
 	etherscan "github.com/mailchain/mailchain/internal/clients/etherscan"
-	ethrpc "github.com/mailchain/mailchain/internal/clients/ethrpc"
+	ethrpc2 "github.com/mailchain/mailchain/sender/ethrpc2"
 	reflect "reflect"
 )
 
@@ -72,10 +72,10 @@ func (m *MockClientsGetter) EXPECT() *MockClientsGetterMockRecorder {
 }
 
 // GetEtherRPC2Client mocks base method
-func (m *MockClientsGetter) GetEtherRPC2Client(network string) (*ethrpc.EthRPC2, error) {
+func (m *MockClientsGetter) GetEtherRPC2Client(network string) (*ethrpc2.EthRPC2, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetEtherRPC2Client", network)
-	ret0, _ := ret[0].(*ethrpc.EthRPC2)
+	ret0, _ := ret[0].(*ethrpc2.EthRPC2)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

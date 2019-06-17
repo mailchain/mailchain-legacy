@@ -23,7 +23,7 @@ import (
 	crypto "github.com/mailchain/mailchain/crypto"
 	cipher "github.com/mailchain/mailchain/crypto/cipher"
 	multi "github.com/mailchain/mailchain/internal/keystore/kdf/multi"
-	mailbox "github.com/mailchain/mailchain/internal/mailbox"
+	signer "github.com/mailchain/mailchain/internal/mailbox/signer"
 	reflect "reflect"
 )
 
@@ -51,10 +51,10 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 }
 
 // GetSigner mocks base method
-func (m *MockStore) GetSigner(address []byte, chain string, deriveKeyOptions multi.OptionsBuilders) (mailbox.Signer, error) {
+func (m *MockStore) GetSigner(address []byte, chain string, deriveKeyOptions multi.OptionsBuilders) (signer.Signer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetSigner", address, chain, deriveKeyOptions)
-	ret0, _ := ret[0].(mailbox.Signer)
+	ret0, _ := ret[0].(signer.Signer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

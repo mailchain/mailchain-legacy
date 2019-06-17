@@ -12,18 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package ethrpc2
 
 import (
-	"log"
+	"math/big"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/commands"
-	"github.com/spf13/viper"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-func main() {
-	if err := commands.Execute(viper.GetViper()); err != nil {
-		log.Fatalln(err)
-	}
+type Options struct {
+	Tx      *types.Transaction
+	ChainID *big.Int
 }
- 
+
+func New(address string) (*EthRPC2, error) {
+	client, err := ethclient.Dial(address)
+	if err != nil {
+		return nil, err
+	}
+	return &EthRPC2{client: client}, nil
+}
+
+type EthRPC2 struct {
+	client Client
+}

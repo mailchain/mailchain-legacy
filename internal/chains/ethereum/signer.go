@@ -20,7 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
-	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/pkg/errors"
 )
 
@@ -37,7 +37,7 @@ type Signer struct {
 	privateKey crypto.PrivateKey
 }
 
-func (e Signer) Sign(opts mailbox.SignerOpts) (signedTransaction interface{}, err error) {
+func (e Signer) Sign(opts signer.SignerOpts) (signedTransaction interface{}, err error) {
 	if opts == nil {
 		return nil, errors.New("opts must not be nil")
 	}

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate mockgen -source=sender.go -package=mailboxtest -destination=./mailboxtest/sender_mock.go
 package mailbox
 
 import (
@@ -25,20 +24,14 @@ import (
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
+	"github.com/mailchain/mailchain/internal/mailbox/signer"
+	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 )
 
-// Sender signs a transaction the sends it
-type Sender interface {
-	Send(ctx context.Context, to []byte, from []byte, data []byte, signer Signer, opts SenderOpts) (err error)
-}
-
 type SendMessageFunc func(ctx context.Context, msg *mail.Message, pubkey crypto.PublicKey,
-	sender Sender, sent stores.Sent, signer Signer) error
-
-// SenderOpts options for sending a message
-type SenderOpts interface{}
+	sender sender.Message, sent stores.Sent, signer signer.Signer) error
 
 // SendMessageFunc performs all the actions required to send a message.
 // - Create a hash of encoded message
@@ -51,13 +44,15 @@ func SendMessage() SendMessageFunc {
 	return sendMessage(defaultEncryptLocation, defaultEncryptMailMessage, defaultPrefixedBytes)
 }
 
-func sendMessage(
-	encryptLocation func(pk crypto.PublicKey, location string) ([]byte, error),
+func sendMessage(encryptLocation func(pk crypto.PublicKey, location string) ([]byte, error),
 	encryptMailMessage func(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error),
-	prefixedBytes func(data proto.Message) ([]byte, error),
-) SendMessageFunc {
-
-	return func(ctx context.Context, msg *mail.Message, pubkey crypto.PublicKey, sender Sender, sent stores.Sent, signer Signer) error {
+	prefixedBytes func(data proto.Message) ([]byte, error)) SendMessageFunc {
+	return func(ctx context.Context,
+		msg *mail.Message,
+		pubkey crypto.PublicKey,
+		sender sender.Message,
+		sent stores.Sent,
+		signer signer.Signer) error {
 		encodedMsg, err := rfc2822.EncodeNewMessage(msg)
 		if err != nil {
 			return errors.WithMessage(err, "could not encode message")

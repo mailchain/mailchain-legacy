@@ -20,12 +20,12 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
-	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/internal/mailbox/signer"
 )
 
 // Store private keys but does not return them, instead return decrypter or signer.
 type Store interface {
-	GetSigner(address []byte, chain string, deriveKeyOptions multi.OptionsBuilders) (mailbox.Signer, error)
+	GetSigner(address []byte, chain string, deriveKeyOptions multi.OptionsBuilders) (signer.Signer, error)
 	GetDecrypter(address []byte, decrypterType byte, deriveKeyOptions multi.OptionsBuilders) (cipher.Decrypter, error)
 	Store(private crypto.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) (address []byte, err error)
 	HasAddress(address []byte) bool

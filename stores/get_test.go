@@ -25,9 +25,6 @@ import (
 
 func Test_getHTTPMessage(t *testing.T) {
 	assert := assert.New(t)
-	type harness struct {
-		server *httptest.Server
-	}
 	tests := []struct {
 		name    string
 		server  *httptest.Server

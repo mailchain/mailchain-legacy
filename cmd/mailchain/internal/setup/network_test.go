@@ -21,7 +21,7 @@ import (
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts/promptstest"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup/setuptest"
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -293,7 +293,7 @@ func TestNetwork_Select(t *testing.T) {
 					selector := setuptest.NewMockChainNetworkExistingSelector(mockCtrl)
 					return selector
 				}(),
-				promptstest.MockSelectItem(t, encoding.EthereumNetworks(), "", errors.Errorf("failed")),
+				promptstest.MockSelectItem(t, ethereum.Networks(), "", errors.Errorf("failed")),
 			},
 			args{
 				nil,

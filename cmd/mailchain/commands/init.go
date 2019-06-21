@@ -22,7 +22,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/chains"
 	"github.com/manifoldco/promptui"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -51,7 +51,7 @@ func initCmd(viper *viper.Viper) *cobra.Command {
 			viper.Set("server.cors.allowed-origins", defaults.CORSAllowedOrigins)
 			viper.Set("server.cors.disabled", defaults.CORSDisabled)
 
-			if _, err := setup.DefaultNetwork().Select(cmd, args, encoding.Ethereum, mailchain.RequiresValue); err != nil {
+			if _, err := setup.DefaultNetwork().Select(cmd, args, chains.Ethereum, mailchain.RequiresValue); err != nil {
 				return err
 			}
 

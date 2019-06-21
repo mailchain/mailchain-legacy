@@ -15,13 +15,15 @@
 package chains
 
 import (
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/chains/ethereum"
 )
+
+const Ethereum = "ethereum"
 
 func NetworkNames(chain string) []string {
 	switch chain {
-	case encoding.Ethereum:
-		return encoding.EthereumNetworks()
+	case Ethereum:
+		return ethereum.Networks()
 	default:
 		return nil
 	}

@@ -17,12 +17,12 @@ package keystore
 import (
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/chains"
+	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/testutil"
-	"github.com/stretchr/testify/assert" 
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSigner(t *testing.T) {
@@ -40,7 +40,7 @@ func TestSigner(t *testing.T) {
 		{
 			"ethereum",
 			args{
-				encoding.Ethereum,
+				chains.Ethereum,
 				testutil.CharlottePrivateKey,
 			},
 			ethereum.NewSigner(testutil.CharlottePrivateKey),

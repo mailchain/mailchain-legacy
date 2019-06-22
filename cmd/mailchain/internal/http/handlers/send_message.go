@@ -86,7 +86,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			return
 		}
 
-		if err := sendmessage(ctx, msg, req.publicKey, sender, sent, signer); err != nil {
+		if err := sendmessage(ctx, req.network, msg, req.publicKey, sender, sent, signer); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}

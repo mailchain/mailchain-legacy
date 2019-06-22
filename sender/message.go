@@ -24,7 +24,7 @@ import (
 
 // Message is prepared, signed, and sent.
 type Message interface {
-	Send(ctx context.Context, to []byte, from []byte, data []byte, signer signer.Signer, opts MessageOpts) (err error)
+	Send(ctx context.Context, network string, to []byte, from []byte, data []byte, signer signer.Signer, opts MessageOpts) (err error)
 }
 
 // MessageOpts options for sending a message

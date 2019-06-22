@@ -74,6 +74,8 @@ func (c Clients) SetClient(client, network string) error {
 		return c.setEtherscan()
 	case mailchain.ClientEtherscanNoAuth:
 		return nil
+	case mailchain.ClientRelay:
+		return nil
 	default:
 		return errors.Errorf("unsupported client type")
 	}

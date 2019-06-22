@@ -78,6 +78,8 @@ func (s Sender) getSender(chain, network string) (sender.Message, error) {
 	switch s.viper.GetString(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network)) {
 	case mailchain.ClientEthereumRPC2:
 		return s.clientGetter.GetEtherRPC2Client(network)
+	case mailchain.ClientRelay:
+		return s.clientGetter.GetRelayClient()
 	default:
 		return nil, errors.Errorf("unsupported sender")
 	}

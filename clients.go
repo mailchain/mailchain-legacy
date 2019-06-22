@@ -18,4 +18,5 @@ const (
 	ClientEtherscan       = "etherscan"
 	ClientEtherscanNoAuth = "etherscan-no-auth"
 	ClientEthereumRPC2    = "ethereum-rpc2"
+	ClientRelay           = "relay"
 )

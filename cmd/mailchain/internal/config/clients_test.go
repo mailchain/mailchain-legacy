@@ -254,6 +254,19 @@ func TestClients_SetClient(t *testing.T) {
 			map[string]interface{}{},
 		},
 		{
+			"relay",
+			fields{
+				viper.New(),
+				nil,
+			},
+			args{
+				"relay",
+				"mainnet",
+			},
+			false,
+			map[string]interface{}{},
+		},
+		{
 			"err-unknown",
 			fields{
 				viper.New(),

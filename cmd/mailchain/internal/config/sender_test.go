@@ -26,6 +26,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/configtest"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/sender/ethrpc2"
+	"github.com/mailchain/mailchain/sender/relay"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -96,6 +97,29 @@ func TestSender_getSender(t *testing.T) {
 				"mainnet",
 			},
 			&ethrpc2.EthRPC2{},
+			false,
+		},
+		{
+			"relay",
+			fields{
+				func() *viper.Viper {
+					v := viper.New()
+					v.Set("chains.ethereum.networks.mainnet.sender", "relay")
+					return v
+				}(),
+				func() ClientsGetter {
+					g := configtest.NewMockClientsGetter(mockCtrl)
+					g.EXPECT().GetRelayClient().Return(relay.NewClient(server.URL))
+					return g
+				}(),
+				nil,
+				nil,
+			},
+			args{
+				"ethereum",
+				"mainnet",
+			},
+			&relay.Client{},
 			false,
 		},
 		{

@@ -444,3 +444,43 @@ func TestClients_GetEtherscanClient(t *testing.T) {
 		})
 	}
 }
+
+func TestClients_GetRelayClient(t *testing.T) {
+	type fields struct {
+		viper         *viper.Viper
+		requiredInput func(label string) (string, error)
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantNil bool
+		wantErr bool
+	}{
+		{
+			"success",
+			fields{
+				nil, nil,
+			},
+			false,
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := Clients{
+				viper:         tt.fields.viper,
+				requiredInput: tt.fields.requiredInput,
+			}
+			got, err := c.GetRelayClient()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Clients.GetRelayClient() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if (got == nil) != tt.wantNil {
+				t.Errorf("Clients.GetRelayClient() nil = %v, wantNil %v", got == nil, tt.wantNil)
+				return
+			}
+		})
+	}
+}

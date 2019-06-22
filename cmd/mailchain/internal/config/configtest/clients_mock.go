@@ -8,6 +8,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	etherscan "github.com/mailchain/mailchain/internal/clients/etherscan"
 	ethrpc2 "github.com/mailchain/mailchain/sender/ethrpc2"
+	relay "github.com/mailchain/mailchain/sender/relay"
 	reflect "reflect"
 )
 
@@ -114,4 +115,19 @@ func (m *MockClientsGetter) GetEtherscanNoAuthClient() (*etherscan.APIClient, er
 func (mr *MockClientsGetterMockRecorder) GetEtherscanNoAuthClient() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEtherscanNoAuthClient", reflect.TypeOf((*MockClientsGetter)(nil).GetEtherscanNoAuthClient))
+}
+
+// GetRelayClient mocks base method
+func (m *MockClientsGetter) GetRelayClient() (*relay.Client, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRelayClient")
+	ret0, _ := ret[0].(*relay.Client)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRelayClient indicates an expected call of GetRelayClient
+func (mr *MockClientsGetterMockRecorder) GetRelayClient() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRelayClient", reflect.TypeOf((*MockClientsGetter)(nil).GetRelayClient))
 }

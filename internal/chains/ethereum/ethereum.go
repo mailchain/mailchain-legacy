@@ -15,14 +15,14 @@
 package ethereum
 
 func Networks() []string {
-	return []string{Mainnet, Kovan, Rinkeby, Ropsten, Goerli}
+	return []string{Goerli, Kovan, Mainnet, Rinkeby, Ropsten}
 }
 
 // Ethereum
 const (
-	Mainnet = "mainnet"
+	Goerli  = "goerli"
 	Kovan   = "kovan"
+	Mainnet = "mainnet"
 	Rinkeby = "rinkeby"
 	Ropsten = "ropsten"
-	Goerli  = "goerli"
 )

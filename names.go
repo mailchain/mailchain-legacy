@@ -16,3 +16,4 @@ package mailchain
 
 const RequiresValue = "-"
 const Mailchain = "mailchain"
+const Relay = "relay"

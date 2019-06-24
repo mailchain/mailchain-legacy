@@ -18,7 +18,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/pkg/errors"
 	"gopkg.in/resty.v1"
 )
@@ -28,11 +28,11 @@ func NewAPIClient(apiKey string) (*APIClient, error) {
 	return &APIClient{
 		key: apiKey,
 		networkConfigs: map[string]networkConfig{
-			encoding.Mainnet: {url: "https://api.etherscan.io/api"},
-			encoding.Ropsten: {url: "https://api-ropsten.etherscan.io/api"},
-			encoding.Kovan:   {url: "https://api-kovan.etherscan.io/api"},
-			encoding.Rinkeby: {url: "https://api-rinkeby.etherscan.io/api"},
-			encoding.Goerli:  {url: "https://api-goerli.etherscan.io/api"},
+			ethereum.Mainnet: {url: "https://api.etherscan.io/api"},
+			ethereum.Ropsten: {url: "https://api-ropsten.etherscan.io/api"},
+			ethereum.Kovan:   {url: "https://api-kovan.etherscan.io/api"},
+			ethereum.Rinkeby: {url: "https://api-rinkeby.etherscan.io/api"},
+			ethereum.Goerli:  {url: "https://api-goerli.etherscan.io/api"},
 		},
 	}, nil
 }

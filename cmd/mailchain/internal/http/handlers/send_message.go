@@ -26,7 +26,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/chains"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/mail"
@@ -86,7 +86,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			return
 		}
 
-		if err := sendmessage(ctx, msg, req.publicKey, sender, sent, signer); err != nil {
+		if err := sendmessage(ctx, req.network, msg, req.publicKey, sender, sent, signer); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}
@@ -200,7 +200,7 @@ func isValid(p *PostRequestBody, network string) error {
 	}
 	var err error
 	p.network = network
-	chain := encoding.Ethereum
+	chain := chains.Ethereum
 
 	p.to, err = mail.ParseAddress(p.Message.Headers.To, chain, p.network)
 	if err != nil {

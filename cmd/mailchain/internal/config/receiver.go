@@ -51,11 +51,11 @@ func (r Receiver) Set(chain, network, receiver string) error {
 func (r Receiver) GetReceivers() (map[string]mailbox.Receiver, error) {
 	receivers := make(map[string]mailbox.Receiver)
 	for chain := range r.viper.GetStringMap("chains") {
-		chRcvrs, err := r.getChainReceivers(chain)
+		cr, err := r.getChainReceivers(chain)
 		if err != nil {
 			return nil, err
 		}
-		if err := r.mapMerge(&receivers, chRcvrs); err != nil {
+		if err := r.mapMerge(&receivers, cr); err != nil {
 			return nil, err
 		}
 	}

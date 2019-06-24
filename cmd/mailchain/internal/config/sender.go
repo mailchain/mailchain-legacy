@@ -37,12 +37,12 @@ type Sender struct {
 	mapMerge     func(dst interface{}, src interface{}, opts ...func(*mergo.Config)) error
 }
 
-func (s Sender) Set(chain, network, sender string) error {
-	if err := s.clientSetter.SetClient(sender, network); err != nil {
+func (s Sender) Set(chain, network, senderType string) error {
+	if err := s.clientSetter.SetClient(senderType, network); err != nil {
 		return err
 	}
-	s.viper.Set(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network), sender)
-	fmt.Printf("%q used for sending messages\n", sender)
+	s.viper.Set(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network), senderType)
+	fmt.Printf("%q used for sending messages\n", senderType)
 	return nil
 }
 
@@ -78,6 +78,8 @@ func (s Sender) getSender(chain, network string) (sender.Message, error) {
 	switch s.viper.GetString(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network)) {
 	case mailchain.ClientEthereumRPC2:
 		return s.clientGetter.GetEtherRPC2Client(network)
+	case mailchain.ClientRelay:
+		return s.clientGetter.GetRelayClient()
 	default:
 		return nil, errors.Errorf("unsupported sender")
 	}

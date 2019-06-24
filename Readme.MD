@@ -1,6 +1,6 @@
 # Mailchain
 
-[![Build Status](https://travis-ci.com/mailchain/mailchain.svg?branch=master&style=for-the-badge)](https://img.shields.io/travis/com/mailchain/mailchain.svg?style=for-the-badge)
+[![Build Status](https://travis-ci.com/mailchain/mailchain.svg?branch=master&style=for-the-badge)](https://travis-ci.com/mailchain/mailchain.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/mailchain/mailchain/badge.svg?branch=master)](https://coveralls.io/github/mailchain/mailchain?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mailchain/mailchain)](https://goreportcard.com/report/github.com/mailchain/mailchain)
 

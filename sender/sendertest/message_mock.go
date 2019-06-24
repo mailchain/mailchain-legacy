@@ -36,17 +36,17 @@ func (m *MockMessage) EXPECT() *MockMessageMockRecorder {
 }
 
 // Send mocks base method
-func (m *MockMessage) Send(ctx context.Context, to, from, data []byte, signer signer.Signer, opts sender.MessageOpts) error {
+func (m *MockMessage) Send(ctx context.Context, network string, to, from, data []byte, signer signer.Signer, opts sender.MessageOpts) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Send", ctx, to, from, data, signer, opts)
+	ret := m.ctrl.Call(m, "Send", ctx, network, to, from, data, signer, opts)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Send indicates an expected call of Send
-func (mr *MockMessageMockRecorder) Send(ctx, to, from, data, signer, opts interface{}) *gomock.Call {
+func (mr *MockMessageMockRecorder) Send(ctx, network, to, from, data, signer, opts interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockMessage)(nil).Send), ctx, to, from, data, signer, opts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockMessage)(nil).Send), ctx, network, to, from, data, signer, opts)
 }
 
 // MockMessageOpts is a mock of MessageOpts interface

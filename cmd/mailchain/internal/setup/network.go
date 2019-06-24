@@ -33,7 +33,7 @@ func (n Network) Select(cmd *cobra.Command, args []string, chain, network string
 	if _, err := n.receiverSelector.Select(chain, selectedNetwork, mailchain.ClientEtherscanNoAuth); err != nil {
 		return "", err
 	}
-	if _, err := n.senderSelector.Select(chain, selectedNetwork, mailchain.RequiresValue); err != nil {
+	if _, err := n.senderSelector.Select(chain, selectedNetwork, mailchain.ClientRelay); err != nil {
 		return "", err
 	}
 	if _, err := n.pubKeyFinderSelector.Select(chain, selectedNetwork, mailchain.ClientEtherscanNoAuth); err != nil {

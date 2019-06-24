@@ -25,6 +25,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
+	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/mailbox/signer/signertest"
@@ -270,12 +271,13 @@ func Test_Message(t *testing.T) {
 		prefixedBytes      func(data proto.Message) ([]byte, error)
 	}
 	type funcArgs struct {
-		ctx    context.Context
-		msg    *mail.Message
-		pubkey crypto.PublicKey
-		sender sender.Message
-		sent   stores.Sent
-		signer signer.Signer
+		ctx     context.Context
+		network string
+		msg     *mail.Message
+		pubkey  crypto.PublicKey
+		sender  sender.Message
+		sent    stores.Sent
+		signer  signer.Signer
 	}
 	tests := []struct {
 		name     string
@@ -298,11 +300,12 @@ func Test_Message(t *testing.T) {
 			},
 			funcArgs{
 				context.Background(),
+				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
 				func() sender.Message {
 					m := sendertest.NewMockMessage(mockCtrl)
-					m.EXPECT().Send(gomock.Any(), testutil.MustHexDecodeString(msg.Headers.To.ChainAddress), testutil.MustHexDecodeString(msg.Headers.From.ChainAddress), append(encoding.DataPrefix(), []byte("prefixed-bytes")...), signertest.NewMockSigner(mockCtrl), nil).Return(nil)
+					m.EXPECT().Send(gomock.Any(),ethereum.Mainnet, testutil.MustHexDecodeString(msg.Headers.To.ChainAddress), testutil.MustHexDecodeString(msg.Headers.From.ChainAddress), append(encoding.DataPrefix(), []byte("prefixed-bytes")...), signertest.NewMockSigner(mockCtrl), nil).Return(nil)
 					return m
 				}(),
 				func() stores.Sent {
@@ -332,6 +335,7 @@ func Test_Message(t *testing.T) {
 			},
 			funcArgs{
 				context.Background(),
+				ethereum.Mainnet,
 				nil,
 				testutil.CharlottePublicKey,
 				func() sender.Message {
@@ -364,6 +368,7 @@ func Test_Message(t *testing.T) {
 			},
 			funcArgs{
 				context.Background(),
+				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
 				func() sender.Message {
@@ -396,6 +401,7 @@ func Test_Message(t *testing.T) {
 			},
 			funcArgs{
 				context.Background(),
+				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
 				func() sender.Message {
@@ -429,6 +435,7 @@ func Test_Message(t *testing.T) {
 			},
 			funcArgs{
 				context.Background(),
+				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
 				func() sender.Message {
@@ -462,6 +469,7 @@ func Test_Message(t *testing.T) {
 			},
 			funcArgs{
 				context.Background(),
+				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
 				func() sender.Message {
@@ -495,11 +503,12 @@ func Test_Message(t *testing.T) {
 			},
 			funcArgs{
 				context.Background(),
+				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
 				func() sender.Message {
 					m := sendertest.NewMockMessage(mockCtrl)
-					m.EXPECT().Send(gomock.Any(), testutil.MustHexDecodeString(msg.Headers.To.ChainAddress), testutil.MustHexDecodeString(msg.Headers.From.ChainAddress), append(encoding.DataPrefix(), []byte("prefixed-bytes")...), signertest.NewMockSigner(mockCtrl), nil).Return(errors.Errorf("failed sender"))
+					m.EXPECT().Send(gomock.Any(), ethereum.Mainnet, testutil.MustHexDecodeString(msg.Headers.To.ChainAddress), testutil.MustHexDecodeString(msg.Headers.From.ChainAddress), append(encoding.DataPrefix(), []byte("prefixed-bytes")...), signertest.NewMockSigner(mockCtrl), nil).Return(errors.Errorf("failed sender"))
 					return m
 				}(),
 				func() stores.Sent {
@@ -518,7 +527,7 @@ func Test_Message(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotFunc := sendMessage(tt.args.encryptLocation, tt.args.encryptMailMessage, tt.args.prefixedBytes)
-			err := gotFunc(tt.funcArgs.ctx, tt.funcArgs.msg, tt.funcArgs.pubkey, tt.funcArgs.sender, tt.funcArgs.sent, tt.funcArgs.signer)
+			err := gotFunc(tt.funcArgs.ctx, tt.funcArgs.network, tt.funcArgs.msg, tt.funcArgs.pubkey, tt.funcArgs.sender, tt.funcArgs.sent, tt.funcArgs.signer)
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("gotFunc() error = %v, wantErr %v", err, tt.wantErr)

@@ -18,7 +18,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/chains/ethereum"
 )
 
 func TestNetworkNames(t *testing.T) {
@@ -35,7 +35,7 @@ func TestNetworkNames(t *testing.T) {
 			args{
 				"ethereum",
 			},
-			encoding.EthereumNetworks(),
+			ethereum.Networks(),
 		},
 		{
 			"unknown",

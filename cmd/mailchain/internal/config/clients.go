@@ -20,6 +20,7 @@ import (
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/internal/clients/etherscan"
 	"github.com/mailchain/mailchain/sender/ethrpc2"
+	"github.com/mailchain/mailchain/sender/relay"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper" // nolint: depguard
 )
@@ -33,11 +34,16 @@ type ClientsGetter interface {
 	GetEtherRPC2Client(network string) (*ethrpc2.EthRPC2, error)
 	GetEtherscanClient() (*etherscan.APIClient, error)
 	GetEtherscanNoAuthClient() (*etherscan.APIClient, error)
+	GetRelayClient() (*relay.Client, error)
 }
 
 type Clients struct {
 	viper         *viper.Viper
 	requiredInput func(label string) (string, error)
+}
+
+func (c Clients) GetRelayClient() (*relay.Client, error) {
+	return relay.NewClient("https://relay.mailchain.xyz/")
 }
 
 func (c Clients) GetEtherRPC2Client(network string) (*ethrpc2.EthRPC2, error) {
@@ -67,6 +73,8 @@ func (c Clients) SetClient(client, network string) error {
 	case mailchain.ClientEtherscan:
 		return c.setEtherscan()
 	case mailchain.ClientEtherscanNoAuth:
+		return nil
+	case mailchain.ClientRelay:
 		return nil
 	default:
 		return errors.Errorf("unsupported client type")

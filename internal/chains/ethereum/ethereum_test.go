@@ -12,8 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package mailchain
+package ethereum
 
-const RequiresValue = "-"
-const Mailchain = "mailchain"
-const Relay = "relay"
+import (
+	"reflect"
+	"testing"
+)
+
+func TestNetworks(t *testing.T) {
+	tests := []struct {
+		name string
+		want []string
+	}{
+		{
+			"success",
+			[]string{Goerli, Kovan, Mainnet, Rinkeby, Ropsten},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Networks(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Networks() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

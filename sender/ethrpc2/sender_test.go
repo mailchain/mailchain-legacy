@@ -24,11 +24,11 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/internal/chains/ethereum"
-	"github.com/mailchain/mailchain/sender/ethrpc2/ethrpc2test"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/mailbox/signer/signertest"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/sender"
+	"github.com/mailchain/mailchain/sender/ethrpc2/ethrpc2test"
 	"github.com/pkg/errors"
 )
 
@@ -38,9 +38,9 @@ func TestEthRPC2_Send(t *testing.T) {
 	gasPrice := big.NewInt(int64(45))
 	gas := uint64(42345)
 	networkID := big.NewInt(12)
-	mockCtrl := gomock.NewController(t)
 	to := testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")
 	from := testutil.MustHexDecodeString("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2")
+	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type signerOpts struct {
 		arg1 string
@@ -49,12 +49,13 @@ func TestEthRPC2_Send(t *testing.T) {
 		client Client
 	}
 	type args struct {
-		ctx    context.Context
-		to     []byte
-		from   []byte
-		data   []byte
-		signer signer.Signer
-		opts   sender.MessageOpts
+		ctx     context.Context
+		network string
+		to      []byte
+		from    []byte
+		data    []byte
+		signer  signer.Signer
+		opts    sender.MessageOpts
 	}
 	tests := []struct {
 		name    string
@@ -84,6 +85,7 @@ func TestEthRPC2_Send(t *testing.T) {
 			},
 			args{
 				context.Background(),
+				ethereum.Mainnet,
 				to,
 				from,
 				[]byte("transactionDataValue"),
@@ -121,6 +123,7 @@ func TestEthRPC2_Send(t *testing.T) {
 			},
 			args{
 				context.Background(),
+				ethereum.Mainnet,
 				to,
 				from,
 				[]byte("transactionDataValue"),
@@ -157,6 +160,7 @@ func TestEthRPC2_Send(t *testing.T) {
 			},
 			args{
 				context.Background(),
+				ethereum.Mainnet,
 				to,
 				from,
 				[]byte("transactionDataValue"),
@@ -193,6 +197,7 @@ func TestEthRPC2_Send(t *testing.T) {
 			},
 			args{
 				context.Background(),
+				ethereum.Mainnet,
 				to,
 				from,
 				[]byte("transactionDataValue"),
@@ -229,6 +234,7 @@ func TestEthRPC2_Send(t *testing.T) {
 			},
 			args{
 				context.Background(),
+				ethereum.Mainnet,
 				to,
 				from,
 				[]byte("transactionDataValue"),
@@ -260,6 +266,7 @@ func TestEthRPC2_Send(t *testing.T) {
 			},
 			args{
 				context.Background(),
+				ethereum.Mainnet,
 				to,
 				from,
 				[]byte("transactionDataValue"),
@@ -283,6 +290,7 @@ func TestEthRPC2_Send(t *testing.T) {
 			},
 			args{
 				context.Background(),
+				ethereum.Mainnet,
 				to,
 				from,
 				[]byte("transactionDataValue"),
@@ -305,6 +313,7 @@ func TestEthRPC2_Send(t *testing.T) {
 			},
 			args{
 				context.Background(),
+				ethereum.Mainnet,
 				to,
 				from,
 				[]byte("transactionDataValue"),
@@ -322,7 +331,7 @@ func TestEthRPC2_Send(t *testing.T) {
 			e := EthRPC2{
 				client: tt.fields.client,
 			}
-			if err := e.Send(tt.args.ctx, tt.args.to, tt.args.from, tt.args.data, tt.args.signer, tt.args.opts); (err != nil) != tt.wantErr {
+			if err := e.Send(tt.args.ctx, tt.args.network, tt.args.to, tt.args.from, tt.args.data, tt.args.signer, tt.args.opts); (err != nil) != tt.wantErr {
 				t.Errorf("EthRPC2.Send() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

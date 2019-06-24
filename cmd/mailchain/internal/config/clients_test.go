@@ -254,6 +254,19 @@ func TestClients_SetClient(t *testing.T) {
 			map[string]interface{}{},
 		},
 		{
+			"relay",
+			fields{
+				viper.New(),
+				nil,
+			},
+			args{
+				"relay",
+				"mainnet",
+			},
+			false,
+			map[string]interface{}{},
+		},
+		{
 			"err-unknown",
 			fields{
 				viper.New(),
@@ -440,6 +453,46 @@ func TestClients_GetEtherscanClient(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Clients.GetEtherscanClient() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestClients_GetRelayClient(t *testing.T) {
+	type fields struct {
+		viper         *viper.Viper
+		requiredInput func(label string) (string, error)
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantNil bool
+		wantErr bool
+	}{
+		{
+			"success",
+			fields{
+				nil, nil,
+			},
+			false,
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := Clients{
+				viper:         tt.fields.viper,
+				requiredInput: tt.fields.requiredInput,
+			}
+			got, err := c.GetRelayClient()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Clients.GetRelayClient() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if (got == nil) != tt.wantNil {
+				t.Errorf("Clients.GetRelayClient() nil = %v, wantNil %v", got == nil, tt.wantNil)
+				return
 			}
 		})
 	}

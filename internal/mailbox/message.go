@@ -30,7 +30,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-type SendMessageFunc func(ctx context.Context, msg *mail.Message, pubkey crypto.PublicKey,
+type SendMessageFunc func(ctx context.Context, network string, msg *mail.Message, pubkey crypto.PublicKey,
 	sender sender.Message, sent stores.Sent, signer signer.Signer) error
 
 // SendMessageFunc performs all the actions required to send a message.
@@ -48,6 +48,7 @@ func sendMessage(encryptLocation func(pk crypto.PublicKey, location string) ([]b
 	encryptMailMessage func(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error),
 	prefixedBytes func(data proto.Message) ([]byte, error)) SendMessageFunc {
 	return func(ctx context.Context,
+		network string,
 		msg *mail.Message,
 		pubkey crypto.PublicKey,
 		sender sender.Message,
@@ -85,7 +86,7 @@ func sendMessage(encryptLocation func(pk crypto.PublicKey, location string) ([]b
 		//TODO: should not use common to parse address
 		to := common.FromHex(msg.Headers.To.ChainAddress)
 		from := common.FromHex(msg.Headers.From.ChainAddress)
-		if err := sender.Send(ctx, to, from, transactonData, signer, nil); err != nil {
+		if err := sender.Send(ctx, network, to, from, transactonData, signer, nil); err != nil {
 			return errors.WithMessage(err, "could not send transaction")
 		}
 

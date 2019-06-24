@@ -26,6 +26,5 @@ const (
 )
 
 const (
-	Ethereum  = "ethereum"
 	SECP256K1 = "secp256k1"
 )

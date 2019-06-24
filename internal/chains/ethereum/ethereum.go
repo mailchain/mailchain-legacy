@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package encoding
+package ethereum
 
-func EthereumNetworks() []string {
-	return []string{Mainnet, Kovan, Rinkeby, Ropsten, Goerli}
+func Networks() []string {
+	return []string{Goerli, Kovan, Mainnet, Rinkeby, Ropsten}
 }
-
-const Mainnet = "mainnet"
 
 // Ethereum
 const (
+	Goerli  = "goerli"
 	Kovan   = "kovan"
+	Mainnet = "mainnet"
 	Rinkeby = "rinkeby"
 	Ropsten = "ropsten"
-	Goerli  = "goerli"
 )

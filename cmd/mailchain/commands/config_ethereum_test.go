@@ -194,6 +194,7 @@ func Test_configChainEthereum(t *testing.T) {
 		args        args
 		cmdArgs     []string
 		cmdFlags    map[string]string
+		wantOutput  string
 		wantExecErr bool
 	}{
 		{
@@ -218,6 +219,7 @@ func Test_configChainEthereum(t *testing.T) {
 				"sender":            "supplied-sender",
 				"public-key-finder": "supplied-pkf",
 			},
+			"setup ethereum\n\n",
 			false,
 		},
 	}
@@ -232,8 +234,8 @@ func Test_configChainEthereum(t *testing.T) {
 				t.Errorf("configChainEthereum().execute() error = %v, wantExecErr %v", err, tt.wantExecErr)
 				return
 			}
-			if !assert.Equal(got.UsageString(), out) {
-				t.Errorf("configChainEthereum().Execute().out != %v", got.Usage())
+			if !assert.Equal(tt.wantOutput+got.UsageString(), out) {
+				t.Errorf("configChainEthereum().Execute().out != %v", got.UsageString())
 			}
 		})
 	}

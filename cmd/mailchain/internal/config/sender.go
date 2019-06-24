@@ -42,7 +42,6 @@ func (s Sender) Set(chain, network, senderType string) error {
 		return err
 	}
 	s.viper.Set(fmt.Sprintf("chains.%s.networks.%s.sender", chain, network), senderType)
-	fmt.Printf("%q used for sending messages\n", senderType)
 	return nil
 }
 

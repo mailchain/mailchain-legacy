@@ -43,7 +43,6 @@ func (r Receiver) Set(chain, network, receiver string) error {
 		return err
 	}
 	r.viper.Set(fmt.Sprintf("chains.%s.networks.%s.receiver", chain, network), receiver)
-	fmt.Printf("%s used for receiving messages\n", receiver)
 	return nil
 }
 

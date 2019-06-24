@@ -14,6 +14,10 @@
 
 package defaults
 
+import (
+	"github.com/mailchain/mailchain"
+)
+
 const (
 	KeystorePath = "./.mailchain/.keystore"
 	KeystoreType = "nacl-filestore"
@@ -31,4 +35,10 @@ const (
 	CORSAllowedOrigins = "*"
 
 	Port = 8080
+
+	Sender = mailchain.ClientRelay
+
+	EthereumSender          = Sender
+	EthereumReceiver        = mailchain.ClientEtherscanNoAuth
+	EthereumPublicKeyFinder = mailchain.ClientEtherscanNoAuth
 )

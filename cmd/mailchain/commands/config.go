@@ -19,7 +19,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func configCmd(preRun func(cmd *cobra.Command, args []string) error, postRun func(cmd *cobra.Command, args []string) error) *cobra.Command {
+func configCmd(preRun func(cmd *cobra.Command, args []string) error,
+	postRun func(cmd *cobra.Command, args []string) error) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                "config",
 		Short:              "Config mailchain",
@@ -27,22 +28,22 @@ func configCmd(preRun func(cmd *cobra.Command, args []string) error, postRun fun
 		PersistentPreRunE:  preRun,
 		PersistentPostRunE: postRun,
 	}
-	cmd.AddCommand(configChainCmd())
+
+	cmd.AddCommand(configChainCmd(setup.DefaultReceiver(), setup.DefaultSender(), setup.DefaultPubKeyFinder()))
 	cmd.AddCommand(configStorage())
 
 	return cmd
 }
 
-func configChainCmd() *cobra.Command {
+func configChainCmd(receiverSelector, senderSelector, pubKeyFinderSelector setup.ChainNetworkExistingSelector) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "chain",
 		Short: "Select a chain to configure",
-		// Long:  ``,
-		Example: "",
 	}
-	cmd.AddCommand(configChainEthereum())
+	cmd.AddCommand(configChainEthereum(receiverSelector, senderSelector, pubKeyFinderSelector))
 	return cmd
 }
+
 func configStorage() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "storage",

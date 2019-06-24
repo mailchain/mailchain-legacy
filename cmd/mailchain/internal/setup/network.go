@@ -16,11 +16,13 @@ package setup
 
 import (
 	"github.com/mailchain/mailchain"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
 	"github.com/mailchain/mailchain/internal/chains"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
+// QUESTION: can this method be removed?
 func (n Network) Select(cmd *cobra.Command, args []string, chain, network string) (string, error) {
 	networkNames := chains.NetworkNames(chain)
 	if len(networkNames) == 0 {
@@ -33,7 +35,7 @@ func (n Network) Select(cmd *cobra.Command, args []string, chain, network string
 	if _, err := n.receiverSelector.Select(chain, selectedNetwork, mailchain.ClientEtherscanNoAuth); err != nil {
 		return "", err
 	}
-	if _, err := n.senderSelector.Select(chain, selectedNetwork, mailchain.ClientRelay); err != nil {
+	if _, err := n.senderSelector.Select(chain, selectedNetwork, defaults.Sender); err != nil {
 		return "", err
 	}
 	if _, err := n.pubKeyFinderSelector.Select(chain, selectedNetwork, mailchain.ClientEtherscanNoAuth); err != nil {

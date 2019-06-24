@@ -43,7 +43,6 @@ func (p PubKeyFinder) Set(chain, network, pubkeyFinder string) error {
 		return err
 	}
 	p.viper.Set(fmt.Sprintf("chains.%s.networks.%s.pubkey-finder", chain, network), pubkeyFinder)
-	fmt.Printf("%s used for looking up public key\n", pubkeyFinder)
 	return nil
 }
 

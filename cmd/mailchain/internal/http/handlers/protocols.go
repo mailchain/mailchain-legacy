@@ -45,7 +45,7 @@ func GetProtocols(base *settings.Base) func(w http.ResponseWriter, r *http.Reque
 		}
 	}
 
-	// Get swagger:route GET /protocols Addresses GetProtocols
+	// Get swagger:route GET /protocols protocols GetProtocols
 	//
 	// Get protocols and the networks.
 	//

@@ -78,7 +78,7 @@ func compHash(contents []byte, suppliedHex string) error {
 		return err
 	}
 
-	if bytes.Compare(contentsLocationHash, suppliedHash) != 0 {
+	if !bytes.Equal(contentsLocationHash, suppliedHash) {
 		return errors.Errorf("contents and supplied hash do not match")
 	}
 	return nil

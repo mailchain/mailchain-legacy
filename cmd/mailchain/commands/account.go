@@ -19,16 +19,18 @@ import (
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/ttacon/chalk"
 )
 
 // account represents the say command
-func accountCmd(preRun func(cmd *cobra.Command, args []string) error) (*cobra.Command, error) {
+func accountCmd(v *viper.Viper) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "account",
 		Short: "Manage Accounts",
@@ -42,25 +44,22 @@ It is safe to transfer the entire directory or the individual keys therein
 between ethereum nodes by simply copying.
 
 Make sure you backup your keys regularly.`,
-		PersistentPreRunE: preRun,
+		// PersistentPreRunE: preRun,
 	}
 	cmd.PersistentFlags().StringP("key-type", "", "", "Select the chain [secp256k1]")
 
-	addCmd, err := accountAddCmd()
-	if err != nil {
-		return nil, err
-	}
-	cmd.AddCommand(addCmd)
-	cmd.AddCommand(accountListCmd())
+	cmd.AddCommand(accountAddCmd(v))
+	cmd.AddCommand(accountListCmd(v))
 
 	return cmd, nil
 }
 
-func accountAddCmd() (*cobra.Command, error) {
+func accountAddCmd(v *viper.Viper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add",
 		Short: "Add private key",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			s := settings.New(v)
 			keytype, err := getKeyType(cmd)
 			if err != nil {
 				return errors.WithMessage(err, "could not determine `key-type`")
@@ -86,7 +85,7 @@ func accountAddCmd() (*cobra.Command, error) {
 				return errors.WithMessage(err, "could not create `random salt`")
 			}
 			// TODO: currently this only does scrypt need flag + config etc
-			ks, err := config.DefaultKeystore().Get()
+			ks, err := s.Keystore.Produce()
 			if err != nil {
 				return errors.WithMessage(err, "could not create `keystore`")
 			}
@@ -109,21 +108,19 @@ func accountAddCmd() (*cobra.Command, error) {
 
 	cmd.Flags().StringP("chain", "C", "", "Select the chain [ethereum]")
 	cmd.Flags().StringP("private-key", "K", "", "Specify the private key to store")
+	_ = cmd.MarkFlagRequired("private-key")
 	cmd.Flags().String("passphrase", "", "Passphrase to encrypt/decrypt key with")
 
-	if err := cmd.MarkFlagRequired("private-key"); err != nil {
-		return nil, err
-	}
-
-	return cmd, nil
+	return cmd
 }
 
-func accountListCmd() *cobra.Command {
+func accountListCmd(v *viper.Viper) *cobra.Command {
 	return &cobra.Command{
 		Use:   "list",
 		Short: "List accounts",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ks, err := config.DefaultKeystore().Get()
+			s := settings.New(v)
+			ks, err := s.Keystore.Produce()
 			if err != nil {
 				return errors.WithMessage(err, "could not create `keystore`")
 			}

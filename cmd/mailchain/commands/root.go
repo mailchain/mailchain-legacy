@@ -15,35 +15,35 @@
 package commands
 
 import (
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func rootCmd(viper *viper.Viper) (*cobra.Command, error) {
+func rootCmd(v *viper.Viper) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "mailchain",
 		Short: "Mailchain node.",
 		Long: `Decentralized Mailchain client, run it locally.
 Complete documentation is available at https://github.com/mailchain/mailchain`,
+		PersistentPreRunE: prerunInitConfig(v),
 	}
 	cmd.PersistentFlags().String("config", "", "config file (default is $HOME/.mailchain/.mailchain.yaml)")
 	cmd.PersistentFlags().String("log-level", "warn", "log level [Panic,Fatal,Error,Warn,Info,Debug]")
 
 	// TODO: this should not be persistent flags
 	cmd.PersistentFlags().Bool("empty-passphrase", false, "no passphrase and no prompt")
+	cmd.PersistentFlags().Bool("prevent-init-config", false, "stop automatically creating config if non is found")
 
-	prerun := prerunInitConfig(viper)
-	account, err := accountCmd(prerun)
+	account, err := accountCmd(v)
 	if err != nil {
 		return nil, err
 	}
 	cmd.AddCommand(account)
-	cmd.AddCommand(configCmd(prerun, config.WriteConfig(viper)))
+	// cmd.AddCommand(configCmd(prerun, config.WriteConfig(v)))
 
-	cmd.AddCommand(initCmd(viper))
+	// cmd.AddCommand(initCmd(v))
 
-	serve, err := serveCmd(prerun)
+	serve, err := serveCmd()
 	if err != nil {
 		return nil, err
 	}

@@ -45,7 +45,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		finder, ok := finders[fmt.Sprintf("ethereum.%s", network)]
+		finder, ok := finders[fmt.Sprintf("ethereum/%s", network)]
 		if !ok {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no public key finder for chain.network configured"))
 			return

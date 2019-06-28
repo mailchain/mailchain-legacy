@@ -19,8 +19,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
 	"github.com/pkg/errors"
@@ -31,33 +32,34 @@ import (
 	"github.com/urfave/negroni"
 )
 
-func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
+func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 	r := mux.NewRouter()
-	r.HandleFunc("/api/spec.json", handlers.GetSpec()).Methods("GET")
-	r.HandleFunc("/api/docs", handlers.GetDocs()).Methods("GET")
-	vpr := viper.GetViper()
-	receivers, err := config.DefaultReceiver().GetReceivers()
+	api := r.PathPrefix("/api").Subrouter()
+	api.HandleFunc("/spec.json", handlers.GetSpec()).Methods("GET")
+	api.HandleFunc("/docs", handlers.GetDocs()).Methods("GET")
+	receivers, err := s.Ethereum.GetReceivers(s.Receivers)
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure receivers")
 	}
-	pubKeyFinders, err := config.DefaultPubKeyFinder().GetFinders()
+	pubKeyFinders, err := s.Ethereum.GetPublicKeyFinders(s.PublicKeyFinders)
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure receivers")
 	}
-	senders, err := config.DefaultSender().GetSenders()
+
+	senders, err := s.Ethereum.GetSenders(s.Senders)
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not configure senders")
 	}
 
-	sentStorage, err := config.DefaultSentStore().Get()
+	sentStorage, err := s.SentStore.Produce()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config store")
 	}
-	mailboxStore, err := config.GetStateStore(vpr)
+	mailboxStore, err := s.MailboxState.Produce()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config mailbox store")
 	}
-	keystore, err := config.DefaultKeystore().Get()
+	keystore, err := s.Keystore.Produce()
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not create `keystore`")
 	}
@@ -69,16 +71,18 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 	deriveKeyOptions := multi.OptionsBuilders{
 		Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase(passphrase)},
 	}
-	r.HandleFunc("/api/addresses", handlers.GetAddresses(keystore)).Methods("GET")
-	r.HandleFunc("/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/public-key", handlers.GetPublicKey(pubKeyFinders)).Methods("GET")
-	r.HandleFunc(
-		"/api/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/messages",
+
+	api.HandleFunc("/addresses", handlers.GetAddresses(keystore)).Methods("GET")
+
+	api.HandleFunc("/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/public-key", handlers.GetPublicKey(pubKeyFinders)).Methods("GET")
+	api.HandleFunc(
+		"/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/messages",
 		handlers.GetMessages(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")
-	r.HandleFunc("/api/ethereum/{network}/messages/send",
+	api.HandleFunc("/ethereum/{network}/messages/send",
 		handlers.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
-	r.HandleFunc("/api/messages/{message_id}/read", handlers.GetRead(mailboxStore)).Methods("GET")
-	r.HandleFunc("/api/messages/{message_id}/read", handlers.PutRead(mailboxStore)).Methods("PUT")
-	r.HandleFunc("/api/messages/{message_id}/read", handlers.DeleteRead(mailboxStore)).Methods("DELETE")
+	api.HandleFunc("/messages/{message_id}/read", handlers.GetRead(mailboxStore)).Methods("GET")
+	api.HandleFunc("/messages/{message_id}/read", handlers.PutRead(mailboxStore)).Methods("PUT")
+	api.HandleFunc("/messages/{message_id}/read", handlers.DeleteRead(mailboxStore)).Methods("DELETE")
 
 	_ = r.Walk(gorillaWalkFn)
 	return r, nil
@@ -87,7 +91,6 @@ func CreateRouter(cmd *cobra.Command) (http.Handler, error) {
 func SetupFlags(cmd *cobra.Command) error {
 	cmd.Flags().Int("port", defaults.Port, "Port to run server on")
 	cmd.Flags().Bool("cors-disabled", defaults.CORSDisabled, "Disable CORS on the server")
-	cmd.Flags().String("cors-allowed-origins", defaults.CORSAllowedOrigins, "Allowed origins for CORS")
 
 	if err := viper.BindPFlag("server.port", cmd.Flags().Lookup("port")); err != nil {
 		return err
@@ -95,19 +98,19 @@ func SetupFlags(cmd *cobra.Command) error {
 	if err := viper.BindPFlag("server.cors.disabled", cmd.Flags().Lookup("cors-disabled")); err != nil {
 		return err
 	}
-	if err := viper.BindPFlag("server.cors.allowed-origins", cmd.Flags().Lookup("cors-allowed-origins")); err != nil {
-		return err
-	}
+	// if err := viper.BindPFlag("server.cors.allowed-origins", cmd.Flags().Lookup("cors-allowed-origins")); err != nil {
+	// 	return err
+	// }
 
 	cmd.PersistentFlags().String("passphrase", "", "Passphrase to encrypt/decrypt key with")
 	return nil
 }
 
-func CreateNegroni(router http.Handler) *negroni.Negroni {
+func CreateNegroni(config *settings.Server, router http.Handler) *negroni.Negroni {
 	n := negroni.New()
-	if !viper.GetBool("server.cors.disabled") {
+	if !config.CORS.Disabled.Get() {
 		n.Use(cors.New(cors.Options{
-			AllowedOrigins: []string{viper.GetString("server.cors.allowed-origins")},
+			AllowedOrigins: config.CORS.AllowedOrigins.Get(),
 			AllowedHeaders: []string{"Authorization", "Content-Type"},
 			AllowedMethods: []string{"GET", "PUT", "DELETE", "POST", "HEAD", "PATCH"},
 			MaxAge:         86400,

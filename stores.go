@@ -16,5 +16,6 @@ package mailchain
 
 const (
 	StoreNACLFilestore = "nacl-filestore"
-	StoreS3                    = "s3"
+	StoreS3            = "s3"
+	StoreLevelDB       = "leveldb"
 )

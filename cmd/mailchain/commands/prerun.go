@@ -15,29 +15,17 @@
 package commands
 
 import (
-	"fmt"
-
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
-	"github.com/ttacon/chalk"
 )
 
-func prerunInitConfig(viper *viper.Viper) func(cmd *cobra.Command, args []string) error {
+func prerunInitConfig(v *viper.Viper) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
-
 		cfgFile, _ := cmd.Flags().GetString("config")
 		logLevel, _ := cmd.Flags().GetString("log-level")
+		preventInitConfig, _ := cmd.Flags().GetBool("prevent-init-config")
 
-		if err := config.Init(viper, cfgFile, logLevel); err != nil {
-			fmt.Println(err)
-
-			fmt.Printf(
-				"Run %s to configure create or specify with %s\n",
-				chalk.Bold.TextStyle("`mailchain init`"),
-				chalk.Bold.TextStyle("`--config`"))
-			return err
-		}
-		return nil
+		return settings.InitStore(v, cfgFile, logLevel, !preventInitConfig)
 	}
 }

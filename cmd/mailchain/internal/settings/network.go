@@ -11,20 +11,25 @@ import (
 
 func network(s values.Store, protocol, network string) *Network {
 	k := &Network{
+		Kind: network,
 		PublicKeyFinder: values.NewDefaultString(defaults.EthereumReceiver, s,
 			fmt.Sprintf("protocols.%s.networks.%s.public-key-finder", protocol, network)),
 		Receiver: values.NewDefaultString(defaults.EthereumReceiver, s,
 			fmt.Sprintf("protocols.%s.networks.%s.receiver", protocol, network)),
 		Sender: values.NewDefaultString(fmt.Sprintf("%s-relay", protocol), s,
 			fmt.Sprintf("protocols.%s.networks.%s.sender", protocol, network)),
+		Disabled: values.NewDefaultBool(false, s,
+			fmt.Sprintf("protocols.%s.networks.%s.disabled", protocol, network)),
 	}
 	return k
 }
 
 type Network struct {
+	Kind            string
 	PublicKeyFinder values.String
 	Receiver        values.String
 	Sender          values.String
+	Disabled        values.Bool
 }
 
 func (s Network) ProduceSender(senders *Senders) (sender.Message, error) {

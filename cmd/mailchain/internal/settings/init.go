@@ -62,11 +62,7 @@ func InitStore(v *viper.Viper, cfgFile, logLevel string, createFile bool) error 
 	log.SetOutput(os.Stdout)
 	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
 
-	// v.SetConfigType(defaults.ConfigFileKind)
 	v.SetEnvPrefix("mc")
-	// v.SetConfigName(defaults.ConfigFileName)   // name of config file (without extension)
-	// v.AddConfigPath(defaults.ConfigPathFirst)  // adding current directory as first search path
-	// v.AddConfigPath(defaults.ConfigPathSecond) // adding home directory as second search path
 	v.AutomaticEnv()
 
 	v.SetConfigFile(cfgFile)

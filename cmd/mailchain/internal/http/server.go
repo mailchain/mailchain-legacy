@@ -15,6 +15,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -37,19 +38,6 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 	api := r.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/spec.json", handlers.GetSpec()).Methods("GET")
 	api.HandleFunc("/docs", handlers.GetDocs()).Methods("GET")
-	receivers, err := s.Ethereum.GetReceivers(s.Receivers)
-	if err != nil {
-		return nil, errors.WithMessage(err, "Could not configure receivers")
-	}
-	pubKeyFinders, err := s.Ethereum.GetPublicKeyFinders(s.PublicKeyFinders)
-	if err != nil {
-		return nil, errors.WithMessage(err, "Could not configure receivers")
-	}
-
-	senders, err := s.Ethereum.GetSenders(s.Senders)
-	if err != nil {
-		return nil, errors.WithMessage(err, "Could not configure senders")
-	}
 
 	sentStorage, err := s.SentStore.Produce()
 	if err != nil {
@@ -74,15 +62,38 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 
 	api.HandleFunc("/addresses", handlers.GetAddresses(keystore)).Methods("GET")
 
-	api.HandleFunc("/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/public-key", handlers.GetPublicKey(pubKeyFinders)).Methods("GET")
-	api.HandleFunc(
-		"/ethereum/{network}/address/{address:[-0-9a-zA-Z]+}/messages",
-		handlers.GetMessages(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")
-	api.HandleFunc("/ethereum/{network}/messages/send",
-		handlers.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
+	for protocol := range s.Protocols {
+		name := s.Protocols[protocol].Kind
+		pubKeyFinders, err := s.Protocols[protocol].GetPublicKeyFinders(s.PublicKeyFinders)
+		if err != nil {
+			return nil, errors.WithMessagef(err, "Could not get %q receivers", name)
+		}
+
+		api.HandleFunc(
+			fmt.Sprintf("/%s/{network}/address/{address:[-0-9a-zA-Z]+}/public-key", name),
+			handlers.GetPublicKey(pubKeyFinders)).Methods("GET")
+
+		receivers, err := s.Protocols[protocol].GetReceivers(s.Receivers)
+		if err != nil {
+			return nil, errors.WithMessagef(err, "Could not get %q receivers", name)
+		}
+		api.HandleFunc(
+			fmt.Sprintf("/%s/{network}/address/{address:[-0-9a-zA-Z]+}/messages", name),
+			handlers.GetMessages(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")
+
+		senders, err := s.Protocols[protocol].GetSenders(s.Senders)
+		if err != nil {
+			return nil, errors.WithMessagef(err, "Could not get %q senders", name)
+		}
+		api.HandleFunc(
+			fmt.Sprintf("/%s/{network}/messages/send", name),
+			handlers.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
+	}
 	api.HandleFunc("/messages/{message_id}/read", handlers.GetRead(mailboxStore)).Methods("GET")
 	api.HandleFunc("/messages/{message_id}/read", handlers.PutRead(mailboxStore)).Methods("PUT")
 	api.HandleFunc("/messages/{message_id}/read", handlers.DeleteRead(mailboxStore)).Methods("DELETE")
+
+	api.HandleFunc("/protocols", handlers.GetProtocols(s)).Methods("GET")
 
 	_ = r.Walk(gorillaWalkFn)
 	return r, nil

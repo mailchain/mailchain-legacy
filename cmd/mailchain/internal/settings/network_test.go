@@ -24,6 +24,7 @@ func Test_network(t *testing.T) {
 		wantPublicKeyFinder string
 		wantReceiver        string
 		wantSender          string
+		wantDisabled        bool
 	}{
 		{
 			"success",
@@ -33,6 +34,7 @@ func Test_network(t *testing.T) {
 					m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.public-key-finder").Return(false)
 					m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.sender").Return(false)
 					m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.receiver").Return(false)
+					m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.disabled").Return(false)
 					return m
 				}(),
 				"ethereum",
@@ -41,6 +43,7 @@ func Test_network(t *testing.T) {
 			"etherscan-no-auth",
 			"etherscan-no-auth",
 			"ethereum-relay",
+			false,
 		},
 	}
 	for _, tt := range tests {
@@ -49,6 +52,7 @@ func Test_network(t *testing.T) {
 			assert.Equal(tt.wantPublicKeyFinder, got.PublicKeyFinder.Get())
 			assert.Equal(tt.wantReceiver, got.Receiver.Get())
 			assert.Equal(tt.wantSender, got.Sender.Get())
+			assert.Equal(tt.wantDisabled, got.Disabled.Get())
 		})
 	}
 }
@@ -60,6 +64,7 @@ func TestNetwork_ProduceSender(t *testing.T) {
 		PublicKeyFinder values.String
 		Receiver        values.String
 		Sender          values.String
+		Disabled        values.Bool
 	}
 	type args struct {
 		senders *Senders
@@ -81,6 +86,7 @@ func TestNetwork_ProduceSender(t *testing.T) {
 					m.EXPECT().Get().Return("ethereum-relay")
 					return m
 				}(),
+				nil,
 			},
 			args{
 				senders(func() values.Store {

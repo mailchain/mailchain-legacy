@@ -20,3 +20,4 @@ coverage.out
 dist
 debug
 .mailchain
+tmp

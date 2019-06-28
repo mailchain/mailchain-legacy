@@ -17,28 +17,29 @@ package commands
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper" // nolint: depguard
 	"github.com/ttacon/chalk"
 )
 
-func serveCmd(preRun func(cmd *cobra.Command, args []string) error) (*cobra.Command, error) {
+func serveCmd() (*cobra.Command, error) {
 	cmd := &cobra.Command{
-		Use:               "serve",
-		Short:             "Serve the mailchain application",
-		PersistentPreRunE: preRun,
+		Use:   "serve",
+		Short: "Serve the mailchain application",
+		// PersistentPreRunE: preRun,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			router, err := http.CreateRouter(cmd)
+			config := settings.New(viper.GetViper())
+			router, err := http.CreateRouter(config, cmd)
 			if err != nil {
 				return err
 			}
-
 			fmt.Println(chalk.Bold.TextStyle(fmt.Sprintf(
 				"Find out more by visiting the docs http://127.0.0.1:%d/api/docs",
-				config.GetServerPort())))
+				config.Server.Port.Get())))
 
-			http.CreateNegroni(router).Run(fmt.Sprintf(":%d", config.GetServerPort()))
+			http.CreateNegroni(config.Server, router).Run(fmt.Sprintf(":%d", config.Server.Port.Get()))
 			return nil
 		},
 	}

@@ -14,34 +14,34 @@
 
 package commands
 
-import (
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
-	"github.com/mailchain/mailchain/stores"
-	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
-)
+// import (
+// 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
+// 	"github.com/mailchain/mailchain/stores"
+// 	"github.com/pkg/errors"
+// 	"github.com/spf13/cobra"
+// )
 
-func configStorageSent(sentSelector setup.SimpleSelector) *cobra.Command {
-	validArgs := stores.SentStoreNames()
+// func configStorageSent(sentSelector setup.SimpleSelector) *cobra.Command {
+// 	validArgs := stores.SentStoreNames()
 
-	cmd := &cobra.Command{
-		Use:                   "sent STORE",
-		Short:                 "configure sent storage",
-		Long:                  `Mailchain stores the sent messages so that the recipient can download them.`,
-		DisableFlagsInUseLine: true,
-		Example:               formatExampleText("mailchain config storage sent mailchain", validArgs),
-		Args:                  exactAndOnlyValid(1),
-		ValidArgs:             validArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			store := args[0]
-			senderStoreType, err := sentSelector.Select(store)
-			if err != nil {
-				return errors.WithStack(err)
-			}
+// 	cmd := &cobra.Command{
+// 		Use:                   "sentstore STORE",
+// 		Short:                 "configure sent storage",
+// 		Long:                  `Mailchain stores the sent messages so that the recipient can download them.`,
+// 		DisableFlagsInUseLine: true,
+// 		Example:               formatExampleText("mailchain config storage sent mailchain", validArgs),
+// 		Args:                  exactAndOnlyValid(1),
+// 		ValidArgs:             validArgs,
+// 		RunE: func(cmd *cobra.Command, args []string) error {
+// 			store := args[0]
+// 			senderStoreType, err := sentSelector.Select(store)
+// 			if err != nil {
+// 				return errors.WithStack(err)
+// 			}
 
-			cmd.Printf("Sent store %q configured\n", senderStoreType)
-			return nil
-		},
-	}
-	return cmd
-}
+// 			cmd.Printf("Sent store %q configured\n", senderStoreType)
+// 			return nil
+// 		},
+// 	}
+// 	return cmd
+// }

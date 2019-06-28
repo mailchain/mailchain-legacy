@@ -68,7 +68,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Message.Headers.From))
 			return
 		}
-		sender, ok := senders[fmt.Sprintf("ethereum.%s", req.network)]
+		sender, ok := senders[fmt.Sprintf("ethereum/%s", req.network)]
 		if !ok {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender for chain.network configured"))
 			return

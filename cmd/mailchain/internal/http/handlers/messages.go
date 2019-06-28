@@ -52,7 +52,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		receiver, ok := receivers[fmt.Sprintf("ethereum.%s", req.Network)]
+		receiver, ok := receivers[fmt.Sprintf("ethereum/%s", req.Network)]
 		if !ok {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no receiver for chain.network configured"))
 			return

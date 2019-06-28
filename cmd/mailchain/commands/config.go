@@ -14,44 +14,33 @@
 
 package commands
 
-import (
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
-	"github.com/spf13/cobra"
-)
+// import (
+// 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
+// 	"github.com/spf13/cobra"
+// )
 
-func configCmd(preRun func(cmd *cobra.Command, args []string) error,
-	postRun func(cmd *cobra.Command, args []string) error) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:                "config",
-		Short:              "Config mailchain",
-		Aliases:            []string{"cfg"},
-		PersistentPreRunE:  preRun,
-		PersistentPostRunE: postRun,
-	}
+// func configCmd(preRun func(cmd *cobra.Command, args []string) error,
+// 	postRun func(cmd *cobra.Command, args []string) error) *cobra.Command {
+// 	cmd := &cobra.Command{
+// 		Use:                "config",
+// 		Short:              "Config mailchain",
+// 		Aliases:            []string{"cfg"},
+// 		PersistentPreRunE:  preRun,
+// 		PersistentPostRunE: postRun,
+// 	}
 
-	cmd.AddCommand(configChainCmd(setup.DefaultReceiver(), setup.DefaultSender(), setup.DefaultPubKeyFinder()))
-	cmd.AddCommand(configStorage())
+// 	cmd.AddCommand(configChainCmd(setup.DefaultReceiver(), setup.DefaultSender(), setup.DefaultPubKeyFinder()))
+// 	cmd.AddCommand(configKeystore(setup.DefaultKeystore()))
+// 	cmd.AddCommand(configStorageSent(setup.DefaultSentStorage()))
 
-	return cmd
-}
+// 	return cmd
+// }
 
-func configChainCmd(receiverSelector, senderSelector, pubKeyFinderSelector setup.ChainNetworkExistingSelector) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "chain",
-		Short: "Select a chain to configure",
-	}
-	cmd.AddCommand(configChainEthereum(receiverSelector, senderSelector, pubKeyFinderSelector))
-	return cmd
-}
-
-func configStorage() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "storage",
-		Short: "Select a storage backend to configure",
-		Long:  "Mailchain has multiple storage backends, this command you can configure each of them.",
-	}
-	cmd.AddCommand(configKeystore(setup.DefaultKeystore()))
-	cmd.AddCommand(configStorageSent(setup.DefaultSentStorage()))
-
-	return cmd
-}
+// func configChainCmd(receiverSelector, senderSelector, pubKeyFinderSelector setup.ChainNetworkExistingSelector) *cobra.Command {
+// 	cmd := &cobra.Command{
+// 		Use:   "chain",
+// 		Short: "Select a chain to configure",
+// 	}
+// 	cmd.AddCommand(configChainEthereum(receiverSelector, senderSelector, pubKeyFinderSelector))
+// 	return cmd
+// }

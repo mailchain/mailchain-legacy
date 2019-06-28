@@ -30,11 +30,11 @@ import (
 	"github.com/pkg/errors"
 )
 
-func NewSentStore() SentStore {
+func NewSentStore() *SentStore {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
-	return SentStore{
+	return &SentStore{
 		domain:     "https://mcx.mx",
 		newRequest: http.NewRequest,
 		doRequest:  client.Do,

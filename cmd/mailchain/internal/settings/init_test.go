@@ -52,6 +52,16 @@ func TestInitStore(t *testing.T) {
 					return f
 				}(),
 				"DEBUG", true},
+			false,
+		},
+		{
+			"err-dont-create-file",
+			args{viper.New(),
+				func() string {
+					f := "./tmp/init-dont-create.yaml"
+					return f
+				}(),
+				"DEBUG", false},
 			true,
 		},
 		{

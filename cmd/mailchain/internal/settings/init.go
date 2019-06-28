@@ -22,9 +22,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus" // nolint: depguard
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper" // nolint: depguard
-	"github.com/ttacon/chalk"
+	"github.com/spf13/viper"         // nolint: depguard
 )
 
 // // MailchainHome set home directory for mailchain
@@ -75,7 +73,7 @@ func InitStore(v *viper.Viper, cfgFile, logLevel string, createFile bool) error 
 
 	err = v.ReadInConfig()
 	_, ok := err.(viper.ConfigFileNotFoundError)
-	if ok || err != nil && strings.Contains(err.Error(), "no such file or directory") && createFile {
+	if ok || err != nil && strings.Contains(err.Error(), "no such file or directory") {
 		if createFile {
 			return createEmptyFile(v, cfgFile)
 		}
@@ -95,12 +93,12 @@ func createEmptyFile(v *viper.Viper, fileName string) error {
 	return v.WriteConfigAs(fileName)
 }
 
-func WriteConfig(v *viper.Viper) func(cmd *cobra.Command, args []string) error {
-	return func(cmd *cobra.Command, args []string) error {
-		if err := v.WriteConfig(); err != nil {
-			return errors.WithStack(err)
-		}
-		cmd.Printf(chalk.Green.Color("Config saved\n"))
-		return nil
-	}
-}
+// func WriteConfig(v *viper.Viper) func(cmd *cobra.Command, args []string) error {
+// 	return func(cmd *cobra.Command, args []string) error {
+// 		if err := v.WriteConfig(); err != nil {
+// 			return errors.WithStack(err)
+// 		}
+// 		cmd.Printf(chalk.Green.Color("Config saved\n"))
+// 		return nil
+// 	}
+// }

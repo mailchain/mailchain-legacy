@@ -1,6 +1,8 @@
 package settings
 
 import (
+	"fmt"
+
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/internal/mailbox"
@@ -9,7 +11,9 @@ import (
 
 func protocol(s values.Store, protocol string) *Protocol {
 	return &Protocol{
-		protocol: protocol,
+		Disabled: values.NewDefaultBool(false, s,
+			fmt.Sprintf("protocols.%s.disabled", protocol)),
+		Kind: protocol,
 		Networks: map[string]*Network{
 			ethereum.Goerli:  network(s, protocol, ethereum.Goerli),
 			ethereum.Kovan:   network(s, protocol, ethereum.Kovan),
@@ -22,7 +26,8 @@ func protocol(s values.Store, protocol string) *Protocol {
 
 type Protocol struct {
 	Networks map[string]*Network
-	protocol string
+	Kind     string
+	Disabled values.Bool
 }
 
 func (p Protocol) GetSenders(senders *Senders) (map[string]sender.Message, error) {
@@ -32,7 +37,7 @@ func (p Protocol) GetSenders(senders *Senders) (map[string]sender.Message, error
 		if err != nil {
 			return nil, err
 		}
-		msg[p.protocol+"/"+network] = s
+		msg[p.Kind+"/"+network] = s
 	}
 	return msg, nil
 }
@@ -44,7 +49,7 @@ func (p Protocol) GetReceivers(receivers *Receivers) (map[string]mailbox.Receive
 		if err != nil {
 			return nil, err
 		}
-		msg[p.protocol+"/"+network] = s
+		msg[p.Kind+"/"+network] = s
 	}
 	return msg, nil
 }
@@ -56,7 +61,7 @@ func (p Protocol) GetPublicKeyFinders(publicKeyFinders *PublicKeyFinders) (map[s
 		if err != nil {
 			return nil, err
 		}
-		msg[p.protocol+"/"+network] = s
+		msg[p.Kind+"/"+network] = s
 	}
 	return msg, nil
 }

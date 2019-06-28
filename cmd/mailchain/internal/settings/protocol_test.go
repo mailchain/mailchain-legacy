@@ -16,7 +16,7 @@ func TestProtocol_GetSenders(t *testing.T) {
 	defer mockCtrl.Finish()
 	type fields struct {
 		Networks map[string]*Network
-		protocol string
+		Kind     string
 	}
 	type args struct {
 		senders *Senders
@@ -84,7 +84,7 @@ func TestProtocol_GetSenders(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p := Protocol{
 				Networks: tt.fields.Networks,
-				protocol: tt.fields.protocol,
+				Kind:     tt.fields.Kind,
 			}
 			got, err := p.GetSenders(tt.args.senders)
 			if (err != nil) != tt.wantErr {
@@ -109,7 +109,7 @@ func TestProtocol_GetReceivers(t *testing.T) {
 	defer mockCtrl.Finish()
 	type fields struct {
 		Networks map[string]*Network
-		protocol string
+		Kind     string
 	}
 	type args struct {
 		receivers *Receivers
@@ -177,7 +177,7 @@ func TestProtocol_GetReceivers(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p := Protocol{
 				Networks: tt.fields.Networks,
-				protocol: tt.fields.protocol,
+				Kind:     tt.fields.Kind,
 			}
 			got, err := p.GetReceivers(tt.args.receivers)
 			if (err != nil) != tt.wantErr {
@@ -202,7 +202,7 @@ func TestProtocol_GetPublicKeyFinders(t *testing.T) {
 	defer mockCtrl.Finish()
 	type fields struct {
 		Networks map[string]*Network
-		protocol string
+		Kind     string
 	}
 	type args struct {
 		publicKeyFinders *PublicKeyFinders
@@ -270,7 +270,7 @@ func TestProtocol_GetPublicKeyFinders(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p := Protocol{
 				Networks: tt.fields.Networks,
-				protocol: tt.fields.protocol,
+				Kind:     tt.fields.Kind,
 			}
 			got, err := p.GetPublicKeyFinders(tt.args.publicKeyFinders)
 			if (err != nil) != tt.wantErr {
@@ -298,20 +298,23 @@ func Test_protocol(t *testing.T) {
 		protocol string
 	}
 	tests := []struct {
-		name     string
-		args     args
-		wantKeys []string
+		name         string
+		args         args
+		wantKeys     []string
+		wantDisabled bool
 	}{
 		{
 			"success",
 			args{
 				func() values.Store {
 					m := valuestest.NewMockStore(mockCtrl)
+					m.EXPECT().IsSet("protocols.ethereum.disabled").Return(false)
 					return m
 				}(),
 				"ethereum",
 			},
 			[]string{"goerli", "kovan", "mainnet", "rinkeby", "ropsten"},
+			false,
 		},
 	}
 	for _, tt := range tests {
@@ -325,6 +328,7 @@ func Test_protocol(t *testing.T) {
 			if !assert.EqualValues(gotKeys, tt.wantKeys) {
 				t.Errorf("protocol().Networks = %v, want %v", got, tt.wantKeys)
 			}
+			assert.Equal(tt.wantDisabled, got.Disabled.Get())
 		})
 	}
 }

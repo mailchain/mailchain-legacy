@@ -11,7 +11,9 @@ func New(s values.Store) *Base {
 		Senders:          senders(s),
 		Receivers:        receivers(s),
 		PublicKeyFinders: publicKeyFinders(s),
-		Ethereum:         protocol(s, chains.Ethereum),
+		Protocols: map[string]*Protocol{
+			chains.Ethereum: protocol(s, chains.Ethereum),
+		},
 		// other
 		Keystore:     keystore(s),
 		MailboxState: mailboxState(s),
@@ -25,7 +27,8 @@ type Base struct {
 	Receivers        *Receivers
 	PublicKeyFinders *PublicKeyFinders
 	// protocol
-	Ethereum *Protocol
+	Protocols map[string]*Protocol
+	// Ethereum  *Protocol
 	// other
 	Keystore     *Keystore
 	MailboxState *MailboxState

@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/mailchain/mailchain.svg?branch=master&style=for-the-badge)](https://travis-ci.com/mailchain/mailchain.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/mailchain/mailchain/badge.svg?branch=master)](https://coveralls.io/github/mailchain/mailchain?branch=master)
-[![Go Report Card](https://goreportcard.com/badge/github.com/mailchain/mailchain)](https://goreportcard.com/report/github.com/mailchain/mailchain)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mailchain/mailchain)](https://goreportcard.com/report/github.com/mailchain/mailchain) [![Join the chat at https://gitter.im/Mailchain/mailchain](https://badges.gitter.im/Mailchain/mailchain.svg)](https://gitter.im/Mailchain/mailchain?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## Introduction
 

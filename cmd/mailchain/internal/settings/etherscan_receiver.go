@@ -1,5 +1,4 @@
 // nolint: dupl
-
 package settings
 
 import (

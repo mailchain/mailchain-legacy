@@ -20,6 +20,8 @@ import (
 	"strings"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
+	"github.com/mailchain/mailchain"
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus" // nolint: depguard
 	"github.com/spf13/viper"         // nolint: depguard
@@ -40,18 +42,19 @@ import (
 // }
 func InitStore(v *viper.Viper, cfgFile, logLevel string, createFile bool) error {
 	if cfgFile == "" {
-		// working directory
-		dir, err := os.Getwd()
-		if err != nil {
-			return err
-		}
-		cfgFile = filepath.Join(dir, defaults.ConfigFileName, defaults.ConfigFileName+"."+defaults.ConfigFileKind)
-		// home directory
-		// dir, err := homedir.Dir()
+		// // working directory
+		// dir, err := os.Getwd()
 		// if err != nil {
 		// 	return err
 		// }
-		// cfgFile = filepath.Join(dir, defaults.ConfigFileName+"."+defaults.ConfigFileKind)
+		// cfgFile = filepath.Join(dir, defaults.ConfigSubDirName, defaults.ConfigFileName+"."+defaults.ConfigFileKind)
+
+		// home directory
+		dir, err := homedir.Dir()
+		if err != nil {
+			return err
+		}
+		cfgFile = filepath.Join(dir, defaults.ConfigSubDirName, defaults.ConfigFileName+"."+defaults.ConfigFileKind)
 	}
 	lvl, err := log.ParseLevel(strings.ToLower(logLevel))
 	if err != nil {
@@ -86,15 +89,6 @@ func createEmptyFile(v *viper.Viper, fileName string) error {
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
 	}
+	v.Set("version", mailchain.Version)
 	return v.WriteConfigAs(fileName)
 }
-
-// func WriteConfig(v *viper.Viper) func(cmd *cobra.Command, args []string) error {
-// 	return func(cmd *cobra.Command, args []string) error {
-// 		if err := v.WriteConfig(); err != nil {
-// 			return errors.WithStack(err)
-// 		}
-// 		cmd.Printf(chalk.Green.Color("Config saved\n"))
-// 		return nil
-// 	}
-// }

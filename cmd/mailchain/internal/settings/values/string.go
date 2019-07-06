@@ -25,9 +25,6 @@ func (d DefaultString) Set(v string) {
 }
 
 func NewDefaultString(defVal string, store Store, setting string) String {
-	// if strings.Contains(setting, "-") {
-	// 	log.Panicf("setting %q must not contain \"-\"", setting)
-	// }
 	return DefaultString{
 		def:     defVal,
 		setting: setting,

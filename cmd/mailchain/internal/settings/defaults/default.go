@@ -31,6 +31,7 @@ const (
 	ConfigPathFirst  = "./.mailchain"
 	ConfigPathSecond = "$HOME/.mailchain"
 	ConfigFileName   = ".mailchain"
+	ConfigSubDirName = ".mailchain"
 	ConfigFileKind   = "yaml"
 	ConfigFile       = ConfigPathFirst + "/" + ".mailchain" + "." + ConfigFileKind
 

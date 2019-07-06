@@ -32,14 +32,14 @@ type Network struct {
 	Disabled        values.Bool
 }
 
-func (s Network) ProduceSender(senders *Senders) (sender.Message, error) {
+func (s *Network) ProduceSender(senders *Senders) (sender.Message, error) {
 	return senders.Produce(s.Sender.Get())
 }
 
-func (s Network) ProduceReceiver(receivers *Receivers) (mailbox.Receiver, error) {
+func (s *Network) ProduceReceiver(receivers *Receivers) (mailbox.Receiver, error) {
 	return receivers.Produce(s.Receiver.Get())
 }
 
-func (s Network) ProducePublicKeyFinders(publicKeyFinders *PublicKeyFinders) (mailbox.PubKeyFinder, error) {
+func (s *Network) ProducePublicKeyFinders(publicKeyFinders *PublicKeyFinders) (mailbox.PubKeyFinder, error) {
 	return publicKeyFinders.Produce(s.PublicKeyFinder.Get())
 }

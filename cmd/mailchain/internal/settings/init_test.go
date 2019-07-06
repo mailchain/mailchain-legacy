@@ -67,7 +67,7 @@ func TestInitStore(t *testing.T) {
 		{
 			"invalid-level-empty-file",
 			args{viper.New(), "", "INVALID", false},
-			true,
+			false,
 		},
 	}
 	for _, tt := range tests {

@@ -16,8 +16,11 @@ package settings
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 
@@ -65,8 +68,22 @@ func TestInitStore(t *testing.T) {
 			true,
 		},
 		{
-			"invalid-level-empty-file",
-			args{viper.New(), "", "INVALID", false},
+			"err-dont-create-file-invalid-level",
+			args{viper.New(),
+				func() string {
+					f := "./tmp/init-dont-create.yaml"
+					return f
+				}(),
+				"INVALID", false},
+			true,
+		},
+		{
+			"empty-file-dont-create",
+			args{viper.New(), func() string {
+				dir, _ := homedir.Dir()
+				os.RemoveAll(filepath.Join(dir, defaults.ConfigSubDirName, defaults.ConfigFileName+"."+defaults.ConfigFileKind))
+				return ""
+			}(), "DEBUG", true},
 			false,
 		},
 	}

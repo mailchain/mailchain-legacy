@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
+	"github.com/mailchain/mailchain"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus" // nolint: depguard
@@ -88,5 +89,6 @@ func createEmptyFile(v *viper.Viper, fileName string) error {
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
 	}
+	v.Set("version", mailchain.Version)
 	return v.WriteConfigAs(fileName)
 }

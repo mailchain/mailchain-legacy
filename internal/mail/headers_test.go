@@ -31,10 +31,9 @@ func TestNewHeaders(t *testing.T) {
 		subject string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    *Headers
-		wantErr bool
+		name string
+		args args
+		want *Headers
 	}{
 		{
 			"simple",
@@ -51,7 +50,6 @@ func TestNewHeaders(t *testing.T) {
 				To:      Address{ChainAddress: "0x92d8f10248c6a3953cc3692a894655ad05d61efb", DisplayName: "", FullAddress: "0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum"},
 				Subject: "Hello World",
 			},
-			false,
 		},
 		{
 			"reply-to",
@@ -69,16 +67,11 @@ func TestNewHeaders(t *testing.T) {
 				ReplyTo: &Address{ChainAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
 				Subject: "Hello World",
 			},
-			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewHeaders(tt.args.date, tt.args.from, tt.args.to, tt.args.replyTo, tt.args.subject)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NewHeaders() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			got := NewHeaders(tt.args.date, tt.args.from, tt.args.to, tt.args.replyTo, tt.args.subject)
 			if !assert.Equal(got, tt.want) {
 				t.Errorf("NewHeaders() = %v, want %v", got, tt.want)
 			}

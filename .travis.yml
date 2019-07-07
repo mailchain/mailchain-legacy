@@ -14,7 +14,8 @@ install:
   - go get -v ./...
 script:
   - go get github.com/mattn/goveralls
-  - go test -covermode=count -coverprofile=coverage.out ./...
+  - go test -covermode=count -coverprofile=coverage.out.tmp ./...  
+  - cat coverage.out.tmp | grep -v ".pb.go" > coverage.out
   - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
   - go mod tidy
 deploy:

@@ -19,14 +19,14 @@ import (
 )
 
 // NewHeaders create the headers for sending a new message
-func NewHeaders(date time.Time, from, to Address, replyTo *Address, subject string) (*Headers, error) {
+func NewHeaders(date time.Time, from, to Address, replyTo *Address, subject string) *Headers {
 	return &Headers{
 		From:    from,
 		To:      to,
 		ReplyTo: replyTo,
 		Subject: subject,
 		Date:    date,
-	}, nil
+	}
 }
 
 // Headers for the message

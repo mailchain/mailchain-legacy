@@ -15,6 +15,7 @@
 package mail
 
 import (
+	nm "net/mail"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -142,6 +143,97 @@ func Test_tryAddChainNetwork(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("tryAddChainNetwork() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_fromAddress(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		address *nm.Address
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Address
+		wantErr bool
+	}{
+		{
+			"success",
+			args{
+				&nm.Address{
+					Name:    "name",
+					Address: "address@domain",
+				},
+			},
+			&Address{DisplayName: "name", FullAddress: "address@domain", ChainAddress: "address"},
+			false,
+		},
+		{
+			"err-no-@",
+			args{
+				&nm.Address{
+					Name:    "name",
+					Address: "address",
+				},
+			},
+			nil,
+			true,
+		},
+		{
+			"err-nil",
+			args{
+				nil,
+			},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := fromAddress(tt.args.address)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("fromAddress() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("fromAddress() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestAddress_String(t *testing.T) {
+	type fields struct {
+		DisplayName  string
+		FullAddress  string
+		ChainAddress string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			"success",
+			fields{
+				"Charlotte",
+				"0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum",
+				"0x92d8f10248c6a3953cc3692a894655ad05d61efb",
+			},
+			"\"Charlotte\" <0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum>",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := &Address{
+				DisplayName:  tt.fields.DisplayName,
+				FullAddress:  tt.fields.FullAddress,
+				ChainAddress: tt.fields.ChainAddress,
+			}
+			if got := a.String(); got != tt.want {
+				t.Errorf("Address.String() = %v, want %v", got, tt.want)
 			}
 		})
 	}

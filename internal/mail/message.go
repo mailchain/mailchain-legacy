@@ -26,14 +26,10 @@ func NewMessage(date time.Time, from, to Address, replyTo *Address, subject stri
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not create ID")
 	}
-	headers, err := NewHeaders(date, from, to, replyTo, subject)
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not create new headers")
-	}
 
 	return &Message{
 		ID:      id,
-		Headers: headers,
+		Headers: NewHeaders(date, from, to, replyTo, subject),
 		Body:    body,
 	}, nil
 }

@@ -24,19 +24,13 @@ import (
 // NewID create a new secure random ID
 func NewID() (ID, error) {
 	id, err := generateRandomID(44)
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not generate ID")
-	}
-	return id, nil
+	return id, errors.WithMessage(err, "could not generate ID")
 }
 
 // FromHexString create ID from multihash hex string
 func FromHexString(hex string) (ID, error) {
 	id, err := multihash.FromHexString(hex)
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not generate ID")
-	}
-	return ID(id), nil
+	return ID(id), errors.WithMessage(err, "could not generate ID")
 }
 
 // HexString create a multihash representation of ID as hex string
@@ -59,9 +53,5 @@ func generateRandomID(n int) (ID, error) {
 		return nil, err
 	}
 
-	id, err := multihash.Encode(bytes, multihash.ID)
-	if err != nil {
-		return nil, err
-	}
-	return id, nil
+	return multihash.Encode(bytes, multihash.ID)
 }

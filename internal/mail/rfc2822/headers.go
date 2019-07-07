@@ -69,6 +69,7 @@ func parseFrom(h nm.Header) (*mail.Address, error) {
 
 	return mail.ParseAddress(sources[0], "", "")
 }
+
 func parseDate(h nm.Header) (*time.Time, error) {
 	dateStrings, ok := h["Date"]
 	if !ok {

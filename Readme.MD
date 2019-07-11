@@ -56,7 +56,7 @@ Blockchains store transactions which act as notifications of a message being sen
 
 *For example: In the case of Ethereum the data will be prefixed with 0x and added to the input field.* 
 
-An explaination of the Ethereum implementation can be found in [internal/pkg/chains/ethereum/README.md](internal/pkg/chains/ethereum/README.md) file.
+An explaination of the Ethereum implementation can be found in [internal/chains/ethereum/README.md](https://github.com/mailchain/mailchain/tree/master/internal/chains/ethereum) file.
 
 #### Format
 

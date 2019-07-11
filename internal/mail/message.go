@@ -23,15 +23,12 @@ import (
 // NewMessage create a new message used when sending a new message
 func NewMessage(date time.Time, from, to Address, replyTo *Address, subject string, body []byte) (*Message, error) {
 	id, err := NewID()
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not create ID")
-	}
 
 	return &Message{
 		ID:      id,
 		Headers: NewHeaders(date, from, to, replyTo, subject),
 		Body:    body,
-	}, nil
+	}, errors.WithMessage(err, "could not create ID")
 }
 
 // Message Mailchain message.

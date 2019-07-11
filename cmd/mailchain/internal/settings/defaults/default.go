@@ -15,25 +15,25 @@
 package defaults
 
 import (
+	"log"
+	"path/filepath"
+
 	"github.com/mailchain/mailchain"
+	homedir "github.com/mitchellh/go-homedir"
+	"github.com/pkg/errors"
 )
 
 const (
 	Empty        = ""
-	KeystorePath = "./.mailchain/.keystore"
 	KeystoreKind = "nacl-filestore"
 
 	SentStoreKind = mailchain.Mailchain
 
 	MailboxStateKind = "leveldb"
-	MailboxStatePath = "./.mailchain/.mailbox"
 
-	ConfigPathFirst  = "./.mailchain"
-	ConfigPathSecond = "$HOME/.mailchain"
 	ConfigFileName   = ".mailchain"
 	ConfigSubDirName = ".mailchain"
 	ConfigFileKind   = "yaml"
-	ConfigFile       = ConfigPathFirst + "/" + ".mailchain" + "." + ConfigFileKind
 
 	CORSDisabled = false
 
@@ -45,3 +45,25 @@ const (
 	EthereumReceiver        = mailchain.ClientEtherscanNoAuth
 	EthereumPublicKeyFinder = mailchain.ClientEtherscanNoAuth
 )
+
+func KeystorePath() string {
+	return filepath.Join(MailchainHome(), ".keystore")
+}
+
+func MailboxStatePath() string {
+	return filepath.Join(MailchainHome(), ".mailbox")
+}
+
+func MailchainHome() string {
+	d, err := homedir.Dir()
+	if err != nil {
+		log.Fatalf("%+v", errors.WithStack(err))
+	}
+	return filepath.Join(d, ConfigSubDirName)
+}
+
+// // working directory
+// dir, err := os.Getwd()
+// if err != nil {
+// 	return err
+// }

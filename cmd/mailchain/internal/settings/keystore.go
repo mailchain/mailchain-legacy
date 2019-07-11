@@ -33,7 +33,7 @@ func (s Keystore) Produce() (ks.Store, error) {
 
 func naclFileStore(s values.Store) NACLFileStore {
 	return NACLFileStore{
-		Path: values.NewDefaultString(defaults.KeystorePath, s, "keystore.nacl-filestore.path"),
+		Path: values.NewDefaultString(defaults.KeystorePath(), s, "keystore.nacl-filestore.path"),
 	}
 }
 

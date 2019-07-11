@@ -83,7 +83,14 @@ brew:
     owner: mailchain
     name: homebrew-tap
   folder: Formula
-  homepage:  https://mailchain.xyz
+  homepage: https://mailchain.xyz
   description: Secure, email-like messaging for blockchain addresses and accounts
   test: |
     system "#{bin}/mailchain -v"
+scoop:
+  bucket:
+    owner: mailchain
+    name: scoop-bucket
+  homepage: https://mailchain.xyz
+  description: Secure, email-like messaging for blockchain addresses and accounts
+  license: MIT    

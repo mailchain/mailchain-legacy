@@ -16,6 +16,7 @@ script:
   - go get github.com/mattn/goveralls
   - go test -covermode=count -coverprofile=coverage.out.tmp ./...  
   - cat coverage.out.tmp | grep -v ".pb.go" > coverage.out
+  - rm coverage.out.tmp
   - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
   - go mod tidy
 deploy:

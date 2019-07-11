@@ -30,18 +30,18 @@ builds:
     - linux
   goarch:
     - amd64    
-# - id: mailchain-windows-amd64
-#   ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
-#   binary: mailchain
-#   env:
-#     - CGO_ENABLED=1
-#     - CC=x86_64-w64-mingw32-gcc
-#     - CXX=x86_64-w64-mingw32-g++
-#   main: ./cmd/mailchain/main.go
-#   goos:
-#     - windows
-#   goarch:
-#     - amd64
+- id: mailchain-windows-amd64
+  ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
+  binary: mailchain
+  env:
+    - CGO_ENABLED=1
+    - CC=x86_64-w64-mingw32-gcc
+    - CXX=x86_64-w64-mingw32-g++
+  main: ./cmd/mailchain/main.go
+  goos:
+    - windows
+  goarch:
+    - amd64
 
 archives:
 - format: tar.gz

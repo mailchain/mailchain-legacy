@@ -78,3 +78,12 @@ changelog:
     - 'README'    
     - Merge pull request
     - Merge branch    
+brew:
+  github:
+    owner: mailchain
+    name: homebrew-tap
+  folder: Formula
+  homepage:  https://mailchain.xyz
+  description: Secure, email-like messaging for blockchain addresses and accounts
+  test: |
+    system "#{bin}/mailchain -v"

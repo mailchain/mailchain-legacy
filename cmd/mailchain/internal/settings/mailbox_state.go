@@ -33,7 +33,7 @@ func (s MailboxState) Produce() (stores.State, error) {
 
 func mailboxStateLevelDB(s values.Store) MailboxStateLevelDB {
 	return MailboxStateLevelDB{
-		Path:    values.NewDefaultString(defaults.KeystorePath, s, "mailboxState.leveldb.path"),
+		Path:    values.NewDefaultString(defaults.MailboxStatePath(), s, "mailboxState.leveldb.path"),
 		Handles: values.NewDefaultInt(0, s, "mailboxState.leveldb.handles"),
 		Cache:   values.NewDefaultInt(256, s, "mailboxState.leveldb.cache"),
 	}

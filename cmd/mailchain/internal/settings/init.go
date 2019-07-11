@@ -19,42 +19,16 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain"
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus" // nolint: depguard
 	"github.com/spf13/viper"         // nolint: depguard
 )
 
-// // MailchainHome set home directory for mailchain
-// func MailchainHome() (string, error) {
-// 	usr, err := user.Current()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	p := usr.HomeDir + "/.mailchain"
-
-// 	if _, err := os.Stat(p); os.IsNotExist(err) {
-// 		_ = os.Mkdir(p, 0700)
-// 	}
-// 	return p
-// }
 func InitStore(v *viper.Viper, cfgFile, logLevel string, createFile bool) error {
 	if cfgFile == "" {
-		// // working directory
-		// dir, err := os.Getwd()
-		// if err != nil {
-		// 	return err
-		// }
-		// cfgFile = filepath.Join(dir, defaults.ConfigSubDirName, defaults.ConfigFileName+"."+defaults.ConfigFileKind)
-
-		// home directory
-		dir, err := homedir.Dir()
-		if err != nil {
-			return err
-		}
-		cfgFile = filepath.Join(dir, defaults.ConfigSubDirName, defaults.ConfigFileName+"."+defaults.ConfigFileKind)
+		cfgFile = filepath.Join(defaults.MailchainHome(), defaults.ConfigFileName+"."+defaults.ConfigFileKind)
 	}
 	lvl, err := log.ParseLevel(strings.ToLower(logLevel))
 	if err != nil {

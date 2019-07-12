@@ -19,8 +19,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/config"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -30,6 +30,7 @@ import (
 	log "github.com/sirupsen/logrus" // nolint:depguard
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint:depguard
+	"github.com/ttacon/chalk"
 	"github.com/urfave/negroni"
 )
 
@@ -51,7 +52,13 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not create `keystore`")
 	}
-	passphrase, err := config.Passphrase(cmd)
+	cmdPassphrase, _ := cmd.Flags().GetString("passphrase")
+	passphrase, err := prompts.Secret(cmdPassphrase,
+		fmt.Sprint(chalk.Yellow, "Note: To derive a storage key passphrase is required. The passphrase must be secure and not guessable."),
+		"Passphrase",
+		false,
+		true,
+	)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not get `passphrase`")
 	}

@@ -15,6 +15,7 @@
 package commands
 
 import (
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -29,12 +30,10 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 	}
 	cmd.PersistentFlags().String("config", "", "config file (default is $HOME/.mailchain/.mailchain.yaml)")
 	cmd.PersistentFlags().String("log-level", "warn", "log level [Panic,Fatal,Error,Warn,Info,Debug]")
-
-	// TODO: this should not be persistent flags
-	cmd.PersistentFlags().Bool("empty-passphrase", false, "no passphrase and no prompt")
 	cmd.PersistentFlags().Bool("prevent-init-config", false, "stop automatically creating config if non is found")
 
-	account, err := accountCmd(v)
+	config := settings.New(v)
+	account, err := accountCmd(config)
 	if err != nil {
 		return nil, err
 	}

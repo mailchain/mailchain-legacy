@@ -17,7 +17,6 @@ package mail
 import (
 	"testing"
 
-	"github.com/multiformats/go-multihash"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,8 +24,7 @@ func TestNewID(t *testing.T) {
 	assert := assert.New(t)
 	id, err := NewID()
 	assert.NoError(err)
-	assert.Len(id, 46)
-	assert.Equal(byte(multihash.ID), id[0])
+	assert.Len(id, 44)
 }
 
 func TestFromHexString(t *testing.T) {

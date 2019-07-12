@@ -23,7 +23,7 @@ func ExecuteCommandC(root *cobra.Command, args []string, flags map[string]string
 	return c, buf.String(), err
 }
 
-func AssertCommandOutput(t *testing.T, cmd *cobra.Command, err error, out string, wantOutput string) bool {
+func AssertCommandOutput(t *testing.T, cmd *cobra.Command, err error, out, wantOutput string) bool {
 	assert := assert.New(t)
 	if err == nil {
 		if !assert.Equal(wantOutput, out) {

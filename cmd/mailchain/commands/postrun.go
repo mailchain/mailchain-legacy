@@ -15,20 +15,18 @@
 package commands
 
 import (
-	"github.com/ttacon/chalk"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" // nolint: depguard
+	"github.com/ttacon/chalk"
 )
-
-
 
 func prerunWriteConfig(v *viper.Viper) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		if err := v.WriteConfig(); err != nil {
 			return errors.WithStack(err)
-		} 
+		}
 		cmd.Printf(chalk.Green.Color("Config saved\n"))
 		return nil
-	} 
+	}
 }

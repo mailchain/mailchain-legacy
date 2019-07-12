@@ -169,7 +169,7 @@ func TestPostHandler(t *testing.T) {
 			}(),
 			"",
 			http.StatusUnprocessableEntity,
-			[]byte("{\"code\":422,\"message\":\"message-id invalid: could not generate ID: encoding/hex: odd length hex string\"}"),
+			[]byte("{\"code\":422,\"message\":\"message-id invalid: encoding/hex: odd length hex string\"}"),
 		},
 		{
 			"err-missing-hash",

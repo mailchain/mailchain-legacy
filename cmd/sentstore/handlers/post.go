@@ -11,7 +11,6 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/mail"
-	"github.com/multiformats/go-multihash"
 	"github.com/pkg/errors"
 )
 
@@ -73,7 +72,7 @@ func PostHandler(base string, store storage.Store, maxContents int) func(w http.
 
 func compHash(contents []byte, suppliedHex string) error {
 	contentsLocationHash := crypto.CreateLocationHash(contents)
-	suppliedHash, err := multihash.FromHexString(suppliedHex)
+	suppliedHash, err := mail.FromHexString(suppliedHex)
 	if err != nil {
 		return err
 	}

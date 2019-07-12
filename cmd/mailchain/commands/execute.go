@@ -14,7 +14,7 @@
 
 package commands
 
-import "github.com/spf13/viper"
+import "github.com/spf13/viper" // nolint: depguard
 
 // Execute run the command
 func Execute(viper *viper.Viper) error {

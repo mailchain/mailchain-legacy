@@ -16,8 +16,8 @@ package mail
 
 import (
 	"crypto/rand"
+	"encoding/hex"
 
-	"github.com/multiformats/go-multihash"
 	"github.com/pkg/errors"
 )
 
@@ -28,19 +28,17 @@ func NewID() (ID, error) {
 }
 
 // FromHexString create ID from multihash hex string
-func FromHexString(hex string) (ID, error) {
-	id, err := multihash.FromHexString(hex)
-	return ID(id), errors.WithMessage(err, "could not generate ID")
+func FromHexString(h string) (ID, error) {
+	return hex.DecodeString(h)
 }
 
 // HexString create a multihash representation of ID as hex string
 func (id ID) HexString() string {
-	mh := multihash.Multihash(id)
-	return mh.HexString()
+	return hex.EncodeToString(id)
 }
 
 // ID create the mail message ID header
-type ID multihash.Multihash
+type ID []byte
 
 // generateRandomID returns a securely generated random bytes encoded with multihash 0x00 prefix.
 // It will return an error if the system's secure random
@@ -49,9 +47,5 @@ type ID multihash.Multihash
 func generateRandomID(n int) (ID, error) {
 	bytes := make([]byte, n)
 	_, err := rand.Read(bytes)
-	if err != nil {
-		return nil, err
-	}
-
-	return multihash.Encode(bytes, multihash.ID)
+	return bytes, errors.WithStack(err)
 }

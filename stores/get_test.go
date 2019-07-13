@@ -183,10 +183,10 @@ func TestGetMessage(t *testing.T) {
 		{
 			"success",
 			args{
-				"file://./testdata/simple.golden.eml-22049eeebdc1",
+				"file://./testdata/simple.golden.eml-2204ec872b32",
 			},
 			func() []byte {
-				contents, _ := ioutil.ReadFile("./testdata/simple.golden.eml-22049eeebdc1")
+				contents, _ := ioutil.ReadFile("./testdata/simple.golden.eml-2204ec872b32")
 				return contents
 			}(),
 			false,
@@ -194,7 +194,7 @@ func TestGetMessage(t *testing.T) {
 		{
 			"err-no-schema",
 			args{
-				"invalid://./testdata/simple.golden.eml-22049eeebdc1",
+				"invalid://./testdata/simple.golden.eml-2204ec872b32",
 			},
 			nil,
 			true,

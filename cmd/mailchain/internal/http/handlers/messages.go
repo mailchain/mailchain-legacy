@@ -201,7 +201,7 @@ type getHeaders struct {
 	// readOnly: true
 	ReplyTo string `json:"reply-to,omitempty"`
 	// Unique identifier of the message
-	// example: 002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471@mailchain
+	// example: 47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471@mailchain
 	// readOnly: true
 	MessageID string `json:"message-id"`
 }

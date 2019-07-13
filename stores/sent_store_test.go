@@ -133,7 +133,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 				}(),
 			},
 			args{
-				testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("body"),
 				nil,
 			},
@@ -162,7 +162,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 				}(),
 			},
 			args{
-				testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("body"),
 				nil,
 			},
@@ -186,7 +186,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 				}(),
 			},
 			args{
-				testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("body"),
 				nil,
 			},
@@ -211,7 +211,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 				}(),
 			},
 			args{
-				testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("body"),
 				nil,
 			},
@@ -235,7 +235,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 				}(),
 			},
 			args{
-				testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("body"),
 				nil,
 			},
@@ -286,10 +286,10 @@ func TestSentStore_Key(t *testing.T) {
 				nil,
 			},
 			args{
-				testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("message"),
 			},
-			"002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471-220455078214",
+			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471-220455078214",
 		},
 	}
 	for _, tt := range tests {

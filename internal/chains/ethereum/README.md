@@ -4,13 +4,13 @@
 
 <!-- code_chunk_output -->
 
-* [Example Implementation in Ethereum](#example-implementation-in-ethereum)
-	* [Message Preparation](#message-preparation)
-	* [Message Sending - GAS required](#message-sending-gas-required)
-	* [Retrieve Messages (GAS NOT required)](#retrieve-messages-gas-not-required)
-	* [Reading Messages (GAS NOT required)](#reading-messages-gas-not-required)
-	* [Key Storage](#key-storage)
-	* [GAS Handling](#gas-handling)
+- [Example Implementation in Ethereum](#Example-Implementation-in-Ethereum)
+  - [Message Preparation](#Message-Preparation)
+  - [Message Sending - GAS required](#Message-Sending---GAS-required)
+  - [Retrieve Messages (GAS NOT required)](#Retrieve-Messages-GAS-NOT-required)
+  - [Reading Messages (GAS NOT required)](#Reading-Messages-GAS-NOT-required)
+  - [Key Storage](#Key-Storage)
+  - [GAS Handling](#GAS-Handling)
 
 <!-- /code_chunk_output -->
 
@@ -40,32 +40,32 @@ The message lifecycle for Ethereum is outlined below:
     Field | Description | Example
     | - | - | - |
     Date: | The RFC1123 date format | `2019-04-12T18:21:00+01:00`
-    Message-id: | A unique message id composed of 64 chars (32 bytes) + `@mailchain` | `002c40fb138807253554afc5161740ca3dade11db7e74e799c9f6091b904277cb9b839393802dc38b8a815615543@mailchain`
+    Message-id: | A unique message id composed of 64 chars (32 bytes) + `@mailchain` | `40fb138807253554afc5161740ca3dade11db7e74e799c9f6091b904277cb9b839393802dc38b8a815615543@mailchain`
     Content-Type: | As per RFC6532 content type for the contents of the message | text/plain; charset="UTF-8" 
     Content-Transfer-Encoding: | The message body is encoded according to this field | `quoted-printable`
 
-1. A hash of the message payload (headers + body etc.) is created (default: `SHA3-256`).
+2. A hash of the message payload (headers + body etc.) is created (default: `SHA3-256`).
 
     [returns `message_payload_hash`]
 
-1.  
+3.  
     1. The message is encrypted using the recipient public key (default: `AES-256-CBC`). This output is a byte array.
 
-    1. The encrypted data byte array is hashed (default murmur3). 
+    2. The encrypted data byte array is hashed (default murmur3). 
 
     [returns `encrypted_message_hash`]
 
-1. The encrypted message is uploaded (PUT) to storage with the following attributes:
+4. The encrypted message is uploaded (PUT) to storage with the following attributes:
 
-    File name: `message-id`-`encrypted_message_hash`, e.g. `002c5d4ba47ce66f9e4b1f36f35e50c357aded81dfb9b98a89b8a80d5ca347b2a16f08dc5d37d255378ddcf3380d-220426516c9b`
+    File name: `message-id`-`encrypted_message_hash`, e.g. `5d4ba47ce66f9e4b1f36f35e50c357aded81dfb9b98a89b8a80d5ca347b2a16f08dc5d37d255378ddcf3380d-220426516c9b`
 
     [File contents: encrypted bytes]
 
-    The file storage location is returned. E.g. https://mcx.mx/002c5d4ba47ce66f9e4b1f36f35e50c357aded81dfb9b98a89b8a80d5ca347b2a16f08dc5d37d255378ddcf3380d-220426516c9b
+    The file storage location is returned. E.g. https://mcx.mx/5d4ba47ce66f9e4b1f36f35e50c357aded81dfb9b98a89b8a80d5ca347b2a16f08dc5d37d255378ddcf3380d-220426516c9b
     
     [returns `message_location`]
 
-1. The `message_location` is encrypted using the recipient public key (default AES-256-CBC). This is a byte array.
+5. The `message_location` is encrypted using the recipient public key (default AES-256-CBC). This is a byte array.
 
     [returns `encrypted_message_location`]
 
@@ -79,7 +79,7 @@ The message lifecycle for Ethereum is outlined below:
 
         [returns `data_protobuf`]
 
-    1. The following fields are then encoded to build the transaction data:
+    2. The following fields are then encoded to build the transaction data:
     
         Field | Example
         - | -
@@ -87,7 +87,7 @@ The message lifecycle for Ethereum is outlined below:
         Protocol prefix | e.g. `mailchain`
         Multiformatdata | e.g. the `data_protobuf`
 
-    1. The resulting transaction data is then hex-encoded:
+    3. The resulting transaction data is then hex-encoded:
         ```
         0x6d61696c636861696e500a82022e808116a34444592018b5b9483...
         ```

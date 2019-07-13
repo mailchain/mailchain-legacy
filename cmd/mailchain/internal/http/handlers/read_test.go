@@ -63,7 +63,7 @@ func Test_doRead(t *testing.T) {
 		// 		func() *http.Request {
 		// 			req := httptest.NewRequest("GET", "/message_id", nil)
 		// 			req = mux.SetURLVars(req, map[string]string{
-		// 				"message_id": "002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
+		// 				"message_id": "47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
 		// 			})
 		// 			return req
 		// 		}(),

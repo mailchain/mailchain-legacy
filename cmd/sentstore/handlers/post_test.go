@@ -32,7 +32,7 @@ func Test_compHash(t *testing.T) {
 			"success",
 			args{
 				func() []byte {
-					c, err := ioutil.ReadFile("./testdata/002cce9fb2801637d78b9fdc4b028fc437ac477fdc35f0409fb381757b82bc232fff27421b0cec283a65fbb81a65-22048866a9d5")
+					c, err := ioutil.ReadFile("./testdata/ce9fb2801637d78b9fdc4b028fc437ac477fdc35f0409fb381757b82bc232fff27421b0cec283a65fbb81a65-22048866a9d5")
 					if err != nil {
 						t.Error(err)
 					}
@@ -92,20 +92,20 @@ func TestPostHandler(t *testing.T) {
 				func() storage.Store {
 					s := storagetest.NewMockStore(mockCtrl)
 					var id mail.ID
-					id = testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")
+					id = testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")
 
 					s.EXPECT().Exists(id, []byte("body"), "2204a9590878").Return(nil)
-					s.EXPECT().Put(id, []byte("body"), "2204a9590878").Return("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471-2204a9590878", nil)
+					s.EXPECT().Put(id, []byte("body"), "2204a9590878").Return("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471-2204a9590878", nil)
 					return s
 				}(),
 				stores.SizeMegabyte * 2,
 			},
 			func() *http.Request {
-				req := httptest.NewRequest("POST", "/?message-id=002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590878", nil)
+				req := httptest.NewRequest("POST", "/?message-id=47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590878", nil)
 				req.Body = ioutil.NopCloser(strings.NewReader("body"))
 				return req
 			}(),
-			"https://test.com/002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471-2204a9590878",
+			"https://test.com/47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471-2204a9590878",
 			http.StatusCreated,
 			[]byte{},
 		},
@@ -116,20 +116,20 @@ func TestPostHandler(t *testing.T) {
 				func() storage.Store {
 					s := storagetest.NewMockStore(mockCtrl)
 					var id mail.ID
-					id = testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")
+					id = testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")
 
 					s.EXPECT().Exists(id, []byte("body"), "2204a9590878").Return(nil)
-					s.EXPECT().Put(id, []byte("body"), "2204a9590878").Return("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471-2204a9590878", nil)
+					s.EXPECT().Put(id, []byte("body"), "2204a9590878").Return("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471-2204a9590878", nil)
 					return s
 				}(),
 				stores.SizeMegabyte * 2,
 			},
 			func() *http.Request {
-				req := httptest.NewRequest("POST", "/?message-id=002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590878", nil)
+				req := httptest.NewRequest("POST", "/?message-id=47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590878", nil)
 				req.Body = ioutil.NopCloser(strings.NewReader("body"))
 				return req
 			}(),
-			"https://test.com/002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471-2204a9590878",
+			"https://test.com/47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471-2204a9590878",
 			http.StatusCreated,
 			[]byte{},
 		},
@@ -163,7 +163,7 @@ func TestPostHandler(t *testing.T) {
 				stores.SizeMegabyte * 2,
 			},
 			func() *http.Request {
-				req := httptest.NewRequest("POST", "/?message-id=002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af47&hash=2204a9590878", nil)
+				req := httptest.NewRequest("POST", "/?message-id=47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af47&hash=2204a9590878", nil)
 				req.Body = ioutil.NopCloser(strings.NewReader("body"))
 				return req
 			}(),
@@ -182,7 +182,7 @@ func TestPostHandler(t *testing.T) {
 				stores.SizeMegabyte * 2,
 			},
 			func() *http.Request {
-				req := httptest.NewRequest("POST", "/?message-id=002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471", nil)
+				req := httptest.NewRequest("POST", "/?message-id=47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471", nil)
 				req.Body = ioutil.NopCloser(strings.NewReader("body"))
 				return req
 			}(),
@@ -201,7 +201,7 @@ func TestPostHandler(t *testing.T) {
 				stores.SizeMegabyte * 2,
 			},
 			func() *http.Request {
-				req := httptest.NewRequest("POST", "/?message-id=002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=", nil)
+				req := httptest.NewRequest("POST", "/?message-id=47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=", nil)
 				req.Body = ioutil.NopCloser(strings.NewReader("body"))
 				return req
 			}(),
@@ -220,7 +220,7 @@ func TestPostHandler(t *testing.T) {
 				stores.SizeMegabyte * 2,
 			},
 			func() *http.Request {
-				req := httptest.NewRequest("POST", "/?message-id=002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590878", nil)
+				req := httptest.NewRequest("POST", "/?message-id=47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590878", nil)
 				return req
 			}(),
 			"",
@@ -239,7 +239,7 @@ func TestPostHandler(t *testing.T) {
 				2,
 			},
 			func() *http.Request {
-				req := httptest.NewRequest("POST", "/?message-id=002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590878", nil)
+				req := httptest.NewRequest("POST", "/?message-id=47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590878", nil)
 				req.Body = ioutil.NopCloser(strings.NewReader("body"))
 				return req
 			}(),
@@ -259,7 +259,7 @@ func TestPostHandler(t *testing.T) {
 				stores.SizeMegabyte * 2,
 			},
 			func() *http.Request {
-				req := httptest.NewRequest("POST", "/?message-id=002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590877", nil)
+				req := httptest.NewRequest("POST", "/?message-id=47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590877", nil)
 				req.Body = ioutil.NopCloser(strings.NewReader("body"))
 				return req
 			}(),
@@ -274,7 +274,7 @@ func TestPostHandler(t *testing.T) {
 				func() storage.Store {
 					s := storagetest.NewMockStore(mockCtrl)
 					var id mail.ID
-					id = testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")
+					id = testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")
 
 					s.EXPECT().Exists(id, []byte("body"), "2204a9590878").Return(errors.Errorf("already exists"))
 					return s
@@ -282,7 +282,7 @@ func TestPostHandler(t *testing.T) {
 				stores.SizeMegabyte * 2,
 			},
 			func() *http.Request {
-				req := httptest.NewRequest("POST", "/?message-id=002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590878", nil)
+				req := httptest.NewRequest("POST", "/?message-id=47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590878", nil)
 				req.Body = ioutil.NopCloser(strings.NewReader("body"))
 				return req
 			}(),
@@ -297,7 +297,7 @@ func TestPostHandler(t *testing.T) {
 				func() storage.Store {
 					s := storagetest.NewMockStore(mockCtrl)
 					var id mail.ID
-					id = testutil.MustHexDecodeString("002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")
+					id = testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")
 
 					s.EXPECT().Exists(id, []byte("body"), "2204a9590878").Return(nil)
 					s.EXPECT().Put(id, []byte("body"), "2204a9590878").Return("", errors.Errorf("put failed"))
@@ -306,7 +306,7 @@ func TestPostHandler(t *testing.T) {
 				stores.SizeMegabyte * 2,
 			},
 			func() *http.Request {
-				req := httptest.NewRequest("POST", "/?message-id=002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590878", nil)
+				req := httptest.NewRequest("POST", "/?message-id=47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471&hash=2204a9590878", nil)
 				req.Body = ioutil.NopCloser(strings.NewReader("body"))
 				return req
 			}(),

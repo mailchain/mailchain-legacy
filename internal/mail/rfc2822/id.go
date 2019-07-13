@@ -20,7 +20,6 @@ import (
 	"strings"
 
 	"github.com/mailchain/mailchain/internal/mail"
-	"github.com/multiformats/go-multihash"
 	"github.com/pkg/errors"
 )
 
@@ -41,9 +40,5 @@ func parseID(h nm.Header) (mail.ID, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to decode")
 	}
-	i, err := multihash.Cast(decoded)
-	if err != nil {
-		return nil, errors.WithMessage(err, "failed to cast")
-	}
-	return mail.ID(i), nil
+	return mail.ID(decoded), nil
 }

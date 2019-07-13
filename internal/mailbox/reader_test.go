@@ -15,7 +15,6 @@
 package mailbox_test
 
 import (
-	"errors"
 	"io/ioutil"
 	"testing"
 
@@ -23,6 +22,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -43,7 +43,7 @@ func TestReadMessage(t *testing.T) {
 		decrypterContentsError error
 	}{
 		{"invalid protobuf prefix",
-			testutil.MustHexDecodeString("08010f7365637265742d6c6f636174696f6e1a221620aff34d74dcb62c288b1a2f41a4852e82aff6c95e5c40c891299b3488b4340769"),
+			testutil.MustHexDecodeString("08010f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
 			"",
 			"invalid encoding prefix",
 			0,
@@ -53,7 +53,7 @@ func TestReadMessage(t *testing.T) {
 			nil,
 		},
 		{"invalid protobuf format",
-			testutil.MustHexDecodeString("5008010f7365637265742d6c6f636174696f6e1a221620aff34d74dcb62c288b1a2f41a4852e82aff6c95e5c40c891299b3488b4340769"),
+			testutil.MustHexDecodeString("5008010f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
 			"",
 			"could not unmarshal to data: proto: can't skip unknown wire type 7",
 			0,
@@ -63,7 +63,7 @@ func TestReadMessage(t *testing.T) {
 			nil,
 		},
 		{"fail decrypted location",
-			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a221620aff34d74dcb62c288b1a2f41a4852e82aff6c95e5c40c891299b3488b4340769"),
+			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
 			"",
 			"could not decrypt location: could not decrypt",
 			1,
@@ -73,8 +73,8 @@ func TestReadMessage(t *testing.T) {
 			nil,
 		},
 		{"no-message-at-location",
-			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a221620aff34d74dcb62c288b1a2f41a4852e82aff6c95e5c40c891299b3488b4340769"),
-			"002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
+			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
 			"could not get message from `location`: open TestReadMessage/no_message_at_location-2204f3d89e5a: no such file or directory",
 			1,
 			[]interface{}{[]byte("file://TestReadMessage/no_message_at_location-2204f3d89e5a"), nil},
@@ -83,8 +83,8 @@ func TestReadMessage(t *testing.T) {
 			nil,
 		},
 		{"decrypt-message-failed",
-			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a221620aff34d74dcb62c288b1a2f41a4852e82aff6c95e5c40c891299b3488b4340769"),
-			"002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
+			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
 			"could not decrypt message: failed to decrypt",
 			1,
 			[]interface{}{[]byte("test://TestReadMessage/success-2204f3d89e5a"), nil},
@@ -93,8 +93,8 @@ func TestReadMessage(t *testing.T) {
 			errors.New("failed to decrypt"),
 		},
 		{"failed-create-hash",
-			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a221620aff34d74dcb62c288b1a2f41a4852e82aff6c95e5c40c891299b3488b4340769"),
-			"002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
+			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
 			"message-hash invalid",
 			1,
 			[]interface{}{[]byte("test://TestReadMessage/success-2204f3d89e5a"), nil},
@@ -103,8 +103,8 @@ func TestReadMessage(t *testing.T) {
 			nil,
 		},
 		{"success",
-			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a221620aff34d74dcb62c288b1a2f41a4852e82aff6c95e5c40c891299b3488b4340769"),
-			"002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
+			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
 			"",
 			1,
 			[]interface{}{[]byte("test://TestReadMessage/success-2204f3d89e5a"), nil},

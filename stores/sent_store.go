@@ -18,6 +18,7 @@ package stores
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -26,6 +27,7 @@ import (
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/errs"
+	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
@@ -47,36 +49,36 @@ type SentStore struct {
 	doRequest  func(req *http.Request) (*http.Response, error)
 }
 
-func (s SentStore) Key(messageID mail.ID, msg []byte) string {
-	hash := crypto.CreateLocationHash(msg)
-	return fmt.Sprintf("%s-%s", messageID.HexString(), hash.HexString())
+func (s SentStore) Key(messageID mail.ID, contentsHash, msg []byte) string {
+	return hex.EncodeToString(contentsHash)
 }
 
-func (s SentStore) PutMessage(messageID mail.ID, msg []byte, headers map[string]string) (string, error) {
+func (s SentStore) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers map[string]string) (
+	address, resource string, gotLocCode uint64, err error) {
 	hash := crypto.CreateLocationHash(msg)
-	url := fmt.Sprintf("%s?hash=%s&message-id=%s", s.domain, hash.HexString(), messageID.HexString())
+	url := fmt.Sprintf("%s?hash=%s&message-id=%s", s.domain, hash.HexString(), hex.EncodeToString(contentsHash))
 
 	req, err := s.newRequest("POST", url, bytes.NewReader(msg))
 	if err != nil {
-		return "", err
+		return "", "", envelope.MLIMailchain, err
 	}
 	req.Header.Add("Content-Type", "application/octet-stream")
 
 	resp, err := s.doRequest(req)
 	if err != nil {
-		return "", err
+		return "", "", envelope.MLIMailchain, err
 	}
 
 	if err := responseAsError(resp); err != nil {
-		return "", err
+		return "", "", envelope.MLIMailchain, err
 	}
 
 	loc := resp.Header.Get("Location")
 	if loc == "" {
-		return "", errors.Errorf("missing `Location` header")
+		return "", "", envelope.MLIMailchain, errors.Errorf("missing `Location` header")
 	}
 
-	return loc, nil
+	return loc, hex.EncodeToString(contentsHash), envelope.MLIMailchain, nil
 }
 
 func responseAsError(r *http.Response) error {

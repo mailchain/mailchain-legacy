@@ -17,10 +17,10 @@ package mailbox
 import (
 	"bytes"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
 	"github.com/mailchain/mailchain/stores"
@@ -37,16 +37,16 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 	if txData[0] != encoding.Protobuf {
 		return nil, errors.Errorf("invalid encoding prefix")
 	}
-	var data mail.Data
-	if err := proto.Unmarshal(txData[1:], &data); err != nil {
-		return nil, errors.WithMessage(err, "could not unmarshal to data")
+	data, err := envelope.Unmarshal(txData)
+	if err != nil {
+		return nil, errors.WithMessage(err, "failed to unmarshal")
+	}
+	url, err := data.URL(decrypter)
+	if err != nil {
+		return nil, errors.WithMessage(err, "failed to get URL")
 	}
 
-	decryptedLocation, err := decryptLocation(&data, decrypter)
-	if err != nil {
-		return nil, err
-	}
-	toDecrypt, err := stores.GetMessage(decryptedLocation)
+	toDecrypt, err := stores.GetMessage(url.String())
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not get message from `location`")
 	}
@@ -54,18 +54,16 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not decrypt message")
 	}
-	messageHash := crypto.CreateMessageHash(rawMsg)
-	if !bytes.Equal(messageHash, data.Hash) {
-		return nil, errors.Errorf("message-hash invalid")
-	}
-	return rfc2822.DecodeNewMessage(bytes.NewReader(rawMsg))
-}
-
-// decryptLocation return the location in readable form
-func decryptLocation(d *mail.Data, decrypter cipher.Decrypter) (string, error) {
-	decryptedLocation, err := decrypter.Decrypt(d.EncryptedLocation)
+	hash, err := data.ContentsHash(decrypter)
 	if err != nil {
-		return "", errors.WithMessage(err, "could not decrypt location")
+		return nil, errors.WithMessage(err, "could not get hash")
 	}
-	return string(decryptedLocation), nil
+	if len(hash) == 0 {
+		messageHash := crypto.CreateMessageHash(rawMsg)
+		if !bytes.Equal(messageHash, hash) {
+			return nil, errors.Errorf("message-hash invalid")
+		}
+	}
+
+	return rfc2822.DecodeNewMessage(bytes.NewReader(rawMsg))
 }

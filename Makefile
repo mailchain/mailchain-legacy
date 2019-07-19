@@ -16,8 +16,8 @@ license: .FORCE
 	addlicense -l apache -c Finobo ./internal
 
 proto:
-	rm -f ./internal/pkg/mail/*.pb.go
-	protoc ./internal/pkg/mail/data.proto -I. --go_out=:.
+	rm -f ./internal/envelope/*.pb.go
+	protoc ./internal/envelope/data.proto -I. --go_out=:.
 
 .PHONY: go-generate
 go-generate:

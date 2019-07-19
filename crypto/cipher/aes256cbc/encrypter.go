@@ -19,20 +19,32 @@ import (
 	"crypto/cipher"
 	"crypto/elliptic"
 	"crypto/rand"
+	"io"
 
 	"github.com/andreburgaud/crypt2go/padding"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
 	"github.com/mailchain/mailchain/crypto"
+	mc "github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/pkg/errors"
 )
 
+// NewEncrypter create a new encrypter with crypto rand for reader
+func NewEncrypter() Encrypter {
+	return Encrypter{rand: rand.Reader}
+}
+
+// Encrypter will encrypt data using AES256CBC method
+type Encrypter struct {
+	rand io.Reader
+}
+
 // Encrypt data using recipient public key with AES in CBC mode.  Generate an ephemeral private key and IV.
-func Encrypt(recipientPublicKey crypto.PublicKey, message []byte) ([]byte, error) {
+func (e Encrypter) Encrypt(recipientPublicKey crypto.PublicKey, message mc.PlainContent) (mc.EncryptedContent, error) {
 	epk, err := asPublicECIES(recipientPublicKey)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert")
 	}
-	ephemeral, err := ecies.GenerateKey(rand.Reader, ecies.DefaultCurve, nil)
+	ephemeral, err := ecies.GenerateKey(e.rand, ecies.DefaultCurve, nil)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not generate ephemeral key")
 	}

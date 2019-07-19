@@ -16,8 +16,6 @@
 package cipher
 
 import (
-	"io"
-
 	"github.com/mailchain/mailchain/crypto"
 )
 
@@ -34,5 +32,5 @@ type Decrypter interface {
 
 // Encrypter will encrypt data using public key
 type Encrypter interface {
-	Encrypt(rand io.Reader, pub crypto.PublicKey, plain PlainContent) (EncryptedContent, error)
+	Encrypt(pub crypto.PublicKey, plain PlainContent) (EncryptedContent, error)
 }

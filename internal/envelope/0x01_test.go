@@ -47,7 +47,7 @@ func TestZeroX01_URL(t *testing.T) {
 				}(),
 			},
 			func() *url.URL {
-				u, _ := url.Parse("https://mcx.mx/value")
+				u, _ := url.Parse("https://mcx.mx/76616c7565")
 				return u
 			}(),
 			false,

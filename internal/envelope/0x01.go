@@ -55,6 +55,7 @@ func (d *ZeroX01) URL(decrypter cipher.Decrypter) (*url.URL, error) {
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	loc, ok := MLIToAddress()[code]
 	if !ok {
 		return nil, errors.Errorf("unknown location code %q", code)
@@ -62,7 +63,7 @@ func (d *ZeroX01) URL(decrypter cipher.Decrypter) (*url.URL, error) {
 	return url.Parse(strings.Join(
 		[]string{
 			loc,
-			string(hash),
+			hex.EncodeToString(hash),
 		},
 		"/"))
 }

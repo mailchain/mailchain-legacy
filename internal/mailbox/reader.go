@@ -19,7 +19,6 @@ import (
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
@@ -34,9 +33,9 @@ import (
 // - Decrypt message
 // - Check hash
 func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, error) {
-	if txData[0] != encoding.Protobuf {
-		return nil, errors.Errorf("invalid encoding prefix")
-	}
+	// if txData[0] != encoding.Protobuf {
+	// 	return nil, errors.Errorf("invalid encoding prefix")
+	// }
 	data, err := envelope.Unmarshal(txData)
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to unmarshal")
@@ -48,7 +47,7 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 
 	toDecrypt, err := stores.GetMessage(url.String())
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not get message from `location`")
+		return nil, errors.WithMessagef(err, "could not get message from %q", url.String())
 	}
 	rawMsg, err := decrypter.Decrypt(toDecrypt)
 	if err != nil {

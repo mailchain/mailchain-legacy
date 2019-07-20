@@ -28,6 +28,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/chains"
+	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/mail"
@@ -87,7 +88,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			return
 		}
 
-		if err := mailbox.SendMessage(ctx, req.network, msg, req.publicKey, encrypter, sender, sent, signer); err != nil {
+		if err := mailbox.SendMessage(ctx, req.network, msg, req.publicKey, encrypter, sender, sent, signer, envelope.Kind0x01); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}

@@ -117,11 +117,11 @@ func TestSent_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("6c6f636174696f6e-2204f48b7b75"), input.Key) {
+					if !assert.Equal(aws.String("6c6f636174696f6e"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
-					return &s3manager.UploadOutput{Location: "https://bucket-id/6c6f636174696f6e-2204f48b7b75"}, nil
+					return &s3manager.UploadOutput{Location: "https://bucket-id/6c6f636174696f6e"}, nil
 				},
 				"bucket-id",
 			},
@@ -133,8 +133,8 @@ func TestSent_PutMessage(t *testing.T) {
 				[]byte("test-data"),
 				nil,
 			},
-			"https://bucket-id/6c6f636174696f6e-2204f48b7b75",
-			"6c6f636174696f6e-2204f48b7b75",
+			"https://bucket-id/6c6f636174696f6e",
+			"6c6f636174696f6e",
 			0,
 			false,
 		},
@@ -148,11 +148,11 @@ func TestSent_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("6c6f636174696f6e-2204f48b7b75"), input.Key) {
+					if !assert.Equal(aws.String("6c6f636174696f6e"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
-					return &s3manager.UploadOutput{Location: "https://bucket-id/6c6f636174696f6e-2204f48b7b75"}, nil
+					return &s3manager.UploadOutput{Location: "https://bucket-id/6c6f636174696f6e"}, nil
 				},
 				"bucket-id",
 			},
@@ -166,8 +166,8 @@ func TestSent_PutMessage(t *testing.T) {
 					"key-1": "value-1",
 				},
 			},
-			"https://bucket-id/6c6f636174696f6e-2204f48b7b75",
-			"6c6f636174696f6e-2204f48b7b75",
+			"https://bucket-id/6c6f636174696f6e",
+			"6c6f636174696f6e",
 			0,
 			false,
 		},
@@ -181,7 +181,7 @@ func TestSent_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("6c6f636174696f6e-2204f48b7b75"), input.Key) {
+					if !assert.Equal(aws.String("6c6f636174696f6e"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
@@ -212,7 +212,7 @@ func TestSent_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("6c6f636174696f6e-2204f48b7b75"), input.Key) {
+					if !assert.Equal(aws.String("6c6f636174696f6e"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
@@ -285,7 +285,7 @@ func TestSent_Key(t *testing.T) {
 				[]byte("contents-hash"),
 				[]byte("body"),
 			},
-			"6d6573736167654944-2204a9590878",
+			"6d6573736167654944",
 		},
 	}
 	for _, tt := range tests {

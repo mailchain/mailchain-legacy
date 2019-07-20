@@ -16,7 +16,6 @@ package s3store
 
 import (
 	"bytes"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -24,7 +23,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/mailchain/mailchain"
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
@@ -60,8 +58,7 @@ type Sent struct {
 }
 
 func (h Sent) Key(messageID mail.ID, contentsHash, msg []byte) string {
-	hash := crypto.CreateLocationHash(msg)
-	return fmt.Sprintf("%s-%s", messageID.HexString(), hash.String())
+	return messageID.HexString()
 }
 
 func (h Sent) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers map[string]string) (

@@ -36,7 +36,7 @@ func (m *MockMessage) EXPECT() *MockMessageMockRecorder {
 }
 
 // Send mocks base method
-func (m *MockMessage) Send(ctx context.Context, network string, to, from, data []byte, signer signer.Signer, opts sender.MessageOpts) error {
+func (m *MockMessage) Send(ctx context.Context, network string, to, from, data []byte, signer signer.Signer, opts sender.SendOpts) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Send", ctx, network, to, from, data, signer, opts)
 	ret0, _ := ret[0].(error)
@@ -49,25 +49,25 @@ func (mr *MockMessageMockRecorder) Send(ctx, network, to, from, data, signer, op
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockMessage)(nil).Send), ctx, network, to, from, data, signer, opts)
 }
 
-// MockMessageOpts is a mock of MessageOpts interface
-type MockMessageOpts struct {
+// MockSendOpts is a mock of SendOpts interface
+type MockSendOpts struct {
 	ctrl     *gomock.Controller
-	recorder *MockMessageOptsMockRecorder
+	recorder *MockSendOptsMockRecorder
 }
 
-// MockMessageOptsMockRecorder is the mock recorder for MockMessageOpts
-type MockMessageOptsMockRecorder struct {
-	mock *MockMessageOpts
+// MockSendOptsMockRecorder is the mock recorder for MockSendOpts
+type MockSendOptsMockRecorder struct {
+	mock *MockSendOpts
 }
 
-// NewMockMessageOpts creates a new mock instance
-func NewMockMessageOpts(ctrl *gomock.Controller) *MockMessageOpts {
-	mock := &MockMessageOpts{ctrl: ctrl}
-	mock.recorder = &MockMessageOptsMockRecorder{mock}
+// NewMockSendOpts creates a new mock instance
+func NewMockSendOpts(ctrl *gomock.Controller) *MockSendOpts {
+	mock := &MockSendOpts{ctrl: ctrl}
+	mock.recorder = &MockSendOptsMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (m *MockMessageOpts) EXPECT() *MockMessageOptsMockRecorder {
+func (m *MockSendOpts) EXPECT() *MockSendOptsMockRecorder {
 	return m.recorder
 }

@@ -13,7 +13,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (c Client) Send(ctx context.Context, network string, to, from, data []byte, signer signer.Signer, opts sender.MessageOpts) error {
+func (c Client) Send(ctx context.Context, network string, to, from, data []byte, signer signer.Signer, opts sender.SendOpts) error {
 	s, ok := c.senders[network]
 	if !ok {
 		return errors.Errorf("no sender found for relay")

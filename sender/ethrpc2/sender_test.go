@@ -55,7 +55,7 @@ func TestEthRPC2_Send(t *testing.T) {
 		from    []byte
 		data    []byte
 		signer  signer.Signer
-		opts    sender.MessageOpts
+		opts    sender.SendOpts
 	}
 	tests := []struct {
 		name    string

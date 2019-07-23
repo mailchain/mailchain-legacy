@@ -99,17 +99,14 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 				Subject: message.Headers.Subject,
 				Status:  "ok",
 			})
-
 		}
 
-		js, err := json.Marshal(getResponse{Messages: messages})
-		if err != nil {
+		if err := json.NewEncoder(w).Encode(getResponse{Messages: messages}); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, err)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write(js)
 	}
 }
 

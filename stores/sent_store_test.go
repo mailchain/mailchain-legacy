@@ -115,14 +115,16 @@ func TestSentStore_PutMessage(t *testing.T) {
 		args         args
 		wantAddress  string
 		wantResource string
-		wantLocCode  uint64
+		wantMLI      uint64
 		wantErr      bool
 	}{
 		{
 			"success",
 			httptest.NewServer(
 				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					w.Header().Add("Location", "https://mcx.mx/mesasgeID-hash")
+					w.Header().Add("Location", "https://mcx.mx/contentsHash")
+					w.Header().Add("Message-Location-Identifier", "1")
+
 					w.WriteHeader(http.StatusCreated)
 				}),
 			),
@@ -134,23 +136,114 @@ func TestSentStore_PutMessage(t *testing.T) {
 					}
 					return c.Do
 				}(),
-			}, 
+			},
 			args{
 				[]byte("messageID"),
 				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("body"),
 				nil,
 			},
-			"https://mcx.mx/mesasgeID-hash",
+			"https://mcx.mx/contentsHash",
 			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
 			1,
 			false,
 		},
 		{
+			"err-incorrect-mil",
+			httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Add("Location", "https://mcx.mx/contentsHash")
+					w.Header().Add("Message-Location-Identifier", "0")
+
+					w.WriteHeader(http.StatusCreated)
+				}),
+			),
+			fields{
+				newRequest: http.NewRequest,
+				doRequest: func() func(req *http.Request) (*http.Response, error) {
+					c := http.Client{
+						Timeout: 1 * time.Second,
+					}
+					return c.Do
+				}(),
+			},
+			args{
+				[]byte("messageID"),
+				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				[]byte("body"),
+				nil,
+			},
+			"",
+			"",
+			1,
+			true,
+		},
+		{
+			"err-invalid-mil",
+			httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Add("Location", "https://mcx.mx/contentsHash")
+					w.Header().Add("Message-Location-Identifier", "invalid")
+
+					w.WriteHeader(http.StatusCreated)
+				}),
+			),
+			fields{
+				newRequest: http.NewRequest,
+				doRequest: func() func(req *http.Request) (*http.Response, error) {
+					c := http.Client{
+						Timeout: 1 * time.Second,
+					}
+					return c.Do
+				}(),
+			},
+			args{
+				[]byte("messageID"),
+				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				[]byte("body"),
+				nil,
+			},
+			"",
+			"",
+			1,
+			true,
+		},
+		{
+			"err-missing-mil",
+			httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Add("Location", "https://mcx.mx/contentsHash")
+
+					w.WriteHeader(http.StatusCreated)
+				}),
+			),
+			fields{
+				newRequest: http.NewRequest,
+				doRequest: func() func(req *http.Request) (*http.Response, error) {
+					c := http.Client{
+						Timeout: 1 * time.Second,
+					}
+					return c.Do
+				}(),
+			},
+			args{
+				[]byte("messageID"),
+				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				[]byte("body"),
+				nil,
+			},
+			"",
+			"",
+			1,
+			true,
+		},
+		{
 			"err-new-request",
 			httptest.NewServer(
 				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					w.Header().Add("Location", "https://mcx.mx/mesasgeID-hash")
+					w.Header().Add("Location", "https://mcx.mx/contentsHash")
+					w.Header().Add("Message-Location-Identifier", "1")
+
 					w.WriteHeader(http.StatusCreated)
 				}),
 			),
@@ -268,7 +361,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 				newRequest: tt.fields.newRequest,
 				doRequest:  tt.fields.doRequest,
 			}
-			gotAddress, gotResource, gotLocCode, err := s.PutMessage(tt.args.messageID, tt.args.contentsHash, tt.args.msg, tt.args.headers)
+			gotAddress, gotResource, gotMLI, err := s.PutMessage(tt.args.messageID, tt.args.contentsHash, tt.args.msg, tt.args.headers)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Sent.PutMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -279,8 +372,8 @@ func TestSentStore_PutMessage(t *testing.T) {
 			if gotResource != tt.wantResource {
 				t.Errorf("Sent.PutMessage() resource = %v, wantResource %v", gotResource, tt.wantResource)
 			}
-			if gotLocCode != tt.wantLocCode {
-				t.Errorf("Sent.PutMessage() = %v, wantLocCode %v", gotLocCode, tt.wantLocCode)
+			if gotMLI != tt.wantMLI {
+				t.Errorf("Sent.PutMessage() = %v, wantMLI %v", gotMLI, tt.wantMLI)
 			}
 		})
 	}

@@ -16,6 +16,7 @@ package s3store
 
 import (
 	"bytes"
+	"encoding/hex"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -104,7 +105,7 @@ func TestSent_PutMessage(t *testing.T) {
 		args         args
 		wantAddress  string
 		wantResource string
-		wantLocCode  uint64
+		wantMLI      uint64
 		wantErr      bool
 	}{
 		{
@@ -117,11 +118,11 @@ func TestSent_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("6c6f636174696f6e"), input.Key) {
-						t.Errorf("Key incorrect")
+					if !assert.Equal(aws.String("636f6e74656e74732d68617368"), input.Key) {
+						t.Errorf("Bucket incorrect")
 					}
 
-					return &s3manager.UploadOutput{Location: "https://bucket-id/6c6f636174696f6e"}, nil
+					return &s3manager.UploadOutput{Location: "https://bucket-id/636f6e74656e74732d68617368"}, nil
 				},
 				"bucket-id",
 			},
@@ -133,8 +134,8 @@ func TestSent_PutMessage(t *testing.T) {
 				[]byte("test-data"),
 				nil,
 			},
-			"https://bucket-id/6c6f636174696f6e",
-			"6c6f636174696f6e",
+			"https://bucket-id/636f6e74656e74732d68617368",
+			"636f6e74656e74732d68617368",
 			0,
 			false,
 		},
@@ -148,11 +149,11 @@ func TestSent_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("6c6f636174696f6e"), input.Key) {
+					if !assert.Equal(aws.String("636f6e74656e74732d68617368"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
-					return &s3manager.UploadOutput{Location: "https://bucket-id/6c6f636174696f6e"}, nil
+					return &s3manager.UploadOutput{Location: "https://bucket-id/636f6e74656e74732d68617368"}, nil
 				},
 				"bucket-id",
 			},
@@ -166,8 +167,8 @@ func TestSent_PutMessage(t *testing.T) {
 					"key-1": "value-1",
 				},
 			},
-			"https://bucket-id/6c6f636174696f6e",
-			"6c6f636174696f6e",
+			"https://bucket-id/636f6e74656e74732d68617368",
+			"636f6e74656e74732d68617368",
 			0,
 			false,
 		},
@@ -181,7 +182,7 @@ func TestSent_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("6c6f636174696f6e"), input.Key) {
+					if !assert.Equal(aws.String("636f6e74656e74732d68617368"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
@@ -212,7 +213,7 @@ func TestSent_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("6c6f636174696f6e"), input.Key) {
+					if !assert.Equal(aws.String("636f6e74656e74732d68617368"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
@@ -240,7 +241,7 @@ func TestSent_PutMessage(t *testing.T) {
 				uploader: tt.fields.uploader,
 				bucket:   tt.fields.bucket,
 			}
-			gotAddress, gotResource, gotLocCode, err := h.PutMessage(tt.args.messageID, tt.args.contentsHash, tt.args.msg, tt.args.headers)
+			gotAddress, gotResource, gotMLI, err := h.PutMessage(tt.args.messageID, tt.args.contentsHash, tt.args.msg, tt.args.headers)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Sent.PutMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -251,8 +252,8 @@ func TestSent_PutMessage(t *testing.T) {
 			if gotResource != tt.wantResource {
 				t.Errorf("Sent.PutMessage() resource = %v, wantResource %v", gotResource, tt.wantResource)
 			}
-			if gotLocCode != tt.wantLocCode {
-				t.Errorf("Sent.PutMessage() = %v, wantLocCode %v", gotLocCode, tt.wantLocCode)
+			if gotMLI != tt.wantMLI {
+				t.Errorf("Sent.PutMessage() = %v, wantMLI %v", gotMLI, tt.wantMLI)
 			}
 		})
 	}
@@ -285,7 +286,7 @@ func TestSent_Key(t *testing.T) {
 				[]byte("contents-hash"),
 				[]byte("body"),
 			},
-			"6d6573736167654944",
+			hex.EncodeToString([]byte("contents-hash")),
 		},
 	}
 	for _, tt := range tests {

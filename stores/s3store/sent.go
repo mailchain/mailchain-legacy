@@ -16,6 +16,7 @@ package s3store
 
 import (
 	"bytes"
+	"encoding/hex"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -58,11 +59,11 @@ type Sent struct {
 }
 
 func (h Sent) Key(messageID mail.ID, contentsHash, msg []byte) string {
-	return messageID.HexString()
+	return hex.EncodeToString(contentsHash)
 }
 
 func (h Sent) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers map[string]string) (
-	address, resource string, locCode uint64, err error) {
+	address, resource string, mli uint64, err error) {
 	if msg == nil {
 		return "", "", 0, errors.Errorf("'msg' must not be nil")
 	}

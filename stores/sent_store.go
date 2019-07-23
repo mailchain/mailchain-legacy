@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/mailchain/mailchain/crypto"
@@ -54,9 +55,9 @@ func (s SentStore) Key(messageID mail.ID, contentsHash, msg []byte) string {
 }
 
 func (s SentStore) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers map[string]string) (
-	address, resource string, gotLocCode uint64, err error) {
-	hash := crypto.CreateLocationHash(msg)
-	url := fmt.Sprintf("%s?hash=%s&message-id=%s", s.domain, hash.HexString(), hex.EncodeToString(contentsHash))
+	address, resource string, mli uint64, err error) {
+	hash := crypto.CreateIntegrityHash(msg)
+	url := fmt.Sprintf("%s?hash=%s&contents-hash=%s", s.domain, hash.HexString(), hex.EncodeToString(contentsHash))
 
 	req, err := s.newRequest("POST", url, bytes.NewReader(msg))
 	if err != nil {
@@ -76,6 +77,15 @@ func (s SentStore) PutMessage(messageID mail.ID, contentsHash, msg []byte, heade
 	loc := resp.Header.Get("Location")
 	if loc == "" {
 		return "", "", envelope.MLIMailchain, errors.Errorf("missing `Location` header")
+	}
+
+	mli, err = strconv.ParseUint(resp.Header.Get("Message-Location-Identifier"), 10, 0)
+	if err != nil {
+		return "", "", envelope.MLIMailchain, errors.Errorf("%q is not valid for `Message-Location-Identifier` header must be %v",
+			resp.Header.Get("Message-Location-Identifier"), envelope.MLIMailchain)
+	}
+	if mli != envelope.MLIMailchain {
+		return "", "", envelope.MLIMailchain, errors.Errorf("mismatch `Message-Location-Identifier` header")
 	}
 
 	return loc, hex.EncodeToString(contentsHash), envelope.MLIMailchain, nil

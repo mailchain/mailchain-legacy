@@ -35,7 +35,7 @@ func GetMessage(location string) ([]byte, error) {
 	if len(parts) < 2 {
 		return nil, errors.Errorf("could not safely extract hash from location")
 	}
-	hash := crypto.CreateLocationHash(msg)
+	hash := crypto.CreateIntegrityHash(msg)
 	if hash.String() != parts[len(parts)-1] {
 		return nil, errors.Errorf("hash does not match contents")
 	}

@@ -33,9 +33,6 @@ import (
 // - Decrypt message
 // - Check hash
 func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, error) {
-	// if txData[0] != encoding.Protobuf {
-	// 	return nil, errors.Errorf("invalid encoding prefix")
-	// }
 	data, err := envelope.Unmarshal(txData)
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to unmarshal")
@@ -57,7 +54,7 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not get hash")
 	}
-	if len(hash) == 0 {
+	if len(hash) != 0 {
 		messageHash := crypto.CreateMessageHash(rawMsg)
 		if !bytes.Equal(messageHash, hash) {
 			return nil, errors.Errorf("message-hash invalid")

@@ -48,11 +48,11 @@ func SendMessage(ctx context.Context, network string, msg *mail.Message, pubkey 
 	if err != nil {
 		return errors.WithMessage(err, "could not encrypt mail message")
 	}
-	address, resource, locCode, err := sent.PutMessage(msg.ID, crypto.CreateMessageHash(encodedMsg), encrypted, nil)
+	address, resource, mli, err := sent.PutMessage(msg.ID, crypto.CreateMessageHash(encodedMsg), encrypted, nil)
 	if err != nil {
 		return errors.WithMessage(err, "failed to store message")
 	}
-	locOpt, err := envelope.WithMessageLocationIdentifier(locCode)
+	locOpt, err := envelope.WithMessageLocationIdentifier(mli)
 	if err != nil {
 		return errors.WithStack(err)
 	}

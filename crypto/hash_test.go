@@ -23,7 +23,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateLocationHash(t *testing.T) {
+func TestCreateIntegrityHash(t *testing.T) {
 	assert := assert.New(t)
 	cases := []struct {
 		name     string
@@ -41,7 +41,7 @@ func TestCreateLocationHash(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual := crypto.CreateLocationHash(tc.original)
+			actual := crypto.CreateIntegrityHash(tc.original)
 			assert.EqualValues(hex.EncodeToString(tc.expected), hex.EncodeToString(actual))
 		})
 	}

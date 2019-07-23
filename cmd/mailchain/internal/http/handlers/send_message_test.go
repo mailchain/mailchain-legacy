@@ -16,9 +16,19 @@ package handlers
 
 import (
 	"encoding/hex"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"github.com/gorilla/mux"
+	"github.com/mailchain/mailchain/internal/keystore"
+	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/sender"
+	"github.com/mailchain/mailchain/stores"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_checkForEmpties(t *testing.T) {
@@ -229,6 +239,153 @@ func Test_isValid(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := isValid(tt.args.p, tt.args.network); (err != nil) != tt.wantErr {
 				t.Errorf("isValid() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func Test_parsePostRequest(t *testing.T) {
+	type args struct {
+		r *http.Request
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantNil bool
+		wantErr bool
+	}{
+		{
+			"success",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("POST", "/", strings.NewReader(`
+					{
+						"message": {
+							"body": "test",
+							"headers": {
+								"from": "0xd5ab4ce3605cd590db609b6b5c8901fdb2ef7fe6",
+								"to": "0x92d8f10248c6a3953cc3692a894655ad05d61efb"
+							},
+							"public-key": "0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d",
+							"subject": "test"
+						}
+					}
+					`))
+					req = mux.SetURLVars(req, map[string]string{
+						"network": "ethereum",
+					})
+					return req
+				}(),
+			},
+			false,
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := parsePostRequest(tt.args.r)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("parsePostRequest() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if (got == nil) != tt.wantNil {
+				t.Errorf("parsePostRequest() go t= %v, wantNil %v", err, tt.wantNil)
+				return
+			}
+		})
+	}
+}
+
+func TestSendMessage(t *testing.T) {
+	assert := assert.New(t)
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type args struct {
+		sent             stores.Sent
+		senders          map[string]sender.Message
+		ks               keystore.Store
+		deriveKeyOptions multi.OptionsBuilders
+	}
+	tests := []struct {
+		name             string
+		args             args
+		req              *http.Request
+		expectedResponse string
+		expectedStatus   int
+	}{
+		// {
+		// 	"success",
+		// 	args{
+		// 		func() stores.Sent {
+		// 			m := storestest.NewMockSent(mockCtrl)
+		// 			m.EXPECT().PutMessage(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return("https://address.com/1620b93b29f056fa752a6a4dd92ff9b3a293580190cf31e24c15278e92fb00f0c28b", "1620b93b29f056fa752a6a4dd92ff9b3a293580190cf31e24c15278e92fb00f0c28b", uint64(1), nil)
+		// 			return m
+		// 		}(),
+		// 		func() map[string]sender.Message {
+		// 			return map[string]sender.Message{
+		// 				"ethereum/mainnet": func() sender.Message {
+		// 					m := sendertest.NewMockMessage(mockCtrl)
+		// 					return m
+		// 				}(),
+		// 			}
+		// 		}(),
+		// 		func() keystore.Store {
+		// 			m := keystoretest.NewMockStore(mockCtrl)
+		// 			m.EXPECT().HasAddress([]byte{0xd5, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x01, 0xfd, 0xb2, 0xef, 0x7f, 0xe6}).Return(true)
+		// 			m.EXPECT().GetSigner(
+		// 				[]byte{0xd5, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x01, 0xfd, 0xb2, 0xef, 0x7f, 0xe6},
+		// 				"ethereum",
+		// 				gomock.Any()).Return(
+		// 				func() signer.Signer {
+		// 					m := signertest.NewMockSigner(mockCtrl)
+		// 					return m
+		// 				}(), nil)
+		// 			return m
+		// 		}(),
+		// 		multi.OptionsBuilders{},
+		// 	},
+		// 	func() *http.Request {
+		// 		req := httptest.NewRequest("POST", "/", strings.NewReader(`
+		// 		{
+		// 			"message": {
+		// 				"body": "test",
+		// 				"headers": {
+		// 					"from": "0xd5ab4ce3605cd590db609b6b5c8901fdb2ef7fe6",
+		// 					"to": "0x92d8f10248c6a3953cc3692a894655ad05d61efb"
+		// 				},
+		// 				"public-key": "0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d",
+		// 				"subject": "test"
+		// 			}
+		// 		}
+		// 		`))
+		// 		req = mux.SetURLVars(req, map[string]string{
+		// 			"network": "mainnet",
+		// 		})
+		// 		return req
+		// 	}(),
+		// 	"",
+		// 	200,
+		// },
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+			rr := httptest.NewRecorder()
+			handler := http.HandlerFunc(SendMessage(tt.args.sent, tt.args.senders, tt.args.ks, tt.args.deriveKeyOptions))
+
+			// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
+			// directly and pass in our Request and ResponseRecorder.
+			handler.ServeHTTP(rr, tt.req)
+
+			// Check the status code is what we expect.
+			if !assert.Equal(tt.expectedStatus, rr.Code) {
+				t.Errorf("handler returned wrong status code: got %v want %v",
+					rr.Code, tt.expectedStatus)
+			}
+			if !assert.Equal(tt.expectedResponse, rr.Body.String()) {
+				t.Errorf("handler returned unexpected body: got %v want %v",
+					rr.Body.String(), tt.expectedResponse)
 			}
 		})
 	}

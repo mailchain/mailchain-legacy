@@ -39,8 +39,8 @@ import (
 )
 
 // SendMessage handler http
-func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store,
-	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
+func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store, deriveKeyOptions multi.OptionsBuilders) func(
+	w http.ResponseWriter, r *http.Request) {
 	encrypter := aes256cbc.NewEncrypter()
 	// Post swagger:route POST /ethereum/{network}/messages/send Send Ethereum SendMessage
 	//
@@ -72,11 +72,11 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 		}
 		sender, ok := senders[fmt.Sprintf("ethereum/%s", req.network)]
 		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender for chain.network configured"))
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender for ethereum/%s configured", req.network))
 			return
 		}
 
-		msg, err := bodyToMessage(req)
+		msg, err := mail.NewMessage(time.Now(), *req.from, *req.to, req.replyTo, req.Message.Subject, []byte(req.Message.Body))
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
@@ -112,10 +112,6 @@ type PostRequest struct {
 	// in: body
 	// required: true
 	PostRequestBody PostRequestBody
-}
-
-func bodyToMessage(p *PostRequestBody) (*mail.Message, error) {
-	return mail.NewMessage(time.Now(), *p.from, *p.to, p.replyTo, p.Message.Subject, []byte(p.Message.Body))
 }
 
 // parsePostRequest post all the details for the message

@@ -101,7 +101,7 @@ func TestEncryptDecrypt(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			encrypted, err := Encrypt(tc.recipientPublicKey, tc.data)
+			encrypted, err := NewEncrypter().Encrypt(tc.recipientPublicKey, tc.data)
 			assert.Equal(tc.err, err)
 			assert.NotNil(encrypted)
 			decrypter := Decrypter{&tc.recipientPrivateKey}

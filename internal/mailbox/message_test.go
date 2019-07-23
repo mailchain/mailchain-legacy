@@ -19,14 +19,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
-	"github.com/mailchain/mailchain/internal/encoding"
-	"github.com/mailchain/mailchain/internal/mail"
+	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
 	"github.com/mailchain/mailchain/internal/chains/ethereum"
-	"github.com/mailchain/mailchain/internal/mail/rfc2822"
+	"github.com/mailchain/mailchain/internal/envelope"
+	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/mailbox/signer/signertest"
 	"github.com/mailchain/mailchain/internal/testutil"
@@ -35,224 +34,9 @@ import (
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/storestest"
 	"github.com/pkg/errors"
-	"github.com/stretchr/testify/assert"
 )
 
-func Test_defaultEncryptLocation(t *testing.T) {
-	assert := assert.New(t)
-	type args struct {
-		pk       crypto.PublicKey
-		location string
-	}
-	type val struct {
-		encryptedLen   int
-		pk             crypto.PrivateKey
-		wantDecryptErr bool
-		location       string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		val     val
-		wantErr bool
-	}{
-		{
-			"testutil-charlotte",
-			args{
-				testutil.CharlottePublicKey,
-				"http://test.com/location",
-			},
-			val{
-				114,
-				testutil.CharlottePrivateKey,
-				false,
-				"http://test.com/location",
-			},
-			false,
-		},
-		{
-			"testutil-charlotte-incorrect-private-key",
-			args{
-				testutil.SofiaPublicKey,
-				"http://test.com/location",
-			},
-			val{
-				114,
-				testutil.CharlottePrivateKey,
-				true,
-				"",
-			},
-			false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := defaultEncryptLocation(tt.args.pk, tt.args.location)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("encryptLocation() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !assert.Equal(tt.val.encryptedLen, len(got)) {
-				t.Errorf("len(encryptLocation()) = %v, want %v", got, tt.val.encryptedLen)
-			}
-			if err == nil {
-				decrypter := aes256cbc.NewDecrypter(tt.val.pk)
-				loc, err := decrypter.Decrypt(got)
-				if (err != nil) != tt.val.wantDecryptErr {
-					t.Errorf("decrypter.Decrypt() error = %v, wantDecryptErr %v", err, tt.val.wantDecryptErr)
-					return
-				}
-				if !assert.Equal(tt.val.location, string(loc)) {
-					t.Errorf("decryptedLocation = %v, want %v", string(loc), tt.val.location)
-				}
-			}
-		})
-	}
-}
-
-func Test_defaultEncryptMailMessage(t *testing.T) {
-	encodedMsg, err := rfc2822.EncodeNewMessage(&mail.Message{
-		Headers: &mail.Headers{
-			From: mail.Address{DisplayName: "From Display Name", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
-			To:   mail.Address{DisplayName: "To Display Name", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
-			// Date: time.
-			Date:    time.Date(2018, 01, 02, 03, 04, 05, 06, time.UTC),
-			Subject: "test",
-		},
-		ID:   []byte("2c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471002c47eca011e32b52c71005ad8a8f75e1b44c9@mailchain"),
-		Body: []byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet."),
-	})
-	if err != nil {
-		t.Error(err)
-	}
-	assert := assert.New(t)
-	type args struct {
-		pk         crypto.PublicKey
-		encodedMsg []byte
-	}
-	type val struct {
-		encryptedLen   int
-		pk             crypto.PrivateKey
-		wantDecryptErr bool
-		encodedMsg     []byte
-	}
-	tests := []struct {
-		name    string
-		args    args
-		val     val
-		wantErr bool
-	}{
-		{
-			"testutil-charlotte",
-			args{
-				testutil.CharlottePublicKey,
-				encodedMsg,
-			},
-			val{
-				914,
-				testutil.CharlottePrivateKey,
-				false,
-				encodedMsg,
-			},
-			false,
-		},
-		{
-			"testutil-charlotte-incorrect-private-key",
-			args{
-				testutil.SofiaPublicKey,
-				encodedMsg,
-			},
-			val{
-				914,
-				testutil.CharlottePrivateKey,
-				true,
-				nil,
-			},
-			false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := defaultEncryptMailMessage(tt.args.pk, tt.args.encodedMsg)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("encryptMailMessage() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !assert.Equal(tt.val.encryptedLen, len(got)) {
-				t.Errorf("len(encryptMailMessage()) = %v, want %v", got, tt.val.encryptedLen)
-			}
-
-			if err == nil {
-				decrypter := aes256cbc.NewDecrypter(tt.val.pk)
-				m, err := decrypter.Decrypt(got)
-				if (err != nil) != tt.val.wantDecryptErr {
-					t.Errorf("decrypter.Decrypt() error = %v, wantDecryptErr %v", err, tt.val.wantDecryptErr)
-					return
-				}
-				if !assert.EqualValues(tt.val.encodedMsg, m) {
-					t.Errorf("decryptMailMessage = %v, want %v", string(m), tt.val.encodedMsg)
-				}
-			}
-		})
-	}
-}
-
 func TestSendMessage(t *testing.T) {
-	assert := assert.New(t)
-	tests := []struct {
-		name string
-	}{
-		{
-			"success",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := SendMessage(); !assert.NotNil(got) {
-				t.Errorf("Message() = %v", got)
-			}
-		})
-	}
-}
-
-func Test_defaultPrefixedBytes(t *testing.T) {
-	assert := assert.New(t)
-	type args struct {
-		data proto.Message
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    []byte
-		wantErr bool
-	}{
-		{
-			"success",
-			args{
-				data: &mail.Data{
-					EncryptedLocation: []byte("encrypted-location"),
-					Hash:              testutil.MustHexDecodeString("1620671f6f840e08b9c6b3e2125e0381dd5da5578a698eb97a357f1015552263aec6"),
-				},
-			},
-			[]byte{0x50, 0x12, 0x12, 0x65, 0x6e, 0x63, 0x72, 0x79, 0x70, 0x74, 0x65, 0x64, 0x2d, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x22, 0x16, 0x20, 0x67, 0x1f, 0x6f, 0x84, 0xe, 0x8, 0xb9, 0xc6, 0xb3, 0xe2, 0x12, 0x5e, 0x3, 0x81, 0xdd, 0x5d, 0xa5, 0x57, 0x8a, 0x69, 0x8e, 0xb9, 0x7a, 0x35, 0x7f, 0x10, 0x15, 0x55, 0x22, 0x63, 0xae, 0xc6},
-			false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := defaultPrefixedBytes(tt.args.data)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("prefixedBytes() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !assert.Equal(tt.want, got) {
-				t.Errorf("prefixedBytes() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_Message(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	msg := &mail.Message{
@@ -265,273 +49,238 @@ func Test_Message(t *testing.T) {
 		ID:   []byte("2c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471002c47eca011e32b52c71005ad8a8f75e1b44c9@mailchain"),
 		Body: []byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet."),
 	}
+
 	type args struct {
-		encryptLocation    func(pk crypto.PublicKey, location string) ([]byte, error)
-		encryptMailMessage func(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error)
-		prefixedBytes      func(data proto.Message) ([]byte, error)
-	}
-	type funcArgs struct {
-		ctx     context.Context
-		network string
-		msg     *mail.Message
-		pubkey  crypto.PublicKey
-		sender  sender.Message
-		sent    stores.Sent
-		signer  signer.Signer
+		ctx          context.Context
+		network      string
+		msg          *mail.Message
+		pubkey       crypto.PublicKey
+		encrypter    cipher.Encrypter
+		msgSender    sender.Message
+		sent         stores.Sent
+		msgSigner    signer.Signer
+		envelopeKind byte
 	}
 	tests := []struct {
-		name     string
-		args     args
-		funcArgs funcArgs
-		wantErr  bool
+		name    string
+		args    args
+		wantErr bool
 	}{
 		{
 			"success",
 			args{
-				func(pk crypto.PublicKey, location string) ([]byte, error) {
-					return []byte("encrypted-location"), nil
-				},
-				func(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error) {
-					return []byte("encrypted-message"), nil
-				},
-				func(data proto.Message) ([]byte, error) {
-					return []byte("prefixed-bytes"), nil
-				},
-			},
-			funcArgs{
 				context.Background(),
 				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
+				func() cipher.Encrypter {
+					m := ciphertest.NewMockEncrypter(mockCtrl)
+					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
+					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-uint64-bytes"), nil)
+
+					return m
+				}(),
 				func() sender.Message {
 					m := sendertest.NewMockMessage(mockCtrl)
-					m.EXPECT().Send(gomock.Any(),ethereum.Mainnet, testutil.MustHexDecodeString(msg.Headers.To.ChainAddress), testutil.MustHexDecodeString(msg.Headers.From.ChainAddress), append(encoding.DataPrefix(), []byte("prefixed-bytes")...), signertest.NewMockSigner(mockCtrl), nil).Return(nil)
+					m.EXPECT().Send(gomock.Any(), ethereum.Mainnet, testutil.MustHexDecodeString(msg.Headers.To.ChainAddress), testutil.MustHexDecodeString(msg.Headers.From.ChainAddress), gomock.AssignableToTypeOf([]byte{}), signertest.NewMockSigner(mockCtrl), nil).Return(nil)
 					return m
 				}(),
 				func() stores.Sent {
-					sent := storestest.NewMockSent(mockCtrl)
-					sent.EXPECT().PutMessage(msg.ID, []byte("encrypted-message"), nil).Return("https://location-of-file", nil)
-					return sent
+					m := storestest.NewMockSent(mockCtrl)
+					m.EXPECT().PutMessage(msg.ID, []byte{0x16, 0x20, 0xed, 0x2b, 0x9, 0x40, 0x7e, 0xb6, 0x91, 0x67, 0x8a, 0x27, 0x10, 0x42, 0xd2, 0xC3, 0xd2, 0x26, 0xF0, 0xBD, 0x8E, 0x62, 0xF0, 0x7C, 0xF1, 0x61, 0xD2, 0x62, 0x8E, 0x8E, 0x11, 0x7E, 0x35, 0x42}, []byte("encrypted-message"), nil).Return("https://location-of-file", "1620ed2b09407eb691678a271042d2c3d226f0bd8e62f07cf161d2628e8e117e3542", uint64(1), nil)
+					return m
 				}(),
 				func() signer.Signer {
 					signer := signertest.NewMockSigner(mockCtrl)
 					return signer
 				}(),
+				envelope.Kind0x01,
 			},
 			false,
 		},
 		{
-			"err-encode-message",
+			"err-send",
 			args{
-				func(pk crypto.PublicKey, location string) ([]byte, error) {
-					return []byte("encrypted-location"), nil
-				},
-				func(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error) {
-					return []byte("encrypted-message"), nil
-				},
-				func(data proto.Message) ([]byte, error) {
-					return []byte("prefixed-bytes"), nil
-				},
+				context.Background(),
+				ethereum.Mainnet,
+				msg,
+				testutil.CharlottePublicKey,
+				func() cipher.Encrypter {
+					m := ciphertest.NewMockEncrypter(mockCtrl)
+					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
+					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-uint64-bytes"), nil)
+
+					return m
+				}(),
+				func() sender.Message {
+					m := sendertest.NewMockMessage(mockCtrl)
+					m.EXPECT().Send(gomock.Any(), ethereum.Mainnet, testutil.MustHexDecodeString(msg.Headers.To.ChainAddress), testutil.MustHexDecodeString(msg.Headers.From.ChainAddress), gomock.AssignableToTypeOf([]byte{}), signertest.NewMockSigner(mockCtrl), nil).Return(errors.Errorf("failed"))
+					return m
+				}(),
+				func() stores.Sent {
+					m := storestest.NewMockSent(mockCtrl)
+					m.EXPECT().PutMessage(msg.ID, []byte{0x16, 0x20, 0xed, 0x2b, 0x9, 0x40, 0x7e, 0xb6, 0x91, 0x67, 0x8a, 0x27, 0x10, 0x42, 0xd2, 0xC3, 0xd2, 0x26, 0xF0, 0xBD, 0x8E, 0x62, 0xF0, 0x7C, 0xF1, 0x61, 0xD2, 0x62, 0x8E, 0x8E, 0x11, 0x7E, 0x35, 0x42}, []byte("encrypted-message"), nil).Return("https://location-of-file", "1620ed2b09407eb691678a271042d2c3d226f0bd8e62f07cf161d2628e8e117e3542", uint64(1), nil)
+					return m
+				}(),
+				func() signer.Signer {
+					signer := signertest.NewMockSigner(mockCtrl)
+					return signer
+				}(),
+				envelope.Kind0x01,
 			},
-			funcArgs{
+			true,
+		},
+		{
+			"err-new-envelope",
+			args{
+				context.Background(),
+				ethereum.Mainnet,
+				msg,
+				testutil.CharlottePublicKey,
+				func() cipher.Encrypter {
+					m := ciphertest.NewMockEncrypter(mockCtrl)
+					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
+
+					return m
+				}(),
+				func() sender.Message {
+					m := sendertest.NewMockMessage(mockCtrl)
+					return m
+				}(),
+				func() stores.Sent {
+					m := storestest.NewMockSent(mockCtrl)
+					m.EXPECT().PutMessage(msg.ID, []byte{0x16, 0x20, 0xed, 0x2b, 0x9, 0x40, 0x7e, 0xb6, 0x91, 0x67, 0x8a, 0x27, 0x10, 0x42, 0xd2, 0xC3, 0xd2, 0x26, 0xF0, 0xBD, 0x8E, 0x62, 0xF0, 0x7C, 0xF1, 0x61, 0xD2, 0x62, 0x8E, 0x8E, 0x11, 0x7E, 0x35, 0x42}, []byte("encrypted-message"), nil).Return("https://location-of-file", "1620ed2b09407eb691678a271042d2c3d226f0bd8e62f07cf161d2628e8e117e3542", uint64(1), nil)
+					return m
+				}(),
+				func() signer.Signer {
+					signer := signertest.NewMockSigner(mockCtrl)
+					return signer
+				}(),
+				0x00,
+			},
+			true,
+		},
+		{
+			"err-invalid-loc-code",
+			args{
+				context.Background(),
+				ethereum.Mainnet,
+				msg,
+				testutil.CharlottePublicKey,
+				func() cipher.Encrypter {
+					m := ciphertest.NewMockEncrypter(mockCtrl)
+					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
+
+					return m
+				}(),
+				func() sender.Message {
+					m := sendertest.NewMockMessage(mockCtrl)
+					return m
+				}(),
+				func() stores.Sent {
+					m := storestest.NewMockSent(mockCtrl)
+					m.EXPECT().PutMessage(msg.ID, []byte{0x16, 0x20, 0xed, 0x2b, 0x9, 0x40, 0x7e, 0xb6, 0x91, 0x67, 0x8a, 0x27, 0x10, 0x42, 0xd2, 0xC3, 0xd2, 0x26, 0xF0, 0xBD, 0x8E, 0x62, 0xF0, 0x7C, 0xF1, 0x61, 0xD2, 0x62, 0x8E, 0x8E, 0x11, 0x7E, 0x35, 0x42}, []byte("encrypted-message"), nil).Return("https://location-of-file", "1620ed2b09407eb691678a271042d2c3d226f0bd8e62f07cf161d2628e8e117e3542", uint64(255), nil)
+					return m
+				}(),
+				func() signer.Signer {
+					signer := signertest.NewMockSigner(mockCtrl)
+					return signer
+				}(),
+				0x00,
+			},
+			true,
+		},
+		{
+			"err-sent-store",
+			args{
+				context.Background(),
+				ethereum.Mainnet,
+				msg,
+				testutil.CharlottePublicKey,
+				func() cipher.Encrypter {
+					m := ciphertest.NewMockEncrypter(mockCtrl)
+					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
+
+					return m
+				}(),
+				func() sender.Message {
+					m := sendertest.NewMockMessage(mockCtrl)
+					return m
+				}(),
+				func() stores.Sent {
+					m := storestest.NewMockSent(mockCtrl)
+					m.EXPECT().PutMessage(msg.ID, []byte{0x16, 0x20, 0xed, 0x2b, 0x9, 0x40, 0x7e, 0xb6, 0x91, 0x67, 0x8a, 0x27, 0x10, 0x42, 0xd2, 0xC3, 0xd2, 0x26, 0xF0, 0xBD, 0x8E, 0x62, 0xF0, 0x7C, 0xF1, 0x61, 0xD2, 0x62, 0x8E, 0x8E, 0x11, 0x7E, 0x35, 0x42}, []byte("encrypted-message"), nil).Return("", "", uint64(1), errors.Errorf("failed"))
+					return m
+				}(),
+				func() signer.Signer {
+					signer := signertest.NewMockSigner(mockCtrl)
+					return signer
+				}(),
+				0x00,
+			},
+			true,
+		},
+		{
+			"err-encrypt",
+			args{
+				context.Background(),
+				ethereum.Mainnet,
+				msg,
+				testutil.CharlottePublicKey,
+				func() cipher.Encrypter {
+					m := ciphertest.NewMockEncrypter(mockCtrl)
+					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return(nil, errors.Errorf("failed"))
+
+					return m
+				}(),
+				func() sender.Message {
+					m := sendertest.NewMockMessage(mockCtrl)
+					return m
+				}(),
+				func() stores.Sent {
+					m := storestest.NewMockSent(mockCtrl)
+					return m
+				}(),
+				func() signer.Signer {
+					signer := signertest.NewMockSigner(mockCtrl)
+					return signer
+				}(),
+				0x00,
+			},
+			true,
+		},
+		{
+			"err-msg-encode",
+			args{
 				context.Background(),
 				ethereum.Mainnet,
 				nil,
 				testutil.CharlottePublicKey,
-				func() sender.Message {
-					sender := sendertest.NewMockMessage(mockCtrl)
-					return sender
+				func() cipher.Encrypter {
+					m := ciphertest.NewMockEncrypter(mockCtrl)
+					return m
 				}(),
-				func() stores.Sent {
-					sent := storestest.NewMockSent(mockCtrl)
-					return sent
-				}(),
-				func() signer.Signer {
-					signer := signertest.NewMockSigner(mockCtrl)
-					return signer
-				}(),
-			},
-			true,
-		},
-		{
-			"err-encrypt-message",
-			args{
-				func(pk crypto.PublicKey, location string) ([]byte, error) {
-					return []byte("encrypted-location"), nil
-				},
-				func(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error) {
-					return nil, errors.Errorf("encryption failed")
-				},
-				func(data proto.Message) ([]byte, error) {
-					return []byte("prefixed-bytes"), nil
-				},
-			},
-			funcArgs{
-				context.Background(),
-				ethereum.Mainnet,
-				msg,
-				testutil.CharlottePublicKey,
-				func() sender.Message {
-					sender := sendertest.NewMockMessage(mockCtrl)
-					return sender
-				}(),
-				func() stores.Sent {
-					sent := storestest.NewMockSent(mockCtrl)
-					return sent
-				}(),
-				func() signer.Signer {
-					signer := signertest.NewMockSigner(mockCtrl)
-					return signer
-				}(),
-			},
-			true,
-		},
-		{
-			"err-put-message",
-			args{
-				func(pk crypto.PublicKey, location string) ([]byte, error) {
-					return []byte("encrypted-location"), nil
-				},
-				func(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error) {
-					return []byte("encrypted-message"), nil
-				},
-				func(data proto.Message) ([]byte, error) {
-					return []byte("prefixed-bytes"), nil
-				},
-			},
-			funcArgs{
-				context.Background(),
-				ethereum.Mainnet,
-				msg,
-				testutil.CharlottePublicKey,
-				func() sender.Message {
-					sender := sendertest.NewMockMessage(mockCtrl)
-					return sender
-				}(),
-				func() stores.Sent {
-					sent := storestest.NewMockSent(mockCtrl)
-					sent.EXPECT().PutMessage(msg.ID, []byte("encrypted-message"), nil).Return("", errors.Errorf("failed to put message"))
-					return sent
-				}(),
-				func() signer.Signer {
-					signer := signertest.NewMockSigner(mockCtrl)
-					return signer
-				}(),
-			},
-			true,
-		},
-		{
-			"err-encrypt-location",
-			args{
-				func(pk crypto.PublicKey, location string) ([]byte, error) {
-					return nil, errors.Errorf("failed encrypt location")
-				},
-				func(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error) {
-					return []byte("encrypted-message"), nil
-				},
-				func(data proto.Message) ([]byte, error) {
-					return []byte("prefixed-bytes"), nil
-				},
-			},
-			funcArgs{
-				context.Background(),
-				ethereum.Mainnet,
-				msg,
-				testutil.CharlottePublicKey,
-				func() sender.Message {
-					sender := sendertest.NewMockMessage(mockCtrl)
-					return sender
-				}(),
-				func() stores.Sent {
-					sent := storestest.NewMockSent(mockCtrl)
-					sent.EXPECT().PutMessage(msg.ID, []byte("encrypted-message"), nil).Return("https://location-of-file", nil)
-					return sent
-				}(),
-				func() signer.Signer {
-					signer := signertest.NewMockSigner(mockCtrl)
-					return signer
-				}(),
-			},
-			true,
-		},
-		{
-			"err-prefix",
-			args{
-				func(pk crypto.PublicKey, location string) ([]byte, error) {
-					return []byte("encrypted-location"), nil
-				},
-				func(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error) {
-					return []byte("encrypted-message"), nil
-				},
-				func(data proto.Message) ([]byte, error) {
-					return nil, errors.Errorf("prefix failed")
-				},
-			},
-			funcArgs{
-				context.Background(),
-				ethereum.Mainnet,
-				msg,
-				testutil.CharlottePublicKey,
-				func() sender.Message {
-					sender := sendertest.NewMockMessage(mockCtrl)
-					return sender
-				}(),
-				func() stores.Sent {
-					sent := storestest.NewMockSent(mockCtrl)
-					sent.EXPECT().PutMessage(msg.ID, []byte("encrypted-message"), nil).Return("https://location-of-file", nil)
-					return sent
-				}(),
-				func() signer.Signer {
-					signer := signertest.NewMockSigner(mockCtrl)
-					return signer
-				}(),
-			},
-			true,
-		},
-		{
-			"err-sender",
-			args{
-				func(pk crypto.PublicKey, location string) ([]byte, error) {
-					return []byte("encrypted-location"), nil
-				},
-				func(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error) {
-					return []byte("encrypted-message"), nil
-				},
-				func(data proto.Message) ([]byte, error) {
-					return []byte("prefixed-bytes"), nil
-				},
-			},
-			funcArgs{
-				context.Background(),
-				ethereum.Mainnet,
-				msg,
-				testutil.CharlottePublicKey,
 				func() sender.Message {
 					m := sendertest.NewMockMessage(mockCtrl)
-					m.EXPECT().Send(gomock.Any(), ethereum.Mainnet, testutil.MustHexDecodeString(msg.Headers.To.ChainAddress), testutil.MustHexDecodeString(msg.Headers.From.ChainAddress), append(encoding.DataPrefix(), []byte("prefixed-bytes")...), signertest.NewMockSigner(mockCtrl), nil).Return(errors.Errorf("failed sender"))
 					return m
 				}(),
 				func() stores.Sent {
-					sent := storestest.NewMockSent(mockCtrl)
-					sent.EXPECT().PutMessage(msg.ID, []byte("encrypted-message"), nil).Return("https://location-of-file", nil)
-					return sent
+					m := storestest.NewMockSent(mockCtrl)
+					return m
 				}(),
 				func() signer.Signer {
 					signer := signertest.NewMockSigner(mockCtrl)
 					return signer
 				}(),
+				0x00,
 			},
 			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotFunc := sendMessage(tt.args.encryptLocation, tt.args.encryptMailMessage, tt.args.prefixedBytes)
-			err := gotFunc(tt.funcArgs.ctx, tt.funcArgs.network, tt.funcArgs.msg, tt.funcArgs.pubkey, tt.funcArgs.sender, tt.funcArgs.sent, tt.funcArgs.signer)
-
-			if (err != nil) != tt.wantErr {
-				t.Errorf("gotFunc() error = %v, wantErr %v", err, tt.wantErr)
-				return
+			if err := SendMessage(tt.args.ctx, tt.args.network, tt.args.msg, tt.args.pubkey, tt.args.encrypter, tt.args.msgSender, tt.args.sent, tt.args.msgSigner, tt.args.envelopeKind); (err != nil) != tt.wantErr {
+				t.Errorf("SendMessage() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

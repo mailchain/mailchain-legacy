@@ -16,7 +16,7 @@ package s3store
 
 import (
 	"bytes"
-	"fmt"
+	"encoding/hex"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -24,7 +24,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/mailchain/mailchain"
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
@@ -59,14 +58,14 @@ type Sent struct {
 	bucket   string
 }
 
-func (h Sent) Key(messageID mail.ID, msg []byte) string {
-	hash := crypto.CreateLocationHash(msg)
-	return fmt.Sprintf("%s-%s", messageID.HexString(), hash.String())
+func (h Sent) Key(messageID mail.ID, contentsHash, msg []byte) string {
+	return hex.EncodeToString(contentsHash)
 }
 
-func (h Sent) PutMessage(messageID mail.ID, msg []byte, headers map[string]string) (string, error) {
+func (h Sent) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers map[string]string) (
+	address, resource string, mli uint64, err error) {
 	if msg == nil {
-		return "", errors.Errorf("'msg' must not be nil")
+		return "", "", 0, errors.Errorf("'msg' must not be nil")
 	}
 	metadata := map[string]*string{
 		"Version": aws.String(mailchain.Version),
@@ -74,16 +73,17 @@ func (h Sent) PutMessage(messageID mail.ID, msg []byte, headers map[string]strin
 	for k, v := range headers {
 		metadata[k] = aws.String(v)
 	}
+	resource = h.Key(messageID, contentsHash, msg)
 	params := &s3manager.UploadInput{
 		Bucket:   &h.bucket,
-		Key:      aws.String(h.Key(messageID, msg)),
+		Key:      aws.String(resource),
 		Body:     bytes.NewReader(msg),
 		Metadata: metadata,
 	}
 	// Perform an upload.
 	result, err := h.uploader(params)
 	if err != nil {
-		return "", errors.WithMessage(err, "could not put message")
+		return "", "", 0, errors.WithMessage(err, "could not put message")
 	}
-	return result.Location, nil
+	return result.Location, resource, 0, nil
 }

@@ -8,7 +8,6 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	crypto "github.com/mailchain/mailchain/crypto"
 	cipher "github.com/mailchain/mailchain/crypto/cipher"
-	io "io"
 	reflect "reflect"
 )
 
@@ -74,16 +73,16 @@ func (m *MockEncrypter) EXPECT() *MockEncrypterMockRecorder {
 }
 
 // Encrypt mocks base method
-func (m *MockEncrypter) Encrypt(rand io.Reader, pub crypto.PublicKey, plain cipher.PlainContent) (cipher.EncryptedContent, error) {
+func (m *MockEncrypter) Encrypt(pub crypto.PublicKey, plain cipher.PlainContent) (cipher.EncryptedContent, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Encrypt", rand, pub, plain)
+	ret := m.ctrl.Call(m, "Encrypt", pub, plain)
 	ret0, _ := ret[0].(cipher.EncryptedContent)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Encrypt indicates an expected call of Encrypt
-func (mr *MockEncrypterMockRecorder) Encrypt(rand, pub, plain interface{}) *gomock.Call {
+func (mr *MockEncrypterMockRecorder) Encrypt(pub, plain interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Encrypt", reflect.TypeOf((*MockEncrypter)(nil).Encrypt), rand, pub, plain)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Encrypt", reflect.TypeOf((*MockEncrypter)(nil).Encrypt), pub, plain)
 }

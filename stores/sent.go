@@ -23,9 +23,9 @@ import (
 
 // The Sent saves the message. This should not be used directly but as the first argument of storing.PutMessage.
 type Sent interface {
-	// PutMessage should write the message contents to the underlying storage service. Return the final location or any error.
-	PutMessage(messageID mail.ID, msg []byte, headers map[string]string) (string, error)
-	Key(messageID mail.ID, msg []byte) string
+	// PutMessage should write the message contents to the underlying storage service. Return the final location information or any error.
+	PutMessage(messageID mail.ID, contentsHash, msg []byte, headers map[string]string) (address, resource string, mli uint64, err error)
+	Key(messageID mail.ID, contentsHash, msg []byte) string
 }
 
 func SentStoreNames() []string {

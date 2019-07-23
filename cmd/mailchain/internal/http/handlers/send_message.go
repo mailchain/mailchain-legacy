@@ -24,9 +24,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/chains"
+	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/mail"
@@ -37,9 +39,9 @@ import (
 )
 
 // SendMessage handler http
-func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store,
-	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
-	sendmessage := mailbox.SendMessage()
+func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store, deriveKeyOptions multi.OptionsBuilders) func(
+	w http.ResponseWriter, r *http.Request) {
+	encrypter := aes256cbc.NewEncrypter()
 	// Post swagger:route POST /ethereum/{network}/messages/send Send Ethereum SendMessage
 	//
 	// Send message.
@@ -70,11 +72,11 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 		}
 		sender, ok := senders[fmt.Sprintf("ethereum/%s", req.network)]
 		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender for chain.network configured"))
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender for ethereum/%s configured", req.network))
 			return
 		}
 
-		msg, err := bodyToMessage(req)
+		msg, err := mail.NewMessage(time.Now(), *req.from, *req.to, req.replyTo, req.Message.Subject, []byte(req.Message.Body))
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
@@ -86,7 +88,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			return
 		}
 
-		if err := sendmessage(ctx, req.network, msg, req.publicKey, sender, sent, signer); err != nil {
+		if err := mailbox.SendMessage(ctx, req.network, msg, req.publicKey, encrypter, sender, sent, signer, envelope.Kind0x01); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}
@@ -110,10 +112,6 @@ type PostRequest struct {
 	// in: body
 	// required: true
 	PostRequestBody PostRequestBody
-}
-
-func bodyToMessage(p *PostRequestBody) (*mail.Message, error) {
-	return mail.NewMessage(time.Now(), *p.from, *p.to, p.replyTo, p.Message.Subject, []byte(p.Message.Body))
 }
 
 // parsePostRequest post all the details for the message

@@ -27,7 +27,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (e EthRPC2) Send(ctx context.Context, network string, to, from, data []byte, signer signer.Signer, opts sender.MessageOpts) error {
+func (e EthRPC2) Send(ctx context.Context, network string, to, from, data []byte, signer signer.Signer, opts sender.SendOpts) error {
 	chainID, err := e.client.NetworkID(ctx)
 	if err != nil {
 		return errors.WithMessage(err, "could not determine chain id")

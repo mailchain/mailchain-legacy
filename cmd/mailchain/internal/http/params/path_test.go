@@ -49,6 +49,34 @@ func TestPathMessageID(t *testing.T) {
 			[]byte{0x47, 0xec, 0xa0, 0x11, 0xe3, 0x2b, 0x52, 0xc7, 0x10, 0x5, 0xad, 0x8a, 0x8f, 0x75, 0xe1, 0xb4, 0x4c, 0x92, 0xc9, 0x9f, 0xd1, 0x2e, 0x43, 0xbc, 0xcf, 0xe5, 0x71, 0xe3, 0xc2, 0xd1, 0x3d, 0x2e, 0x9a, 0x82, 0x6a, 0x55, 0xf, 0x5f, 0xf6, 0x3b, 0x24, 0x7a, 0xf4, 0x71},
 			false,
 		},
+		{
+			"invalid",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("GET", "/message_id", nil)
+					req = mux.SetURLVars(req, map[string]string{
+						"message_id": "47eca",
+					})
+					return req
+				}(),
+			},
+			nil,
+			true,
+		},
+		{
+			"empty",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("GET", "/message_id", nil)
+					req = mux.SetURLVars(req, map[string]string{
+						"message_id": "",
+					})
+					return req
+				}(),
+			},
+			nil,
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

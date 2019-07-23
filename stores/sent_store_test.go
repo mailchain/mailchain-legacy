@@ -103,23 +103,28 @@ func TestSentStore_PutMessage(t *testing.T) {
 		doRequest  func(req *http.Request) (*http.Response, error)
 	}
 	type args struct {
-		messageID mail.ID
-		msg       []byte
-		headers   map[string]string
+		messageID    mail.ID
+		contentsHash []byte
+		msg          []byte
+		headers      map[string]string
 	}
 	tests := []struct {
-		name    string
-		server  *httptest.Server
-		fields  fields
-		args    args
-		want    string
-		wantErr bool
+		name         string
+		server       *httptest.Server
+		fields       fields
+		args         args
+		wantAddress  string
+		wantResource string
+		wantMLI      uint64
+		wantErr      bool
 	}{
 		{
 			"success",
 			httptest.NewServer(
 				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					w.Header().Add("Location", "https://mcx.mx/mesasgeID-hash")
+					w.Header().Add("Location", "https://mcx.mx/contentsHash")
+					w.Header().Add("Message-Location-Identifier", "1")
+
 					w.WriteHeader(http.StatusCreated)
 				}),
 			),
@@ -133,18 +138,112 @@ func TestSentStore_PutMessage(t *testing.T) {
 				}(),
 			},
 			args{
+				[]byte("messageID"),
 				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("body"),
 				nil,
 			},
-			"https://mcx.mx/mesasgeID-hash",
+			"https://mcx.mx/contentsHash",
+			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
+			1,
 			false,
+		},
+		{
+			"err-incorrect-mil",
+			httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Add("Location", "https://mcx.mx/contentsHash")
+					w.Header().Add("Message-Location-Identifier", "0")
+
+					w.WriteHeader(http.StatusCreated)
+				}),
+			),
+			fields{
+				newRequest: http.NewRequest,
+				doRequest: func() func(req *http.Request) (*http.Response, error) {
+					c := http.Client{
+						Timeout: 1 * time.Second,
+					}
+					return c.Do
+				}(),
+			},
+			args{
+				[]byte("messageID"),
+				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				[]byte("body"),
+				nil,
+			},
+			"",
+			"",
+			1,
+			true,
+		},
+		{
+			"err-invalid-mil",
+			httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Add("Location", "https://mcx.mx/contentsHash")
+					w.Header().Add("Message-Location-Identifier", "invalid")
+
+					w.WriteHeader(http.StatusCreated)
+				}),
+			),
+			fields{
+				newRequest: http.NewRequest,
+				doRequest: func() func(req *http.Request) (*http.Response, error) {
+					c := http.Client{
+						Timeout: 1 * time.Second,
+					}
+					return c.Do
+				}(),
+			},
+			args{
+				[]byte("messageID"),
+				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				[]byte("body"),
+				nil,
+			},
+			"",
+			"",
+			1,
+			true,
+		},
+		{
+			"err-missing-mil",
+			httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Header().Add("Location", "https://mcx.mx/contentsHash")
+
+					w.WriteHeader(http.StatusCreated)
+				}),
+			),
+			fields{
+				newRequest: http.NewRequest,
+				doRequest: func() func(req *http.Request) (*http.Response, error) {
+					c := http.Client{
+						Timeout: 1 * time.Second,
+					}
+					return c.Do
+				}(),
+			},
+			args{
+				[]byte("messageID"),
+				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				[]byte("body"),
+				nil,
+			},
+			"",
+			"",
+			1,
+			true,
 		},
 		{
 			"err-new-request",
 			httptest.NewServer(
 				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					w.Header().Add("Location", "https://mcx.mx/mesasgeID-hash")
+					w.Header().Add("Location", "https://mcx.mx/contentsHash")
+					w.Header().Add("Message-Location-Identifier", "1")
+
 					w.WriteHeader(http.StatusCreated)
 				}),
 			),
@@ -163,10 +262,13 @@ func TestSentStore_PutMessage(t *testing.T) {
 			},
 			args{
 				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				[]byte("contentshash"),
 				[]byte("body"),
 				nil,
 			},
 			"",
+			"",
+			1,
 			true,
 		},
 		{
@@ -187,10 +289,13 @@ func TestSentStore_PutMessage(t *testing.T) {
 			},
 			args{
 				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				[]byte("contentshash"),
 				[]byte("body"),
 				nil,
 			},
 			"",
+			"",
+			1,
 			true,
 		},
 		{
@@ -212,10 +317,13 @@ func TestSentStore_PutMessage(t *testing.T) {
 			},
 			args{
 				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				[]byte("contentshash"),
 				[]byte("body"),
 				nil,
 			},
 			"",
+			"",
+			1,
 			true,
 		},
 		{
@@ -236,10 +344,13 @@ func TestSentStore_PutMessage(t *testing.T) {
 			},
 			args{
 				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				[]byte("contentshash"),
 				[]byte("body"),
 				nil,
 			},
 			"",
+			"",
+			1,
 			true,
 		},
 	}
@@ -250,13 +361,19 @@ func TestSentStore_PutMessage(t *testing.T) {
 				newRequest: tt.fields.newRequest,
 				doRequest:  tt.fields.doRequest,
 			}
-			got, err := s.PutMessage(tt.args.messageID, tt.args.msg, tt.args.headers)
+			gotAddress, gotResource, gotMLI, err := s.PutMessage(tt.args.messageID, tt.args.contentsHash, tt.args.msg, tt.args.headers)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("SentStore.PutMessage() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Sent.PutMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if got != tt.want {
-				t.Errorf("SentStore.PutMessage() = %v, want %v", got, tt.want)
+			if gotAddress != tt.wantAddress {
+				t.Errorf("Sent.PutMessage() address = %v, wantAddress %v", gotAddress, tt.wantAddress)
+			}
+			if gotResource != tt.wantResource {
+				t.Errorf("Sent.PutMessage() resource = %v, wantResource %v", gotResource, tt.wantResource)
+			}
+			if gotMLI != tt.wantMLI {
+				t.Errorf("Sent.PutMessage() = %v, wantMLI %v", gotMLI, tt.wantMLI)
 			}
 		})
 	}
@@ -269,8 +386,9 @@ func TestSentStore_Key(t *testing.T) {
 		doRequest  func(req *http.Request) (*http.Response, error)
 	}
 	type args struct {
-		messageID mail.ID
-		msg       []byte
+		messageID    mail.ID
+		contentsHash []byte
+		msg          []byte
 	}
 	tests := []struct {
 		name   string
@@ -286,10 +404,11 @@ func TestSentStore_Key(t *testing.T) {
 				nil,
 			},
 			args{
+				[]byte("messageID"),
 				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("message"),
 			},
-			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471-220455078214",
+			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
 		},
 	}
 	for _, tt := range tests {
@@ -299,7 +418,7 @@ func TestSentStore_Key(t *testing.T) {
 				newRequest: tt.fields.newRequest,
 				doRequest:  tt.fields.doRequest,
 			}
-			if got := s.Key(tt.args.messageID, tt.args.msg); got != tt.want {
+			if got := s.Key(tt.args.messageID, tt.args.contentsHash, tt.args.msg); got != tt.want {
 				t.Errorf("SentStore.Key() = %v, want %v", got, tt.want)
 			}
 		})

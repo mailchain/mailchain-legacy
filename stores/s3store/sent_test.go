@@ -16,6 +16,7 @@ package s3store
 
 import (
 	"bytes"
+	"encoding/hex"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -93,16 +94,19 @@ func TestSent_PutMessage(t *testing.T) {
 		bucket   string
 	}
 	type args struct {
-		messageID mail.ID
-		msg       []byte
-		headers   map[string]string
+		messageID    mail.ID
+		contentsHash []byte
+		msg          []byte
+		headers      map[string]string
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    string
-		wantErr bool
+		name         string
+		fields       fields
+		args         args
+		wantAddress  string
+		wantResource string
+		wantMLI      uint64
+		wantErr      bool
 	}{
 		{
 			"success-no-headers",
@@ -114,11 +118,11 @@ func TestSent_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("6c6f636174696f6e-2204f48b7b75"), input.Key) {
-						t.Errorf("Key incorrect")
+					if !assert.Equal(aws.String("636f6e74656e74732d68617368"), input.Key) {
+						t.Errorf("Bucket incorrect")
 					}
 
-					return &s3manager.UploadOutput{Location: "https://bucket-id/location-hash"}, nil
+					return &s3manager.UploadOutput{Location: "https://bucket-id/636f6e74656e74732d68617368"}, nil
 				},
 				"bucket-id",
 			},
@@ -126,10 +130,13 @@ func TestSent_PutMessage(t *testing.T) {
 				func() mail.ID {
 					return []byte("location")
 				}(),
+				[]byte("contents-hash"),
 				[]byte("test-data"),
 				nil,
 			},
-			"https://bucket-id/location-hash",
+			"https://bucket-id/636f6e74656e74732d68617368",
+			"636f6e74656e74732d68617368",
+			0,
 			false,
 		},
 		{
@@ -142,11 +149,11 @@ func TestSent_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("6c6f636174696f6e-2204f48b7b75"), input.Key) {
+					if !assert.Equal(aws.String("636f6e74656e74732d68617368"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
-					return &s3manager.UploadOutput{Location: "https://bucket-id/location-hash"}, nil
+					return &s3manager.UploadOutput{Location: "https://bucket-id/636f6e74656e74732d68617368"}, nil
 				},
 				"bucket-id",
 			},
@@ -154,12 +161,15 @@ func TestSent_PutMessage(t *testing.T) {
 				func() mail.ID {
 					return []byte("location")
 				}(),
+				[]byte("contents-hash"),
 				[]byte("test-data"),
 				map[string]string{
 					"key-1": "value-1",
 				},
 			},
-			"https://bucket-id/location-hash",
+			"https://bucket-id/636f6e74656e74732d68617368",
+			"636f6e74656e74732d68617368",
+			0,
 			false,
 		},
 		{
@@ -172,7 +182,7 @@ func TestSent_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("6c6f636174696f6e-2204f48b7b75"), input.Key) {
+					if !assert.Equal(aws.String("636f6e74656e74732d68617368"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
@@ -184,10 +194,13 @@ func TestSent_PutMessage(t *testing.T) {
 				func() mail.ID {
 					return []byte("location")
 				}(),
+				[]byte("contents-hash"),
 				[]byte("test-data"),
 				nil,
 			},
 			"",
+			"",
+			0,
 			true,
 		},
 		{
@@ -200,7 +213,7 @@ func TestSent_PutMessage(t *testing.T) {
 					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("6c6f636174696f6e-2204f48b7b75"), input.Key) {
+					if !assert.Equal(aws.String("636f6e74656e74732d68617368"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
@@ -212,10 +225,13 @@ func TestSent_PutMessage(t *testing.T) {
 				func() mail.ID {
 					return []byte("location")
 				}(),
+				[]byte("contents-hash"),
 				nil,
 				nil,
 			},
 			"",
+			"",
+			0,
 			true,
 		},
 	}
@@ -225,13 +241,19 @@ func TestSent_PutMessage(t *testing.T) {
 				uploader: tt.fields.uploader,
 				bucket:   tt.fields.bucket,
 			}
-			got, err := h.PutMessage(tt.args.messageID, tt.args.msg, tt.args.headers)
+			gotAddress, gotResource, gotMLI, err := h.PutMessage(tt.args.messageID, tt.args.contentsHash, tt.args.msg, tt.args.headers)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Sent.PutMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if got != tt.want {
-				t.Errorf("Sent.PutMessage() = %v, want %v", got, tt.want)
+			if gotAddress != tt.wantAddress {
+				t.Errorf("Sent.PutMessage() address = %v, wantAddress %v", gotAddress, tt.wantAddress)
+			}
+			if gotResource != tt.wantResource {
+				t.Errorf("Sent.PutMessage() resource = %v, wantResource %v", gotResource, tt.wantResource)
+			}
+			if gotMLI != tt.wantMLI {
+				t.Errorf("Sent.PutMessage() = %v, wantMLI %v", gotMLI, tt.wantMLI)
 			}
 		})
 	}
@@ -243,8 +265,9 @@ func TestSent_Key(t *testing.T) {
 		bucket   string
 	}
 	type args struct {
-		messageID mail.ID
-		msg       []byte
+		messageID    mail.ID
+		contentsHash []byte
+		msg          []byte
 	}
 	tests := []struct {
 		name   string
@@ -260,9 +283,10 @@ func TestSent_Key(t *testing.T) {
 			},
 			args{
 				[]byte("messageID"),
+				[]byte("contents-hash"),
 				[]byte("body"),
 			},
-			"6d6573736167654944-2204a9590878",
+			hex.EncodeToString([]byte("contents-hash")),
 		},
 	}
 	for _, tt := range tests {
@@ -271,7 +295,7 @@ func TestSent_Key(t *testing.T) {
 				uploader: tt.fields.uploader,
 				bucket:   tt.fields.bucket,
 			}
-			if got := h.Key(tt.args.messageID, tt.args.msg); got != tt.want {
+			if got := h.Key(tt.args.messageID, tt.args.contentsHash, tt.args.msg); got != tt.want {
 				t.Errorf("Sent.Key() = %v, want %v", got, tt.want)
 			}
 		})

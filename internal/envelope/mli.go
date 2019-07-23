@@ -14,20 +14,25 @@
 
 package envelope
 
-import (
-	"net/url"
-
-	"github.com/mailchain/mailchain/crypto/cipher"
+const (
+	MLIEmpty     uint64 = 0
+	MLIMailchain uint64 = 1
 )
+
+// // LocationCode maps the location to the code
+// func LocationCode() map[string]uint64 {
+// 	return map[string]uint64{
+// 		locationMailchain: CodeMailchain,
+// 	}
+// }
+
+// MLIToAddress maps code to a location
+func MLIToAddress() map[uint64]string {
+	return map[uint64]string{
+		MLIMailchain: mliMailchain,
+	}
+}
 
 const (
-	Kind0x01 byte = 0x01 // Message locator
-	Kind0x50 byte = 0x50 // Alpha
+	mliMailchain = "https://mcx.mx"
 )
-
-type Data interface {
-	URL(decrypter cipher.Decrypter) (*url.URL, error)
-	IntegrityHash(decrypter cipher.Decrypter) ([]byte, error)
-	ContentsHash(decrypter cipher.Decrypter) ([]byte, error)
-	Valid() error
-}

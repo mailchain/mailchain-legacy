@@ -25,7 +25,14 @@ import (
 )
 
 func PathMessageID(r *http.Request) (mail.ID, error) {
-	return mail.FromHexString(mux.Vars(r)["message_id"])
+	id, err := mail.FromHexString(mux.Vars(r)["message_id"])
+	if err != nil {
+		return nil, err
+	}
+	if len(id) == 0 {
+		return nil, errors.Errorf("must not be empty")
+	}
+	return id, nil
 }
 
 func PathNetwork(r *http.Request) string {

@@ -18,7 +18,7 @@ import (
 	"github.com/multiformats/go-multihash"
 )
 
-func CreateLocationHash(encryptedData []byte) multihash.Multihash {
+func CreateIntegrityHash(encryptedData []byte) multihash.Multihash {
 	hash, _ := multihash.Sum(encryptedData, multihash.MURMUR3, -1)
 	return hash
 }

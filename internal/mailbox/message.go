@@ -18,10 +18,10 @@ import (
 	"context"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/gogo/protobuf/proto"
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
+	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
@@ -30,91 +30,57 @@ import (
 	"github.com/pkg/errors"
 )
 
-type SendMessageFunc func(ctx context.Context, network string, msg *mail.Message, pubkey crypto.PublicKey,
-	sender sender.Message, sent stores.Sent, signer signer.Signer) error
-
-// SendMessageFunc performs all the actions required to send a message.
+// SendMessage performs all the actions required to send a message.
 // - Create a hash of encoded message
 // - Encrypt message
 // - Store sent message
 // - Encrypt message location
 // - Create transaction data with encrypted location and message hash
 // - Send transaction
-func SendMessage() SendMessageFunc {
-	return sendMessage(defaultEncryptLocation, defaultEncryptMailMessage, defaultPrefixedBytes)
-}
-
-func sendMessage(encryptLocation func(pk crypto.PublicKey, location string) ([]byte, error),
-	encryptMailMessage func(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error),
-	prefixedBytes func(data proto.Message) ([]byte, error)) SendMessageFunc {
-	return func(ctx context.Context,
-		network string,
-		msg *mail.Message,
-		pubkey crypto.PublicKey,
-		sender sender.Message,
-		sent stores.Sent,
-		signer signer.Signer) error {
-		encodedMsg, err := rfc2822.EncodeNewMessage(msg)
-		if err != nil {
-			return errors.WithMessage(err, "could not encode message")
-		}
-		msgHash := crypto.CreateMessageHash(encodedMsg)
-
-		encrypted, err := encryptMailMessage(pubkey, encodedMsg)
-		if err != nil {
-			return errors.WithMessage(err, "could not encrypt mail message")
-		}
-
-		location, err := sent.PutMessage(msg.ID, encrypted, nil)
-		if err != nil {
-			return errors.WithStack(err)
-		}
-		encryptedLocation, err := encryptLocation(pubkey, location)
-		if err != nil {
-			return errors.WithMessage(err, "could not encrypt transaction data")
-		}
-
-		data := &mail.Data{
-			EncryptedLocation: encryptedLocation,
-			Hash:              msgHash,
-		}
-		encodedData, err := prefixedBytes(data)
-		if err != nil {
-			return errors.WithMessage(err, "could not encode transaction data")
-		}
-		transactonData := append(encoding.DataPrefix(), encodedData...)
-		//TODO: should not use common to parse address
-		to := common.FromHex(msg.Headers.To.ChainAddress)
-		from := common.FromHex(msg.Headers.From.ChainAddress)
-		if err := sender.Send(ctx, network, to, from, transactonData, signer, nil); err != nil {
-			return errors.WithMessage(err, "could not send transaction")
-		}
-
-		return nil
-	}
-}
-
-// encryptLocation is encrypted with supplied public key and location string
-func defaultEncryptLocation(pk crypto.PublicKey, location string) ([]byte, error) {
-	// TODO: encryptLocation hard coded to aes256cbc
-	return aes256cbc.Encrypt(pk, []byte(location))
-}
-
-// encryptMailMessage is encrypted with supplied public key and location string
-func defaultEncryptMailMessage(pk crypto.PublicKey, encodedMsg []byte) ([]byte, error) {
-	// TODO: encryptMailMessage hard coded to aes256cbc
-	return aes256cbc.Encrypt(pk, encodedMsg)
-}
-
-func defaultPrefixedBytes(data proto.Message) ([]byte, error) {
-	protoData, err := proto.Marshal(data)
+func SendMessage(ctx context.Context, network string, msg *mail.Message, pubkey crypto.PublicKey, encrypter cipher.Encrypter,
+	msgSender sender.Message, sent stores.Sent, msgSigner signer.Signer, envelopeKind byte) error {
+	encodedMsg, err := rfc2822.EncodeNewMessage(msg)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not marshal data")
+		return errors.WithMessage(err, "could not encode message")
 	}
 
-	prefixedProto := make([]byte, len(protoData)+1)
-	prefixedProto[0] = encoding.Protobuf
-	copy(prefixedProto[1:], protoData)
+	encrypted, err := encrypter.Encrypt(pubkey, encodedMsg)
+	if err != nil {
+		return errors.WithMessage(err, "could not encrypt mail message")
+	}
+	address, resource, mli, err := sent.PutMessage(msg.ID, crypto.CreateMessageHash(encodedMsg), encrypted, nil)
+	if err != nil {
+		return errors.WithMessage(err, "failed to store message")
+	}
+	locOpt, err := envelope.WithMessageLocationIdentifier(mli)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	opts := []envelope.CreateOptionsBuilder{
+		envelope.WithKind(envelopeKind),
+		envelope.WithURL(address),
+		envelope.WithResource(resource),
+		envelope.WithDecryptedHash(crypto.CreateMessageHash(encodedMsg)),
+		locOpt,
+	}
 
-	return prefixedProto, nil
+	env, err := envelope.NewEnvelope(encrypter, pubkey, opts)
+	if err != nil {
+		return errors.WithMessage(err, "could not create envelope")
+	}
+
+	encodedData, err := envelope.Marshal(env)
+	if err != nil {
+		return errors.WithMessage(err, "could not marshal envelope")
+	}
+
+	transactonData := append(encoding.DataPrefix(), encodedData...)
+	//TODO: should not use common to parse address
+	to := common.FromHex(msg.Headers.To.ChainAddress)
+	from := common.FromHex(msg.Headers.From.ChainAddress)
+	if err := msgSender.Send(ctx, network, to, from, transactonData, msgSigner, nil); err != nil {
+		return errors.WithMessage(err, "could not send transaction")
+	}
+
+	return nil
 }

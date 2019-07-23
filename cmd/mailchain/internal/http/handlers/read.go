@@ -80,17 +80,12 @@ func GetRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 			errs.JSONWriter(w, http.StatusInternalServerError, err)
 			return
 		}
-
-		js, err := json.Marshal(getBody{
-			Read: read,
-		})
-		if err != nil {
+		if err := json.NewEncoder(w).Encode(getBody{Read: read}); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, err)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write(js)
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/stores"
@@ -133,16 +134,19 @@ func TestS3Store_Put(t *testing.T) {
 		bucket         string
 	}
 	type args struct {
-		messageID mail.ID
-		contents  []byte
-		hash      string
+		messageID     mail.ID
+		contentsHash  []byte
+		integrityHash []byte
+		contents      []byte
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    string
-		wantErr bool
+		name         string
+		fields       fields
+		args         args
+		wantAddress  string
+		wantResource string
+		wantMLI      uint64
+		wantErr      bool
 	}{
 		{
 			"success",
@@ -152,18 +156,21 @@ func TestS3Store_Put(t *testing.T) {
 					sent := storestest.NewMockSent(mockCtrl)
 					var id mail.ID
 					id = testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")
-					sent.EXPECT().Key(id, []byte("body")).Return("messageID-hash")
-					sent.EXPECT().PutMessage(id, []byte("body"), nil).Return("https://s3bucket/messageID-hash", nil)
+					sent.EXPECT().Key(id, []byte("contents-hash"), []byte("body")).Return("hashkey")
+					sent.EXPECT().PutMessage(id, []byte("contents-hash"), []byte("body"), nil).Return("https://s3bucket/hashkey", "hashkey", envelope.MLIMailchain, nil)
 					return sent
 				}(),
 				"bucket",
 			},
 			args{
 				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				[]byte("contents-hash"),
+				[]byte("integrity-hash"),
 				[]byte("body"),
-				"hash",
 			},
-			"messageID-hash",
+			"https://s3bucket/hashkey",
+			"hashkey",
+			1,
 			false,
 		},
 		{
@@ -174,18 +181,21 @@ func TestS3Store_Put(t *testing.T) {
 					sent := storestest.NewMockSent(mockCtrl)
 					var id mail.ID
 					id = testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")
-					sent.EXPECT().Key(id, []byte("body")).Return("messageID-hash")
-					sent.EXPECT().PutMessage(id, []byte("body"), nil).Return("", errors.Errorf("put failed"))
+					sent.EXPECT().Key(id, []byte("contents-hash"), []byte("body")).Return("messageID-hash")
+					sent.EXPECT().PutMessage(id, []byte("contents-hash"), []byte("body"), nil).Return("", "", envelope.MLIMailchain, errors.Errorf("put failed"))
 					return sent
 				}(),
 				"bucket",
 			},
 			args{
 				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				[]byte("contents-hash"),
+				[]byte("integrity-hash"),
 				[]byte("body"),
-				"hash",
 			},
 			"",
+			"",
+			1,
 			true,
 		},
 		{
@@ -196,18 +206,21 @@ func TestS3Store_Put(t *testing.T) {
 					sent := storestest.NewMockSent(mockCtrl)
 					var id mail.ID
 					id = testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")
-					sent.EXPECT().Key(id, []byte("body")).Return("")
-					sent.EXPECT().PutMessage(id, []byte("body"), nil).Return("https://s3bucket/messageID-hash", nil)
+					sent.EXPECT().Key(id, []byte("contents-hash"), []byte("body")).Return("")
+					sent.EXPECT().PutMessage(id, []byte("contents-hash"), []byte("body"), nil).Return("https://s3bucket/hashkey", "hashkey", envelope.MLIMailchain, nil)
 					return sent
 				}(),
 				"bucket",
 			},
 			args{
 				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				[]byte("contents-hash"),
+				[]byte("integrity-hash"),
 				[]byte("body"),
-				"hash",
 			},
 			"",
+			"",
+			1,
 			true,
 		},
 		{
@@ -218,18 +231,46 @@ func TestS3Store_Put(t *testing.T) {
 					sent := storestest.NewMockSent(mockCtrl)
 					var id mail.ID
 					id = testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")
-					sent.EXPECT().Key(id, []byte("body")).Return("messageIDother-hashother")
-					sent.EXPECT().PutMessage(id, []byte("body"), nil).Return("https://s3bucket/messageID-hash", nil)
+					sent.EXPECT().Key(id, []byte("contents-hash"), []byte("body")).Return("messageIDother-hashother")
+					sent.EXPECT().PutMessage(id, []byte("contents-hash"), []byte("body"), nil).Return("https://s3bucket/hashkey", "hashkey", envelope.MLIMailchain, nil)
 					return sent
 				}(),
 				"bucket",
 			},
 			args{
 				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				[]byte("contents-hash"),
+				[]byte("integrity-hash"),
 				[]byte("body"),
-				"hash",
 			},
 			"",
+			"",
+			1,
+			true,
+		},
+		{
+			"err-inconsistent-resource",
+			fields{
+				nil,
+				func() stores.Sent {
+					sent := storestest.NewMockSent(mockCtrl)
+					var id mail.ID
+					id = testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")
+					sent.EXPECT().Key(id, []byte("contents-hash"), []byte("body")).Return("hashkey")
+					sent.EXPECT().PutMessage(id, []byte("contents-hash"), []byte("body"), nil).Return("https://s3bucket/hashkey", "inconsistent-resource", envelope.MLIMailchain, nil)
+					return sent
+				}(),
+				"bucket",
+			},
+			args{
+				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				[]byte("contents-hash"),
+				[]byte("integrity-hash"),
+				[]byte("body"),
+			},
+			"",
+			"",
+			1,
 			true,
 		},
 	}
@@ -240,13 +281,19 @@ func TestS3Store_Put(t *testing.T) {
 				sent:           tt.fields.sent,
 				bucket:         tt.fields.bucket,
 			}
-			got, err := s.Put(tt.args.messageID, tt.args.contents, tt.args.hash)
+			gotAddress, gotResource, gotMLI, err := s.Put(tt.args.messageID, tt.args.contentsHash, tt.args.integrityHash, tt.args.contents)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("S3Store.Put() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if got != tt.want {
-				t.Errorf("S3Store.Put() = %v, want %v", got, tt.want)
+			if gotAddress != tt.wantAddress {
+				t.Errorf("S3Store.Put() Address = %v, wantAddress %v", gotAddress, tt.wantAddress)
+			}
+			if gotResource != tt.wantResource {
+				t.Errorf("S3Store.Put() Resource = %v, wantResource %v", gotResource, tt.wantResource)
+			}
+			if gotMLI != tt.wantMLI {
+				t.Errorf("S3Store.Put() MLI = %v, want %v", gotMLI, tt.wantMLI)
 			}
 		})
 	}
@@ -261,9 +308,10 @@ func TestS3Store_Exists(t *testing.T) {
 		bucket         string
 	}
 	type args struct {
-		messageID mail.ID
-		contents  []byte
-		hash      string
+		messageID     mail.ID
+		contentsHash  []byte
+		integrityHash []byte
+		contents      []byte
 	}
 	tests := []struct {
 		name    string
@@ -281,15 +329,16 @@ func TestS3Store_Exists(t *testing.T) {
 					sent := storestest.NewMockSent(mockCtrl)
 					var id mail.ID
 					id = testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")
-					sent.EXPECT().Key(id, []byte("body")).Return("messageID-hash")
+					sent.EXPECT().Key(id, []byte("contents-hash"), []byte("body")).Return("messageID-hash")
 					return sent
 				}(),
 				"bucket",
 			},
 			args{
 				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				[]byte("contents-hash"),
+				[]byte("integrity-hash"),
 				[]byte("body"),
-				"hash",
 			},
 			false,
 		},
@@ -303,15 +352,16 @@ func TestS3Store_Exists(t *testing.T) {
 					sent := storestest.NewMockSent(mockCtrl)
 					var id mail.ID
 					id = testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")
-					sent.EXPECT().Key(id, []byte("body")).Return("messageID-hash")
+					sent.EXPECT().Key(id, []byte("contents-hash"), []byte("body")).Return("messageID-hash")
 					return sent
 				}(),
 				"bucket",
 			},
 			args{
 				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				[]byte("contents-hash"),
+				[]byte("integrity-hash"),
 				[]byte("body"),
-				"hash",
 			},
 			true,
 		},
@@ -325,15 +375,16 @@ func TestS3Store_Exists(t *testing.T) {
 					sent := storestest.NewMockSent(mockCtrl)
 					var id mail.ID
 					id = testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")
-					sent.EXPECT().Key(id, []byte("body")).Return("messageID-hash")
+					sent.EXPECT().Key(id, []byte("contents-hash"), []byte("body")).Return("messageID-hash")
 					return sent
 				}(),
 				"bucket",
 			},
 			args{
 				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				[]byte("contents-hash"),
+				[]byte("integrity-hash"),
 				[]byte("body"),
-				"hash",
 			},
 			true,
 		},
@@ -347,15 +398,16 @@ func TestS3Store_Exists(t *testing.T) {
 					sent := storestest.NewMockSent(mockCtrl)
 					var id mail.ID
 					id = testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")
-					sent.EXPECT().Key(id, []byte("body")).Return("messageID-hash")
+					sent.EXPECT().Key(id, []byte("contents-hash"), []byte("body")).Return("messageID-hash")
 					return sent
 				}(),
 				"bucket",
 			},
 			args{
 				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				[]byte("contents-hash"),
+				[]byte("integrity-hash"),
 				[]byte("body"),
-				"hash",
 			},
 			true,
 		},
@@ -367,7 +419,7 @@ func TestS3Store_Exists(t *testing.T) {
 				sent:           tt.fields.sent,
 				bucket:         tt.fields.bucket,
 			}
-			if err := s.Exists(tt.args.messageID, tt.args.contents, tt.args.hash); (err != nil) != tt.wantErr {
+			if err := s.Exists(tt.args.messageID, tt.args.contentsHash, tt.args.integrityHash, tt.args.contents); (err != nil) != tt.wantErr {
 				t.Errorf("S3Store.Exists() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

@@ -4,6 +4,6 @@ import "github.com/mailchain/mailchain/internal/mail"
 
 //go:generate mockgen -source=store.go -package=storagetest -destination=./storagetest/store_mock.go
 type Store interface {
-	Exists(messageID mail.ID, contents []byte, hash string) error
-	Put(messageID mail.ID, contents []byte, hash string) (string, error)
+	Exists(messageID mail.ID, contentsHash, integrityHash, contents []byte) error
+	Put(messageID mail.ID, contentsHash, integrityHash, contents []byte) (address, resource string, mli uint64, err error)
 }

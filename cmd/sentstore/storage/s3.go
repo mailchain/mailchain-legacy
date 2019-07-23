@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/s3store"
@@ -20,10 +21,10 @@ type S3Store struct {
 	bucket         string
 }
 
-func (s S3Store) Exists(messageID mail.ID, contents []byte, hash string) error {
+func (s S3Store) Exists(messageID mail.ID, contentsHash, integrityHash, contents []byte) error {
 	_, err := s.headObjectFunc(&s3.HeadObjectInput{
 		Bucket: aws.String(s.bucket),
-		Key:    aws.String(s.sent.Key(messageID, contents)),
+		Key:    aws.String(s.sent.Key(messageID, contentsHash, contents)),
 	})
 	if err == nil {
 		return errors.Errorf("message already exists")
@@ -38,20 +39,21 @@ func (s S3Store) Exists(messageID mail.ID, contents []byte, hash string) error {
 	return nil
 }
 
-func (s S3Store) Put(messageID mail.ID, contents []byte, hash string) (string, error) {
-	loc := s.sent.Key(messageID, contents)
-	putLoc, err := s.sent.PutMessage(messageID, contents, nil)
+func (s S3Store) Put(messageID mail.ID, contentsHash, integrityHash, contents []byte) (
+	address, resource string, mli uint64, err error) {
+	loc := s.sent.Key(messageID, contentsHash, contents)
+	address, resource, _, err = s.sent.PutMessage(messageID, contentsHash, contents, nil)
 	if err != nil {
-		return "", errors.WithMessage(err, "could not PUT message")
+		return "", "", envelope.MLIMailchain, errors.WithMessage(err, "could not PUT message")
 	}
-	if !strings.HasSuffix(putLoc, loc) || strings.TrimSpace(loc) == "" {
-		return "", errors.Errorf("message location could not be safely determined")
+	if !strings.HasSuffix(address, loc) || strings.TrimSpace(loc) == "" {
+		return "", "", envelope.MLIMailchain, errors.Errorf("message location could not be safely determined %q must contain %q", address, loc)
+	}
+	if resource != loc {
+		return "", "", envelope.MLIMailchain, errors.Errorf("resource could not be safely determined %q must equal %q", resource, loc)
 	}
 
-	// if !strings.HasSuffix(loc, k) {
-	// 	return "", errors.Errorf("object not created at correct location")
-	// }
-	return loc, nil
+	return address, resource, envelope.MLIMailchain, nil
 }
 
 func createS3Client(region, id, secret string) (*s3.S3, error) {

@@ -46,13 +46,13 @@ func WithResource(resource string) CreateOptionsBuilder {
 	return func(o *CreateOpts) { o.Resource = resource }
 }
 
-func WithMessageLocationIdentifier(locCode uint64) (CreateOptionsBuilder, error) {
-	_, ok := MLIToAddress()[locCode]
-	if !ok && locCode != 0 {
-		return func(o *CreateOpts) {}, errors.Errorf("unknown location code %q", locCode)
+func WithMessageLocationIdentifier(mli uint64) (CreateOptionsBuilder, error) {
+	_, ok := MLIToAddress()[mli]
+	if !ok && mli != 0 {
+		return func(o *CreateOpts) {}, errors.Errorf("unknown mli %q", mli)
 	}
 
-	return func(o *CreateOpts) { o.Location = locCode }, nil
+	return func(o *CreateOpts) { o.Location = mli }, nil
 }
 
 // WithDecryptedHash the encrypted resource name.

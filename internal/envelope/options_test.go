@@ -107,7 +107,7 @@ func TestWithResource(t *testing.T) {
 func TestWithMessageLocationIdentifier(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
-		locCode uint64
+		mli uint64
 	}
 	tests := []struct {
 		name    string
@@ -136,7 +136,7 @@ func TestWithMessageLocationIdentifier(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := WithMessageLocationIdentifier(tt.args.locCode)
+			got, err := WithMessageLocationIdentifier(tt.args.mli)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("WithMessageLocationIdentifier() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -15,10 +15,10 @@
 package stores
 
 import (
+	"bytes"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/pkg/errors"
@@ -26,17 +26,13 @@ import (
 )
 
 // GetMessage get the message contents from the location and perform location hash check
-func GetMessage(location string) ([]byte, error) {
+func GetMessage(location string, integrityHash []byte) ([]byte, error) {
 	msg, err := getAnyMessage(location)
 	if err != nil {
 		return nil, err
 	}
-	parts := strings.Split(location, "-")
-	if len(parts) < 2 {
-		return nil, errors.Errorf("could not safely extract hash from location")
-	}
 	hash := crypto.CreateIntegrityHash(msg)
-	if hash.String() != parts[len(parts)-1] {
+	if len(integrityHash) != 0 && !bytes.Equal(hash, integrityHash) {
 		return nil, errors.Errorf("hash does not match contents")
 	}
 	return msg, nil

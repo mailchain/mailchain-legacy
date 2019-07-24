@@ -15,11 +15,15 @@
 package mailbox_test
 
 import (
+	"bytes"
 	"io/ioutil"
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
+	"github.com/mailchain/mailchain/internal/mail"
+	"github.com/mailchain/mailchain/internal/mail/rfc2822"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/pkg/errors"
@@ -31,102 +35,130 @@ func TestReadMessage(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	assert := assert.New(t)
-	cases := []struct {
-		name                   string
-		txData                 []byte
-		expectedID             string
-		err                    string
-		decrypterLocationCalls int
-		decrypterLocationRet   []interface{}
-		decrypterContentsCalls int
-		decrypterFile          string
-		decrypterContentsError error
+	type args struct {
+		txData    []byte
+		decrypter cipher.Decrypter
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *mail.Message
+		wantErr bool
 	}{
-		{"invalid protobuf prefix",
-			testutil.MustHexDecodeString("08010f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
-			"",
-			"failed to unmarshal: invalid kind",
-			0,
-			[]interface{}{[]byte("test://TestReadMessage/success-2204f3d89e5a"), nil},
-			0,
-			"",
-			nil,
+		{
+			"success",
+			args{
+				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				func() cipher.Decrypter {
+					m := ciphertest.NewMockDecrypter(mockCtrl)
+					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil)
+					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil)
+					decrypted, _ := ioutil.ReadFile("./testdata/simple.golden.eml")
+					m.EXPECT().Decrypt(gomock.Any()).Return(decrypted, nil)
+					return m
+				}(),
+			},
+			func() *mail.Message {
+				rawMsg, _ := ioutil.ReadFile("./testdata/simple.golden.eml")
+				m, _ := rfc2822.DecodeNewMessage(bytes.NewReader(rawMsg))
+				return m
+			}(),
+			false,
 		},
-		{"invalid protobuf format",
-			testutil.MustHexDecodeString("5008010f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
-			"",
-			"failed to unmarshal: proto: can't skip unknown wire type 7",
-			0,
-			[]interface{}{[]byte("test://TestReadMessage/success-2204f3d89e5a"), nil},
-			0,
-			"",
+		{
+			"err-invalid-hash",
+			args{
+				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				func() cipher.Decrypter {
+					m := ciphertest.NewMockDecrypter(mockCtrl)
+					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil)
+					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil)
+					decrypted, _ := ioutil.ReadFile("./testdata/alternative.golden.eml")
+					m.EXPECT().Decrypt(gomock.Any()).Return(decrypted, nil)
+					return m
+				}(),
+			},
 			nil,
+			true,
 		},
-		{"fail decrypted location",
-			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
-			"",
-			"failed to get URL: could not decrypt",
-			1,
-			[]interface{}{nil, errors.New("could not decrypt")},
-			0,
-			"",
+		{
+			"err-msg-decrypt",
+			args{
+				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				func() cipher.Decrypter {
+					m := ciphertest.NewMockDecrypter(mockCtrl)
+					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil)
+					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil)
+					m.EXPECT().Decrypt(gomock.Any()).Return(nil, errors.Errorf("failed"))
+					return m
+				}(),
+			},
 			nil,
+			true,
 		},
-		{"no-message-at-location",
-			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
-			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
-			"could not get message from \"file://TestReadMessage/no_message_at_location-2204f3d89e5a\": open TestReadMessage/no_message_at_location-2204f3d89e5a: no such file or directory",
-			1,
-			[]interface{}{[]byte("file://TestReadMessage/no_message_at_location-2204f3d89e5a"), nil},
-			0,
-			"no_message_at_location.golden.eml",
+		{
+			"err-get-message",
+			args{
+				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				func() cipher.Decrypter {
+					m := ciphertest.NewMockDecrypter(mockCtrl)
+					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("file://TestReadMessage/no_message_at_location-2204f3d89e5a"), nil)
+					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("file://TestReadMessage/no_message_at_location-2204f3d89e5a"), nil)
+					return m
+				}(),
+			},
 			nil,
+			true,
 		},
-		{"decrypt-message-failed",
-			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
-			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
-			"could not decrypt message: failed to decrypt",
-			1,
-			[]interface{}{[]byte("test://TestReadMessage/success-2204f3d89e5a"), nil},
-			1,
-			"simple.golden.eml",
-			errors.New("failed to decrypt"),
-		},
-		{"failed-create-hash",
-			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
-			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
-			"message-hash invalid",
-			1,
-			[]interface{}{[]byte("test://TestReadMessage/success-2204f3d89e5a"), nil},
-			1,
-			"alternative.golden.eml",
+		{
+			"err-get-integrity-hash",
+			args{
+				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				func() cipher.Decrypter {
+					m := ciphertest.NewMockDecrypter(mockCtrl)
+					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("file://TestReadMessage/no_message_at_location-2204f3d89e5a"), nil)
+					m.EXPECT().Decrypt(gomock.Any()).Return(nil, errors.Errorf("failed"))
+					return m
+				}(),
+			},
 			nil,
+			true,
 		},
-		{"success",
-			testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
-			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
-			"",
-			1,
-			[]interface{}{[]byte("test://TestReadMessage/success-2204f3d89e5a"), nil},
-			1,
-			"simple.golden.eml",
+		{
+			"err-get-url",
+			args{
+				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				func() cipher.Decrypter {
+					m := ciphertest.NewMockDecrypter(mockCtrl)
+					m.EXPECT().Decrypt(gomock.Any()).Return(nil, errors.Errorf("failed"))
+					return m
+				}(),
+			},
 			nil,
+			true,
+		},
+		{
+			"err-invalid-envelope",
+			args{
+				testutil.MustHexDecodeString("000801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				func() cipher.Decrypter {
+					m := ciphertest.NewMockDecrypter(mockCtrl)
+					return m
+				}(),
+			},
+			nil,
+			true,
 		},
 	}
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			decrypter := ciphertest.NewMockDecrypter(mockCtrl)
-			decrypter.EXPECT().Decrypt(gomock.Any()).Return(tc.decrypterLocationRet...).Times(tc.decrypterLocationCalls)
-			decrypted, _ := ioutil.ReadFile("./testdata/" + tc.decrypterFile)
-			decrypter.EXPECT().Decrypt(gomock.Any()).Return(decrypted, tc.decrypterContentsError).Times(tc.decrypterContentsCalls)
-			actual, err := mailbox.ReadMessage(tc.txData, decrypter)
-			_ = actual
-			if tc.err == "" {
-				assert.NoError(err)
-				assert.Equal(tc.expectedID, actual.ID.HexString())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := mailbox.ReadMessage(tt.args.txData, tt.args.decrypter)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ReadMessage() error = %v, wantErr %v", err, tt.wantErr)
+				return
 			}
-			if tc.err != "" {
-				assert.EqualError(err, tc.err)
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("ReadMessage() = %v, want %v", got, tt.want)
 			}
 		})
 	}

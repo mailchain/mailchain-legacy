@@ -42,7 +42,12 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 		return nil, errors.WithMessage(err, "failed to get URL")
 	}
 
-	toDecrypt, err := stores.GetMessage(url.String())
+	integrityHash, err := data.IntegrityHash(decrypter)
+	if err != nil {
+		return nil, errors.WithMessage(err, "failed to get integrityHash")
+	}
+
+	toDecrypt, err := stores.GetMessage(url.String(), integrityHash)
 	if err != nil {
 		return nil, errors.WithMessagef(err, "could not get message from %q", url.String())
 	}
@@ -57,7 +62,7 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 	if len(hash) != 0 {
 		messageHash := crypto.CreateMessageHash(rawMsg)
 		if !bytes.Equal(messageHash, hash) {
-			return nil, errors.Errorf("message-hash invalid")
+			return nil, errors.Errorf("contents-hash invalid")
 		}
 	}
 

@@ -172,7 +172,8 @@ func Test_getAnyMessage(t *testing.T) {
 func TestGetMessage(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
-		location string
+		location      string
+		integrityHash []byte
 	}
 	tests := []struct {
 		name    string
@@ -181,9 +182,22 @@ func TestGetMessage(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success",
+			"success-hash",
 			args{
 				"file://./testdata/simple.golden.eml-2204ec872b32",
+				[]byte{0x22, 0x04, 0xec, 0x87, 0x2b, 0x32},
+			},
+			func() []byte {
+				contents, _ := ioutil.ReadFile("./testdata/simple.golden.eml-2204ec872b32")
+				return contents
+			}(),
+			false,
+		},
+		{
+			"success-no-hash",
+			args{
+				"file://./testdata/simple.golden.eml-2204ec872b32",
+				nil,
 			},
 			func() []byte {
 				contents, _ := ioutil.ReadFile("./testdata/simple.golden.eml-2204ec872b32")
@@ -195,14 +209,7 @@ func TestGetMessage(t *testing.T) {
 			"err-no-schema",
 			args{
 				"invalid://./testdata/simple.golden.eml-2204ec872b32",
-			},
-			nil,
-			true,
-		},
-		{
-			"no-hash-part",
-			args{
-				"test://nohash",
+				nil,
 			},
 			nil,
 			true,
@@ -211,6 +218,7 @@ func TestGetMessage(t *testing.T) {
 			"hash-part-does-not-match",
 			args{
 				"test://hash.does.not.match-2204f3d89e5a",
+				[]byte{0x22, 0x04, 0xf3, 0xd8, 0x9e, 0x5a},
 			},
 			nil,
 			true,
@@ -218,7 +226,7 @@ func TestGetMessage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetMessage(tt.args.location)
+			got, err := GetMessage(tt.args.location, tt.args.integrityHash)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return

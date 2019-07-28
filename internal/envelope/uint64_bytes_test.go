@@ -61,7 +61,7 @@ func Test_parseUInt64Bytes(t *testing.T) {
 			false,
 		},
 		{
-			"3-byte-number",
+			"zero-value-int",
 			args{
 				[]byte{0x1, 0x0, 0x76, 0x61, 0x6c, 0x75, 0x65},
 			},

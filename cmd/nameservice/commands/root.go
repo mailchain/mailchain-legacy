@@ -29,8 +29,11 @@ func rootCmd() (*cobra.Command, error) {
 		Use: "nameservice",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			r := mux.NewRouter()
-			for k, v := range config() {
-				println(fmt.Sprintf("%s/name", k))
+			cfg, err := config()
+			if err != nil {
+				return err
+			}
+			for k, v := range cfg {
 				r.HandleFunc(fmt.Sprintf("/%s/name", k), handler.Forward(v)).Methods("GET")
 				r.HandleFunc(fmt.Sprintf("/%s/address", k), handler.Reverse(v)).Methods("GET")
 			}

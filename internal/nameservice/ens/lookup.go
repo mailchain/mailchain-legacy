@@ -23,14 +23,14 @@ import (
 	ens "github.com/wealdtech/go-ens"
 )
 
-func NewLookupService(clientURL string) nameservice.Lookup {
+func NewLookupService(clientURL string) (nameservice.Lookup, error) {
 	client, err := ethclient.Dial(clientURL)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	return &LookupService{
 		client: client,
-	}
+	}, nil
 }
 
 type LookupService struct {

@@ -17,7 +17,7 @@ package ens
 import (
 	"fmt"
 
-	"github.com/mailchain/mailchain/internal/nameservice"
+	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
 )
 

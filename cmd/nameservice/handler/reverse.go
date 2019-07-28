@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/nameservice"
+	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
 )
 

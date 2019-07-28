@@ -5,8 +5,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/nameservice/handler"
-	"github.com/mailchain/mailchain/internal/nameservice"
-	"github.com/mailchain/mailchain/internal/nameservice/ens"
+	"github.com/mailchain/mailchain/nameservice"
+	"github.com/mailchain/mailchain/nameservice/ens"
 	"github.com/spf13/cobra"
 	"github.com/urfave/negroni"
 )

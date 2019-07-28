@@ -19,7 +19,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/mailchain/mailchain/internal/nameservice"
+	"github.com/mailchain/mailchain/nameservice"
 	ens "github.com/wealdtech/go-ens"
 )
 

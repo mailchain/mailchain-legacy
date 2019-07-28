@@ -7,8 +7,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/internal/nameservice"
-	"github.com/mailchain/mailchain/internal/nameservice/nameservicetest"
+	"github.com/mailchain/mailchain/nameservice"
+	"github.com/mailchain/mailchain/nameservice/nameservicetest"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"

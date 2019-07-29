@@ -39,6 +39,10 @@ type Network struct {
 	Disabled              values.Bool
 }
 
+func (s *Network) ProduceNameServiceDomain(ans *DomainNameServices) (nameservice.ForwardLookup, error) {
+	return ans.Produce(s.NameServiceDomainName.Get())
+}
+
 func (s *Network) ProduceNameServiceAddress(ans *AddressNameServices) (nameservice.ReverseLookup, error) {
 	return ans.Produce(s.NameServiceAddress.Get())
 }

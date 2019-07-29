@@ -69,6 +69,7 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 	}
 
 	nsAddressResolvers := map[string]nameservice.ReverseLookup{}
+	nsDomainResolvers := map[string]nameservice.ForwardLookup{}
 
 	api.HandleFunc("/addresses", handlers.GetAddresses(keystore)).Methods("GET")
 	for protocol := range s.Protocols {
@@ -78,6 +79,14 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 		}
 		for k, v := range ans {
 			nsAddressResolvers[k] = v
+		}
+
+		dns, err := s.Protocols[protocol].GetDomainNameServices(s.DomainNameServices)
+		if err != nil {
+			return nil, errors.WithMessage(err, "could not get domain name service")
+		}
+		for k, v := range dns {
+			nsDomainResolvers[k] = v
 		}
 
 		name := s.Protocols[protocol].Kind
@@ -111,6 +120,7 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 	api.HandleFunc("/messages/{message_id}/read", handlers.DeleteRead(mailboxStore)).Methods("DELETE")
 
 	api.HandleFunc("/nameservice/address/{address}/resolve", handlers.GetResolveAddress(nsAddressResolvers)).Methods("GET")
+	api.HandleFunc("/nameservice/name/{domain-name}/resolve", handlers.GetResolveName(nsDomainResolvers)).Methods("GET")
 
 	api.HandleFunc("/protocols", handlers.GetProtocols(s)).Methods("GET")
 

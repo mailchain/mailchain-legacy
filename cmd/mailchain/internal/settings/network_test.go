@@ -300,3 +300,57 @@ func TestNetwork_ProduceNameServiceAddress(t *testing.T) {
 		})
 	}
 }
+
+func TestNetwork_ProduceNameServiceDomain(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type fields struct {
+		NameServiceDomainName values.String
+	}
+	type args struct {
+		ans *DomainNameServices
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantNil bool
+		wantErr bool
+	}{
+		{
+			"success",
+			fields{
+				func() values.String {
+					m := valuestest.NewMockString(mockCtrl)
+					m.EXPECT().Get().Return("mailchain")
+					return m
+				}(),
+			},
+			args{
+				domainNameServices(func() values.Store {
+					m := valuestest.NewMockStore(mockCtrl)
+					m.EXPECT().IsSet("name-service-domain-name.base-url").Return(false)
+					return m
+				}()),
+			},
+			false,
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &Network{
+				NameServiceDomainName: tt.fields.NameServiceDomainName,
+			}
+			got, err := s.ProduceNameServiceDomain(tt.args.ans)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Network.ProduceNameServiceDomain() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if (got == nil) != tt.wantNil {
+				t.Errorf("Network.ProduceNameServiceDomain() = %v, want %v", got, tt.wantNil)
+				return
+			}
+		})
+	}
+}

@@ -78,3 +78,15 @@ func (p Protocol) GetAddressNameServices(ans *AddressNameServices) (map[string]n
 	}
 	return msg, nil
 }
+
+func (p Protocol) GetDomainNameServices(ans *DomainNameServices) (map[string]nameservice.ForwardLookup, error) {
+	msg := map[string]nameservice.ForwardLookup{}
+	for network, v := range p.Networks {
+		s, err := v.ProduceNameServiceDomain(ans)
+		if err != nil {
+			return nil, err
+		}
+		msg[p.Kind+"/"+network] = s
+	}
+	return msg, nil
+}

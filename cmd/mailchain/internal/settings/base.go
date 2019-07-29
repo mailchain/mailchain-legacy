@@ -8,6 +8,7 @@ import (
 // TODO: maybe this is not a new?
 func New(s values.Store) *Base {
 	return &Base{
+		DomainNameServices:  domainNameServices(s),
 		AddressNameServices: addressNameServices(s),
 		Senders:             senders(s),
 		Receivers:           receivers(s),
@@ -25,6 +26,7 @@ func New(s values.Store) *Base {
 
 type Base struct {
 	AddressNameServices *AddressNameServices
+	DomainNameServices  *DomainNameServices
 	Senders             *Senders
 	Receivers           *Receivers
 	PublicKeyFinders    *PublicKeyFinders

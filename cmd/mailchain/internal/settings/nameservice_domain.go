@@ -8,19 +8,19 @@ import (
 	"github.com/pkg/errors"
 )
 
-func addressNameServices(s values.Store) *AddressNameServices {
-	return &AddressNameServices{
-		clients: map[string]NameServiceAddressClient{
-			mailchain.Mailchain: mailchainAddressNameServices(s),
+func domainNameServices(s values.Store) *DomainNameServices {
+	return &DomainNameServices{
+		clients: map[string]NameServiceDomainClient{
+			mailchain.Mailchain: mailchainDomainNameServices(s),
 		},
 	}
 }
 
-type AddressNameServices struct {
-	clients map[string]NameServiceAddressClient
+type DomainNameServices struct {
+	clients map[string]NameServiceDomainClient
 }
 
-func (s AddressNameServices) Produce(client string) (nameservice.ReverseLookup, error) {
+func (s DomainNameServices) Produce(client string) (nameservice.ForwardLookup, error) {
 	m, ok := s.clients[client]
 	if !ok {
 		return nil, errors.Errorf("%s not a supported address name service", client)
@@ -28,31 +28,31 @@ func (s AddressNameServices) Produce(client string) (nameservice.ReverseLookup, 
 	return m.Produce()
 }
 
-func mailchainAddressNameServices(s values.Store) *MailchainAddressNameServices {
+func mailchainDomainNameServices(s values.Store) *MailchainDomainNameServices {
 	enabledNetworks := []string{}
 	for _, n := range ethereum.Networks() {
 		enabledNetworks = append(enabledNetworks, "ethereum/"+n)
 	}
-	return &MailchainAddressNameServices{
-		BaseURL: values.NewDefaultString("https://ns.mailchain.xyz/", s, "name-service-address.base-url"),
+	return &MailchainDomainNameServices{
+		BaseURL: values.NewDefaultString("https://ns.mailchain.xyz/", s, "name-service-domain-name.base-url"),
 		EnabledProtocolNetworks: values.NewDefaultStringSlice(
 			enabledNetworks,
 			s,
-			"name-service-address.mailchain.enabled-networks",
+			"name-service-domain-name.mailchain.enabled-networks",
 		),
 	}
 }
 
-type MailchainAddressNameServices struct {
+type MailchainDomainNameServices struct {
 	BaseURL                 values.String
 	EnabledProtocolNetworks values.StringSlice
 }
 
-func (s MailchainAddressNameServices) Produce() (nameservice.ReverseLookup, error) {
+func (s MailchainDomainNameServices) Produce() (nameservice.ForwardLookup, error) {
 	return nameservice.NewLookupService(s.BaseURL.Get()), nil
 }
 
-func (s MailchainAddressNameServices) Supports() map[string]bool {
+func (s MailchainDomainNameServices) Supports() map[string]bool {
 	m := map[string]bool{}
 	for _, np := range s.EnabledProtocolNetworks.Get() {
 		m[np] = true

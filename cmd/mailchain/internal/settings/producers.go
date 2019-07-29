@@ -32,6 +32,11 @@ type NameServiceAddressClient interface {
 	Supporter
 }
 
+type NameServiceDomainClient interface {
+	Produce() (nameservice.ForwardLookup, error)
+	Supporter
+}
+
 type SentClient interface {
 	Produce(client string) (sender.Message, error)
 }

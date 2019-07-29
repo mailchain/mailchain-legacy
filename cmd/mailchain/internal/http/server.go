@@ -25,6 +25,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
+	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus" // nolint:depguard
@@ -67,13 +68,22 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 		Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase(passphrase)},
 	}
 
-	api.HandleFunc("/addresses", handlers.GetAddresses(keystore)).Methods("GET")
+	nsAddressResolvers := map[string]nameservice.ReverseLookup{}
 
+	api.HandleFunc("/addresses", handlers.GetAddresses(keystore)).Methods("GET")
 	for protocol := range s.Protocols {
+		ans, err := s.Protocols[protocol].GetAddressNameServices(s.AddressNameServices)
+		if err != nil {
+			return nil, errors.WithMessage(err, "could not get address name service")
+		}
+		for k, v := range ans {
+			nsAddressResolvers[k] = v
+		}
+
 		name := s.Protocols[protocol].Kind
 		pubKeyFinders, err := s.Protocols[protocol].GetPublicKeyFinders(s.PublicKeyFinders)
 		if err != nil {
-			return nil, errors.WithMessagef(err, "Could not get %q receivers", name)
+			return nil, errors.WithMessagef(err, "could not get %q receivers", name)
 		}
 
 		api.HandleFunc(
@@ -99,6 +109,8 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 	api.HandleFunc("/messages/{message_id}/read", handlers.GetRead(mailboxStore)).Methods("GET")
 	api.HandleFunc("/messages/{message_id}/read", handlers.PutRead(mailboxStore)).Methods("PUT")
 	api.HandleFunc("/messages/{message_id}/read", handlers.DeleteRead(mailboxStore)).Methods("DELETE")
+
+	api.HandleFunc("/nameservice/address/{address}/resolve", handlers.GetResolveAddress(nsAddressResolvers)).Methods("GET")
 
 	api.HandleFunc("/protocols", handlers.GetProtocols(s)).Methods("GET")
 

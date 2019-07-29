@@ -8,9 +8,10 @@ import (
 // TODO: maybe this is not a new?
 func New(s values.Store) *Base {
 	return &Base{
-		Senders:          senders(s),
-		Receivers:        receivers(s),
-		PublicKeyFinders: publicKeyFinders(s),
+		AddressNameServices: addressNameServices(s),
+		Senders:             senders(s),
+		Receivers:           receivers(s),
+		PublicKeyFinders:    publicKeyFinders(s),
 		Protocols: map[string]*Protocol{
 			chains.Ethereum: protocol(s, chains.Ethereum),
 		},
@@ -23,9 +24,10 @@ func New(s values.Store) *Base {
 }
 
 type Base struct {
-	Senders          *Senders
-	Receivers        *Receivers
-	PublicKeyFinders *PublicKeyFinders
+	AddressNameServices *AddressNameServices
+	Senders             *Senders
+	Receivers           *Receivers
+	PublicKeyFinders    *PublicKeyFinders
 	// protocol
 	Protocols map[string]*Protocol
 	// Ethereum  *Protocol

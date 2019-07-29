@@ -6,6 +6,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/sender"
 )
 
@@ -58,6 +59,18 @@ func (p Protocol) GetPublicKeyFinders(publicKeyFinders *PublicKeyFinders) (map[s
 	msg := map[string]mailbox.PubKeyFinder{}
 	for network, v := range p.Networks {
 		s, err := v.ProducePublicKeyFinders(publicKeyFinders)
+		if err != nil {
+			return nil, err
+		}
+		msg[p.Kind+"/"+network] = s
+	}
+	return msg, nil
+}
+
+func (p Protocol) GetAddressNameServices(ans *AddressNameServices) (map[string]nameservice.ReverseLookup, error) {
+	msg := map[string]nameservice.ReverseLookup{}
+	for network, v := range p.Networks {
+		s, err := v.ProduceNameServiceAddress(ans)
 		if err != nil {
 			return nil, err
 		}

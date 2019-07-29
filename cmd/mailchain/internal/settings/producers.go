@@ -2,6 +2,7 @@ package settings
 
 import (
 	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/sender"
 )
 
@@ -23,6 +24,11 @@ type ReceiverClient interface {
 
 type PublicKeyFinderClient interface {
 	Produce() (mailbox.PubKeyFinder, error)
+	Supporter
+}
+
+type NameServiceAddressClient interface {
+	Produce() (nameservice.ReverseLookup, error)
 	Supporter
 }
 

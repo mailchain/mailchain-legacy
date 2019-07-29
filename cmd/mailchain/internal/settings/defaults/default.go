@@ -27,7 +27,9 @@ const (
 	Empty        = ""
 	KeystoreKind = "nacl-filestore"
 
-	SentStoreKind = mailchain.Mailchain
+	SentStoreKind             = mailchain.Mailchain
+	NameServiceAddressKind    = mailchain.Mailchain
+	NameServiceDomainNameKind = mailchain.Mailchain
 
 	MailboxStateKind = "leveldb"
 

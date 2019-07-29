@@ -6,12 +6,17 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/sender"
 )
 
 func network(s values.Store, protocol, network string) *Network {
 	k := &Network{
 		Kind: network,
+		NameServiceAddress: values.NewDefaultString(defaults.NameServiceAddressKind, s,
+			fmt.Sprintf("protocols.%s.networks.%s.name-service-address", protocol, network)),
+		NameServiceDomainName: values.NewDefaultString(defaults.NameServiceDomainNameKind, s,
+			fmt.Sprintf("protocols.%s.networks.%s.name-service-domain-name", protocol, network)),
 		PublicKeyFinder: values.NewDefaultString(defaults.EthereumReceiver, s,
 			fmt.Sprintf("protocols.%s.networks.%s.public-key-finder", protocol, network)),
 		Receiver: values.NewDefaultString(defaults.EthereumReceiver, s,
@@ -25,11 +30,21 @@ func network(s values.Store, protocol, network string) *Network {
 }
 
 type Network struct {
-	Kind            string
-	PublicKeyFinder values.String
-	Receiver        values.String
-	Sender          values.String
-	Disabled        values.Bool
+	Kind                  string
+	NameServiceAddress    values.String
+	NameServiceDomainName values.String
+	PublicKeyFinder       values.String
+	Receiver              values.String
+	Sender                values.String
+	Disabled              values.Bool
+}
+
+func (s *Network) ProduceNameServiceDomain(ans *DomainNameServices) (nameservice.ForwardLookup, error) {
+	return ans.Produce(s.NameServiceDomainName.Get())
+}
+
+func (s *Network) ProduceNameServiceAddress(ans *AddressNameServices) (nameservice.ReverseLookup, error) {
+	return ans.Produce(s.NameServiceAddress.Get())
 }
 
 func (s *Network) ProduceSender(senders *Senders) (sender.Message, error) {

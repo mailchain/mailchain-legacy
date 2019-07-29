@@ -332,3 +332,198 @@ func Test_protocol(t *testing.T) {
 		})
 	}
 }
+
+func TestProtocol_GetAddressNameServices(t *testing.T) {
+	assert := assert.New(t)
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	type fields struct {
+		Networks map[string]*Network
+		Kind     string
+		Disabled values.Bool
+	}
+	type args struct {
+		ans *AddressNameServices
+	}
+	tests := []struct {
+		name     string
+		fields   fields
+		args     args
+		wantKeys []string
+		wantErr  bool
+	}{
+		{
+			"success",
+			fields{
+				map[string]*Network{
+					"mainnet": network(
+						func() values.Store {
+							m := valuestest.NewMockStore(mockCtrl)
+							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.name-service-address").Return(false)
+							return m
+						}(), "ethereum", "mainnet"),
+					"ropsten": network(
+						func() values.Store {
+							m := valuestest.NewMockStore(mockCtrl)
+							m.EXPECT().IsSet("protocols.ethereum.networks.ropsten.name-service-address").Return(false)
+							return m
+						}(), "ethereum", "ropsten")},
+				"ethereum",
+				nil,
+			},
+			args{
+				addressNameServices(func() values.Store {
+					m := valuestest.NewMockStore(mockCtrl)
+					m.EXPECT().IsSet("name-service-address.base-url").Return(false).Times(2)
+					return m
+				}()),
+			},
+			[]string{"ethereum/mainnet", "ethereum/ropsten"},
+			false,
+		},
+		{
+			"err-produce",
+			fields{
+				map[string]*Network{
+					"mainnet": network(
+						func() values.Store {
+							m := valuestest.NewMockStore(mockCtrl)
+							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.name-service-address").Return(true)
+							m.EXPECT().GetString("protocols.ethereum.networks.mainnet.name-service-address").Return("invalid")
+							return m
+						}(), "ethereum", "mainnet"),
+				},
+				"ethereum",
+				nil,
+			},
+			args{
+				addressNameServices(func() values.Store {
+					m := valuestest.NewMockStore(mockCtrl)
+					return m
+				}()),
+			},
+			[]string{},
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := Protocol{
+				Networks: tt.fields.Networks,
+				Kind:     tt.fields.Kind,
+				Disabled: tt.fields.Disabled,
+			}
+			got, err := p.GetAddressNameServices(tt.args.ans)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Protocol.GetAddressNameServices() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			gotKeys := []string{}
+			for k := range got {
+				gotKeys = append(gotKeys, k)
+			}
+			sort.Strings(gotKeys)
+			if !assert.EqualValues(gotKeys, tt.wantKeys) {
+				t.Errorf("Protocol.GetPublicKeyFinders() = %v, want %v", got, tt.wantKeys)
+			}
+		})
+	}
+}
+
+func TestProtocol_GetDomainNameServices(t *testing.T) {
+	assert := assert.New(t)
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type fields struct {
+		Networks map[string]*Network
+		Kind     string
+		Disabled values.Bool
+	}
+	type args struct {
+		ans *DomainNameServices
+	}
+	tests := []struct {
+		name     string
+		fields   fields
+		args     args
+		wantKeys []string
+		wantErr  bool
+	}{
+		{
+			"success",
+			fields{
+				map[string]*Network{
+					"mainnet": network(
+						func() values.Store {
+							m := valuestest.NewMockStore(mockCtrl)
+							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.name-service-domain-name").Return(false)
+							return m
+						}(), "ethereum", "mainnet"),
+					"ropsten": network(
+						func() values.Store {
+							m := valuestest.NewMockStore(mockCtrl)
+							m.EXPECT().IsSet("protocols.ethereum.networks.ropsten.name-service-domain-name").Return(false)
+							return m
+						}(), "ethereum", "ropsten")},
+				"ethereum",
+				nil,
+			},
+			args{
+				domainNameServices(func() values.Store {
+					m := valuestest.NewMockStore(mockCtrl)
+					m.EXPECT().IsSet("name-service-domain-name.base-url").Return(false).Times(2)
+					return m
+				}()),
+			},
+			[]string{"ethereum/mainnet", "ethereum/ropsten"},
+			false,
+		},
+		{
+			"err-produce",
+			fields{
+				map[string]*Network{
+					"mainnet": network(
+						func() values.Store {
+							m := valuestest.NewMockStore(mockCtrl)
+							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.name-service-domain-name").Return(true)
+							m.EXPECT().GetString("protocols.ethereum.networks.mainnet.name-service-domain-name").Return("invalid")
+							return m
+						}(), "ethereum", "mainnet"),
+				},
+				"ethereum",
+				nil,
+			},
+			args{
+				domainNameServices(func() values.Store {
+					m := valuestest.NewMockStore(mockCtrl)
+					return m
+				}()),
+			},
+			[]string{},
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := Protocol{
+				Networks: tt.fields.Networks,
+				Kind:     tt.fields.Kind,
+				Disabled: tt.fields.Disabled,
+			}
+			got, err := p.GetDomainNameServices(tt.args.ans)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Protocol.GetDomainNameServices() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			gotKeys := []string{}
+			for k := range got {
+				gotKeys = append(gotKeys, k)
+			}
+			sort.Strings(gotKeys)
+			if !assert.EqualValues(gotKeys, tt.wantKeys) {
+				t.Errorf("Protocol.GetPublicKeyFinders() = %v, want %v", got, tt.wantKeys)
+			}
+		})
+	}
+}

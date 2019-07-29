@@ -33,9 +33,9 @@ import (
 func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.ResponseWriter, r *http.Request) {
 	// Get swagger:route GET /nameservice/name/{domain-name}/resolve ResolveName NameService GetResolveName
 	//
-	// Get public key from an address.
+	// Get address from name.
 	//
-	// Get the public key.
+	// Get address
 	//
 	// Responses:
 	//   200: GetResolveNameResponse
@@ -130,14 +130,14 @@ func parseGetResolveNameRequest(r *http.Request) (protocol, network, domain stri
 // swagger:response GetResolveNameResponse
 type GetResolveNameResponse struct {
 	// in: body
-	Body GetPublicKeyResponseBody
+	Body GetResolveNameResponseBody
 }
 
 // GetBody body response
 //
 // swagger:model GetResolveNameResponseBody
 type GetResolveNameResponseBody struct {
-	// The public key
+	// The resolved address
 	//
 	// Required: true
 	// example: 0x4ad2b251246aafc2f3bdf3b690de3bf906622c51

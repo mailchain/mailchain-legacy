@@ -259,6 +259,147 @@
           }
         }
       }
+    },
+    "/nameservice/address/{address}/resolve": {
+      "get": {
+        "description": "Get name.",
+        "tags": [
+          "ResolveName",
+          "NameService"
+        ],
+        "summary": "Get name from address.",
+        "operationId": "GetResolveAddress",
+        "parameters": [
+          {
+            "type": "string",
+            "example": "0x4ad2b251246aafc2f3bdf3b690de3bf906622c51",
+            "x-go-name": "Address",
+            "description": "name to query to get address for",
+            "name": "address",
+            "in": "path",
+            "required": true
+          },
+          {
+            "enum": [
+              "mainnet",
+              "ropsten",
+              "rinkeby",
+              "local"
+            ],
+            "type": "string",
+            "example": "ropsten",
+            "x-go-name": "Network",
+            "description": "Network for the name to resolve",
+            "name": "network",
+            "in": "path",
+            "required": true
+          },
+          {
+            "enum": [
+              "ethereum"
+            ],
+            "type": "string",
+            "example": "ethereum",
+            "x-go-name": "Protocol",
+            "description": "Protocol for the name to resolve",
+            "name": "protocol",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetResolveAddressResponse"
+          },
+          "404": {
+            "$ref": "#/responses/NotFoundError"
+          },
+          "422": {
+            "$ref": "#/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/nameservice/name/{domain-name}/resolve": {
+      "get": {
+        "description": "Get address",
+        "tags": [
+          "ResolveName",
+          "NameService"
+        ],
+        "summary": "Get address from name.",
+        "operationId": "GetResolveName",
+        "parameters": [
+          {
+            "type": "string",
+            "example": "mailchain.eth",
+            "x-go-name": "Name",
+            "description": "name to query to get address for",
+            "name": "domain-name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "enum": [
+              "mainnet",
+              "ropsten",
+              "rinkeby",
+              "local"
+            ],
+            "type": "string",
+            "example": "ropsten",
+            "x-go-name": "Network",
+            "description": "Network for the name to resolve",
+            "name": "network",
+            "in": "path",
+            "required": true
+          },
+          {
+            "enum": [
+              "ethereum"
+            ],
+            "type": "string",
+            "example": "ethereum",
+            "x-go-name": "Protocol",
+            "description": "Protocol for the name to resolve",
+            "name": "protocol",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetResolveNameResponse"
+          },
+          "404": {
+            "$ref": "#/responses/NotFoundError"
+          },
+          "422": {
+            "$ref": "#/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/protocols": {
+      "get": {
+        "description": "Get all networks for each protocol that is enabled.",
+        "tags": [
+          "protocols"
+        ],
+        "summary": "Get protocols and the networks.",
+        "operationId": "GetProtocols",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetProtocolsResponse"
+          },
+          "404": {
+            "$ref": "#/responses/NotFoundError"
+          },
+          "422": {
+            "$ref": "#/responses/ValidationError"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -285,7 +426,7 @@
           "type": "string",
           "x-go-name": "MessageID",
           "readOnly": true,
-          "example": "002c47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471@mailchain"
+          "example": "47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471@mailchain"
         },
         "reply-to": {
           "description": "Reply to if the reply address is different to the from address.",
@@ -344,6 +485,25 @@
       "x-go-name": "getMessage",
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
+    "GetProtocolsProtocol": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "in: body",
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "networks": {
+          "description": "in: body",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "Networks"
+        }
+      },
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+    },
     "GetPublicKeyResponseBody": {
       "description": "GetBody body response",
       "type": "object",
@@ -374,6 +534,38 @@
         }
       },
       "x-go-name": "getBody",
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+    },
+    "GetResolveAddressResponseBody": {
+      "description": "GetBody body response",
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "description": "The resolved name",
+          "type": "string",
+          "x-go-name": "Name",
+          "example": "mailchain.eth"
+        }
+      },
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+    },
+    "GetResolveNameResponseBody": {
+      "description": "GetBody body response",
+      "type": "object",
+      "required": [
+        "address"
+      ],
+      "properties": {
+        "address": {
+          "description": "The resolved address",
+          "type": "string",
+          "x-go-name": "Address",
+          "example": "0x4ad2b251246aafc2f3bdf3b690de3bf906622c51"
+        }
+      },
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "PostMessagesResponseHeaders": {
@@ -469,6 +661,15 @@
         }
       }
     },
+    "GetProtocolsResponse": {
+      "description": "GetProtocolsResponse Holds the response messages",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/GetProtocolsProtocol"
+        }
+      }
+    },
     "GetPublicKeyResponse": {
       "description": "GetPublicKeyResponse public key from address response",
       "schema": {
@@ -478,6 +679,18 @@
     "GetReadResponse": {
       "schema": {
         "$ref": "#/definitions/GetReadResponseBody"
+      }
+    },
+    "GetResolveAddressResponse": {
+      "description": "GetResolveAddressResponse address of resolved name",
+      "schema": {
+        "$ref": "#/definitions/GetResolveAddressResponseBody"
+      }
+    },
+    "GetResolveNameResponse": {
+      "description": "GetResolveNameResponse address of resolved name",
+      "schema": {
+        "$ref": "#/definitions/GetResolveNameResponseBody"
       }
     },
     "NotFoundError": {

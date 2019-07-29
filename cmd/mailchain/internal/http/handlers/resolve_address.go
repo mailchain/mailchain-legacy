@@ -16,11 +16,11 @@ package handlers
 
 import (
 	"encoding/json"
+	"encoding/hex"
 	"fmt"
 	"net/http"
 	"strings"
-
-	"github.com/ethereum/go-ethereum/common/hexutil"
+ 
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
@@ -29,29 +29,21 @@ import (
 	"github.com/pkg/errors"
 )
 
-// api/resolver/ethereum/mainnet
-// api/ethereum/mainnet/resolve
-// api/ethereum/mainnet/forward-lookup
-// api/ethereum/mainnet/address/forward-lookup
-// api/ethereum/mainnet/address/reverse-lookup
-// api/ethereum/mainnet/address/resolve
-// api/ethereum/mainnet/address/reverse
-
-// GetResolveName returns a handler get spec
-func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.ResponseWriter, r *http.Request) {
-	// Get swagger:route GET /nameservice/name/{domain-name}/resolve ResolveName NameService GetResolveName
+// GetResolveAddress returns a handler get spec
+func GetResolveAddress(resolvers map[string]nameservice.ReverseLookup) func(w http.ResponseWriter, r *http.Request) {
+	// Get swagger:route GET /nameservice/address/{address}/resolve ResolveName NameService GetResolveAddress
 	//
-	// Get public key from an address.
+	// Get name from address.
 	//
-	// Get the public key.
+	// Get name.
 	//
 	// Responses:
-	//   200: GetResolveNameResponse
+	//   200: GetResolveAddressResponse
 	//   404: NotFoundError
 	//   422: ValidationError
 	return func(w http.ResponseWriter, hr *http.Request) {
 		ctx := hr.Context()
-		protocol, network, domainName, err := parseGetResolveNameRequest(hr)
+		protocol, network, address, err := parseGetResolveAddressRequest(hr)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
@@ -62,12 +54,12 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 			return
 		}
 
-		address, err := resolver.ResolveName(ctx, protocol, network, domainName)
+		name, err := resolver.ResolveAddress(ctx, protocol, network, address)
 		if mailbox.IsNetworkNotSupportedError(err) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("%q not supported", protocol+"/"+network))
 			return
 		}
-		if nameservice.IsInvalidNameError(err) {
+		if nameservice.IsInvalidAddressError(err) {
 			errs.JSONWriter(w, http.StatusPreconditionFailed, err)
 			return
 		}
@@ -85,21 +77,21 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(GetResolveNameResponseBody{
-			Address: hexutil.Encode(address),
+		_ = json.NewEncoder(w).Encode(GetResolveAddressResponseBody{
+			Name: name,
 		})
 	}
 }
 
-// GetResolveNameRequest pubic key from address request
-// swagger:parameters GetResolveName
-type GetResolveNameRequest struct {
+// GetResolveAddressRequest pubic key from address request
+// swagger:parameters GetResolveAddress
+type GetResolveAddressRequest struct {
 	// name to query to get address for
 	//
 	// in: path
 	// required: true
-	// example: name.ens
-	Name string `json:"domain-name"`
+	// example: 0x4ad2b251246aafc2f3bdf3b690de3bf906622c51
+	Address string `json:"address"`
 
 	// Network for the name to resolve
 	//
@@ -118,36 +110,40 @@ type GetResolveNameRequest struct {
 	Protocol string `json:"protocol"`
 }
 
-// parseGetResolveNameRequest get all the details for the get request
-func parseGetResolveNameRequest(r *http.Request) (protocol, network, domain string, err error) {
+// parseGetResolveAddressRequest get all the details for the get request
+func parseGetResolveAddressRequest(r *http.Request) (protocol, network string, address []byte, err error) {
 	protocol, err = params.QueryRequireProtocol(r)
 	if err != nil {
-		return "", "", "", err
+		return "", "", nil, err
 	}
 	network, err = params.QueryRequireNetwork(r)
 	if err != nil {
-		return "", "", "", err
+		return "", "", nil, err
 	}
-	domain = strings.ToLower(mux.Vars(r)["domain-name"])
 
-	return protocol, network, domain, nil
+	address, err = hex.DecodeString(strings.TrimPrefix(strings.ToLower(mux.Vars(r)["address"]), "0x"))
+	if err != nil {
+		return "", "", nil, err
+	}
+
+	return protocol, network, address, nil
 }
 
-// GetResolveNameResponse address of resolved name
+// GetResolveAddressResponse address of resolved name
 //
-// swagger:response GetResolveNameResponse
-type GetResolveNameResponse struct {
+// swagger:response GetResolveAddressResponse
+type GetResolveAddressResponse struct {
 	// in: body
 	Body GetPublicKeyResponseBody
 }
 
 // GetBody body response
 //
-// swagger:model GetResolveNameResponseBody
-type GetResolveNameResponseBody struct {
+// swagger:model GetResolveAddressResponseBody
+type GetResolveAddressResponseBody struct {
 	// The public key
 	//
 	// Required: true
-	// example: 0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae
-	Address string `json:"address"`
+	// example: mailchain.eth
+	Name string `json:"name"`
 }

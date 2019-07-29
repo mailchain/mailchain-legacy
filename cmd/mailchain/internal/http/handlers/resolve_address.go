@@ -15,12 +15,12 @@
 package handlers
 
 import (
-	"encoding/json"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
- 
+
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
@@ -134,14 +134,14 @@ func parseGetResolveAddressRequest(r *http.Request) (protocol, network string, a
 // swagger:response GetResolveAddressResponse
 type GetResolveAddressResponse struct {
 	// in: body
-	Body GetPublicKeyResponseBody
+	Body GetResolveAddressResponseBody
 }
 
 // GetBody body response
 //
 // swagger:model GetResolveAddressResponseBody
 type GetResolveAddressResponseBody struct {
-	// The public key
+	// The resolved name
 	//
 	// Required: true
 	// example: mailchain.eth

@@ -41,6 +41,11 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 			continue
 		}
 
+		// remove duplicates, eg. messages sent to self
+		if i > 0 && txResult.Result[i-1] == x {
+			continue
+		}
+
 		encryptedTransactionData, err := hexutil.Decode(x.Input)
 		if err != nil {
 			return nil, errors.WithMessage(err, "can not decode `data`")

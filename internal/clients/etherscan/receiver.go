@@ -35,6 +35,7 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 		return nil, errors.WithStack(err)
 	}
 	res := []cipher.EncryptedContent{}
+	txHashes := map[string]bool{}
 	for i := range txResult.Result { // TODO: paging
 		x := txResult.Result[i]
 		if !strings.HasPrefix(x.Input, "0x6d61696c636861696e") {
@@ -42,9 +43,11 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 		}
 
 		// remove duplicates, eg. messages sent to self
-		if i > 0 && txResult.Result[i-1] == x {
+		_, ok := txHashes[x.Hash]
+		if ok {
 			continue
 		}
+		txHashes[x.Hash] = true
 
 		encryptedTransactionData, err := hexutil.Decode(x.Input)
 		if err != nil {

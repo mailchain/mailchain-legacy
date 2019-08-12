@@ -14,7 +14,7 @@ markComment: >
   recent activity. The resources of the Mailchain team are limited, and so we are asking for your help.
   If this is a **bug** and you can still reproduce this error on the <code>master</code> branch, please reply with all of the information you have about it in order to keep the issue open.
   If this is a **feature request**, and you feel that it is still relevant and valuable, please tell us why.
-  This issue will automatically be closed in the near future if no further activity occurs. Thank you for all your contributions.
+  This issue will automatically be closed in the near future if no further activity occurs. Thank you for all your contributions!
   
 # Comment to post when closing a stale issue. Set to `false` to disable
 closeComment: false

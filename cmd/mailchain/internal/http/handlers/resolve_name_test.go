@@ -21,9 +21,9 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
+	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/nameservice/nameservicetest"
-	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -248,6 +248,25 @@ func TestGetResolveName(t *testing.T) {
 			}(),
 			"{\"code\":404,\"message\":\"unable to resolve\"}\n",
 			http.StatusNotFound,
+		},
+		{
+			"err-encoding-error",
+			args{
+				func() map[string]nameservice.ForwardLookup {
+					m := nameservicetest.NewMockForwardLookup(mockCtrl)
+					m.EXPECT().ResolveName(gomock.Any(), "invalid", "mainnet", "name.ens").Return(testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"), nil).Times(1)
+					return map[string]nameservice.ForwardLookup{"invalid/mainnet": m}
+				}(),
+			},
+			func() *http.Request {
+				req := httptest.NewRequest("GET", "/?network=mainnet&protocol=invalid", nil)
+				req = mux.SetURLVars(req, map[string]string{
+					"domain-name": "name.ens",
+				})
+				return req
+			}(),
+			`{"code":500,"message":"failed to encode address: \"invalid\" unsupported protocol"}` + "\n",
+			http.StatusInternalServerError,
 		},
 		{
 			"success",

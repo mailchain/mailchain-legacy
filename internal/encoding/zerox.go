@@ -1,4 +1,4 @@
-package address
+package encoding
 
 import (
 	"encoding/hex"
@@ -7,14 +7,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-func encodeZeroX(in []byte) string {
+func EncodeZeroX(in []byte) string {
 	out := make([]byte, len(in)*2+2)
 	copy(out, "0x")
 	hex.Encode(out[2:], in)
 	return string(out)
 }
 
-func decodeZeroX(in string) ([]byte, error) {
+func DecodeZeroX(in string) ([]byte, error) {
 	if in == "" {
 		return nil, errors.Errorf("empty hex string")
 	}

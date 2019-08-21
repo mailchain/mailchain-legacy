@@ -1,4 +1,4 @@
-package address
+package encoding
 
 import (
 	"reflect"
@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_encodeZeroX(t *testing.T) {
+func Test_EncodeZeroX(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
 		in []byte
@@ -28,14 +28,14 @@ func Test_encodeZeroX(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := encodeZeroX(tt.args.in); !assert.Equal(tt.want, got) {
+			if got := EncodeZeroX(tt.args.in); !assert.Equal(tt.want, got) {
 				t.Errorf("encodeZeroX() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_decodeZeroX(t *testing.T) {
+func Test_DecodeZeroX(t *testing.T) {
 	type args struct {
 		in string
 	}
@@ -72,7 +72,7 @@ func Test_decodeZeroX(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := decodeZeroX(tt.args.in)
+			got, err := DecodeZeroX(tt.args.in)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("decodeZeroX() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -27,6 +27,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/errs"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/chains"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/keystore"
@@ -59,14 +60,19 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 	//   404: NotFoundError
 	//   422: ValidationError
 	return func(w http.ResponseWriter, r *http.Request) {
+		protocol := "ethereum"
 		ctx := r.Context()
 		req, err := parsePostRequest(r)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-
-		if !ks.HasAddress(common.HexToAddress(req.from.ChainAddress).Bytes()) {
+		from, err := address.DecodeByProtocol(req.from.ChainAddress, protocol)
+		if err != nil {
+			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"))
+			return
+		}
+		if !ks.HasAddress(from) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Message.Headers.From))
 			return
 		}
@@ -82,13 +88,13 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			return
 		}
 		// TODO: signer is hard coded to ethereum
-		signer, err := ks.GetSigner(common.FromHex(msg.Headers.From.ChainAddress), "ethereum", deriveKeyOptions)
+		signer, err := ks.GetSigner(from, protocol, deriveKeyOptions)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
 			return
 		}
 
-		if err := mailbox.SendMessage(ctx, req.network, msg, req.publicKey, encrypter, sender, sent, signer, envelope.Kind0x01); err != nil {
+		if err := mailbox.SendMessage(ctx, protocol, req.network, msg, req.publicKey, encrypter, sender, sent, signer, envelope.Kind0x01); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}

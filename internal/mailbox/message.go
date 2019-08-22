@@ -17,9 +17,9 @@ package mailbox
 import (
 	"context"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
@@ -37,7 +37,7 @@ import (
 // - Encrypt message location
 // - Create transaction data with encrypted location and message hash
 // - Send transaction
-func SendMessage(ctx context.Context, network string, msg *mail.Message, pubkey crypto.PublicKey, encrypter cipher.Encrypter,
+func SendMessage(ctx context.Context, protocol, network string, msg *mail.Message, pubkey crypto.PublicKey, encrypter cipher.Encrypter,
 	msgSender sender.Message, sent stores.Sent, msgSigner signer.Signer, envelopeKind byte) error {
 	encodedMsg, err := rfc2822.EncodeNewMessage(msg)
 	if err != nil {
@@ -48,7 +48,8 @@ func SendMessage(ctx context.Context, network string, msg *mail.Message, pubkey 
 	if err != nil {
 		return errors.WithMessage(err, "could not encrypt mail message")
 	}
-	address, resource, mli, err := sent.PutMessage(msg.ID, crypto.CreateMessageHash(encodedMsg), encrypted, nil)
+
+	msgAddress, resource, mli, err := sent.PutMessage(msg.ID, crypto.CreateMessageHash(encodedMsg), encrypted, nil)
 	if err != nil {
 		return errors.WithMessage(err, "failed to store message")
 	}
@@ -58,7 +59,7 @@ func SendMessage(ctx context.Context, network string, msg *mail.Message, pubkey 
 	}
 	opts := []envelope.CreateOptionsBuilder{
 		envelope.WithKind(envelopeKind),
-		envelope.WithURL(address),
+		envelope.WithURL(msgAddress),
 		envelope.WithResource(resource),
 		envelope.WithDecryptedHash(crypto.CreateMessageHash(encodedMsg)),
 		locOpt,
@@ -75,9 +76,14 @@ func SendMessage(ctx context.Context, network string, msg *mail.Message, pubkey 
 	}
 
 	transactonData := append(encoding.DataPrefix(), encodedData...)
-	//TODO: should not use common to parse address
-	to := common.FromHex(msg.Headers.To.ChainAddress)
-	from := common.FromHex(msg.Headers.From.ChainAddress)
+	to, err := address.DecodeByProtocol(msg.Headers.To.ChainAddress, protocol)
+	if err != nil {
+		return errors.WithMessage(err, "could not decode to address")
+	}
+	from, err := address.DecodeByProtocol(msg.Headers.From.ChainAddress, protocol)
+	if err != nil {
+		return errors.WithMessage(err, "could not decode from address")
+	}
 	if err := msgSender.Send(ctx, network, to, from, transactonData, msgSigner, nil); err != nil {
 		return errors.WithMessage(err, "could not send transaction")
 	}

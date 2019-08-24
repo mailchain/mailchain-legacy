@@ -21,7 +21,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
@@ -195,7 +194,7 @@ func checkForEmpties(msg PostMessage) error {
 	return nil
 }
 
-func isValid(p *PostRequestBody, network string) error {
+func isValid(p *PostRequestBody, protocol string) error {
 	if p == nil {
 		return errors.New("PostRequestBody must not be nil")
 	}
@@ -203,7 +202,7 @@ func isValid(p *PostRequestBody, network string) error {
 		return err
 	}
 	var err error
-	p.network = network
+	p.network = protocol
 	chain := chains.Ethereum
 
 	p.to, err = mail.ParseAddress(p.Message.Headers.To, chain, p.network)
@@ -232,7 +231,11 @@ func isValid(p *PostRequestBody, network string) error {
 		return errors.WithMessage(err, "invalid `public-key`")
 	}
 	pkAddress := p.publicKey.Address()
-	toAddress := common.HexToAddress(p.to.ChainAddress).Bytes()
+	toAddress, err := address.DecodeByProtocol(p.to.ChainAddress, protocol)
+	if err != nil {
+		return errors.WithMessage(err, "failed to decode address")
+	}
+
 	if !bytes.Equal(pkAddress, toAddress) {
 		return errors.Errorf("`public-key` does not match to address")
 	}

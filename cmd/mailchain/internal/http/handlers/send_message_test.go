@@ -199,12 +199,30 @@ func Test_isValid(t *testing.T) {
 			true,
 		},
 		{
-			"err-address-from-public-key",
+			"err-decode-to",
 			args{
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
 							To:   hex.EncodeToString(testutil.CharlottePublicKey.Address()),
+							From: hex.EncodeToString(testutil.SofiaPublicKey.Address()),
+						},
+						Subject:   "subject-value",
+						Body:      "body-value",
+						PublicKey: "0x" + hex.EncodeToString(testutil.CharlottePublicKey.Bytes()),
+					},
+				},
+				"ethereum",
+			},
+			true,
+		},
+		{
+			"err-address-from-public-key",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   "0x" + hex.EncodeToString(testutil.CharlottePublicKey.Address()),
 							From: hex.EncodeToString(testutil.SofiaPublicKey.Address()),
 						},
 						Subject:   "subject-value",
@@ -222,7 +240,7 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   hex.EncodeToString(testutil.CharlottePublicKey.Address()),
+							To:   "0x" + hex.EncodeToString(testutil.CharlottePublicKey.Address()),
 							From: hex.EncodeToString(testutil.SofiaPublicKey.Address()),
 						},
 						Subject:   "subject-value",

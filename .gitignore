@@ -21,3 +21,5 @@ dist
 debug
 .mailchain
 tmp
+
+.idea

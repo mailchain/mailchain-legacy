@@ -21,10 +21,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -46,6 +46,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 	//   404: NotFoundError
 	//   422: ValidationError
 	return func(w http.ResponseWriter, r *http.Request) {
+		protocol := "ethereum"
 		ctx := r.Context()
 		req, err := parseGetMessagesRequest(r)
 		if err != nil {
@@ -58,12 +59,16 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			return
 		}
 
-		addr := common.HexToAddress(req.Address) // TODO: multi address
-		if !ks.HasAddress(addr.Bytes()) {        // TODO: multi address
+		addr, err := address.DecodeByProtocol(req.Address, protocol)
+		if err != nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+			return
+		}
+		if !ks.HasAddress(addr) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for address"))
 			return
 		}
-		encryptedSlice, err := receiver.Receive(ctx, req.Network, addr.Bytes())
+		encryptedSlice, err := receiver.Receive(ctx, req.Network, addr)
 		if mailbox.IsNetworkNotSupportedError(err) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("network `%s` does not have etherscan client configured", req.Network))
 			return
@@ -72,7 +77,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
-		decrypter, err := ks.GetDecrypter(addr.Bytes(), encoding.AES256CBC, deriveKeyOptions)
+		decrypter, err := ks.GetDecrypter(addr, encoding.AES256CBC, deriveKeyOptions)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not get `decrypter`"))
 			return

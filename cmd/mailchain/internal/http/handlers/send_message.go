@@ -21,12 +21,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/errs"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/chains"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/keystore"
@@ -59,14 +59,19 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 	//   404: NotFoundError
 	//   422: ValidationError
 	return func(w http.ResponseWriter, r *http.Request) {
+		protocol := "ethereum"
 		ctx := r.Context()
 		req, err := parsePostRequest(r)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-
-		if !ks.HasAddress(common.HexToAddress(req.from.ChainAddress).Bytes()) {
+		from, err := address.DecodeByProtocol(req.from.ChainAddress, protocol)
+		if err != nil {
+			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"))
+			return
+		}
+		if !ks.HasAddress(from) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Message.Headers.From))
 			return
 		}
@@ -82,13 +87,13 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			return
 		}
 		// TODO: signer is hard coded to ethereum
-		signer, err := ks.GetSigner(common.FromHex(msg.Headers.From.ChainAddress), "ethereum", deriveKeyOptions)
+		signer, err := ks.GetSigner(from, protocol, deriveKeyOptions)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
 			return
 		}
 
-		if err := mailbox.SendMessage(ctx, req.network, msg, req.publicKey, encrypter, sender, sent, signer, envelope.Kind0x01); err != nil {
+		if err := mailbox.SendMessage(ctx, protocol, req.network, msg, req.publicKey, encrypter, sender, sent, signer, envelope.Kind0x01); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}
@@ -189,7 +194,7 @@ func checkForEmpties(msg PostMessage) error {
 	return nil
 }
 
-func isValid(p *PostRequestBody, network string) error {
+func isValid(p *PostRequestBody, protocol string) error {
 	if p == nil {
 		return errors.New("PostRequestBody must not be nil")
 	}
@@ -197,7 +202,7 @@ func isValid(p *PostRequestBody, network string) error {
 		return err
 	}
 	var err error
-	p.network = network
+	p.network = protocol
 	chain := chains.Ethereum
 
 	p.to, err = mail.ParseAddress(p.Message.Headers.To, chain, p.network)
@@ -226,7 +231,11 @@ func isValid(p *PostRequestBody, network string) error {
 		return errors.WithMessage(err, "invalid `public-key`")
 	}
 	pkAddress := p.publicKey.Address()
-	toAddress := common.HexToAddress(p.to.ChainAddress).Bytes()
+	toAddress, err := address.DecodeByProtocol(p.to.ChainAddress, protocol)
+	if err != nil {
+		return errors.WithMessage(err, "failed to decode address")
+	}
+
 	if !bytes.Equal(pkAddress, toAddress) {
 		return errors.Errorf("`public-key` does not match to address")
 	}

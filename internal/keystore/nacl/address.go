@@ -20,7 +20,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/pkg/errors"
 )
 
@@ -58,7 +57,32 @@ func (fs FileStore) GetAddresses() ([][]byte, error) {
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}
-		addresses = append(addresses, encoding.HexToAddress(encryptedKey.Address))
+		addresses = append(addresses, HexToAddress(encryptedKey.Address))
 	}
 	return addresses, nil
+}
+
+// TODO: this needs to be removed only works for ethereum, using mailchain address package instead, or rethink how keys are stored. Should public key be the index then generate address
+func HexToAddress(s string) []byte {
+	return FromHex(s)
+}
+
+// FromHex returns the bytes represented by the hexadecimal string s.
+// s may be prefixed with "0x".
+func FromHex(s string) []byte {
+	if len(s) > 1 {
+		if s[0:2] == "0x" || s[0:2] == "0X" {
+			s = s[2:]
+		}
+	}
+	if len(s)%2 == 1 {
+		s = "0" + s
+	}
+	return Hex2Bytes(s)
+}
+
+// Hex2Bytes returns the bytes represented by the hexadecimal string str.
+func Hex2Bytes(str string) []byte {
+	h, _ := hex.DecodeString(str)
+	return h
 }

@@ -20,10 +20,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
@@ -54,7 +54,7 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 			return
 		}
 
-		address, err := resolver.ResolveName(ctx, protocol, network, domainName)
+		resolvedAddress, err := resolver.ResolveName(ctx, protocol, network, domainName)
 		if mailbox.IsNetworkNotSupportedError(err) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("%q not supported", protocol+"/"+network))
 			return
@@ -75,10 +75,14 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
-
+		encAddress, err := address.EncodeByProtocol(resolvedAddress, protocol)
+		if err != nil {
+			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"))
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(GetResolveNameResponseBody{
-			Address: hexutil.Encode(address),
+			Address: encAddress,
 		})
 	}
 }

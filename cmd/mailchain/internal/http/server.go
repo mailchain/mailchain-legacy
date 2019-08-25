@@ -96,7 +96,7 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 		}
 
 		api.HandleFunc(
-			fmt.Sprintf("/{protocol}/{network}/address/{address:[-0-9a-zA-Z]+}/public-key", name),
+			"/{protocol}/{network}/address/{address:[-0-9a-zA-Z]+}/public-key",
 			handlers.GetPublicKey(pubKeyFinders)).Methods("GET")
 
 		receivers, err := s.Protocols[protocol].GetReceivers(s.Receivers)

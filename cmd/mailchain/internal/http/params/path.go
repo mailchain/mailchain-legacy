@@ -18,8 +18,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/mux"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
@@ -39,7 +39,15 @@ func PathNetwork(r *http.Request) string {
 	return strings.ToLower(mux.Vars(r)["network"])
 }
 
-func PathAddress(r *http.Request) ([]byte, error) {
+func PathProtocol(r *http.Request) (string, error) {
+	v := strings.ToLower(mux.Vars(r)["protocol"])
+	if v == "" {
+		return "", errors.Errorf("protocol path param must not be empty")
+	}
+	return v, nil
+}
+
+func PathAddress(r *http.Request, protocol string) ([]byte, error) {
 	addr := strings.ToLower(mux.Vars(r)["address"])
 	if addr == "" {
 		return nil, errors.Errorf("'address' must not be empty")
@@ -48,6 +56,5 @@ func PathAddress(r *http.Request) ([]byte, error) {
 	// if !ethereum.IsAddressValid(addr) {
 	// 	return nil, "", errors.Errorf("'address' is invalid")
 	// }
-	// TODO: generic address parsing
-	return common.HexToAddress(addr).Bytes(), nil
+	return address.DecodeByProtocol(addr, protocol)
 }

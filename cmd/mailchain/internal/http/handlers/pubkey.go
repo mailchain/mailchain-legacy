@@ -28,7 +28,7 @@ import (
 
 // GetPublicKey returns a handler get spec
 func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseWriter, r *http.Request) {
-	// Get swagger:route GET /ethereum/{network}/address/{address}/public-key PublicKey Ethereum GetPublicKey
+	// Get swagger:route GET /{protocol}/{network}/address/{address}/public-key PublicKey Ethereum GetPublicKey
 	//
 	// Get public key from an address.
 	//
@@ -40,12 +40,17 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 	//   422: ValidationError
 	return func(w http.ResponseWriter, hr *http.Request) {
 		ctx := hr.Context()
-		address, network, err := parseGetPublicKey(hr)
+		protocol, err := params.PathProtocol(hr)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		finder, ok := finders[fmt.Sprintf("ethereum/%s", network)]
+		address, network, err := parseGetPublicKey(hr, protocol)
+		if err != nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+			return
+		}
+		finder, ok := finders[fmt.Sprintf("%s/%s", protocol, network)]
 		if !ok {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no public key finder for chain.network configured"))
 			return
@@ -89,8 +94,8 @@ type GetPublicKeyRequest struct {
 }
 
 // parseGetPublicKey get all the details for the get request
-func parseGetPublicKey(r *http.Request) (address []byte, network string, err error) {
-	addr, err := params.PathAddress(r)
+func parseGetPublicKey(r *http.Request, protocol string) (address []byte, network string, err error) {
+	addr, err := params.PathAddress(r, protocol)
 	if err != nil {
 		return nil, "", errors.WithStack(err)
 	}

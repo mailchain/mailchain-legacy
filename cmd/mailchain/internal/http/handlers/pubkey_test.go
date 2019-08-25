@@ -31,7 +31,8 @@ import (
 func Test_parseGetPublicKey(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
-		r *http.Request
+		r        *http.Request
+		protocol string
 	}
 	tests := []struct {
 		name        string
@@ -46,14 +47,16 @@ func Test_parseGetPublicKey(t *testing.T) {
 				func() *http.Request {
 					req := httptest.NewRequest("GET", "/", nil)
 					req = mux.SetURLVars(req, map[string]string{
-						"address": "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
-						"network": "ethereum",
+						"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+						"network":  "mainnet",
+						"protocol": "ethereum",
 					})
 					return req
 				}(),
+				"ethereum",
 			},
-			[]byte{0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61},
-			"ethereum",
+			[]byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61},
+			"mainnet",
 			false,
 		},
 		{
@@ -62,10 +65,11 @@ func Test_parseGetPublicKey(t *testing.T) {
 				func() *http.Request {
 					req := httptest.NewRequest("GET", "/", nil)
 					req = mux.SetURLVars(req, map[string]string{
-						"network": "ethereum",
+						"network": "mainnet",
 					})
 					return req
 				}(),
+				"ethereum",
 			},
 			nil,
 			"",
@@ -74,7 +78,7 @@ func Test_parseGetPublicKey(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotAddress, gotNetwork, err := parseGetPublicKey(tt.args.r)
+			gotAddress, gotNetwork, err := parseGetPublicKey(tt.args.r, tt.args.protocol)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("parseGetPublicKey() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -104,6 +108,23 @@ func TestGetPublicKey(t *testing.T) {
 		wantStatus int
 	}{
 		{
+			"err-protocol",
+			args{
+				nil,
+			},
+			func() *http.Request {
+				req := httptest.NewRequest("GET", "/", nil)
+				req = mux.SetURLVars(req, map[string]string{
+					"address":  "",
+					"network":  "mainnet",
+					"protocol": "",
+				})
+				return req
+			}(),
+			"{\"code\":422,\"message\":\"protocol path param must not be empty\"}\n",
+			http.StatusUnprocessableEntity,
+		},
+		{
 			"err-invalid-request",
 			args{
 				nil,
@@ -111,7 +132,9 @@ func TestGetPublicKey(t *testing.T) {
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/", nil)
 				req = mux.SetURLVars(req, map[string]string{
-					"address": "",
+					"address":  "",
+					"network":  "mainnet",
+					"protocol": "ethereum",
 				})
 				return req
 			}(),
@@ -129,7 +152,9 @@ func TestGetPublicKey(t *testing.T) {
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/", nil)
 				req = mux.SetURLVars(req, map[string]string{
-					"address": "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"network":  "mainnet",
+					"protocol": "ethereum",
 				})
 				return req
 			}(),
@@ -141,15 +166,16 @@ func TestGetPublicKey(t *testing.T) {
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
-					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "mainnet", []byte{0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}).Return(nil, errors.New("network not supported")).Times(1)
+					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "mainnet", []byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}).Return(nil, errors.New("network not supported")).Times(1)
 					return map[string]mailbox.PubKeyFinder{"ethereum/mainnet": finder}
 				}(),
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/", nil)
 				req = mux.SetURLVars(req, map[string]string{
-					"address": "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
-					"network": "mainnet",
+					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"network":  "mainnet",
+					"protocol": "ethereum",
 				})
 				return req
 			}(),
@@ -161,15 +187,16 @@ func TestGetPublicKey(t *testing.T) {
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
-					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "mainnet", []byte{0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}).Return(nil, errors.New("error")).Times(1)
+					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "mainnet", []byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}).Return(nil, errors.New("error")).Times(1)
 					return map[string]mailbox.PubKeyFinder{"ethereum/mainnet": finder}
 				}(),
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/", nil)
 				req = mux.SetURLVars(req, map[string]string{
-					"address": "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
-					"network": "mainnet",
+					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"network":  "mainnet",
+					"protocol": "ethereum",
 				})
 				return req
 			}(),
@@ -181,15 +208,16 @@ func TestGetPublicKey(t *testing.T) {
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
-					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "mainnet", []byte{0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}).Return(testutil.MustHexDecodeString("3ada323710def1e02f3586710ae3624ceefba1638e9d9894f724a5401997cd792933ddfd0687874e515a8ab479a38646e6db9f3d8b74d27c4e4eae5a116f9f1400"), nil).Times(1)
+					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "mainnet", []byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}).Return(testutil.MustHexDecodeString("3ada323710def1e02f3586710ae3624ceefba1638e9d9894f724a5401997cd792933ddfd0687874e515a8ab479a38646e6db9f3d8b74d27c4e4eae5a116f9f1400"), nil).Times(1)
 					return map[string]mailbox.PubKeyFinder{"ethereum/mainnet": finder}
 				}(),
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/", nil)
 				req = mux.SetURLVars(req, map[string]string{
-					"address": "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
-					"network": "mainnet",
+					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"network":  "mainnet",
+					"protocol": "ethereum",
 				})
 				return req
 			}(),

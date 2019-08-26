@@ -105,55 +105,6 @@ func spec() string {
         }
       }
     },
-    "/ethereum/{network}/address/{address}/public-key": {
-      "get": {
-        "description": "Get the public key.",
-        "tags": [
-          "PublicKey",
-          "Ethereum"
-        ],
-        "summary": "Get public key from an address.",
-        "operationId": "GetPublicKey",
-        "parameters": [
-          {
-            "pattern": "0x[a-fA-F0-9]{40}",
-            "type": "string",
-            "example": "0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae",
-            "x-go-name": "Address",
-            "description": "address to query to get public key for",
-            "name": "address",
-            "in": "path",
-            "required": true
-          },
-          {
-            "enum": [
-              "mainnet",
-              "ropsten",
-              "rinkeby",
-              "local"
-            ],
-            "type": "string",
-            "example": "ropsten",
-            "x-go-name": "Network",
-            "description": "Network for the message to send",
-            "name": "network",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/responses/GetPublicKeyResponse"
-          },
-          "404": {
-            "$ref": "#/responses/NotFoundError"
-          },
-          "422": {
-            "$ref": "#/responses/ValidationError"
-          }
-        }
-      }
-    },
     "/ethereum/{network}/messages/send": {
       "post": {
         "description": "Securely send message to ethereum address that can only be discovered and de-cryted by the private key holder.\n\nCreate mailchain message\nEncrypt content with public key\nStore message\nEncrypt location\nStore encrypted location on the blockchain.",
@@ -279,14 +230,14 @@ func spec() string {
         }
       }
     },
-    "/nameservice/address/{address}/resolve": {
+    "/nameservice/address/{address}/resolve?network={network}\u0026protocol={protocol}": {
       "get": {
-        "description": "Get name.",
+        "description": "Get name for supplied address. The name is typically a human-readable value that can be used in place of the address.\nResolve will query the protocol's name service to find the human-readable name for the supplied address.",
         "tags": [
           "ResolveName",
           "NameService"
         ],
-        "summary": "Get name from address.",
+        "summary": "Resolve Address Against Name Service",
         "operationId": "GetResolveAddress",
         "parameters": [
           {
@@ -339,14 +290,14 @@ func spec() string {
         }
       }
     },
-    "/nameservice/name/{domain-name}/resolve": {
+    "/nameservice/name/{domain-name}/resolve?network={network}\u0026protocol={protocol}": {
       "get": {
-        "description": "Get address",
+        "description": "Get address for supplied name. The name is typically a human-readable value that can be used in place of the address.\nResolve will query the protocol's name service to find the address for supplied human-readable name.",
         "tags": [
           "ResolveName",
           "NameService"
         ],
-        "summary": "Get address from name.",
+        "summary": "Resolve Name Against Name Service",
         "operationId": "GetResolveName",
         "parameters": [
           {
@@ -410,6 +361,55 @@ func spec() string {
         "responses": {
           "200": {
             "$ref": "#/responses/GetProtocolsResponse"
+          },
+          "404": {
+            "$ref": "#/responses/NotFoundError"
+          },
+          "422": {
+            "$ref": "#/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/{protocol}/{network}/address/{address}/public-key": {
+      "get": {
+        "description": "Get the public key.",
+        "tags": [
+          "PublicKey",
+          "Ethereum"
+        ],
+        "summary": "Get public key from an address.",
+        "operationId": "GetPublicKey",
+        "parameters": [
+          {
+            "pattern": "0x[a-fA-F0-9]{40}",
+            "type": "string",
+            "example": "0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae",
+            "x-go-name": "Address",
+            "description": "address to query to get public key for",
+            "name": "address",
+            "in": "path",
+            "required": true
+          },
+          {
+            "enum": [
+              "mainnet",
+              "ropsten",
+              "rinkeby",
+              "local"
+            ],
+            "type": "string",
+            "example": "ropsten",
+            "x-go-name": "Network",
+            "description": "Network for the message to send",
+            "name": "network",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetPublicKeyResponse"
           },
           "404": {
             "$ref": "#/responses/NotFoundError"

@@ -108,8 +108,9 @@ func Test_checkForEmpties(t *testing.T) {
 
 func Test_isValid(t *testing.T) {
 	type args struct {
-		p       *PostRequestBody
-		network string
+		p        *PostRequestBody
+		protocol string
+		network  string
 	}
 	tests := []struct {
 		name    string
@@ -126,6 +127,7 @@ func Test_isValid(t *testing.T) {
 			args{
 				&PostRequestBody{},
 				"ethereum",
+				"mainnet",
 			},
 			true,
 		},
@@ -141,6 +143,7 @@ func Test_isValid(t *testing.T) {
 					},
 				},
 				"ethereum",
+				"mainnet",
 			},
 			true,
 		},
@@ -158,6 +161,7 @@ func Test_isValid(t *testing.T) {
 					},
 				},
 				"ethereum",
+				"mainnet",
 			},
 			true,
 		},
@@ -177,6 +181,7 @@ func Test_isValid(t *testing.T) {
 					},
 				},
 				"ethereum",
+				"mainnet",
 			},
 			true,
 		},
@@ -195,6 +200,7 @@ func Test_isValid(t *testing.T) {
 					},
 				},
 				"ethereum",
+				"mainnet",
 			},
 			true,
 		},
@@ -213,6 +219,7 @@ func Test_isValid(t *testing.T) {
 					},
 				},
 				"ethereum",
+				"mainnet",
 			},
 			true,
 		},
@@ -231,6 +238,7 @@ func Test_isValid(t *testing.T) {
 					},
 				},
 				"ethereum",
+				"mainnet",
 			},
 			true,
 		},
@@ -249,13 +257,14 @@ func Test_isValid(t *testing.T) {
 					},
 				},
 				"ethereum",
+				"mainnet",
 			},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := isValid(tt.args.p, tt.args.network); (err != nil) != tt.wantErr {
+			if err := isValid(tt.args.p, tt.args.protocol, tt.args.network); (err != nil) != tt.wantErr {
 				t.Errorf("isValid() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -290,13 +299,40 @@ func Test_parsePostRequest(t *testing.T) {
 					}
 					`))
 					req = mux.SetURLVars(req, map[string]string{
-						"network": "ethereum",
+						"protocol": "ethereum",
+						"network":  "mainnet",
 					})
 					return req
 				}(),
 			},
 			false,
 			false,
+		},
+		{
+			"err-protocol",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("POST", "/", strings.NewReader(`
+					{
+						"message": {
+							"body": "test",
+							"headers": {
+								"from": "0xd5ab4ce3605cd590db609b6b5c8901fdb2ef7fe6",
+								"to": "0x92d8f10248c6a3953cc3692a894655ad05d61efb"
+							},
+							"public-key": "0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d",
+							"subject": "test"
+						}
+					}
+					`))
+					req = mux.SetURLVars(req, map[string]string{
+						"network": "mainnet",
+					})
+					return req
+				}(),
+			},
+			true,
+			true,
 		},
 	}
 	for _, tt := range tests {

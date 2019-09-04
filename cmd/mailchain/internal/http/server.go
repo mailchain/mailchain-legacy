@@ -104,7 +104,7 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 			return nil, errors.WithMessagef(err, "Could not get %q receivers", name)
 		}
 		api.HandleFunc(
-			fmt.Sprintf("/%s/{network}/address/{address:[-0-9a-zA-Z]+}/messages", name),
+			"/{protocol}/{network}/address/{address:[-0-9a-zA-Z]+}/messages",
 			handlers.GetMessages(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")
 
 		senders, err := s.Protocols[protocol].GetSenders(s.Senders)
@@ -112,7 +112,7 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 			return nil, errors.WithMessagef(err, "Could not get %q senders", name)
 		}
 		api.HandleFunc(
-			fmt.Sprintf("/%s/{network}/messages/send", name),
+			"/{protocol}/{network}/messages/send",
 			handlers.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
 	}
 	api.HandleFunc("/messages/{message_id}/read", handlers.GetRead(mailboxStore)).Methods("GET")

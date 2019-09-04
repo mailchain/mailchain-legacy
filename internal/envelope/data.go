@@ -26,8 +26,13 @@ const (
 )
 
 type Data interface {
+	// URL returns the addressable location of the message, the URL may be encrypted requiring decrypter to be supplied.
 	URL(decrypter cipher.Decrypter) (*url.URL, error)
+	// IntegrityHash returns a hash of the encrypted content. This can be used to validate the integrity of the contents before decrypting.
 	IntegrityHash(decrypter cipher.Decrypter) ([]byte, error)
+	// ContentsHash returns a hash of the decrypted content.
+	// This can be used to verify the contents of the message have not been tampered with.
 	ContentsHash(decrypter cipher.Decrypter) ([]byte, error)
+	// Valid will verify the contents of the envelope.
 	Valid() error
 }

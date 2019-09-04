@@ -27,7 +27,6 @@ import (
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
-	"github.com/mailchain/mailchain/internal/chains"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -129,7 +128,12 @@ func parsePostRequest(r *http.Request) (*PostRequestBody, error) {
 		return nil, errors.WithMessage(err, "'message' is invalid")
 	}
 
-	return &req, isValid(&req, params.PathNetwork(r))
+	protocol, err := params.PathProtocol(r)
+	if err != nil {
+		return nil, errors.WithMessage(err, "'protocol' is invalid")
+	}
+
+	return &req, isValid(&req, protocol, params.PathNetwork(r))
 }
 
 // swagger:model PostMessagesResponseHeaders
@@ -194,7 +198,7 @@ func checkForEmpties(msg PostMessage) error {
 	return nil
 }
 
-func isValid(p *PostRequestBody, protocol string) error {
+func isValid(p *PostRequestBody, protocol, network string) error {
 	if p == nil {
 		return errors.New("PostRequestBody must not be nil")
 	}
@@ -202,10 +206,9 @@ func isValid(p *PostRequestBody, protocol string) error {
 		return err
 	}
 	var err error
-	p.network = protocol
-	chain := chains.Ethereum
+	p.network = network
 
-	p.to, err = mail.ParseAddress(p.Message.Headers.To, chain, p.network)
+	p.to, err = mail.ParseAddress(p.Message.Headers.To, protocol, p.network)
 	if err != nil {
 		return errors.WithMessage(err, "`to` is invalid")
 	}
@@ -213,13 +216,13 @@ func isValid(p *PostRequestBody, protocol string) error {
 	// if !ethereup.IsAddressValid(p.to.ChainAddress) {
 	// 	return errors.Errorf("'address' is invalid")
 	// }
-	p.from, err = mail.ParseAddress(p.Message.Headers.From, chain, p.network)
+	p.from, err = mail.ParseAddress(p.Message.Headers.From, protocol, p.network)
 	if err != nil {
 		return errors.WithMessage(err, "`from` is invalid")
 	}
 
 	if p.Message.Headers.ReplyTo != "" {
-		p.replyTo, err = mail.ParseAddress(p.Message.Headers.ReplyTo, chain, p.network)
+		p.replyTo, err = mail.ParseAddress(p.Message.Headers.ReplyTo, protocol, p.network)
 		if err != nil {
 			return errors.WithMessage(err, "`reply-to` is invalid")
 		}

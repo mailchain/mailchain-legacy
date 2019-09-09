@@ -18,10 +18,10 @@ This is the primary repo for the Mailchain development.
 
 The complete list of Mailchain repositories is:
 
-* [mailchain](mailchain): Main Mailchain repo, API and CLI
-* [mailchain-web](mailchain-web): Inbox web client, the repository for https://inbox.mailchain.xyy/
-* [docs.mailchain.xyz](docs.mailchain.xyz): Documentation hosted at https://docs.mailchain.xyz
-* [mailchain-specification](mailchain-specification): Original specification and design documents
+* [mailchain](https://github.com/mailchain/mailchain): Main Mailchain repo, API and CLI
+* [mailchain-web](https://github.com/mailchain/mailchain-web): Inbox web client, the repository for https://inbox.mailchain.xyy/
+* [docs.mailchain.xyz](https://github.com/mailchain/docs.mailchain.xyz): Documentation hosted at https://docs.mailchain.xyz
+* [mailchain-specification](https://github.com/mailchain/mailchain-specification): Original specification and design documents
 
 ## Quickstart and documentation
 
@@ -29,12 +29,12 @@ You can run Mailchain on most operating systems in a matter of seconds. See
 the [Mailchain Getting Started Guide]([getting-started](https://docs.mailchain.xyz/getting-started)) for how.
 
 For more comprehensive documentation, start with the [Mailchain
-docs][[linkerd-docs](https://docs.mailchain.xyz/concepts/overview)]. (The doc source code is available in the
+docs](https://docs.mailchain.xyz/concepts/overview). (The doc source code is available in the
 [docs](docs.mailchain.xyz) repo.)
 
 ## Working in this repo
 
-We :heart: pull requests! See [`CONTRIBUTING.md`][CONTRIBUTING] for info on
+We :heart: pull requests! See [`CONTRIBUTING.md`](CONTRIBUTING.md) for info on
 contributing changes.
 
 ## Get involved
@@ -46,7 +46,7 @@ contributing changes.
 ## Code of conduct
 
 This project is for everyone. We ask that our users and contributors take a few
-minutes to review our [code of conduct][CODE_OF_CONDUCT].
+minutes to review our [code of conduct](CODE_OF_CONDUCT.md).
 
 ## Checksums
 

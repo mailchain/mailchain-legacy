@@ -123,6 +123,7 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 	api.HandleFunc("/nameservice/name/{domain-name}/resolve", handlers.GetResolveName(nsDomainResolvers)).Methods("GET")
 
 	api.HandleFunc("/protocols", handlers.GetProtocols(s)).Methods("GET")
+	api.HandleFunc("/version", handlers.GetResolveVersion()).Methods("GET")
 
 	_ = r.Walk(gorillaWalkFn)
 	return r, nil

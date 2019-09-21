@@ -17,10 +17,9 @@ package keystore
 import (
 	"testing"
 
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
-	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
@@ -40,7 +39,7 @@ func TestDecrypter(t *testing.T) {
 		{
 			"ethereum",
 			args{
-				encoding.AES256CBC,
+				cipher.AES256CBC,
 				testutil.CharlottePrivateKey,
 			},
 			aes256cbc.NewDecrypter(testutil.CharlottePrivateKey),

@@ -7,6 +7,7 @@ package settingstest
 import (
 	gomock "github.com/golang/mock/gomock"
 	mailbox "github.com/mailchain/mailchain/internal/mailbox"
+	nameservice "github.com/mailchain/mailchain/nameservice"
 	sender "github.com/mailchain/mailchain/sender"
 	reflect "reflect"
 )
@@ -202,6 +203,110 @@ func (m *MockPublicKeyFinderClient) Supports() map[string]bool {
 func (mr *MockPublicKeyFinderClientMockRecorder) Supports() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Supports", reflect.TypeOf((*MockPublicKeyFinderClient)(nil).Supports))
+}
+
+// MockNameServiceAddressClient is a mock of NameServiceAddressClient interface
+type MockNameServiceAddressClient struct {
+	ctrl     *gomock.Controller
+	recorder *MockNameServiceAddressClientMockRecorder
+}
+
+// MockNameServiceAddressClientMockRecorder is the mock recorder for MockNameServiceAddressClient
+type MockNameServiceAddressClientMockRecorder struct {
+	mock *MockNameServiceAddressClient
+}
+
+// NewMockNameServiceAddressClient creates a new mock instance
+func NewMockNameServiceAddressClient(ctrl *gomock.Controller) *MockNameServiceAddressClient {
+	mock := &MockNameServiceAddressClient{ctrl: ctrl}
+	mock.recorder = &MockNameServiceAddressClientMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockNameServiceAddressClient) EXPECT() *MockNameServiceAddressClientMockRecorder {
+	return m.recorder
+}
+
+// Produce mocks base method
+func (m *MockNameServiceAddressClient) Produce() (nameservice.ReverseLookup, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Produce")
+	ret0, _ := ret[0].(nameservice.ReverseLookup)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Produce indicates an expected call of Produce
+func (mr *MockNameServiceAddressClientMockRecorder) Produce() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Produce", reflect.TypeOf((*MockNameServiceAddressClient)(nil).Produce))
+}
+
+// Supports mocks base method
+func (m *MockNameServiceAddressClient) Supports() map[string]bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Supports")
+	ret0, _ := ret[0].(map[string]bool)
+	return ret0
+}
+
+// Supports indicates an expected call of Supports
+func (mr *MockNameServiceAddressClientMockRecorder) Supports() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Supports", reflect.TypeOf((*MockNameServiceAddressClient)(nil).Supports))
+}
+
+// MockNameServiceDomainClient is a mock of NameServiceDomainClient interface
+type MockNameServiceDomainClient struct {
+	ctrl     *gomock.Controller
+	recorder *MockNameServiceDomainClientMockRecorder
+}
+
+// MockNameServiceDomainClientMockRecorder is the mock recorder for MockNameServiceDomainClient
+type MockNameServiceDomainClientMockRecorder struct {
+	mock *MockNameServiceDomainClient
+}
+
+// NewMockNameServiceDomainClient creates a new mock instance
+func NewMockNameServiceDomainClient(ctrl *gomock.Controller) *MockNameServiceDomainClient {
+	mock := &MockNameServiceDomainClient{ctrl: ctrl}
+	mock.recorder = &MockNameServiceDomainClientMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockNameServiceDomainClient) EXPECT() *MockNameServiceDomainClientMockRecorder {
+	return m.recorder
+}
+
+// Produce mocks base method
+func (m *MockNameServiceDomainClient) Produce() (nameservice.ForwardLookup, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Produce")
+	ret0, _ := ret[0].(nameservice.ForwardLookup)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Produce indicates an expected call of Produce
+func (mr *MockNameServiceDomainClientMockRecorder) Produce() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Produce", reflect.TypeOf((*MockNameServiceDomainClient)(nil).Produce))
+}
+
+// Supports mocks base method
+func (m *MockNameServiceDomainClient) Supports() map[string]bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Supports")
+	ret0, _ := ret[0].(map[string]bool)
+	return ret0
+}
+
+// Supports indicates an expected call of Supports
+func (mr *MockNameServiceDomainClientMockRecorder) Supports() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Supports", reflect.TypeOf((*MockNameServiceDomainClient)(nil).Supports))
 }
 
 // MockSentClient is a mock of SentClient interface

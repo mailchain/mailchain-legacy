@@ -23,9 +23,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
+	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/mailbox"
@@ -77,7 +77,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
-		decrypter, err := ks.GetDecrypter(addr, encoding.AES256CBC, deriveKeyOptions)
+		decrypter, err := ks.GetDecrypter(addr, cipher.AES256CBC, deriveKeyOptions)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not get `decrypter`"))
 			return

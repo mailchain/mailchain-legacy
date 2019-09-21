@@ -15,7 +15,7 @@
 package aes256cbc
 
 import (
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/pkg/errors"
 )
 
@@ -29,7 +29,7 @@ func bytesEncode(data *encryptedData) ([]byte, error) {
 		return nil, errors.WithMessage(err, "could not compress EphemeralPublicKey")
 	}
 	encodedData := make([]byte, 1+len(data.InitializationVector)+len(compressedKey)+len(data.MessageAuthenticationCode)+len(data.Ciphertext))
-	encodedData[0] = encoding.AES256CBC
+	encodedData[0] = cipher.AES256CBC
 	copy(encodedData[1:], data.InitializationVector)
 	copy(encodedData[1+len(data.InitializationVector):], compressedKey)
 	copy(encodedData[1+len(data.InitializationVector)+len(compressedKey):], data.MessageAuthenticationCode)
@@ -47,7 +47,7 @@ func bytesDecode(raw []byte) (*encryptedData, error) {
 	if len(raw) < macLen+ivLen+pubKeyBytesLenCompressed+2 {
 		return nil, errors.Errorf("raw data does not have enough bytes to be encoded")
 	}
-	if raw[0] != encoding.AES256CBC {
+	if raw[0] != cipher.AES256CBC {
 		return nil, errors.Errorf("invalid prefix")
 	}
 	raw = raw[1:]

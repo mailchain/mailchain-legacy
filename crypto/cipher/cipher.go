@@ -19,6 +19,11 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 )
 
+// Cipher lookup
+const (
+	AES256CBC byte = 0x2e
+)
+
 // EncryptedContent typed version of byte array that holds encrypted data
 type EncryptedContent []byte
 

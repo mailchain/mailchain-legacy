@@ -79,7 +79,7 @@ func (s LookupService) ResolveName(ctx context.Context, protocol, network, domai
 		return nil, err
 	}
 
-	return nil, errors.Errorf(errRes.Message)
+	return nil, WrapError(errors.Errorf(errRes.Message))
 }
 
 func (s LookupService) ResolveAddress(ctx context.Context, protocol, network string, address []byte) (string, error) {
@@ -113,5 +113,5 @@ func (s LookupService) ResolveAddress(ctx context.Context, protocol, network str
 		return "", err
 	}
 
-	return "", errors.Errorf(errRes.Message)
+	return "", WrapError(errors.Errorf(errRes.Message))
 }

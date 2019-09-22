@@ -15,6 +15,13 @@ import (
 func Reverse(resolver nameservice.ReverseLookup) func(w http.ResponseWriter, r *http.Request) {
 	type response struct {
 		Name string `json:"name"`
+
+		// The rfc1035 error status, if present
+		// Since 0 status belongs to 'No Error', it's safe to use 'omitempty'
+		//
+		// Required: false
+		// example: 3
+		Status int `json:"status,omitempty"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		protocol := strings.ToLower(mux.Vars(r)["protocol"])
@@ -25,20 +32,16 @@ func Reverse(resolver nameservice.ReverseLookup) func(w http.ResponseWriter, r *
 		}
 		address, err := hex.DecodeString(strings.TrimPrefix(r.URL.Query()["address"][0], "0x"))
 		if err != nil {
-			errs.JSONWriter(w, http.StatusPreconditionFailed, nameservice.ErrInvalidAddress)
+			_ = json.NewEncoder(w).Encode(response{
+				Status: nameservice.Rfc1035StatusMap[nameservice.ErrFormat],
+			})
 			return
 		}
 		name, err := resolver.ResolveAddress(r.Context(), protocol, network, address)
-		if nameservice.IsInvalidAddressError(err) {
-			errs.JSONWriter(w, http.StatusPreconditionFailed, err)
-			return
-		}
-		if nameservice.IsNoResolverError(err) {
-			errs.JSONWriter(w, http.StatusNotFound, err)
-			return
-		}
-		if nameservice.IsNotFoundError(err) {
-			errs.JSONWriter(w, http.StatusNotFound, err)
+		if nameservice.IsRfc1035Error(err) {
+			_ = json.NewEncoder(w).Encode(response{
+				Status: nameservice.Rfc1035StatusMap[err],
+			})
 			return
 		}
 		if err != nil {

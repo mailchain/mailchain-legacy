@@ -15,45 +15,86 @@
 package nameservice
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 
 	"github.com/pkg/errors"
 )
 
-func TestIsNoResolverError(t *testing.T) {
+func Test_WrapError(t *testing.T) {
+	assert := assert.New(t)
 	type args struct {
 		err error
 	}
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name           string
+		args           args
+		wantErr        bool
+		wantErrMessage string
 	}{
 		{
-			"ErrUnableToResolve",
+			"nil",
 			args{
-				errors.Errorf("unable to resolve and other"),
-			},
-			true,
-		},
-		{
-			"other",
-			args{
-				errors.Errorf("other"),
+				nil,
 			},
 			false,
+			nilErrorMsg,
+		},
+		{
+			"no-resolver",
+			args{
+				errors.Errorf("%s: %s", "error", noResolverErrorMsg),
+			},
+			true,
+			ErrNXDomain.Error(),
+		},
+		{
+			"no-resolution",
+			args{
+				errors.Errorf("%s: %s", "error", noResolutionErrorMsg),
+			},
+			true,
+			ErrNXDomain.Error(),
+		},
+		{
+			"unregistered-name",
+			args{
+				errors.Errorf("%s: %s", "error", unregisteredNameErrorMsg),
+			},
+			true,
+			ErrNXDomain.Error(),
+		},
+		{
+			"could-not-parse-address",
+			args{
+				errors.Errorf("%s: %s", "error", couldNotParseAddressErrorMsg),
+			},
+			true,
+			ErrFormat.Error(),
+		},
+		{
+			"unknown",
+			args{
+				errors.Errorf(unknownErrorMsg),
+			},
+			true,
+			unknownErrorMsg,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsNoResolverError(tt.args.err); got != tt.want {
-				t.Errorf("IsNoResolverError() = %v, want %v", got, tt.want)
+			err := WrapError(tt.args.err)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("wrapError() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if (err != nil) && (tt.wantErrMessage != "") && !assert.EqualError(err, tt.wantErrMessage) {
+				t.Errorf("wrapError() errorMessage = %v, wantErrMessage %v", err, tt.wantErrMessage)
 			}
 		})
 	}
 }
 
-func TestIsNotFoundError(t *testing.T) {
+func TestIsRfc1035Error(t *testing.T) {
 	type args struct {
 		err error
 	}
@@ -63,9 +104,37 @@ func TestIsNotFoundError(t *testing.T) {
 		want bool
 	}{
 		{
-			"ErrNotFound",
+			"Rfc1035Error-ErrFormat",
 			args{
-				errors.Errorf("not found and other"),
+				ErrFormat,
+			},
+			true,
+		},
+		{
+			"Rfc1035Error-ErrServFail",
+			args{
+				ErrServFail,
+			},
+			true,
+		},
+		{
+			"Rfc1035Error-ErrNXDomain",
+			args{
+				ErrNXDomain,
+			},
+			true,
+		},
+		{
+			"Rfc1035Error-ErrNotImp",
+			args{
+				ErrNotImp,
+			},
+			true,
+		},
+		{
+			"Rfc1035Error-ErrRefused",
+			args{
+				ErrRefused,
 			},
 			true,
 		},
@@ -79,73 +148,7 @@ func TestIsNotFoundError(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsNotFoundError(tt.args.err); got != tt.want {
-				t.Errorf("IsNotFoundError() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestIsInvalidNameError(t *testing.T) {
-	type args struct {
-		err error
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			"ErrInvalidName",
-			args{
-				errors.Errorf("invalid name"),
-			},
-			true,
-		},
-		{
-			"other",
-			args{
-				errors.Errorf("other"),
-			},
-			false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := IsInvalidNameError(tt.args.err); got != tt.want {
-				t.Errorf("IsInvalidNameError() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestIsInvalidAddressError(t *testing.T) {
-	type args struct {
-		err error
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			"ErrInvalidAddress",
-			args{
-				errors.Errorf("invalid address"),
-			},
-			true,
-		},
-		{
-			"other",
-			args{
-				errors.Errorf("other"),
-			},
-			false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := IsInvalidAddressError(tt.args.err); got != tt.want {
+			if got := IsRfc1035Error(tt.args.err); got != tt.want {
 				t.Errorf("IsInvalidAddressError() = %v, want %v", got, tt.want)
 			}
 		})

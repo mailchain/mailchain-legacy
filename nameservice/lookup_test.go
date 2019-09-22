@@ -71,7 +71,7 @@ func TestLookupService_ResolveName(t *testing.T) {
 		fields  fields
 		args    args
 		want    []byte
-		wantErr bool
+		wantErr error
 	}{
 		{
 			"success",
@@ -97,7 +97,7 @@ func TestLookupService_ResolveName(t *testing.T) {
 				"test.eth",
 			},
 			[]byte{0x4a, 0xd2, 0xb2, 0x51, 0x24, 0x6a, 0xaf, 0xc2, 0xf3, 0xbd, 0xf3, 0xb6, 0x90, 0xde, 0x3b, 0xf9, 0x6, 0x62, 0x2c, 0x51},
-			false,
+			nil,
 		},
 		{
 			"err-invalid-200",
@@ -123,7 +123,7 @@ func TestLookupService_ResolveName(t *testing.T) {
 				"test.eth",
 			},
 			nil,
-			true,
+			errors.New("invalid character '0' after object key"),
 		},
 		{
 			"err-404",
@@ -149,7 +149,7 @@ func TestLookupService_ResolveName(t *testing.T) {
 				"test.eth",
 			},
 			nil,
-			true,
+			ErrNXDomain,
 		},
 		{
 			"err-invalid-404",
@@ -175,7 +175,33 @@ func TestLookupService_ResolveName(t *testing.T) {
 				"test.eth",
 			},
 			nil,
-			true,
+			errors.New("invalid character 'n' after object key"),
+		},
+		{
+			"err-unable-to-resolve-404",
+			httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusNotFound)
+					w.Write([]byte("{\"code\":404,\"message\":\"unable to resolve: unregistered name\"}"))
+				}),
+			),
+			fields{
+				http.NewRequest,
+				func() func(req *http.Request) (*http.Response, error) {
+					c := http.Client{
+						Timeout: 1 * time.Second,
+					}
+					return c.Do
+				}(),
+			},
+			args{
+				context.Background(),
+				"ethereum",
+				"mainnet",
+				"test.eth",
+			},
+			nil,
+			ErrNXDomain,
 		},
 		{
 			"err-do-request",
@@ -200,7 +226,7 @@ func TestLookupService_ResolveName(t *testing.T) {
 				"test.eth",
 			},
 			nil,
-			true,
+			errors.New("do request failed"),
 		},
 		{
 			"err-do-request",
@@ -225,7 +251,7 @@ func TestLookupService_ResolveName(t *testing.T) {
 				"test.eth",
 			},
 			nil,
-			true,
+			errors.New("failed to create request"),
 		},
 	}
 	for _, tt := range tests {
@@ -236,7 +262,7 @@ func TestLookupService_ResolveName(t *testing.T) {
 				doRequest:  tt.fields.doRequest,
 			}
 			got, err := s.ResolveName(tt.args.ctx, tt.args.protocol, tt.args.network, tt.args.domainName)
-			if (err != nil) != tt.wantErr {
+			if err != nil && err.Error() != tt.wantErr.Error() {
 				t.Errorf("LookupService.ResolveName() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
@@ -264,7 +290,7 @@ func TestLookupService_ResolveAddress(t *testing.T) {
 		fields  fields
 		args    args
 		want    string
-		wantErr bool
+		wantErr error
 	}{
 		{
 			"success",
@@ -290,7 +316,7 @@ func TestLookupService_ResolveAddress(t *testing.T) {
 				[]byte{0x4a, 0xd2, 0xb2, 0x51, 0x24, 0x6a, 0xaf, 0xc2, 0xf3, 0xbd, 0xf3, 0xb6, 0x90, 0xde, 0x3b, 0xf9, 0x6, 0x62, 0x2c, 0x51},
 			},
 			"test.eth",
-			false,
+			nil,
 		},
 		{
 			"err-invalid-200",
@@ -316,7 +342,33 @@ func TestLookupService_ResolveAddress(t *testing.T) {
 				[]byte{0x4a, 0xd2, 0xb2, 0x51, 0x24, 0x6a, 0xaf, 0xc2, 0xf3, 0xbd, 0xf3, 0xb6, 0x90, 0xde, 0x3b, 0xf9, 0x6, 0x62, 0x2c, 0x51},
 			},
 			"",
-			true,
+			errors.New("invalid character '0' after object key"),
+		},
+		{
+			"err-404",
+			httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusNotFound)
+					w.Write([]byte("{\"code\":404,\"message\":\"invalid name: could not parse address\"}"))
+				}),
+			),
+			fields{
+				http.NewRequest,
+				func() func(req *http.Request) (*http.Response, error) {
+					c := http.Client{
+						Timeout: 1 * time.Second,
+					}
+					return c.Do
+				}(),
+			},
+			args{
+				context.Background(),
+				"ethereum",
+				"mainnet",
+				[]byte{0x4a, 0xd2, 0xb2, 0x51, 0x24, 0x6a, 0xaf, 0xc2, 0xf3, 0xbd, 0xf3, 0xb6, 0x90, 0xde, 0x3b, 0xf9, 0x6, 0x62, 0x2c, 0x51},
+			},
+			"",
+			ErrFormat,
 		},
 		{
 			"err-404",
@@ -342,7 +394,7 @@ func TestLookupService_ResolveAddress(t *testing.T) {
 				[]byte{0x4a, 0xd2, 0xb2, 0x51, 0x24, 0x6a, 0xaf, 0xc2, 0xf3, 0xbd, 0xf3, 0xb6, 0x90, 0xde, 0x3b, 0xf9, 0x6, 0x62, 0x2c, 0x51},
 			},
 			"",
-			true,
+			ErrNXDomain,
 		},
 		{
 			"err-invalid-404",
@@ -368,8 +420,35 @@ func TestLookupService_ResolveAddress(t *testing.T) {
 				[]byte{0x4a, 0xd2, 0xb2, 0x51, 0x24, 0x6a, 0xaf, 0xc2, 0xf3, 0xbd, 0xf3, 0xb6, 0x90, 0xde, 0x3b, 0xf9, 0x6, 0x62, 0x2c, 0x51},
 			},
 			"",
-			true,
+			errors.New("invalid character 'n' after object key"),
 		},
+		{
+			"err-unable-to-resolve-404",
+			httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusNotFound)
+					w.Write([]byte("{\"code\":404,\"message\":\"unable to resolve: unregistered name\"}"))
+				}),
+			),
+			fields{
+				http.NewRequest,
+				func() func(req *http.Request) (*http.Response, error) {
+					c := http.Client{
+						Timeout: 1 * time.Second,
+					}
+					return c.Do
+				}(),
+			},
+			args{
+				context.Background(),
+				"ethereum",
+				"mainnet",
+				[]byte{0x4a, 0xd2, 0xb2, 0x51, 0x24, 0x6a, 0xaf, 0xc2, 0xf3, 0xbd, 0xf3, 0xb6, 0x90, 0xde, 0x3b, 0xf9, 0x6, 0x62, 0x2c, 0x51},
+			},
+			"",
+			ErrNXDomain,
+		},
+
 		{
 			"err-do-request",
 			httptest.NewServer(
@@ -393,7 +472,7 @@ func TestLookupService_ResolveAddress(t *testing.T) {
 				[]byte{0x4a, 0xd2, 0xb2, 0x51, 0x24, 0x6a, 0xaf, 0xc2, 0xf3, 0xbd, 0xf3, 0xb6, 0x90, 0xde, 0x3b, 0xf9, 0x6, 0x62, 0x2c, 0x51},
 			},
 			"",
-			true,
+			errors.New("do request failed"),
 		},
 		{
 			"err-do-request",
@@ -418,7 +497,7 @@ func TestLookupService_ResolveAddress(t *testing.T) {
 				[]byte{0x4a, 0xd2, 0xb2, 0x51, 0x24, 0x6a, 0xaf, 0xc2, 0xf3, 0xbd, 0xf3, 0xb6, 0x90, 0xde, 0x3b, 0xf9, 0x6, 0x62, 0x2c, 0x51},
 			},
 			"",
-			true,
+			errors.New("failed to create request"),
 		},
 	}
 	for _, tt := range tests {
@@ -429,7 +508,7 @@ func TestLookupService_ResolveAddress(t *testing.T) {
 				doRequest:  tt.fields.doRequest,
 			}
 			got, err := s.ResolveAddress(tt.args.ctx, tt.args.protocol, tt.args.network, tt.args.address)
-			if (err != nil) != tt.wantErr {
+			if err != nil && err.Error() != tt.wantErr.Error() {
 				t.Errorf("LookupService.ResolveAddress() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}

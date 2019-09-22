@@ -15,49 +15,59 @@
 package nameservice
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/pkg/errors"
+	"strings"
+)
+
+const (
+	nilErrorMsg                  = ""
+	noResolverErrorMsg           = "no resolver"
+	noResolutionErrorMsg         = "No resolution"
+	unregisteredNameErrorMsg     = "unregistered name"
+	couldNotParseAddressErrorMsg = "could not parse address"
+	unknownErrorMsg              = "unknown error"
 )
 
 var (
-	ErrUnableToResolve = errors.New("unable to resolve")
-	ErrNotFound        = errors.New("not found")
-	ErrInvalidName     = errors.New("invalid name")
-	ErrInvalidAddress  = errors.New("invalid address")
+	// RFC 1035 error interpretation
+	ErrFormat   = errors.New("Format Error")
+	ErrServFail = errors.New("Server Failure")
+	ErrNXDomain = errors.New("Non-Existent Domain")
+	ErrNotImp   = errors.New("Not Implemented")
+	ErrRefused  = errors.New("Query Refused")
 )
 
-func IsNoResolverError(err error) bool {
-	message := fmt.Sprintf("%v", err)
-	if strings.HasPrefix(message, ErrUnableToResolve.Error()) {
-		return true
-	}
-	return false
+var Rfc1035StatusMap = map[error]int{
+	ErrFormat:   1,
+	ErrServFail: 2,
+	ErrNXDomain: 3,
+	ErrNotImp:   4,
+	ErrRefused:  5,
 }
 
-func IsNotFoundError(err error) bool {
-	message := fmt.Sprintf("%v", err)
-	if strings.HasPrefix(message, ErrNotFound.Error()) {
-		return true
-	}
-
-	return false
+func IsRfc1035Error(err error) bool {
+	_, ok := Rfc1035StatusMap[err]
+	return ok
 }
 
-func IsInvalidNameError(err error) bool {
-	message := fmt.Sprintf("%v", err)
-	if strings.HasPrefix(message, ErrInvalidName.Error()) {
-		return true
+func WrapError(err error) error {
+	if err == nil {
+		return nil
 	}
-
-	return false
+	if isErrorOfAnyType(err, []string{noResolverErrorMsg, noResolutionErrorMsg, unregisteredNameErrorMsg}) {
+		return ErrNXDomain
+	} else if isErrorOfAnyType(err, []string{couldNotParseAddressErrorMsg}) {
+		// address related to not being able to part ens address not ethereum address
+		return ErrFormat
+	}
+	return err
 }
 
-func IsInvalidAddressError(err error) bool {
-	message := fmt.Sprintf("%v", err)
-	if strings.HasPrefix(message, ErrInvalidAddress.Error()) {
-		return true
+func isErrorOfAnyType(err error, errors []string) bool {
+	for _, errorMsg := range errors {
+		if strings.Contains(err.Error(), errorMsg) {
+			return true
+		}
 	}
 	return false
 }

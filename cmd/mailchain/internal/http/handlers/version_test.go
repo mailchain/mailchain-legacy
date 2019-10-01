@@ -1,17 +1,18 @@
 package handlers
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestGetResolveVersion(t *testing.T) {
+func TestGetVersion(t *testing.T) {
 	assert := assert.New(t)
 	rr := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/version", nil)
-	handler := http.HandlerFunc(GetResolveVersion())
+	handler := http.HandlerFunc(GetVersion())
 	handler.ServeHTTP(rr, req)
 	wantStatus := http.StatusOK
 	wantBody := "{\"version\":\"dev\",\"commit\":\"none\",\"time\":\"unknown\"}\n"

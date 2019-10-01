@@ -31,7 +31,7 @@ import (
 
 // GetResolveAddress returns a handler get spec
 func GetResolveAddress(resolvers map[string]nameservice.ReverseLookup) func(w http.ResponseWriter, r *http.Request) {
-	// Get swagger:route GET /nameservice/address/{address}/resolve?network={network}&protocol={protocol} ResolveName NameService GetResolveAddress
+	// Get swagger:route GET /nameservice/address/{address}/resolve?network={network}&protocol={protocol} ResolveAddress NameService GetResolveAddress
 	//
 	// Resolve Address Against Name Service
 	//

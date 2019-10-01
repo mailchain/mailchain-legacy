@@ -253,7 +253,7 @@ func spec() string {
       "get": {
         "description": "Get name for supplied address. The name is typically a human-readable value that can be used in place of the address.\nResolve will query the protocol's name service to find the human-readable name for the supplied address.",
         "tags": [
-          "ResolveName",
+          "ResolveAddress",
           "NameService"
         ],
         "summary": "Resolve Address Against Name Service",
@@ -452,6 +452,24 @@ func spec() string {
           }
         }
       }
+    },
+    "/version": {
+      "get": {
+        "description": "Get version of the running mailchain client application and API.\nThis method be used to determine what version of the API and client is being used and what functionality.",
+        "tags": [
+          "Version"
+        ],
+        "summary": "Get version",
+        "operationId": "GetVersion",
+        "responses": {
+          "200": {
+            "description": "GetVersionResponseBody",
+            "schema": {
+              "$ref": "#/definitions/GetVersionResponseBody"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -620,6 +638,35 @@ func spec() string {
       },
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
+    "GetVersionResponseBody": {
+      "description": "GetBody body response",
+      "type": "object",
+      "required": [
+        "version",
+        "commit",
+        "time"
+      ],
+      "properties": {
+        "commit": {
+          "description": "The resolved version commit",
+          "type": "string",
+          "x-go-name": "VersionCommit"
+        },
+        "time": {
+          "description": "The resolved version release date",
+          "type": "string",
+          "x-go-name": "VersionDate",
+          "example": "2019-09-04T21:59:26Z"
+        },
+        "version": {
+          "description": "The resolved version tag",
+          "type": "string",
+          "x-go-name": "VersionTag",
+          "example": "1.0.0"
+        }
+      },
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+    },
     "PostMessagesResponseHeaders": {
       "type": "object",
       "required": [
@@ -743,6 +790,12 @@ func spec() string {
       "description": "GetResolveNameResponse address of resolved name",
       "schema": {
         "$ref": "#/definitions/GetResolveNameResponseBody"
+      }
+    },
+    "GetVersionResponse": {
+      "description": "GetVersionResponse version response",
+      "schema": {
+        "$ref": "#/definitions/GetVersionResponseBody"
       }
     },
     "NotFoundError": {

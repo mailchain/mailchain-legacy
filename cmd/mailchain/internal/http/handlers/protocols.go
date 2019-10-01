@@ -29,20 +29,21 @@ func GetProtocols(base *settings.Base) func(w http.ResponseWriter, r *http.Reque
 	}
 
 	for _, protocol := range base.Protocols {
-		if !protocol.Disabled.Get() {
-			networks := []string{}
-			for _, network := range protocol.Networks {
-				if !network.Disabled.Get() {
-					networks = append(networks, network.Kind)
-				}
-			}
-			sort.Strings(networks)
-			resP := GetProtocolsProtocol{
-				Name:     protocol.Kind,
-				Networks: networks,
-			}
-			res.Protocols = append(res.Protocols, resP)
+		if protocol.Disabled.Get() {
+			continue
 		}
+		networks := []string{}
+		for _, network := range protocol.Networks {
+			if !network.Disabled.Get() {
+				networks = append(networks, network.Kind)
+			}
+		}
+		sort.Strings(networks)
+		resP := GetProtocolsProtocol{
+			Name:     protocol.Kind,
+			Networks: networks,
+		}
+		res.Protocols = append(res.Protocols, resP)
 	}
 
 	// Get swagger:route GET /protocols protocols GetProtocols
@@ -58,7 +59,6 @@ func GetProtocols(base *settings.Base) func(w http.ResponseWriter, r *http.Reque
 		_ = json.NewEncoder(w).Encode(res)
 		w.Header().Set("Content-Type", "application/json")
 	}
-
 }
 
 // GetProtocolsResponse Holds the response messages

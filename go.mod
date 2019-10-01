@@ -63,3 +63,5 @@ require (
 	gopkg.in/resty.v1 v1.12.0
 	gopkg.in/urfave/cli.v1 v1.20.0 // indirect
 )
+
+go 1.13

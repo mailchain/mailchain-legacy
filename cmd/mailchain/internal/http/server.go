@@ -25,7 +25,6 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
-	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus" // nolint:depguard
@@ -41,18 +40,11 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 	api.HandleFunc("/spec.json", handlers.GetSpec()).Methods("GET")
 	api.HandleFunc("/docs", handlers.GetDocs()).Methods("GET")
 
-	sentStorage, err := s.SentStore.Produce()
+	config, err := produceConfig(s)
 	if err != nil {
-		return nil, errors.WithMessage(err, "Could not config store")
+		return nil, errors.WithMessage(err, "could not config http server")
 	}
-	mailboxStore, err := s.MailboxState.Produce()
-	if err != nil {
-		return nil, errors.WithMessage(err, "Could not config mailbox store")
-	}
-	keystore, err := s.Keystore.Produce()
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not create `keystore`")
-	}
+
 	cmdPassphrase, _ := cmd.Flags().GetString("passphrase")
 	passphrase, err := prompts.Secret(cmdPassphrase,
 		fmt.Sprint(chalk.Yellow, "Note: To derive a storage key passphrase is required. The passphrase must be secure and not guessable."),
@@ -68,61 +60,22 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 		Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase(passphrase)},
 	}
 
-	nsAddressResolvers := map[string]nameservice.ReverseLookup{}
-	nsDomainResolvers := map[string]nameservice.ForwardLookup{}
+	api.HandleFunc("/addresses", handlers.GetAddresses(config.keystore)).Methods("GET")
 
-	api.HandleFunc("/addresses", handlers.GetAddresses(keystore)).Methods("GET")
-	for protocol := range s.Protocols {
-		ans, err := s.Protocols[protocol].GetAddressNameServices(s.AddressNameServices)
-		if err != nil {
-			return nil, errors.WithMessage(err, "could not get address name service")
-		}
-		for k, v := range ans {
-			nsAddressResolvers[k] = v
-		}
+	api.HandleFunc("/messages", handlers.GetMessages(config.mailboxStateStore, config.receivers, config.keystore, deriveKeyOptions)).Methods("GET") // nolint:lll
+	api.HandleFunc("/messages", handlers.SendMessage(config.sentStore, config.senders, config.keystore, deriveKeyOptions)).Methods("POST")
 
-		dns, err := s.Protocols[protocol].GetDomainNameServices(s.DomainNameServices)
-		if err != nil {
-			return nil, errors.WithMessage(err, "could not get domain name service")
-		}
-		for k, v := range dns {
-			nsDomainResolvers[k] = v
-		}
-
-		name := s.Protocols[protocol].Kind
-		pubKeyFinders, err := s.Protocols[protocol].GetPublicKeyFinders(s.PublicKeyFinders)
-		if err != nil {
-			return nil, errors.WithMessagef(err, "could not get %q receivers", name)
-		}
-
-		api.HandleFunc(
-			"/{protocol}/{network}/address/{address:[-0-9a-zA-Z]+}/public-key",
-			handlers.GetPublicKey(pubKeyFinders)).Methods("GET")
-
-		receivers, err := s.Protocols[protocol].GetReceivers(s.Receivers)
-		if err != nil {
-			return nil, errors.WithMessagef(err, "Could not get %q receivers", name)
-		}
-		api.HandleFunc(
-			"/{protocol}/{network}/address/{address:[-0-9a-zA-Z]+}/messages",
-			handlers.GetMessages(mailboxStore, receivers, keystore, deriveKeyOptions)).Methods("GET")
-
-		senders, err := s.Protocols[protocol].GetSenders(s.Senders)
-		if err != nil {
-			return nil, errors.WithMessagef(err, "Could not get %q senders", name)
-		}
-		api.HandleFunc(
-			"/{protocol}/{network}/messages/send",
-			handlers.SendMessage(sentStorage, senders, keystore, deriveKeyOptions)).Methods("POST")
-	}
-	api.HandleFunc("/messages/{message_id}/read", handlers.GetRead(mailboxStore)).Methods("GET")
-	api.HandleFunc("/messages/{message_id}/read", handlers.PutRead(mailboxStore)).Methods("PUT")
-	api.HandleFunc("/messages/{message_id}/read", handlers.DeleteRead(mailboxStore)).Methods("DELETE")
-
-	api.HandleFunc("/nameservice/address/{address}/resolve", handlers.GetResolveAddress(nsAddressResolvers)).Methods("GET")
-	api.HandleFunc("/nameservice/name/{domain-name}/resolve", handlers.GetResolveName(nsDomainResolvers)).Methods("GET")
+	api.HandleFunc("/messages/{message_id}/read", handlers.GetRead(config.mailboxStateStore)).Methods("GET")
+	api.HandleFunc("/messages/{message_id}/read", handlers.PutRead(config.mailboxStateStore)).Methods("PUT")
+	api.HandleFunc("/messages/{message_id}/read", handlers.DeleteRead(config.mailboxStateStore)).Methods("DELETE")
 
 	api.HandleFunc("/protocols", handlers.GetProtocols(s)).Methods("GET")
+
+	api.HandleFunc("/public-key", handlers.GetPublicKey(config.publicKeyFinders)).Methods("GET")
+
+	api.HandleFunc("/nameservice/address/{address}/resolve", handlers.GetResolveAddress(config.addressResolvers)).Methods("GET")
+	api.HandleFunc("/nameservice/name/{domain-name}/resolve", handlers.GetResolveName(config.domainResolvers)).Methods("GET")
+
 	api.HandleFunc("/version", handlers.GetResolveVersion()).Methods("GET")
 
 	_ = r.Walk(gorillaWalkFn)

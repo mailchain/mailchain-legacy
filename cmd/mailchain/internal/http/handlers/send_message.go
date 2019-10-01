@@ -38,14 +38,15 @@ import (
 )
 
 // SendMessage handler http
-func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store, deriveKeyOptions multi.OptionsBuilders) func(
-	w http.ResponseWriter, r *http.Request) {
+func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store,
+	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
 	encrypter := aes256cbc.NewEncrypter()
-	// Post swagger:route POST /ethereum/{network}/messages/send Send Ethereum SendMessage
+	// Post swagger:route POST /messages Send SendMessage
 	//
 	// Send message.
 	//
-	// Securely send message to ethereum address that can only be discovered and de-cryted by the private key holder.
+	// Securely send message on the protocol and network specified in the query string to the address.
+	// Only the private key holder for the recipient address can decrypted any encrypted contents.
 	//
 	// - Create mailchain message
 	// - Encrypt content with public key
@@ -58,82 +59,104 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 	//   404: NotFoundError
 	//   422: ValidationError
 	return func(w http.ResponseWriter, r *http.Request) {
-		protocol := "ethereum"
 		ctx := r.Context()
 		req, err := parsePostRequest(r)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		from, err := address.DecodeByProtocol(req.from.ChainAddress, protocol)
+		from, err := address.DecodeByProtocol(req.Body.from.ChainAddress, req.Protocol)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"))
 			return
 		}
 		if !ks.HasAddress(from) {
-			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Message.Headers.From))
+			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Body.Message.Headers.From))
 			return
 		}
-		sender, ok := senders[fmt.Sprintf("ethereum/%s", req.network)]
+		sender, ok := senders[fmt.Sprintf("ethereum/%s", req.Network)]
 		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender for ethereum/%s configured", req.network))
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender for ethereum/%s configured", req.Network))
 			return
 		}
 
-		msg, err := mail.NewMessage(time.Now(), *req.from, *req.to, req.replyTo, req.Message.Subject, []byte(req.Message.Body))
+		msg, err := mail.NewMessage(time.Now(), *req.Body.from, *req.Body.to, req.Body.replyTo, req.Body.Message.Subject, []byte(req.Body.Message.Body))
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		// TODO: signer is hard coded to ethereum
-		signer, err := ks.GetSigner(from, protocol, deriveKeyOptions)
+		signer, err := ks.GetSigner(from, req.Protocol, deriveKeyOptions)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
 			return
 		}
 
-		if err := mailbox.SendMessage(ctx, protocol, req.network, msg, req.publicKey, encrypter, sender, sent, signer, envelope.Kind0x01); err != nil {
+		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network,
+			msg, req.Body.publicKey,
+			encrypter, sender, sent, signer, envelope.Kind0x01); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}
 
 		w.WriteHeader(http.StatusOK)
+		return
 	}
 }
 
 // PostRequest get mailchain inputs
 // swagger:parameters SendMessage
 type PostRequest struct {
-	// Network
+	// Network to use when sending a message.
 	//
-	// enum: mainnet,ropsten,rinkeby,local
-	// in: path
+	// enum: mainnet,goerli,ropsten,rinkeby,local
+	// in: query
 	// required: true
-	// example: ropsten
+	// example: goerli
 	Network string `json:"network"`
+
+	// Protocol to use when sending a message.
+	//
+	// enum: ethereum
+	// in: query
+	// required: true
+	// example: ethereum
+	Protocol string `json:"protocol"`
 
 	// Message to send
 	// in: body
 	// required: true
-	PostRequestBody PostRequestBody
+	Body PostRequestBody
 }
 
 // parsePostRequest post all the details for the message
-func parsePostRequest(r *http.Request) (*PostRequestBody, error) {
+func parsePostRequest(r *http.Request) (*PostRequest, error) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
-	var req PostRequestBody
-	if err := decoder.Decode(&req); err != nil {
+	protocol, err := params.QueryRequireProtocol(r)
+	if err != nil {
+		return nil, err
+	}
+
+	network, err := params.QueryRequireNetwork(r)
+	if err != nil {
+		return nil, err
+	}
+
+	var body PostRequestBody
+	if err := decoder.Decode(&body); err != nil {
 		return nil, errors.WithMessage(err, "'message' is invalid")
 	}
 
-	protocol, err := params.PathProtocol(r)
-	if err != nil {
-		return nil, errors.WithMessage(err, "'protocol' is invalid")
+	if err := isValid(&body, protocol, network); err != nil {
+		return nil, err
 	}
 
-	return &req, isValid(&req, protocol, params.PathNetwork(r))
+	return &PostRequest{
+		Network:  network,
+		Protocol: protocol,
+		Body:     body,
+	}, nil
 }
 
 // swagger:model PostMessagesResponseHeaders
@@ -179,7 +202,6 @@ type PostRequestBody struct {
 	from      *mail.Address
 	replyTo   *mail.Address
 	publicKey crypto.PublicKey
-	network   string
 }
 
 func checkForEmpties(msg PostMessage) error {
@@ -206,9 +228,8 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		return err
 	}
 	var err error
-	p.network = network
 
-	p.to, err = mail.ParseAddress(p.Message.Headers.To, protocol, p.network)
+	p.to, err = mail.ParseAddress(p.Message.Headers.To, protocol, network)
 	if err != nil {
 		return errors.WithMessage(err, "`to` is invalid")
 	}
@@ -216,13 +237,13 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 	// if !ethereup.IsAddressValid(p.to.ChainAddress) {
 	// 	return errors.Errorf("'address' is invalid")
 	// }
-	p.from, err = mail.ParseAddress(p.Message.Headers.From, protocol, p.network)
+	p.from, err = mail.ParseAddress(p.Message.Headers.From, protocol, network)
 	if err != nil {
 		return errors.WithMessage(err, "`from` is invalid")
 	}
 
 	if p.Message.Headers.ReplyTo != "" {
-		p.replyTo, err = mail.ParseAddress(p.Message.Headers.ReplyTo, protocol, p.network)
+		p.replyTo, err = mail.ParseAddress(p.Message.Headers.ReplyTo, protocol, network)
 		if err != nil {
 			return errors.WithMessage(err, "`reply-to` is invalid")
 		}

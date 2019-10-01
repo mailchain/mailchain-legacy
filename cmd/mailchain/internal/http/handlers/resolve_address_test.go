@@ -25,10 +25,9 @@ import (
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/nameservice/nameservicetest"
-	"github.com/stretchr/testify/assert"
 	"github.com/pkg/errors"
+	"github.com/stretchr/testify/assert"
 )
-
 
 func Test_parseGetResolveAddressRequest(t *testing.T) {
 	type args struct {
@@ -135,8 +134,8 @@ func TestGetResolveAddress(t *testing.T) {
 		resolvers map[string]nameservice.ReverseLookup
 	}
 	tests := []struct {
-		name string
-		args args
+		name       string
+		args       args
 		req        *http.Request
 		wantBody   string
 		wantStatus int
@@ -151,7 +150,7 @@ func TestGetResolveAddress(t *testing.T) {
 				req = mux.SetURLVars(req, map[string]string{})
 				return req
 			}(),
-			"{\"code\":422,\"message\":\"protocol must be specified exactly once\"}\n",
+			"{\"code\":422,\"message\":\"'protocol' must be specified exactly once\"}\n",
 			http.StatusUnprocessableEntity,
 		},
 		{
@@ -177,7 +176,7 @@ func TestGetResolveAddress(t *testing.T) {
 			args{
 				func() map[string]nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum","mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", errors.New("network not supported")).Times(1)
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", errors.New("network not supported")).Times(1)
 					return map[string]nameservice.ReverseLookup{"ethereum/mainnet": m}
 				}(),
 			},
@@ -196,7 +195,7 @@ func TestGetResolveAddress(t *testing.T) {
 			args{
 				func() map[string]nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum","mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", errors.New("error")).Times(1)
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", errors.New("error")).Times(1)
 					return map[string]nameservice.ReverseLookup{"ethereum/mainnet": m}
 				}(),
 			},
@@ -215,7 +214,7 @@ func TestGetResolveAddress(t *testing.T) {
 			args{
 				func() map[string]nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum","mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrNotFound).Times(1)
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrNotFound).Times(1)
 					return map[string]nameservice.ReverseLookup{"ethereum/mainnet": m}
 				}(),
 			},
@@ -234,7 +233,7 @@ func TestGetResolveAddress(t *testing.T) {
 			args{
 				func() map[string]nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum","mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrInvalidAddress).Times(1)
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrInvalidAddress).Times(1)
 					return map[string]nameservice.ReverseLookup{"ethereum/mainnet": m}
 				}(),
 			},
@@ -253,7 +252,7 @@ func TestGetResolveAddress(t *testing.T) {
 			args{
 				func() map[string]nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum","mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrUnableToResolve).Times(1)
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrUnableToResolve).Times(1)
 					return map[string]nameservice.ReverseLookup{"ethereum/mainnet": m}
 				}(),
 			},
@@ -286,7 +285,7 @@ func TestGetResolveAddress(t *testing.T) {
 			"{\"name\":\"name.ens\"}\n",
 			http.StatusOK,
 		},
-	} 
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.

@@ -22,13 +22,14 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/pkg/errors"
 )
 
 // GetPublicKey returns a handler get spec
 func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseWriter, r *http.Request) {
-	// Get swagger:route GET /{protocol}/{network}/address/{address}/public-key PublicKey Ethereum GetPublicKey
+	// Get swagger:route GET /public-key PublicKey GetPublicKey
 	//
 	// Get public key from an address.
 	//
@@ -38,27 +39,22 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 	//   200: GetPublicKeyResponse
 	//   404: NotFoundError
 	//   422: ValidationError
-	return func(w http.ResponseWriter, hr *http.Request) {
-		ctx := hr.Context()
-		protocol, err := params.PathProtocol(hr)
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		req, err := parseGetPublicKey(r)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		address, network, err := parseGetPublicKey(hr, protocol)
-		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
-			return
-		}
-		finder, ok := finders[fmt.Sprintf("%s/%s", protocol, network)]
+		finder, ok := finders[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no public key finder for chain.network configured"))
 			return
 		}
 
-		publicKey, err := finder.PublicKeyFromAddress(ctx, network, address)
+		publicKey, err := finder.PublicKeyFromAddress(ctx, req.Network, req.addressBytes)
 		if mailbox.IsNetworkNotSupportedError(err) {
-			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("network %q not supported", network))
+			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("network %q not supported", req.Network))
 			return
 		}
 		if err != nil {
@@ -76,31 +72,58 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 // GetPublicKey pubic key from address request
 // swagger:parameters GetPublicKey
 type GetPublicKeyRequest struct {
-	// address to query to get public key for
+	// Address to to use when performing public key lookup.
 	//
-	// in: path
+	// in: query
 	// required: true
 	// example: 0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae
 	// pattern: 0x[a-fA-F0-9]{40}
-	Address string `json:"address"`
+	Address      string `json:"address"`
+	addressBytes []byte
 
-	// Network for the message to send
+	// Network to use when performing public key lookup.
 	//
-	// enum: mainnet,ropsten,rinkeby,local
-	// in: path
+	// enum: mainnet,goerli,ropsten,rinkeby,local
+	// in: query
 	// required: true
-	// example: ropsten
+	// example: goerli
 	Network string `json:"network"`
+
+	// Protocol to use when performing public key lookup.
+	//
+	// enum: ethereum
+	// in: query
+	// required: true
+	// example: ethereum
+	Protocol string `json:"protocol"`
 }
 
 // parseGetPublicKey get all the details for the get request
-func parseGetPublicKey(r *http.Request, protocol string) (address []byte, network string, err error) {
-	addr, err := params.PathAddress(r, protocol)
+func parseGetPublicKey(r *http.Request) (*GetPublicKeyRequest, error) {
+	protocol, err := params.QueryRequireProtocol(r)
 	if err != nil {
-		return nil, "", errors.WithStack(err)
+		return nil, errors.WithStack(err)
+	}
+	network, err := params.QueryRequireNetwork(r)
+	if err != nil {
+		return nil, errors.WithStack(err)
 	}
 
-	return addr, params.PathNetwork(r), nil
+	addr, err := params.QueryRequireAddress(r)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	addressBytes, err := address.DecodeByProtocol(addr, protocol)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return &GetPublicKeyRequest{
+		Address:      addr,
+		addressBytes: addressBytes,
+		Network:      network,
+		Protocol:     protocol,
+	}, nil
 }
 
 // GetPublicKeyResponse public key from address response

@@ -49,7 +49,6 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 		_ = json.NewEncoder(w).Encode(GetAddressesResponse{Addresses: addresses})
 		w.Header().Set("Content-Type", "application/json")
 	}
-
 }
 
 // GetAddressesResponse Holds the response messages

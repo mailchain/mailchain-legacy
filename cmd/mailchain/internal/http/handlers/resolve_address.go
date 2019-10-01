@@ -96,10 +96,10 @@ type GetResolveAddressRequest struct {
 
 	// Network for the name to resolve
 	//
-	// enum: mainnet,ropsten,rinkeby,local
+	// enum: mainnet,goerli,ropsten,rinkeby,local
 	// in: path
 	// required: true
-	// example: ropsten
+	// example: goerli
 	Network string `json:"network"`
 
 	// Protocol for the name to resolve

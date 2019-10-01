@@ -22,7 +22,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/testutil"
@@ -285,7 +284,7 @@ func Test_parsePostRequest(t *testing.T) {
 			"success",
 			args{
 				func() *http.Request {
-					req := httptest.NewRequest("POST", "/", strings.NewReader(`
+					req := httptest.NewRequest("POST", "/?protocol=ethereum&network=mainnet", strings.NewReader(`
 					{
 						"message": {
 							"body": "test",
@@ -298,10 +297,6 @@ func Test_parsePostRequest(t *testing.T) {
 						}
 					}
 					`))
-					req = mux.SetURLVars(req, map[string]string{
-						"protocol": "ethereum",
-						"network":  "mainnet",
-					})
 					return req
 				}(),
 			},
@@ -312,7 +307,7 @@ func Test_parsePostRequest(t *testing.T) {
 			"err-protocol",
 			args{
 				func() *http.Request {
-					req := httptest.NewRequest("POST", "/", strings.NewReader(`
+					req := httptest.NewRequest("POST", "/?", strings.NewReader(`
 					{
 						"message": {
 							"body": "test",
@@ -325,9 +320,65 @@ func Test_parsePostRequest(t *testing.T) {
 						}
 					}
 					`))
-					req = mux.SetURLVars(req, map[string]string{
-						"network": "mainnet",
-					})
+					return req
+				}(),
+			},
+			true,
+			true,
+		},
+		{
+			"err-network",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("POST", "/?protocol=ethereum", strings.NewReader(`
+					{
+						"message": {
+							"body": "test",
+							"headers": {
+								"from": "0xd5ab4ce3605cd590db609b6b5c8901fdb2ef7fe6",
+								"to": "0x92d8f10248c6a3953cc3692a894655ad05d61efb"
+							},
+							"public-key": "0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d",
+							"subject": "test"
+						}
+					}
+					`))
+					return req
+				}(),
+			},
+			true,
+			true,
+		},
+		{
+			"err-parse-body",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("POST", "/?protocol=ethereum&network=mainnet", strings.NewReader(`
+					{/}
+					`))
+					return req
+				}(),
+			},
+			true,
+			true,
+		},
+		{
+			"err-invalid-body",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("POST", "/?protocol=ethereum&network=mainnet", strings.NewReader(`
+					{
+						"message": {
+							"body": "test",
+							"headers": {
+								"from": "",
+								"to": ""
+							},
+							"public-key": "0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d",
+							"subject": "test"
+						}
+					}
+					`))
 					return req
 				}(),
 			},

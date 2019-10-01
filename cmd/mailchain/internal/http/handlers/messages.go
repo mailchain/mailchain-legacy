@@ -18,10 +18,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/errs"
@@ -36,39 +34,33 @@ import (
 // GetMessages returns a handler get spec
 func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
-	// Get swagger:route GET /ethereum/{network}/address/{address}/messages Messages Ethereum GetMessages
+	// Get swagger:route GET /messages Messages GetMessages
 	//
-	// Get Messages.
+	// Get Mailchain messages.
 	//
-	// Get mailchain messages.
+	// Check the protocol, network, address combination for Mailchain messages.
 	// Responses:
 	//   200: GetMessagesResponse
-	//   404: NotFoundError
 	//   422: ValidationError
+
 	return func(w http.ResponseWriter, r *http.Request) {
-		protocol := "ethereum"
 		ctx := r.Context()
 		req, err := parseGetMessagesRequest(r)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		receiver, ok := receivers[fmt.Sprintf("%s/%s", protocol, req.Network)]
+		receiver, ok := receivers[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no receiver for chain.network configured"))
 			return
 		}
 
-		addr, err := address.DecodeByProtocol(req.Address, protocol)
-		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
-			return
-		}
-		if !ks.HasAddress(addr) {
+		if !ks.HasAddress(req.addressBytes) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for address"))
 			return
 		}
-		encryptedSlice, err := receiver.Receive(ctx, req.Network, addr)
+		encryptedSlice, err := receiver.Receive(ctx, req.Network, req.addressBytes)
 		if mailbox.IsNetworkNotSupportedError(err) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("network `%s` does not have etherscan client configured", req.Network))
 			return
@@ -77,7 +69,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
-		decrypter, err := ks.GetDecrypter(addr, cipher.AES256CBC, deriveKeyOptions)
+		decrypter, err := ks.GetDecrypter(req.addressBytes, cipher.AES256CBC, deriveKeyOptions)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not get `decrypter`"))
 			return
@@ -118,39 +110,64 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 // GetMessagesRequest get mailchain messages
 // swagger:parameters GetMessages
 type GetMessagesRequest struct {
-	// address to query
+	// Address to use when looking for messages.
 	//
-	// in: path
+	// in: query
 	// required: true
 	// example: 0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae
 	// pattern: 0x[a-fA-F0-9]{40}
 	Address string `json:"address"`
 
-	// Network
+	// Network to use when looking for messages.
 	//
-	// enum: mainnet,ropsten,rinkeby,local
-	// in: path
+	// enum: mainnet,goerli,ropsten,rinkeby,local
+	// in: query
 	// required: true
-	// example: ropsten
+	// example: goerli
 	Network string `json:"network"`
+
+	// Protocol to use when looking for messages.
+	//
+	// enum: ethereum
+	// in: query
+	// required: true
+	// example: ethereum
+	Protocol string `json:"protocol"`
+
+	addressBytes []byte
 }
 
 // ParseGetRequest get all the details for the get request
 func parseGetMessagesRequest(r *http.Request) (*GetMessagesRequest, error) {
-	addr := strings.ToLower(mux.Vars(r)["address"])
-	if addr == "" {
-		return nil, errors.Errorf("'address' must not be empty")
+	protocol, err := params.QueryRequireProtocol(r)
+	if err != nil {
+		return nil, err
+	}
+
+	network, err := params.QueryRequireNetwork(r)
+	if err != nil {
+		return nil, err
+	}
+	addr, err := params.QueryRequireAddress(r)
+	if err != nil {
+		return nil, err
 	}
 	// TODO: validate address
 	// if !ethereum.IsAddressValid(addr) {
 	// 	return nil, errors.Errorf("'address' is invalid")
 	// }
 
-	req := &GetMessagesRequest{
-		Address: addr,
-		Network: params.PathNetwork(r),
+	addressBytes, err := address.DecodeByProtocol(addr, protocol)
+	if err != nil {
+		return nil, err
 	}
-	return req, nil
+
+	return &GetMessagesRequest{
+		Address:      addr,
+		addressBytes: addressBytes,
+		Network:      network,
+		Protocol:     protocol,
+	}, nil
 }
 
 // GetResponse Holds the response messages

@@ -20,7 +20,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/internal/mailbox/mailboxtest"
 	"github.com/mailchain/mailchain/internal/testutil"
@@ -31,63 +30,95 @@ import (
 func Test_parseGetPublicKey(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
-		r        *http.Request
-		protocol string
+		queryParams map[string]string
 	}
 	tests := []struct {
-		name        string
-		args        args
-		wantAddress []byte
-		wantNetwork string
-		wantErr     bool
+		name    string
+		args    args
+		wantRes *GetPublicKeyRequest
+		wantErr bool
 	}{
 		{
 			"success",
 			args{
-				func() *http.Request {
-					req := httptest.NewRequest("GET", "/", nil)
-					req = mux.SetURLVars(req, map[string]string{
-						"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
-						"network":  "mainnet",
-						"protocol": "ethereum",
-					})
-					return req
-				}(),
-				"ethereum",
+				map[string]string{
+					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"network":  "mainnet",
+					"protocol": "ethereum",
+				},
 			},
-			[]byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61},
-			"mainnet",
+			&GetPublicKeyRequest{
+				Address:      "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+				addressBytes: []byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61},
+				Network:      "mainnet",
+				Protocol:     "ethereum",
+			},
 			false,
+		},
+		{
+			"err_empty_address",
+			args{
+				map[string]string{
+					"address":  "",
+					"network":  "mainnet",
+					"protocol": "ethereum",
+				},
+			},
+			nil,
+			true,
 		},
 		{
 			"err_address",
 			args{
-				func() *http.Request {
-					req := httptest.NewRequest("GET", "/", nil)
-					req = mux.SetURLVars(req, map[string]string{
-						"network": "mainnet",
-					})
-					return req
-				}(),
-				"ethereum",
+				map[string]string{
+					"address":  "0x560",
+					"network":  "mainnet",
+					"protocol": "ethereum",
+				},
 			},
 			nil,
-			"",
+			true,
+		},
+		{
+			"err_protocol",
+			args{
+				map[string]string{
+					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"network":  "mainnet",
+					"protocol": "",
+				},
+			},
+			nil,
+			true,
+		},
+		{
+			"err_network",
+			args{
+				map[string]string{
+					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"network":  "",
+					"protocol": "ethereum",
+				},
+			},
+			nil,
 			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotAddress, gotNetwork, err := parseGetPublicKey(tt.args.r, tt.args.protocol)
+			req, _ := http.NewRequest("GET", "/", nil)
+			q := req.URL.Query()
+			for k, v := range tt.args.queryParams {
+				q.Add(k, v)
+			}
+			req.URL.RawQuery = q.Encode()
+			gotRes, err := parseGetPublicKey(req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("parseGetPublicKey() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.wantAddress, gotAddress) {
-				t.Errorf("parseGetPublicKey() gotAddress = %v, want %v", gotAddress, tt.wantAddress)
-			}
-			if gotNetwork != tt.wantNetwork {
-				t.Errorf("parseGetPublicKey() gotNetwork = %v, want %v", gotNetwork, tt.wantNetwork)
+			if !assert.Equal(tt.wantRes, gotRes) {
+				t.Errorf("parseGetPublicKey() gotRes = %v, want %v", gotRes, tt.wantRes)
 			}
 		})
 	}
@@ -101,44 +132,19 @@ func TestGetPublicKey(t *testing.T) {
 		finders map[string]mailbox.PubKeyFinder
 	}
 	tests := []struct {
-		name       string
-		args       args
-		req        *http.Request
-		wantBody   string
-		wantStatus int
+		name        string
+		args        args
+		queryParams map[string]string
+		wantBody    string
+		wantStatus  int
 	}{
-		{
-			"err-protocol",
-			args{
-				nil,
-			},
-			func() *http.Request {
-				req := httptest.NewRequest("GET", "/", nil)
-				req = mux.SetURLVars(req, map[string]string{
-					"address":  "",
-					"network":  "mainnet",
-					"protocol": "",
-				})
-				return req
-			}(),
-			"{\"code\":422,\"message\":\"protocol path param must not be empty\"}\n",
-			http.StatusUnprocessableEntity,
-		},
 		{
 			"err-invalid-request",
 			args{
 				nil,
 			},
-			func() *http.Request {
-				req := httptest.NewRequest("GET", "/", nil)
-				req = mux.SetURLVars(req, map[string]string{
-					"address":  "",
-					"network":  "mainnet",
-					"protocol": "ethereum",
-				})
-				return req
-			}(),
-			"{\"code\":422,\"message\":\"'address' must not be empty\"}\n",
+			map[string]string{},
+			"{\"code\":422,\"message\":\"'protocol' must be specified exactly once\"}\n",
 			http.StatusUnprocessableEntity,
 		},
 		{
@@ -149,15 +155,11 @@ func TestGetPublicKey(t *testing.T) {
 					return map[string]mailbox.PubKeyFinder{"ethereum.no-network": finder}
 				}(),
 			},
-			func() *http.Request {
-				req := httptest.NewRequest("GET", "/", nil)
-				req = mux.SetURLVars(req, map[string]string{
-					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
-					"network":  "mainnet",
-					"protocol": "ethereum",
-				})
-				return req
-			}(),
+			map[string]string{
+				"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+				"network":  "mainnet",
+				"protocol": "ethereum",
+			},
 			"{\"code\":422,\"message\":\"no public key finder for chain.network configured\"}\n",
 			http.StatusUnprocessableEntity,
 		},
@@ -170,15 +172,11 @@ func TestGetPublicKey(t *testing.T) {
 					return map[string]mailbox.PubKeyFinder{"ethereum/mainnet": finder}
 				}(),
 			},
-			func() *http.Request {
-				req := httptest.NewRequest("GET", "/", nil)
-				req = mux.SetURLVars(req, map[string]string{
-					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
-					"network":  "mainnet",
-					"protocol": "ethereum",
-				})
-				return req
-			}(),
+			map[string]string{
+				"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+				"network":  "mainnet",
+				"protocol": "ethereum",
+			},
 			"{\"code\":406,\"message\":\"network \\\"mainnet\\\" not supported\"}\n",
 			http.StatusNotAcceptable,
 		},
@@ -191,15 +189,11 @@ func TestGetPublicKey(t *testing.T) {
 					return map[string]mailbox.PubKeyFinder{"ethereum/mainnet": finder}
 				}(),
 			},
-			func() *http.Request {
-				req := httptest.NewRequest("GET", "/", nil)
-				req = mux.SetURLVars(req, map[string]string{
-					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
-					"network":  "mainnet",
-					"protocol": "ethereum",
-				})
-				return req
-			}(),
+			map[string]string{
+				"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+				"network":  "mainnet",
+				"protocol": "ethereum",
+			},
 			"{\"code\":500,\"message\":\"error\"}\n",
 			http.StatusInternalServerError,
 		},
@@ -212,15 +206,11 @@ func TestGetPublicKey(t *testing.T) {
 					return map[string]mailbox.PubKeyFinder{"ethereum/mainnet": finder}
 				}(),
 			},
-			func() *http.Request {
-				req := httptest.NewRequest("GET", "/", nil)
-				req = mux.SetURLVars(req, map[string]string{
-					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
-					"network":  "mainnet",
-					"protocol": "ethereum",
-				})
-				return req
-			}(),
+			map[string]string{
+				"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+				"network":  "mainnet",
+				"protocol": "ethereum",
+			},
 			"{\"public_key\":\"0x3ada323710def1e02f3586710ae3624ceefba1638e9d9894f724a5401997cd792933ddfd0687874e515a8ab479a38646e6db9f3d8b74d27c4e4eae5a116f9f1400\"}\n",
 			http.StatusOK,
 		},
@@ -228,12 +218,19 @@ func TestGetPublicKey(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+			req, _ := http.NewRequest("GET", "/", nil)
+			q := req.URL.Query()
+			for k, v := range tt.queryParams {
+				q.Add(k, v)
+			}
+			req.URL.RawQuery = q.Encode()
+
 			rr := httptest.NewRecorder()
 			handler := http.HandlerFunc(GetPublicKey(tt.args.finders))
 
 			// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
 			// directly and pass in our Request and ResponseRecorder.
-			handler.ServeHTTP(rr, tt.req)
+			handler.ServeHTTP(rr, req)
 
 			// Check the status code is what we expect.
 			if !assert.Equal(tt.wantStatus, rr.Code) {

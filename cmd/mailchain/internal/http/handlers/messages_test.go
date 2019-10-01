@@ -16,16 +16,15 @@ package handlers
 
 import (
 	"net/http"
-	"net/http/httptest"
-	"reflect"
 	"testing"
 
-	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_parseGetMessagesRequest(t *testing.T) {
+	assert := assert.New(t)
 	type args struct {
-		r *http.Request
+		queryParams map[string]string
 	}
 	tests := []struct {
 		name    string
@@ -36,31 +35,52 @@ func Test_parseGetMessagesRequest(t *testing.T) {
 		{
 			"success",
 			args{
-				func() *http.Request {
-					req := httptest.NewRequest("GET", "/", nil)
-					req = mux.SetURLVars(req, map[string]string{
-						"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
-						"network":  "mainnet",
-						"protocol": "ethereum",
-					})
-					return req
-				}(),
+				map[string]string{
+					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"network":  "mainnet",
+					"protocol": "ethereum",
+				},
 			},
-			&GetMessagesRequest{Address: "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761", Network: "mainnet"},
+			&GetMessagesRequest{
+				Address:      "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+				Network:      "mainnet",
+				Protocol:     "ethereum",
+				addressBytes: []uint8{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61},
+			},
 			false,
 		},
 		{
 			"err-empty-address",
 			args{
-				func() *http.Request {
-					req := httptest.NewRequest("GET", "/", nil)
-					req = mux.SetURLVars(req, map[string]string{
-						"address":  "",
-						"network":  "mainnet",
-						"protocol": "ethereum",
-					})
-					return req
-				}(),
+				map[string]string{
+					"address":  "",
+					"network":  "mainnet",
+					"protocol": "ethereum",
+				},
+			},
+			nil,
+			true,
+		},
+		{
+			"err-empty-protocol",
+			args{
+				map[string]string{
+					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"network":  "mainnet",
+					"protocol": "",
+				},
+			},
+			nil,
+			true,
+		},
+		{
+			"err-empty-network",
+			args{
+				map[string]string{
+					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"network":  "",
+					"protocol": "ethereum",
+				},
 			},
 			nil,
 			true,
@@ -68,12 +88,18 @@ func Test_parseGetMessagesRequest(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := parseGetMessagesRequest(tt.args.r)
+			req, _ := http.NewRequest("GET", "/", nil)
+			q := req.URL.Query()
+			for k, v := range tt.args.queryParams {
+				q.Add(k, v)
+			}
+			req.URL.RawQuery = q.Encode()
+			got, err := parseGetMessagesRequest(req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("parseGetMessagesRequest() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if !assert.Equal(tt.want, got) {
 				t.Errorf("parseGetMessagesRequest() = %v, want %v", got, tt.want)
 			}
 		})

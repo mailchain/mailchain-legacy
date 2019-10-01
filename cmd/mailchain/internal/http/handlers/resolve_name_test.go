@@ -133,7 +133,7 @@ func TestGetResolveName(t *testing.T) {
 				req = mux.SetURLVars(req, map[string]string{})
 				return req
 			}(),
-			"{\"code\":422,\"message\":\"protocol must be specified exactly once\"}\n",
+			"{\"code\":422,\"message\":\"'protocol' must be specified exactly once\"}\n",
 			http.StatusUnprocessableEntity,
 		},
 		{

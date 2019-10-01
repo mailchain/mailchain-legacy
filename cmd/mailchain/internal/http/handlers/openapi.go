@@ -56,14 +56,13 @@ func spec() string {
         }
       }
     },
-    "/ethereum/{network}/address/{address}/messages": {
+    "/messages": {
       "get": {
-        "description": "Get mailchain messages.",
+        "description": "Check the protocol, network, address combination for Mailchain messages.",
         "tags": [
-          "Messages",
-          "Ethereum"
+          "Messages"
         ],
-        "summary": "Get Messages.",
+        "summary": "Get Mailchain messages.",
         "operationId": "GetMessages",
         "parameters": [
           {
@@ -71,24 +70,37 @@ func spec() string {
             "type": "string",
             "example": "0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae",
             "x-go-name": "Address",
-            "description": "address to query",
+            "description": "Address to use when looking for messages.",
             "name": "address",
-            "in": "path",
+            "in": "query",
             "required": true
           },
           {
             "enum": [
               "mainnet",
+              "goerli",
               "ropsten",
               "rinkeby",
               "local"
             ],
             "type": "string",
-            "example": "ropsten",
+            "example": "goerli",
             "x-go-name": "Network",
-            "description": "Network",
+            "description": "Network to use when looking for messages.",
             "name": "network",
-            "in": "path",
+            "in": "query",
+            "required": true
+          },
+          {
+            "enum": [
+              "ethereum"
+            ],
+            "type": "string",
+            "example": "ethereum",
+            "x-go-name": "Protocol",
+            "description": "Protocol to use when looking for messages.",
+            "name": "protocol",
+            "in": "query",
             "required": true
           }
         ],
@@ -96,21 +108,15 @@ func spec() string {
           "200": {
             "$ref": "#/responses/GetMessagesResponse"
           },
-          "404": {
-            "$ref": "#/responses/NotFoundError"
-          },
           "422": {
             "$ref": "#/responses/ValidationError"
           }
         }
-      }
-    },
-    "/ethereum/{network}/messages/send": {
+      },
       "post": {
-        "description": "Securely send message to ethereum address that can only be discovered and de-cryted by the private key holder.\n\nCreate mailchain message\nEncrypt content with public key\nStore message\nEncrypt location\nStore encrypted location on the blockchain.",
+        "description": "Securely send message on the protocol and network specified in the query string to the address.\nOnly the private key holder for the recipient address can decrypted any encrypted contents.\n\nCreate mailchain message\nEncrypt content with public key\nStore message\nEncrypt location\nStore encrypted location on the blockchain.",
         "tags": [
-          "Send",
-          "Ethereum"
+          "Send"
         ],
         "summary": "Send message.",
         "operationId": "SendMessage",
@@ -118,21 +124,34 @@ func spec() string {
           {
             "enum": [
               "mainnet",
+              "goerli",
               "ropsten",
               "rinkeby",
               "local"
             ],
             "type": "string",
-            "example": "ropsten",
+            "example": "goerli",
             "x-go-name": "Network",
-            "description": "Network",
+            "description": "Network to use when sending a message.",
             "name": "network",
-            "in": "path",
+            "in": "query",
+            "required": true
+          },
+          {
+            "enum": [
+              "ethereum"
+            ],
+            "type": "string",
+            "example": "ethereum",
+            "x-go-name": "Protocol",
+            "description": "Protocol to use when sending a message.",
+            "name": "protocol",
+            "in": "query",
             "required": true
           },
           {
             "description": "Message to send",
-            "name": "PostRequestBody",
+            "name": "Body",
             "in": "body",
             "required": true,
             "schema": {
@@ -252,12 +271,13 @@ func spec() string {
           {
             "enum": [
               "mainnet",
+              "goerli",
               "ropsten",
               "rinkeby",
               "local"
             ],
             "type": "string",
-            "example": "ropsten",
+            "example": "goerli",
             "x-go-name": "Network",
             "description": "Network for the name to resolve",
             "name": "network",
@@ -312,12 +332,13 @@ func spec() string {
           {
             "enum": [
               "mainnet",
+              "goerli",
               "ropsten",
               "rinkeby",
               "local"
             ],
             "type": "string",
-            "example": "ropsten",
+            "example": "goerli",
             "x-go-name": "Network",
             "description": "Network for the name to resolve",
             "name": "network",
@@ -371,12 +392,11 @@ func spec() string {
         }
       }
     },
-    "/{protocol}/{network}/address/{address}/public-key": {
+    "/public-key": {
       "get": {
         "description": "Get the public key.",
         "tags": [
-          "PublicKey",
-          "Ethereum"
+          "PublicKey"
         ],
         "summary": "Get public key from an address.",
         "operationId": "GetPublicKey",
@@ -386,24 +406,37 @@ func spec() string {
             "type": "string",
             "example": "0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae",
             "x-go-name": "Address",
-            "description": "address to query to get public key for",
+            "description": "Address to to use when performing public key lookup.",
             "name": "address",
-            "in": "path",
+            "in": "query",
             "required": true
           },
           {
             "enum": [
               "mainnet",
+              "goerli",
               "ropsten",
               "rinkeby",
               "local"
             ],
             "type": "string",
-            "example": "ropsten",
+            "example": "goerli",
             "x-go-name": "Network",
-            "description": "Network for the message to send",
+            "description": "Network to use when performing public key lookup.",
             "name": "network",
-            "in": "path",
+            "in": "query",
+            "required": true
+          },
+          {
+            "enum": [
+              "ethereum"
+            ],
+            "type": "string",
+            "example": "ethereum",
+            "x-go-name": "Protocol",
+            "description": "Protocol to use when performing public key lookup.",
+            "name": "protocol",
+            "in": "query",
             "required": true
           }
         ],

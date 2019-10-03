@@ -17,7 +17,7 @@ package commands
 import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/spf13/viper" // nolint: depguard
 )
 
 func rootCmd(v *viper.Viper) (*cobra.Command, error) {
@@ -38,9 +38,6 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 		return nil, err
 	}
 	cmd.AddCommand(account)
-	// cmd.AddCommand(configCmd(prerun, config.WriteConfig(v)))
-
-	// cmd.AddCommand(initCmd(v))
 
 	serve, err := serveCmd()
 	if err != nil {

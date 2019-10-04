@@ -29,13 +29,14 @@ func (f RelayFunc) HandleRequest(w http.ResponseWriter, req *http.Request) {
 }
 
 func ChangeURL(url string) RelayFunc {
-	return func(req *http.Request) (*http.Request, error) {
-		proxyReq, err := http.NewRequest(req.Method, url, req.Body)
+	return func(inReq *http.Request) (*http.Request, error) {
+		outReq, err := http.NewRequest(inReq.Method, url, inReq.Body)
 		if err != nil {
 			return nil, err
 		}
-		copyHeader(req.Header, proxyReq.Header)
-		return proxyReq, nil
+		copyHeader(inReq.Header, outReq.Header)
+		outReq.ContentLength = inReq.ContentLength
+		return outReq, nil
 	}
 }
 

@@ -60,16 +60,10 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("%q not supported", protocol+"/"+network))
 			return
 		}
-		if nameservice.IsInvalidNameError(err) {
-			errs.JSONWriter(w, http.StatusPreconditionFailed, err)
-			return
-		}
-		if nameservice.IsNoResolverError(err) {
-			errs.JSONWriter(w, http.StatusNotFound, err)
-			return
-		}
-		if nameservice.IsNotFoundError(err) {
-			errs.JSONWriter(w, http.StatusNotFound, err)
+		if nameservice.IsRfc1035Error(err) {
+			_ = json.NewEncoder(w).Encode(GetResolveNameResponseBody{
+				Status: nameservice.Rfc1035StatusMap[err],
+			})
 			return
 		}
 		if err != nil {
@@ -147,4 +141,11 @@ type GetResolveNameResponseBody struct {
 	// Required: true
 	// example: 0x4ad2b251246aafc2f3bdf3b690de3bf906622c51
 	Address string `json:"address"`
+
+	// The rfc1035 error status, if present
+	// Since 0 status belongs to 'No Error', it's safe to use 'omitempty'
+	//
+	// Required: false
+	// example: 3
+	Status int `json:"status,omitempty"`
 }

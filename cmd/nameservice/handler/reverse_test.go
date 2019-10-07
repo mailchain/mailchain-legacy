@@ -7,9 +7,9 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
+	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/nameservice/nameservicetest"
-	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -80,7 +80,7 @@ func TestReverse(t *testing.T) {
 			args{
 				func() nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrNotFound)
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrNXDomain)
 					return m
 				}(),
 			},
@@ -92,35 +92,15 @@ func TestReverse(t *testing.T) {
 				})
 				return req
 			}(),
-			404,
-			"{\"code\":404,\"message\":\"not found\"}\n",
-		},
-		{
-			"err-no-resolver",
-			args{
-				func() nameservice.ReverseLookup {
-					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrUnableToResolve)
-					return m
-				}(),
-			},
-			func() *http.Request {
-				req := httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761", nil)
-				req = mux.SetURLVars(req, map[string]string{
-					"protocol": "ethereum",
-					"network":  "mainnet",
-				})
-				return req
-			}(),
-			404,
-			"{\"code\":404,\"message\":\"unable to resolve\"}\n",
+			200,
+			"{\"name\":\"\",\"status\":3}\n",
 		},
 		{
 			"err-invalid-address",
 			args{
 				func() nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrInvalidAddress)
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrFormat)
 					return m
 				}(),
 			},
@@ -132,8 +112,8 @@ func TestReverse(t *testing.T) {
 				})
 				return req
 			}(),
-			412,
-			"{\"code\":412,\"message\":\"invalid address\"}\n",
+			200,
+			"{\"name\":\"\",\"status\":1}\n",
 		},
 		{
 			"err-invalid-address-query",
@@ -151,8 +131,8 @@ func TestReverse(t *testing.T) {
 				})
 				return req
 			}(),
-			412,
-			"{\"code\":412,\"message\":\"invalid address\"}\n",
+			200,
+			"{\"name\":\"\",\"status\":1}\n",
 		},
 		{
 			"err-missing-address-query",

@@ -193,63 +193,6 @@ func TestGetResolveName(t *testing.T) {
 			http.StatusInternalServerError,
 		},
 		{
-			"err-not-found",
-			args{
-				func() map[string]nameservice.ForwardLookup {
-					m := nameservicetest.NewMockForwardLookup(mockCtrl)
-					m.EXPECT().ResolveName(gomock.Any(), "ethereum", "mainnet", "name.ens").Return(nil, nameservice.ErrNotFound).Times(1)
-					return map[string]nameservice.ForwardLookup{"ethereum/mainnet": m}
-				}(),
-			},
-			func() *http.Request {
-				req := httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil)
-				req = mux.SetURLVars(req, map[string]string{
-					"domain-name": "name.ens",
-				})
-				return req
-			}(),
-			"{\"code\":404,\"message\":\"not found\"}\n",
-			http.StatusNotFound,
-		},
-		{
-			"err-invalid-name",
-			args{
-				func() map[string]nameservice.ForwardLookup {
-					m := nameservicetest.NewMockForwardLookup(mockCtrl)
-					m.EXPECT().ResolveName(gomock.Any(), "ethereum", "mainnet", "name.ens").Return(nil, nameservice.ErrInvalidName).Times(1)
-					return map[string]nameservice.ForwardLookup{"ethereum/mainnet": m}
-				}(),
-			},
-			func() *http.Request {
-				req := httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil)
-				req = mux.SetURLVars(req, map[string]string{
-					"domain-name": "name.ens",
-				})
-				return req
-			}(),
-			"{\"code\":412,\"message\":\"invalid name\"}\n",
-			http.StatusPreconditionFailed,
-		},
-		{
-			"err-unable-to-resolve",
-			args{
-				func() map[string]nameservice.ForwardLookup {
-					m := nameservicetest.NewMockForwardLookup(mockCtrl)
-					m.EXPECT().ResolveName(gomock.Any(), "ethereum", "mainnet", "name.ens").Return(nil, nameservice.ErrUnableToResolve).Times(1)
-					return map[string]nameservice.ForwardLookup{"ethereum/mainnet": m}
-				}(),
-			},
-			func() *http.Request {
-				req := httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil)
-				req = mux.SetURLVars(req, map[string]string{
-					"domain-name": "name.ens",
-				})
-				return req
-			}(),
-			"{\"code\":404,\"message\":\"unable to resolve\"}\n",
-			http.StatusNotFound,
-		},
-		{
 			"err-encoding-error",
 			args{
 				func() map[string]nameservice.ForwardLookup {
@@ -267,6 +210,25 @@ func TestGetResolveName(t *testing.T) {
 			}(),
 			`{"code":500,"message":"failed to encode address: \"invalid\" unsupported protocol"}` + "\n",
 			http.StatusInternalServerError,
+		},
+		{
+			"err-nx-domain",
+			args{
+				func() map[string]nameservice.ForwardLookup {
+					m := nameservicetest.NewMockForwardLookup(mockCtrl)
+					m.EXPECT().ResolveName(gomock.Any(), "ethereum", "mainnet", "name.ens").Return(nil, nameservice.ErrNXDomain).Times(1)
+					return map[string]nameservice.ForwardLookup{"ethereum/mainnet": m}
+				}(),
+			},
+			func() *http.Request {
+				req := httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil)
+				req = mux.SetURLVars(req, map[string]string{
+					"domain-name": "name.ens",
+				})
+				return req
+			}(),
+			"{\"address\":\"\",\"status\":3}\n",
+			http.StatusOK,
 		},
 		{
 			"success",

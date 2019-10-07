@@ -40,7 +40,7 @@ type LookupService struct {
 func (s LookupService) ResolveName(ctx context.Context, protocol, network, domainName string) ([]byte, error) {
 	address, err := ens.Resolve(s.client, domainName)
 	if err != nil {
-		return nil, wrapError(err)
+		return nil, nameservice.WrapError(err)
 	}
 	return address.Bytes(), nil
 }
@@ -49,7 +49,7 @@ func (s LookupService) ResolveAddress(ctx context.Context, protocol, network str
 	ethAddress := common.BytesToAddress(address)
 	reverse, err := ens.ReverseResolve(s.client, &ethAddress)
 	if err != nil {
-		return "", wrapError(err)
+		return "", nameservice.WrapError(err)
 	}
 	return reverse, nil
 }

@@ -15,17 +15,16 @@
 package nameservice
 
 import (
-	"github.com/pkg/errors"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 const (
-	nilErrorMsg                  = ""
 	noResolverErrorMsg           = "no resolver"
 	noResolutionErrorMsg         = "No resolution"
 	unregisteredNameErrorMsg     = "unregistered name"
 	couldNotParseAddressErrorMsg = "could not parse address"
-	unknownErrorMsg              = "unknown error"
 )
 
 var (
@@ -54,6 +53,7 @@ func WrapError(err error) error {
 	if err == nil {
 		return nil
 	}
+
 	if isErrorOfAnyType(err, []string{noResolverErrorMsg, noResolutionErrorMsg, unregisteredNameErrorMsg}) {
 		return ErrNXDomain
 	} else if isErrorOfAnyType(err, []string{couldNotParseAddressErrorMsg}) {

@@ -15,8 +15,9 @@
 package nameservice
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/pkg/errors"
 )
@@ -32,14 +33,6 @@ func Test_WrapError(t *testing.T) {
 		wantErr        bool
 		wantErrMessage string
 	}{
-		{
-			"nil",
-			args{
-				nil,
-			},
-			false,
-			nilErrorMsg,
-		},
 		{
 			"no-resolver",
 			args{
@@ -71,14 +64,6 @@ func Test_WrapError(t *testing.T) {
 			},
 			true,
 			ErrFormat.Error(),
-		},
-		{
-			"unknown",
-			args{
-				errors.Errorf(unknownErrorMsg),
-			},
-			true,
-			unknownErrorMsg,
 		},
 	}
 	for _, tt := range tests {

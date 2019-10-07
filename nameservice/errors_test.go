@@ -65,6 +65,22 @@ func Test_WrapError(t *testing.T) {
 			true,
 			ErrFormat.Error(),
 		},
+		{
+			"unknown error",
+			args{
+				errors.Errorf("%s: %s", "error", "original"),
+			},
+			true,
+			"error: original",
+		},
+		{
+			"nil error",
+			args{
+				nil,
+			},
+			false,
+			"",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

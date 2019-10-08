@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/sender"
@@ -37,4 +38,14 @@ func (r RelaySender) Supports() map[string]bool {
 
 func (r RelaySender) Produce() (sender.Message, error) {
 	return relayer.NewClient(r.BaseURL.Get())
+}
+
+func (r RelaySender) Output() output.Element {
+	return output.Element{
+		FullName: "senders.ethereum-relay",
+		Attributes: []output.Attribute{
+			r.BaseURL.Attribute(),
+			r.EnabledProtocolNetworks.Attribute(),
+		},
+	}
 }

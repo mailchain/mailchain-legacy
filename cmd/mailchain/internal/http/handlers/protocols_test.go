@@ -46,7 +46,7 @@ func TestGetProtocols(t *testing.T) {
 					m.EXPECT().IsSet("protocols.ethereum.disabled").Return(true)
 					m.EXPECT().GetBool("protocols.ethereum.disabled").Return(true)
 					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
-					return settings.New(m)
+					return settings.FromStore(m)
 				}(),
 			},
 			"{\"protocols\":[]}\n",
@@ -60,7 +60,7 @@ func TestGetProtocols(t *testing.T) {
 					m.EXPECT().IsSet("protocols.ethereum.networks.goerli.disabled").Return(true)
 					m.EXPECT().GetBool("protocols.ethereum.networks.goerli.disabled").Return(true)
 					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
-					return settings.New(m)
+					return settings.FromStore(m)
 				}(),
 			},
 			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[\"kovan\",\"mainnet\",\"rinkeby\",\"ropsten\"]}]}\n",
@@ -72,7 +72,7 @@ func TestGetProtocols(t *testing.T) {
 				func() *settings.Base {
 					m := valuestest.NewMockStore(mockCtrl)
 					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
-					return settings.New(m)
+					return settings.FromStore(m)
 				}(),
 			},
 			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[\"goerli\",\"kovan\",\"mainnet\",\"rinkeby\",\"ropsten\"]}]}\n",

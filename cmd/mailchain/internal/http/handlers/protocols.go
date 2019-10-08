@@ -34,8 +34,8 @@ func GetProtocols(base *settings.Base) func(w http.ResponseWriter, r *http.Reque
 		}
 		networks := []string{}
 		for _, network := range protocol.Networks {
-			if !network.Disabled.Get() {
-				networks = append(networks, network.Kind)
+			if !network.Disabled() {
+				networks = append(networks, network.Kind())
 			}
 		}
 		sort.Strings(networks)

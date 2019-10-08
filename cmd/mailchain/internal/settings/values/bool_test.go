@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values/valuestest"
 	"github.com/stretchr/testify/assert"
 )
@@ -133,6 +134,49 @@ func TestNewDefaultBool(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := NewDefaultBool(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(tt.want, got) {
 				t.Errorf("NewDefaultBool() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDefaultBool_Attribute(t *testing.T) {
+	assert := assert.New(t)
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type fields struct {
+		def     bool
+		setting string
+		store   Store
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   output.Attribute
+	}{
+		{
+			"success",
+			fields{
+				false,
+				"test.setting.name1",
+				func() Store {
+					m := valuestest.NewMockStore(mockCtrl)
+					m.EXPECT().IsSet("test.setting.name1").Return(true).AnyTimes()
+					m.EXPECT().GetBool("test.setting.name1").Return(true).AnyTimes()
+					return m
+				}(),
+			},
+			output.Attribute{FullName: "name1", IsDefault: false, AdditionalComment: "", Value: true},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d := DefaultBool{
+				def:     tt.fields.def,
+				setting: tt.fields.setting,
+				store:   tt.fields.store,
+			}
+			if got := d.Attribute(); !assert.Equal(tt.want, got) {
+				t.Errorf("DefaultBool.Attribute() = %v, want %v", got, tt.want)
 			}
 		})
 	}

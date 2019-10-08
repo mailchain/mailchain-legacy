@@ -59,7 +59,9 @@ func GetRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 	}
 	// Get swagger:route GET /messages/{message_id}/read Messages GetRead
 	//
-	// Get message read status.
+	// Message read status.
+	//
+	// Messages can be either read or unread.
 	//
 	// Responses:
 	//   200: GetReadResponse

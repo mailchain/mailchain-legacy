@@ -2,9 +2,11 @@
 package values
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values/valuestest"
 	"github.com/stretchr/testify/assert"
 )
@@ -134,6 +136,48 @@ func TestNewDefaultString(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := NewDefaultString(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(tt.want, got) {
 				t.Errorf("NewDefaultString() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDefaultString_Attribute(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type fields struct {
+		def     string
+		setting string
+		store   Store
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   output.Attribute
+	}{
+		{
+			"success",
+			fields{
+				"value1",
+				"test.setting.name1",
+				func() Store {
+					m := valuestest.NewMockStore(mockCtrl)
+					m.EXPECT().IsSet("test.setting.name1").Return(true).AnyTimes()
+					m.EXPECT().GetString("test.setting.name1").Return("value1").AnyTimes()
+					return m
+				}(),
+			},
+			output.Attribute{FullName: "name1", IsDefault: true, AdditionalComment: "", Value: "value1"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d := DefaultString{
+				def:     tt.fields.def,
+				setting: tt.fields.setting,
+				store:   tt.fields.store,
+			}
+			if got := d.Attribute(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("DefaultString.Attribute() = %v, want %v", got, tt.want)
 			}
 		})
 	}

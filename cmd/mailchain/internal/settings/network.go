@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/nameservice"
@@ -12,35 +13,37 @@ import (
 
 func network(s values.Store, protocol, network string) *Network {
 	k := &Network{
-		Kind: network,
+		kind:     network,
+		protocol: protocol,
 		NameServiceAddress: values.NewDefaultString(defaults.NameServiceAddressKind, s,
-			fmt.Sprintf("protocols.%s.networks.%s.name-service-address", protocol, network)),
+			fmt.Sprintf("protocols.%s.networks.%s.nameservice-address", protocol, network)),
 		NameServiceDomainName: values.NewDefaultString(defaults.NameServiceDomainNameKind, s,
-			fmt.Sprintf("protocols.%s.networks.%s.name-service-domain-name", protocol, network)),
+			fmt.Sprintf("protocols.%s.networks.%s.nameservice-domain-name", protocol, network)),
 		PublicKeyFinder: values.NewDefaultString(defaults.EthereumReceiver, s,
 			fmt.Sprintf("protocols.%s.networks.%s.public-key-finder", protocol, network)),
 		Receiver: values.NewDefaultString(defaults.EthereumReceiver, s,
 			fmt.Sprintf("protocols.%s.networks.%s.receiver", protocol, network)),
 		Sender: values.NewDefaultString(fmt.Sprintf("%s-relay", protocol), s,
 			fmt.Sprintf("protocols.%s.networks.%s.sender", protocol, network)),
-		Disabled: values.NewDefaultBool(false, s,
+		disabled: values.NewDefaultBool(false, s,
 			fmt.Sprintf("protocols.%s.networks.%s.disabled", protocol, network)),
 	}
 	return k
 }
 
 type Network struct {
-	Kind                  string
+	kind                  string
+	protocol              string
 	NameServiceAddress    values.String
 	NameServiceDomainName values.String
 	PublicKeyFinder       values.String
 	Receiver              values.String
 	Sender                values.String
-	Disabled              values.Bool
+	disabled              values.Bool
 }
 
-func (s *Network) ProduceNameServiceDomain(ans *DomainNameServices) (nameservice.ForwardLookup, error) {
-	return ans.Produce(s.NameServiceDomainName.Get())
+func (s *Network) ProduceNameServiceDomain(dns *DomainNameServices) (nameservice.ForwardLookup, error) {
+	return dns.Produce(s.NameServiceDomainName.Get())
 }
 
 func (s *Network) ProduceNameServiceAddress(ans *AddressNameServices) (nameservice.ReverseLookup, error) {
@@ -57,4 +60,26 @@ func (s *Network) ProduceReceiver(receivers *Receivers) (mailbox.Receiver, error
 
 func (s *Network) ProducePublicKeyFinders(publicKeyFinders *PublicKeyFinders) (mailbox.PubKeyFinder, error) {
 	return publicKeyFinders.Produce(s.PublicKeyFinder.Get())
+}
+
+func (s *Network) Disabled() bool {
+	return s.disabled.Get()
+}
+
+func (s *Network) Kind() string {
+	return s.kind
+}
+
+func (s *Network) Output() output.Element {
+	return output.Element{
+		FullName: fmt.Sprintf("protocols.%s.networks.%s", s.protocol, s.kind),
+		Attributes: []output.Attribute{
+			s.NameServiceAddress.Attribute(),
+			s.NameServiceDomainName.Attribute(),
+			s.PublicKeyFinder.Attribute(),
+			s.Receiver.Attribute(),
+			s.Sender.Attribute(),
+			s.disabled.Attribute(),
+		},
+	}
 }

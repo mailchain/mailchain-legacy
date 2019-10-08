@@ -68,7 +68,7 @@ func TestDomainNameServices_Produce(t *testing.T) {
 				map[string]NameServiceDomainClient{
 					"client": func() NameServiceDomainClient {
 						s := valuestest.NewMockStore(mockCtrl)
-						s.EXPECT().IsSet("name-service-domain-name.base-url").Return(false)
+						s.EXPECT().IsSet("nameservice-domain-name.base-url").Return(false)
 						return mailchainDomainNameServices(s)
 					}(),
 				},

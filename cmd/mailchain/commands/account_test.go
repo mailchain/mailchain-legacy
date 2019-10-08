@@ -321,7 +321,7 @@ func Test_accountCmd(t *testing.T) {
 			args{
 				func() *settings.Base {
 					v := viper.New()
-					config := settings.New(v)
+					config := settings.FromStore(v)
 					return config
 				}(),
 			},
@@ -337,7 +337,7 @@ func Test_accountCmd(t *testing.T) {
 				func() *settings.Base {
 					v := viper.New()
 					v.Set("keystore.kind", "invalid")
-					config := settings.New(v)
+					config := settings.FromStore(v)
 					return config
 				}(),
 			},

@@ -6,6 +6,7 @@ package valuestest
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	output "github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	reflect "reflect"
 )
 
@@ -56,4 +57,18 @@ func (m *MockBool) Set(v bool) {
 func (mr *MockBoolMockRecorder) Set(v interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Set", reflect.TypeOf((*MockBool)(nil).Set), v)
+}
+
+// Attribute mocks base method
+func (m *MockBool) Attribute() output.Attribute {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Attribute")
+	ret0, _ := ret[0].(output.Attribute)
+	return ret0
+}
+
+// Attribute indicates an expected call of Attribute
+func (mr *MockBoolMockRecorder) Attribute() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Attribute", reflect.TypeOf((*MockBool)(nil).Attribute))
 }

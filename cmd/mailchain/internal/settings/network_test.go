@@ -33,8 +33,8 @@ func Test_network(t *testing.T) {
 			args{
 				func() values.Store {
 					m := valuestest.NewMockStore(mockCtrl)
-					m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.name-service-address").Return(false)
-					m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.name-service-domain-name").Return(false)
+					m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.nameservice-address").Return(false)
+					m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.nameservice-domain-name").Return(false)
 					m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.public-key-finder").Return(false)
 					m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.sender").Return(false)
 					m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.receiver").Return(false)
@@ -60,7 +60,7 @@ func Test_network(t *testing.T) {
 			assert.Equal(tt.wantPublicKeyFinder, got.PublicKeyFinder.Get())
 			assert.Equal(tt.wantReceiver, got.Receiver.Get())
 			assert.Equal(tt.wantSender, got.Sender.Get())
-			assert.Equal(tt.wantDisabled, got.Disabled.Get())
+			assert.Equal(tt.wantDisabled, got.Disabled())
 		})
 	}
 }
@@ -275,7 +275,7 @@ func TestNetwork_ProduceNameServiceAddress(t *testing.T) {
 			args{
 				addressNameServices(func() values.Store {
 					m := valuestest.NewMockStore(mockCtrl)
-					m.EXPECT().IsSet("name-service-address.base-url").Return(false)
+					m.EXPECT().IsSet("nameservice-address.base-url").Return(false)
 					return m
 				}()),
 			},
@@ -329,7 +329,7 @@ func TestNetwork_ProduceNameServiceDomain(t *testing.T) {
 			args{
 				domainNameServices(func() values.Store {
 					m := valuestest.NewMockStore(mockCtrl)
-					m.EXPECT().IsSet("name-service-domain-name.base-url").Return(false)
+					m.EXPECT().IsSet("nameservice-domain-name.base-url").Return(false)
 					return m
 				}()),
 			},

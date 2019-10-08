@@ -15,37 +15,31 @@
 package commands
 
 import (
-	"fmt"
-
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/http"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper" // nolint: depguard
-	"github.com/ttacon/chalk"
 )
 
-func serveCmd() (*cobra.Command, error) {
+func settingsCmd(config *settings.Base) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "serve",
-		Short: "Serve the mailchain application",
-		// PersistentPreRunE: preRun,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			config := settings.FromStore(viper.GetViper())
-			router, err := http.CreateRouter(config, cmd)
-			if err != nil {
-				return err
-			}
-			fmt.Println(chalk.Bold.TextStyle(fmt.Sprintf(
-				"Find out more by visiting the docs http://127.0.0.1:%d/api/docs",
-				config.Server.Port.Get())))
+		Use:   "settings",
+		Short: "Settings of the mailchain application",
+	}
+	cmd.AddCommand(settingsViewAll(config))
+	return cmd
+}
 
-			http.CreateNegroni(config.Server, router).Run(fmt.Sprintf(":%d", config.Server.Port.Get()))
+func settingsViewAll(config *settings.Base) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "view",
+		Short: "View the current config",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			commentDefaults, _ := cmd.Flags().GetBool("comment-defaults")
+			excludeDefaults, _ := cmd.Flags().GetBool("exclude-defaults")
+			config.ToYaml(cmd.OutOrStderr(), 2, commentDefaults, excludeDefaults)
 			return nil
 		},
 	}
-
-	if err := http.SetupFlags(cmd); err != nil {
-		return nil, err
-	}
-	return cmd, nil
+	cmd.Flags().Bool("comment-defaults", true, "comment out values if the value is the default")
+	cmd.Flags().Bool("exclude-defaults", false, "exclude values if the value is the default")
+	return cmd
 }

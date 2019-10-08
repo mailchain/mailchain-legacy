@@ -3,6 +3,7 @@ package settings
 import (
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/ldbstore"
@@ -31,6 +32,15 @@ func (s MailboxState) Produce() (stores.State, error) {
 	}
 }
 
+func (s MailboxState) Output() output.Element {
+	return output.Element{
+		FullName: "mailboxState",
+		Elements: []output.Element{
+			s.mailboxStateLevelDB.Output(),
+		},
+	}
+}
+
 func mailboxStateLevelDB(s values.Store) MailboxStateLevelDB {
 	return MailboxStateLevelDB{
 		Path:    values.NewDefaultString(defaults.MailboxStatePath(), s, "mailboxState.leveldb.path"),
@@ -47,4 +57,15 @@ type MailboxStateLevelDB struct {
 
 func (s MailboxStateLevelDB) Produce() (*ldbstore.Database, error) {
 	return ldbstore.New(s.Path.Get(), s.Cache.Get(), s.Handles.Get())
+}
+
+func (s MailboxStateLevelDB) Output() output.Element {
+	return output.Element{
+		FullName: "mailboxState.leveldb",
+		Attributes: []output.Attribute{
+			s.Path.Attribute(),
+			s.Handles.Attribute(),
+			s.Cache.Attribute(),
+		},
+	}
 }

@@ -1,11 +1,9 @@
 package settings
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values/valuestest"
 	"github.com/stretchr/testify/assert"
@@ -75,31 +73,6 @@ func Test_server(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := server(tt.args.s)
 			assert.Equal(tt.wantPort, got.Port.Get())
-		})
-	}
-}
-
-func TestCORS_Output(t *testing.T) {
-	type fields struct {
-		AllowedOrigins values.StringSlice
-		Disabled       values.Bool
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   output.Element
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			o := CORS{
-				AllowedOrigins: tt.fields.AllowedOrigins,
-				Disabled:       tt.fields.Disabled,
-			}
-			if got := o.Output(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CORS.Output() = %v, want %v", got, tt.want)
-			}
 		})
 	}
 }

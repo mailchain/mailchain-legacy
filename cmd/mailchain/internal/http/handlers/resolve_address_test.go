@@ -210,30 +210,11 @@ func TestGetResolveAddress(t *testing.T) {
 			http.StatusInternalServerError,
 		},
 		{
-			"err-not-found",
-			args{
-				func() map[string]nameservice.ReverseLookup {
-					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrNotFound).Times(1)
-					return map[string]nameservice.ReverseLookup{"ethereum/mainnet": m}
-				}(),
-			},
-			func() *http.Request {
-				req := httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil)
-				req = mux.SetURLVars(req, map[string]string{
-					"address": "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
-				})
-				return req
-			}(),
-			"{\"code\":404,\"message\":\"not found\"}\n",
-			http.StatusNotFound,
-		},
-		{
 			"err-invalid-address",
 			args{
 				func() map[string]nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrInvalidAddress).Times(1)
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrFormat).Times(1)
 					return map[string]nameservice.ReverseLookup{"ethereum/mainnet": m}
 				}(),
 			},
@@ -244,15 +225,15 @@ func TestGetResolveAddress(t *testing.T) {
 				})
 				return req
 			}(),
-			"{\"code\":412,\"message\":\"invalid address\"}\n",
-			http.StatusPreconditionFailed,
+			"{\"name\":\"\",\"status\":1}\n",
+			http.StatusOK,
 		},
 		{
-			"err-unable-to-resolve",
+			"err-nx-domain",
 			args{
 				func() map[string]nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrUnableToResolve).Times(1)
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrNXDomain).Times(1)
 					return map[string]nameservice.ReverseLookup{"ethereum/mainnet": m}
 				}(),
 			},
@@ -263,8 +244,8 @@ func TestGetResolveAddress(t *testing.T) {
 				})
 				return req
 			}(),
-			"{\"code\":404,\"message\":\"unable to resolve\"}\n",
-			http.StatusNotFound,
+			"{\"name\":\"\",\"status\":3}\n",
+			http.StatusOK,
 		},
 		{
 			"success",

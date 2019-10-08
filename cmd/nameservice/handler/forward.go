@@ -15,6 +15,13 @@ import (
 func Forward(resolver nameservice.ForwardLookup) func(w http.ResponseWriter, r *http.Request) {
 	type response struct {
 		Address string `json:"address"`
+
+		// The rfc1035 error status, if present
+		// Since 0 status belongs to 'No Error', it's safe to use 'omitempty'
+		//
+		// Required: false
+		// example: 3
+		Status int `json:"status,omitempty"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		protocol := strings.ToLower(mux.Vars(r)["protocol"])
@@ -25,16 +32,10 @@ func Forward(resolver nameservice.ForwardLookup) func(w http.ResponseWriter, r *
 		}
 
 		resolvedAddress, err := resolver.ResolveName(r.Context(), protocol, network, r.URL.Query()["domain-name"][0])
-		if nameservice.IsInvalidNameError(err) {
-			errs.JSONWriter(w, http.StatusPreconditionFailed, err)
-			return
-		}
-		if nameservice.IsNoResolverError(err) {
-			errs.JSONWriter(w, http.StatusNotFound, err)
-			return
-		}
-		if nameservice.IsNotFoundError(err) {
-			errs.JSONWriter(w, http.StatusNotFound, err)
+		if nameservice.IsRfc1035Error(err) {
+			_ = json.NewEncoder(w).Encode(response{
+				Status: nameservice.Rfc1035StatusMap[err],
+			})
 			return
 		}
 		if err != nil {

@@ -109,12 +109,12 @@ senders:
 keystore:
   kind: "nacl-filestore"
   nacl-filestore:
-    path: "/Users/robdefeo/.mailchain/.keystore"
+    path: "/home/user/.mailchain/.keystore"
 mailboxState:
   leveldb:
     cache: 256
     handles: 0
-    path: "/Users/robdefeo/.mailchain/.mailbox"
+    path: "/home/user/.mailchain/.mailbox"
 sentstore:
   kind: "mailchain"
   s3:

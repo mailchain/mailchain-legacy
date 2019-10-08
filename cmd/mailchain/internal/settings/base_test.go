@@ -95,6 +95,8 @@ func TestBase_ToYaml(t *testing.T) {
 			args{
 				func() values.Store {
 					v := viper.New()
+					v.Set("keystore.nacl-filestore.path", "/home/user/.mailchain/.keystore")
+					v.Set("mailboxState.leveldb.path", "/home/user/.mailchain/.mailbox")
 					v.Set("server.port", 12345)
 					return v
 				}(),

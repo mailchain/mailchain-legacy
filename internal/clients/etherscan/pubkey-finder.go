@@ -24,7 +24,7 @@ import (
 )
 
 // PublicKeyFromAddress get public key from the recipient address, this will only work if the recipient has previously sent a message.
-func (c APIClient) PublicKeyFromAddress(ctx context.Context, network string, address []byte) ([]byte, error) {
+func (c APIClient) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) ([]byte, error) {
 	if !c.isNetworkSupported(network) {
 		return nil, errors.Errorf("network not supported")
 	}

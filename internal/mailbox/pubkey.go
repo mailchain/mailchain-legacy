@@ -21,5 +21,5 @@ import (
 
 // PubKeyFinder find public key to encrypt message with
 type PubKeyFinder interface {
-	PublicKeyFromAddress(ctx context.Context, network string, address []byte) ([]byte, error)
+	PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) ([]byte, error)
 }

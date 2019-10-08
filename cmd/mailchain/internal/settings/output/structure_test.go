@@ -1,6 +1,7 @@
 package output
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -132,6 +133,41 @@ func TestElement_ShortName(t *testing.T) {
 			}
 			if got := e.ShortName(); got != tt.want {
 				t.Errorf("Element.ShortName() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestElement_SortedAttributes(t *testing.T) {
+	type fields struct {
+		FullName   string
+		Attributes []Attribute
+		Elements   []Element
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   []Attribute
+	}{
+		{
+			"success",
+			fields{
+				"simple",
+				[]Attribute{Attribute{FullName: "D"}, Attribute{FullName: "F"}, Attribute{FullName: "A"}},
+				nil,
+			},
+			[]Attribute{Attribute{FullName: "A"}, Attribute{FullName: "D"}, Attribute{FullName: "F"}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := Element{
+				FullName:   tt.fields.FullName,
+				Attributes: tt.fields.Attributes,
+				Elements:   tt.fields.Elements,
+			}
+			if got := e.SortedAttributes(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Element.SortedAttributes() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -21,6 +21,7 @@ func (e Element) SortedElements() []Element {
 	})
 	return e.Elements
 }
+
 func (e Element) SortedAttributes() []Attribute {
 	sort.Slice(e.Attributes, func(i, j int) bool {
 		return e.Attributes[i].FullName < e.Attributes[j].FullName

@@ -2,6 +2,7 @@ package settings
 
 import (
 	"github.com/mailchain/mailchain"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/pkg/errors"
@@ -26,4 +27,16 @@ func (s Receivers) Produce(client string) (mailbox.Receiver, error) {
 		return nil, errors.Errorf("%s not a supported receiver", client)
 	}
 	return m.Produce()
+}
+
+func (s Receivers) Output() output.Element {
+	elements := []output.Element{}
+	for _, c := range s.clients {
+		elements = append(elements, c.Output())
+	}
+
+	return output.Element{
+		FullName: "receivers",
+		Elements: elements,
+	}
 }

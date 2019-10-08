@@ -166,7 +166,7 @@ func TestDefaultString_Attribute(t *testing.T) {
 					return m
 				}(),
 			},
-			output.Attribute{Name: "name1", IsDefault: true, AdditionalComment: "", Value: "value1"},
+			output.Attribute{FullName: "name1", IsDefault: true, AdditionalComment: "", Value: "value1"},
 		},
 	}
 	for _, tt := range tests {

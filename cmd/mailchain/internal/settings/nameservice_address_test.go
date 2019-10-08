@@ -68,7 +68,7 @@ func TestAddressNameServices_Produce(t *testing.T) {
 				map[string]NameServiceAddressClient{
 					"client": func() NameServiceAddressClient {
 						s := valuestest.NewMockStore(mockCtrl)
-						s.EXPECT().IsSet("name-service-address.base-url").Return(false)
+						s.EXPECT().IsSet("nameservice-address.base-url").Return(false)
 						return mailchainAddressNameServices(s)
 					}(),
 				},

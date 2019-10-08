@@ -2,6 +2,7 @@ package settings
 
 import (
 	"github.com/mailchain/mailchain"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/nameservice"
@@ -20,6 +21,17 @@ type AddressNameServices struct {
 	clients map[string]NameServiceAddressClient
 }
 
+func (s AddressNameServices) Output() output.Element {
+	elements := []output.Element{}
+	for _, c := range s.clients {
+		elements = append(elements, c.Output())
+	}
+	return output.Element{
+		FullName: "nameservice-address",
+		Elements: elements,
+	}
+}
+
 func (s AddressNameServices) Produce(client string) (nameservice.ReverseLookup, error) {
 	m, ok := s.clients[client]
 	if !ok {
@@ -34,11 +46,11 @@ func mailchainAddressNameServices(s values.Store) *MailchainAddressNameServices 
 		enabledNetworks = append(enabledNetworks, "ethereum/"+n)
 	}
 	return &MailchainAddressNameServices{
-		BaseURL: values.NewDefaultString("https://ns.mailchain.xyz/", s, "name-service-address.base-url"),
+		BaseURL: values.NewDefaultString("https://ns.mailchain.xyz/", s, "nameservice-address.base-url"),
 		EnabledProtocolNetworks: values.NewDefaultStringSlice(
 			enabledNetworks,
 			s,
-			"name-service-address.mailchain.enabled-networks",
+			"nameservice-address.mailchain.enabled-networks",
 		),
 	}
 }
@@ -58,4 +70,14 @@ func (s MailchainAddressNameServices) Supports() map[string]bool {
 		m[np] = true
 	}
 	return m
+}
+
+func (s MailchainAddressNameServices) Output() output.Element {
+	return output.Element{
+		FullName: "nameservice-address.mailchain",
+		Attributes: []output.Attribute{
+			s.BaseURL.Attribute(),
+			s.EnabledProtocolNetworks.Attribute(),
+		},
+	}
 }

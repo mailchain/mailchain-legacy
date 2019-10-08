@@ -3,6 +3,7 @@ package settings
 import (
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
@@ -31,5 +32,15 @@ func (ss SentStore) Produce() (stores.Sent, error) {
 		return ss.mailchain.Produce()
 	default:
 		return nil, errors.Errorf("%q is an unsupported sent store", ss.Kind.Get())
+	}
+}
+
+func (ss SentStore) Output() output.Element {
+	return output.Element{
+		FullName:   "sentstore",
+		Attributes: []output.Attribute{ss.Kind.Attribute()},
+		Elements: []output.Element{
+			ss.s3.Output(),
+		},
 	}
 }

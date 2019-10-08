@@ -1,0 +1,130 @@
+ethereum:
+  disabled: false
+  goerli:
+    disabled: false
+    nameservice-address: "mailchain"
+    nameservice-domain-name: "mailchain"
+    public-key-finder: "etherscan-no-auth"
+    receiver: "etherscan-no-auth"
+    sender: "ethereum-relay"
+  kovan:
+    disabled: false
+    nameservice-address: "mailchain"
+    nameservice-domain-name: "mailchain"
+    public-key-finder: "etherscan-no-auth"
+    receiver: "etherscan-no-auth"
+    sender: "ethereum-relay"
+  mainnet:
+    disabled: false
+    nameservice-address: "mailchain"
+    nameservice-domain-name: "mailchain"
+    public-key-finder: "etherscan-no-auth"
+    receiver: "etherscan-no-auth"
+    sender: "ethereum-relay"
+  rinkeby:
+    disabled: false
+    nameservice-address: "mailchain"
+    nameservice-domain-name: "mailchain"
+    public-key-finder: "etherscan-no-auth"
+    receiver: "etherscan-no-auth"
+    sender: "ethereum-relay"
+  ropsten:
+    disabled: false
+    nameservice-address: "mailchain"
+    nameservice-domain-name: "mailchain"
+    public-key-finder: "etherscan-no-auth"
+    receiver: "etherscan-no-auth"
+    sender: "ethereum-relay"
+nameservice-address:
+  mailchain:
+    base-url: "https://ns.mailchain.xyz/"
+    enabled-networks:
+      - "ethereum/goerli"
+      - "ethereum/kovan"
+      - "ethereum/mainnet"
+      - "ethereum/rinkeby"
+      - "ethereum/ropsten"
+nameservice-domain-name:
+  mailchain:
+    base-url: "https://ns.mailchain.xyz/"
+    enabled-networks:
+      - "ethereum/goerli"
+      - "ethereum/kovan"
+      - "ethereum/mainnet"
+      - "ethereum/rinkeby"
+      - "ethereum/ropsten"
+public-key-finders:
+  etherscan:
+    api-key: ""
+    enabled-networks:
+      - "ethereum/goerli"
+      - "ethereum/kovan"
+      - "ethereum/mainnet"
+      - "ethereum/rinkeby"
+      - "ethereum/ropsten"
+  etherscan-no-auth:
+    api-key: ""
+    enabled-networks:
+      - "ethereum/goerli"
+      - "ethereum/kovan"
+      - "ethereum/mainnet"
+      - "ethereum/rinkeby"
+      - "ethereum/ropsten"
+receivers:
+  etherscan:
+    api-key: ""
+    enabled-networks:
+      - "ethereum/goerli"
+      - "ethereum/kovan"
+      - "ethereum/mainnet"
+      - "ethereum/rinkeby"
+      - "ethereum/ropsten"
+  etherscan-no-auth:
+    api-key: ""
+    enabled-networks:
+      - "ethereum/goerli"
+      - "ethereum/kovan"
+      - "ethereum/mainnet"
+      - "ethereum/rinkeby"
+      - "ethereum/ropsten"
+senders:
+  ethereum-relay:
+    base-url: "https://relay.mailchain.xyz/"
+    enabled-networks:
+      - "ethereum/goerli"
+      - "ethereum/kovan"
+      - "ethereum/mainnet"
+      - "ethereum/rinkeby"
+      - "ethereum/ropsten"
+  ethereum-rpc2-goerli:
+    address: "https://relay.mailchain.xyz/json-rpc/ethereum/goerli"
+  ethereum-rpc2-kovan:
+    address: "https://relay.mailchain.xyz/json-rpc/ethereum/kovan"
+  ethereum-rpc2-mainnet:
+    address: "https://relay.mailchain.xyz/json-rpc/ethereum/mainnet"
+  ethereum-rpc2-rinkeby:
+    address: "https://relay.mailchain.xyz/json-rpc/ethereum/rinkeby"
+  ethereum-rpc2-ropsten:
+    address: "https://relay.mailchain.xyz/json-rpc/ethereum/ropsten"
+keystore:
+  kind: "nacl-filestore"
+  nacl-filestore:
+    path: "/Users/robdefeo/.mailchain/.keystore"
+mailboxState:
+  leveldb:
+    cache: 256
+    handles: 0
+    path: "/Users/robdefeo/.mailchain/.mailbox"
+sentstore:
+  kind: "mailchain"
+  s3:
+    accessKeyId: ""
+    bucket: ""
+    region: ""
+    secretAccessKey: ""
+server:
+  port: 12345
+  cors:
+    allowedOrigins:
+      - "*"
+    disabled: false

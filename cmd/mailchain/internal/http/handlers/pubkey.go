@@ -31,9 +31,10 @@ import (
 func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseWriter, r *http.Request) {
 	// Get swagger:route GET /public-key PublicKey GetPublicKey
 	//
-	// Get public key from an address.
+	// Public key from address.
 	//
-	// Get the public key.
+	// This method will get the public key to use when encrypting messages and envelopes.
+	// Protocols and networks have different methods for retrieving or calculating a public key from an address.
 	//
 	// Responses:
 	//   200: GetPublicKeyResponse

@@ -35,7 +35,7 @@ func (d DefaultBool) Attribute() output.Attribute {
 	dots := strings.Split(d.setting, ".")
 
 	return output.Attribute{
-		Name:      dots[len(dots)-1],
+		FullName:  dots[len(dots)-1],
 		IsDefault: d.Get() == d.def,
 		Value:     d.Get(),
 	}

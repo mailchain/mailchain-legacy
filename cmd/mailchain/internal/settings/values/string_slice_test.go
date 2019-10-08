@@ -166,7 +166,7 @@ func TestDefaultStringSlice_Attribute(t *testing.T) {
 					return m
 				}(),
 			},
-			output.Attribute{Name: "name1", IsDefault: true, AdditionalComment: "", Value: []string{"value1", "value2"}},
+			output.Attribute{FullName: "name1", IsDefault: true, AdditionalComment: "", Value: []string{"value1", "value2"}},
 		},
 	}
 	for _, tt := range tests {

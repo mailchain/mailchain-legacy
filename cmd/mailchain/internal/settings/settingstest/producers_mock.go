@@ -6,6 +6,8 @@ package settingstest
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	settings "github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
+	output "github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	mailbox "github.com/mailchain/mailchain/internal/mailbox"
 	nameservice "github.com/mailchain/mailchain/nameservice"
 	sender "github.com/mailchain/mailchain/sender"
@@ -47,6 +49,146 @@ func (m *MockSupporter) Supports() map[string]bool {
 func (mr *MockSupporterMockRecorder) Supports() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Supports", reflect.TypeOf((*MockSupporter)(nil).Supports))
+}
+
+// MockNetworkClient is a mock of NetworkClient interface
+type MockNetworkClient struct {
+	ctrl     *gomock.Controller
+	recorder *MockNetworkClientMockRecorder
+}
+
+// MockNetworkClientMockRecorder is the mock recorder for MockNetworkClient
+type MockNetworkClientMockRecorder struct {
+	mock *MockNetworkClient
+}
+
+// NewMockNetworkClient creates a new mock instance
+func NewMockNetworkClient(ctrl *gomock.Controller) *MockNetworkClient {
+	mock := &MockNetworkClient{ctrl: ctrl}
+	mock.recorder = &MockNetworkClientMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use
+func (m *MockNetworkClient) EXPECT() *MockNetworkClientMockRecorder {
+	return m.recorder
+}
+
+// ProduceNameServiceDomain mocks base method
+func (m *MockNetworkClient) ProduceNameServiceDomain(dns *settings.DomainNameServices) (nameservice.ForwardLookup, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ProduceNameServiceDomain", dns)
+	ret0, _ := ret[0].(nameservice.ForwardLookup)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ProduceNameServiceDomain indicates an expected call of ProduceNameServiceDomain
+func (mr *MockNetworkClientMockRecorder) ProduceNameServiceDomain(dns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProduceNameServiceDomain", reflect.TypeOf((*MockNetworkClient)(nil).ProduceNameServiceDomain), dns)
+}
+
+// ProduceNameServiceAddress mocks base method
+func (m *MockNetworkClient) ProduceNameServiceAddress(ans *settings.AddressNameServices) (nameservice.ReverseLookup, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ProduceNameServiceAddress", ans)
+	ret0, _ := ret[0].(nameservice.ReverseLookup)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ProduceNameServiceAddress indicates an expected call of ProduceNameServiceAddress
+func (mr *MockNetworkClientMockRecorder) ProduceNameServiceAddress(ans interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProduceNameServiceAddress", reflect.TypeOf((*MockNetworkClient)(nil).ProduceNameServiceAddress), ans)
+}
+
+// ProduceSender mocks base method
+func (m *MockNetworkClient) ProduceSender(senders *settings.Senders) (sender.Message, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ProduceSender", senders)
+	ret0, _ := ret[0].(sender.Message)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ProduceSender indicates an expected call of ProduceSender
+func (mr *MockNetworkClientMockRecorder) ProduceSender(senders interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProduceSender", reflect.TypeOf((*MockNetworkClient)(nil).ProduceSender), senders)
+}
+
+// ProduceReceiver mocks base method
+func (m *MockNetworkClient) ProduceReceiver(receivers *settings.Receivers) (mailbox.Receiver, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ProduceReceiver", receivers)
+	ret0, _ := ret[0].(mailbox.Receiver)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ProduceReceiver indicates an expected call of ProduceReceiver
+func (mr *MockNetworkClientMockRecorder) ProduceReceiver(receivers interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProduceReceiver", reflect.TypeOf((*MockNetworkClient)(nil).ProduceReceiver), receivers)
+}
+
+// ProducePublicKeyFinders mocks base method
+func (m *MockNetworkClient) ProducePublicKeyFinders(publicKeyFinders *settings.PublicKeyFinders) (mailbox.PubKeyFinder, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ProducePublicKeyFinders", publicKeyFinders)
+	ret0, _ := ret[0].(mailbox.PubKeyFinder)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ProducePublicKeyFinders indicates an expected call of ProducePublicKeyFinders
+func (mr *MockNetworkClientMockRecorder) ProducePublicKeyFinders(publicKeyFinders interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProducePublicKeyFinders", reflect.TypeOf((*MockNetworkClient)(nil).ProducePublicKeyFinders), publicKeyFinders)
+}
+
+// Disabled mocks base method
+func (m *MockNetworkClient) Disabled() bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Disabled")
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// Disabled indicates an expected call of Disabled
+func (mr *MockNetworkClientMockRecorder) Disabled() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Disabled", reflect.TypeOf((*MockNetworkClient)(nil).Disabled))
+}
+
+// Kind mocks base method
+func (m *MockNetworkClient) Kind() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Kind")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// Kind indicates an expected call of Kind
+func (mr *MockNetworkClientMockRecorder) Kind() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Kind", reflect.TypeOf((*MockNetworkClient)(nil).Kind))
+}
+
+// Output mocks base method
+func (m *MockNetworkClient) Output() output.Element {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Output")
+	ret0, _ := ret[0].(output.Element)
+	return ret0
+}
+
+// Output indicates an expected call of Output
+func (mr *MockNetworkClientMockRecorder) Output() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Output", reflect.TypeOf((*MockNetworkClient)(nil).Output))
 }
 
 // MockSenderClient is a mock of SenderClient interface
@@ -101,6 +243,20 @@ func (mr *MockSenderClientMockRecorder) Supports() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Supports", reflect.TypeOf((*MockSenderClient)(nil).Supports))
 }
 
+// Output mocks base method
+func (m *MockSenderClient) Output() output.Element {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Output")
+	ret0, _ := ret[0].(output.Element)
+	return ret0
+}
+
+// Output indicates an expected call of Output
+func (mr *MockSenderClientMockRecorder) Output() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Output", reflect.TypeOf((*MockSenderClient)(nil).Output))
+}
+
 // MockReceiverClient is a mock of ReceiverClient interface
 type MockReceiverClient struct {
 	ctrl     *gomock.Controller
@@ -151,6 +307,20 @@ func (m *MockReceiverClient) Supports() map[string]bool {
 func (mr *MockReceiverClientMockRecorder) Supports() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Supports", reflect.TypeOf((*MockReceiverClient)(nil).Supports))
+}
+
+// Output mocks base method
+func (m *MockReceiverClient) Output() output.Element {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Output")
+	ret0, _ := ret[0].(output.Element)
+	return ret0
+}
+
+// Output indicates an expected call of Output
+func (mr *MockReceiverClientMockRecorder) Output() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Output", reflect.TypeOf((*MockReceiverClient)(nil).Output))
 }
 
 // MockPublicKeyFinderClient is a mock of PublicKeyFinderClient interface
@@ -205,6 +375,20 @@ func (mr *MockPublicKeyFinderClientMockRecorder) Supports() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Supports", reflect.TypeOf((*MockPublicKeyFinderClient)(nil).Supports))
 }
 
+// Output mocks base method
+func (m *MockPublicKeyFinderClient) Output() output.Element {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Output")
+	ret0, _ := ret[0].(output.Element)
+	return ret0
+}
+
+// Output indicates an expected call of Output
+func (mr *MockPublicKeyFinderClientMockRecorder) Output() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Output", reflect.TypeOf((*MockPublicKeyFinderClient)(nil).Output))
+}
+
 // MockNameServiceAddressClient is a mock of NameServiceAddressClient interface
 type MockNameServiceAddressClient struct {
 	ctrl     *gomock.Controller
@@ -257,6 +441,20 @@ func (mr *MockNameServiceAddressClientMockRecorder) Supports() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Supports", reflect.TypeOf((*MockNameServiceAddressClient)(nil).Supports))
 }
 
+// Output mocks base method
+func (m *MockNameServiceAddressClient) Output() output.Element {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Output")
+	ret0, _ := ret[0].(output.Element)
+	return ret0
+}
+
+// Output indicates an expected call of Output
+func (mr *MockNameServiceAddressClientMockRecorder) Output() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Output", reflect.TypeOf((*MockNameServiceAddressClient)(nil).Output))
+}
+
 // MockNameServiceDomainClient is a mock of NameServiceDomainClient interface
 type MockNameServiceDomainClient struct {
 	ctrl     *gomock.Controller
@@ -307,6 +505,20 @@ func (m *MockNameServiceDomainClient) Supports() map[string]bool {
 func (mr *MockNameServiceDomainClientMockRecorder) Supports() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Supports", reflect.TypeOf((*MockNameServiceDomainClient)(nil).Supports))
+}
+
+// Output mocks base method
+func (m *MockNameServiceDomainClient) Output() output.Element {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Output")
+	ret0, _ := ret[0].(output.Element)
+	return ret0
+}
+
+// Output indicates an expected call of Output
+func (mr *MockNameServiceDomainClientMockRecorder) Output() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Output", reflect.TypeOf((*MockNameServiceDomainClient)(nil).Output))
 }
 
 // MockSentClient is a mock of SentClient interface

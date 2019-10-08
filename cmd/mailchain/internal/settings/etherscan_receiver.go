@@ -3,6 +3,7 @@ package settings
 
 import (
 	"github.com/mailchain/mailchain"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/internal/clients/etherscan"
@@ -10,6 +11,7 @@ import (
 )
 
 type EtherscanReceiver struct {
+	kind                    string
 	EnabledProtocolNetworks values.StringSlice
 	APIKey                  values.String
 }
@@ -28,6 +30,7 @@ func etherscanReceiverAny(s values.Store, kind string) *EtherscanReceiver {
 		enabledNetworks = append(enabledNetworks, "ethereum/"+n)
 	}
 	return &EtherscanReceiver{
+		kind: kind,
 		EnabledProtocolNetworks: values.NewDefaultStringSlice(
 			enabledNetworks,
 			s,
@@ -47,4 +50,14 @@ func (r EtherscanReceiver) Supports() map[string]bool {
 
 func (r EtherscanReceiver) Produce() (mailbox.Receiver, error) {
 	return etherscan.NewAPIClient(r.APIKey.Get())
+}
+
+func (r EtherscanReceiver) Output() output.Element {
+	return output.Element{
+		FullName: r.kind,
+		Attributes: []output.Attribute{
+			r.EnabledProtocolNetworks.Attribute(),
+			r.APIKey.Attribute(),
+		},
+	}
 }

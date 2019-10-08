@@ -3,6 +3,7 @@ package settings
 import (
 	"fmt"
 
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/sender/ethrpc2"
@@ -30,5 +31,14 @@ func (e EthereumRPC2) Produce() (sender.Message, error) {
 func (e EthereumRPC2) Supports() map[string]bool {
 	return map[string]bool{
 		"ethereum/" + e.network: true,
+	}
+}
+
+func (e EthereumRPC2) Output() output.Element {
+	return output.Element{
+		FullName: "senders.ethereum-rpc2-" + e.network,
+		Attributes: []output.Attribute{
+			e.Address.Attribute(),
+		},
 	}
 }

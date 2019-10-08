@@ -32,12 +32,13 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 	cmd.PersistentFlags().String("log-level", "warn", "log level [Panic,Fatal,Error,Warn,Info,Debug]")
 	cmd.PersistentFlags().Bool("prevent-init-config", false, "stop automatically creating config if non is found")
 
-	config := settings.New(v)
+	config := settings.FromStore(v)
 	account, err := accountCmd(config)
 	if err != nil {
 		return nil, err
 	}
 	cmd.AddCommand(account)
+	cmd.AddCommand(settingsCmd(config))
 
 	serve, err := serveCmd()
 	if err != nil {

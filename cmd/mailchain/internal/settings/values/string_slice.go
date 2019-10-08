@@ -35,7 +35,7 @@ func (d DefaultStringSlice) Attribute() output.Attribute {
 	dots := strings.Split(d.setting, ".")
 
 	return output.Attribute{
-		Name:      dots[len(dots)-1],
+		FullName:  dots[len(dots)-1],
 		IsDefault: strings.Join(d.Get(), "-") == strings.Join(d.def, "-"),
 		Value:     d.Get(),
 	}

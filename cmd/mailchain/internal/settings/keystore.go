@@ -3,6 +3,7 @@ package settings
 import (
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	ks "github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/nacl"
@@ -31,6 +32,18 @@ func (s Keystore) Produce() (ks.Store, error) {
 	}
 }
 
+func (s Keystore) Output() output.Element {
+	return output.Element{
+		FullName: "keystore",
+		Attributes: []output.Attribute{
+			s.Kind.Attribute(),
+		},
+		Elements: []output.Element{
+			s.naclFileStore.Output(),
+		},
+	}
+}
+
 func naclFileStore(s values.Store) NACLFileStore {
 	return NACLFileStore{
 		Path: values.NewDefaultString(defaults.KeystorePath(), s, "keystore.nacl-filestore.path"),
@@ -44,4 +57,13 @@ type NACLFileStore struct {
 func (n NACLFileStore) Produce() (*nacl.FileStore, error) {
 	fs := nacl.NewFileStore(n.Path.Get())
 	return &fs, nil
+}
+
+func (n NACLFileStore) Output() output.Element {
+	return output.Element{
+		FullName: "keystore.nacl-filestore",
+		Attributes: []output.Attribute{
+			n.Path.Attribute(),
+		},
+	}
 }

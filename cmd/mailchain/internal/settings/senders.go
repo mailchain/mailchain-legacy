@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/chains"
 	"github.com/mailchain/mailchain/internal/chains/ethereum"
@@ -31,4 +32,16 @@ func (s Senders) Produce(client string) (sender.Message, error) {
 		return nil, errors.Errorf("%s not a supported sender", client)
 	}
 	return m.Produce()
+}
+
+func (s Senders) Output() output.Element {
+	elements := []output.Element{}
+	for _, c := range s.clients {
+		elements = append(elements, c.Output())
+	}
+
+	return output.Element{
+		FullName: "senders",
+		Elements: elements,
+	}
 }

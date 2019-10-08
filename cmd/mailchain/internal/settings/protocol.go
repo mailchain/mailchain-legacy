@@ -3,6 +3,7 @@ package settings
 import (
 	"fmt"
 
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/internal/mailbox"
@@ -15,7 +16,7 @@ func protocol(s values.Store, protocol string) *Protocol {
 		Disabled: values.NewDefaultBool(false, s,
 			fmt.Sprintf("protocols.%s.disabled", protocol)),
 		Kind: protocol,
-		Networks: map[string]*Network{
+		Networks: map[string]NetworkClient{
 			ethereum.Goerli:  network(s, protocol, ethereum.Goerli),
 			ethereum.Kovan:   network(s, protocol, ethereum.Kovan),
 			ethereum.Mainnet: network(s, protocol, ethereum.Mainnet),
@@ -26,7 +27,7 @@ func protocol(s values.Store, protocol string) *Protocol {
 }
 
 type Protocol struct {
-	Networks map[string]*Network
+	Networks map[string]NetworkClient
 	Kind     string
 	Disabled values.Bool
 }
@@ -89,4 +90,18 @@ func (p Protocol) GetDomainNameServices(ans *DomainNameServices) (map[string]nam
 		msg[p.Kind+"/"+network] = s
 	}
 	return msg, nil
+}
+
+func (p Protocol) Output() output.Element {
+	elements := []output.Element{}
+	for _, c := range p.Networks {
+		elements = append(elements, c.Output())
+	}
+	return output.Element{
+		FullName: "protocols." + p.Kind,
+		Attributes: []output.Attribute{
+			p.Disabled.Attribute(),
+		},
+		Elements: elements,
+	}
 }

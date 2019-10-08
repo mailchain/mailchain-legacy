@@ -165,7 +165,7 @@ func TestDefaultBool_Attribute(t *testing.T) {
 					return m
 				}(),
 			},
-			output.Attribute{Name: "name1", IsDefault: false, AdditionalComment: "", Value: true},
+			output.Attribute{FullName: "name1", IsDefault: false, AdditionalComment: "", Value: true},
 		},
 	}
 	for _, tt := range tests {

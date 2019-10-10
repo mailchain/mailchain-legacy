@@ -2,6 +2,7 @@ package settings
 
 import (
 	"github.com/mailchain/mailchain"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/mailbox"
@@ -11,8 +12,9 @@ import (
 func publicKeyFinders(s values.Store) *PublicKeyFinders {
 	return &PublicKeyFinders{
 		clients: map[string]PublicKeyFinderClient{
-			mailchain.ClientEtherscanNoAuth: etherscanPublicKeyFinderNoAuth(s),
-			mailchain.ClientEtherscan:       etherscanPublicKeyFinder(s),
+			mailchain.ClientEtherscanNoAuth:   etherscanPublicKeyFinderNoAuth(s),
+			mailchain.ClientEtherscan:         etherscanPublicKeyFinder(s),
+			defaults.SubstratePublicKeyFinder: substratePublicKeyFinder(s),
 		},
 	}
 }

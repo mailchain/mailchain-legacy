@@ -18,9 +18,9 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/internal/chains"
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
+	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
@@ -40,7 +40,7 @@ func TestSigner(t *testing.T) {
 		{
 			"ethereum",
 			args{
-				chains.Ethereum,
+				protocols.Ethereum,
 				testutil.CharlottePrivateKey,
 			},
 			ethereum.NewSigner(testutil.CharlottePrivateKey),

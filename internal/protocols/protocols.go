@@ -12,16 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package chains
+package protocols
 
 import (
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 )
 
-const Ethereum = "ethereum"
+const (
+	Ethereum  = "ethereum"
+	Substrate = "substrate"
+)
 
-func NetworkNames(chain string) []string {
-	switch chain {
+func NetworkNames(protocol string) []string {
+	switch protocol {
 	case Ethereum:
 		return ethereum.Networks()
 	default:

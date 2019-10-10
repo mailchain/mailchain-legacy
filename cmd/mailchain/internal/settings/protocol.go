@@ -5,8 +5,8 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/sender"
 )
@@ -93,15 +93,20 @@ func (p Protocol) GetDomainNameServices(ans *DomainNameServices) (map[string]nam
 }
 
 func (p Protocol) Output() output.Element {
-	elements := []output.Element{}
+	networkElements := []output.Element{}
 	for _, c := range p.Networks {
-		elements = append(elements, c.Output())
+		networkElements = append(networkElements, c.Output())
 	}
 	return output.Element{
 		FullName: "protocols." + p.Kind,
 		Attributes: []output.Attribute{
 			p.Disabled.Attribute(),
 		},
-		Elements: elements,
+		Elements: []output.Element{
+			output.Element{
+				FullName: "protocols." + p.Kind + ".networks",
+				Elements: networkElements,
+			},
+		},
 	}
 }

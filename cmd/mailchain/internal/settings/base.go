@@ -5,7 +5,7 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
-	"github.com/mailchain/mailchain/internal/chains"
+	"github.com/mailchain/mailchain/internal/protocols"
 )
 
 func FromStore(s values.Store) *Base {
@@ -17,7 +17,7 @@ func FromStore(s values.Store) *Base {
 		PublicKeyFinders:    publicKeyFinders(s),
 		// Protocols these contain the networks
 		Protocols: map[string]*Protocol{
-			chains.Ethereum: protocol(s, chains.Ethereum),
+			protocols.Ethereum: protocol(s, protocols.Ethereum),
 		},
 		// other
 		Keystore:     keystore(s),
@@ -50,8 +50,12 @@ func (o *Base) ToYaml(out io.Writer, tabsize int, commentDefaults, excludeDefaul
 	}
 
 	output.ToYaml(output.Root{
-		Elements: append(
-			protocols,
+		Elements: []output.Element{
+			output.Element{
+				FullName: "protocols",
+				Elements: protocols,
+			},
+
 			o.AddressNameServices.Output(),
 			o.DomainNameServices.Output(),
 
@@ -63,6 +67,6 @@ func (o *Base) ToYaml(out io.Writer, tabsize int, commentDefaults, excludeDefaul
 			o.MailboxState.Output(),
 			o.SentStore.Output(),
 			o.Server.Output(),
-		),
+		},
 	}, out, 2, commentDefaults, excludeDefaults)
 }

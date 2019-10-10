@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package chains
+package protocols
 
 import (
 	"reflect"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 )
 
 func TestNetworkNames(t *testing.T) {

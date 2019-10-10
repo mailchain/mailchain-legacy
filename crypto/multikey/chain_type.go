@@ -15,14 +15,14 @@
 package multikey
 
 import (
-	"github.com/mailchain/mailchain/internal/chains"
+	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/pkg/errors"
 )
 
 func GetKeyTypeFromChain(chain string) (string, error) {
 	switch chain {
-	case chains.Ethereum:
+	case protocols.Ethereum:
 		return encoding.SECP256K1, nil
 	default:
 		return "", errors.Errorf("no key type for specified chain")

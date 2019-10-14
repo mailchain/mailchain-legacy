@@ -51,7 +51,7 @@ func GetResolveAddress(resolvers map[string]nameservice.ReverseLookup) func(w ht
 		}
 		resolver, ok := resolvers[fmt.Sprintf("%s/%s", protocol, network)]
 		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no name servier resolver for chain.network configured"))
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no nameserver for \"%s/%s\"", protocol, network))
 			return
 		}
 

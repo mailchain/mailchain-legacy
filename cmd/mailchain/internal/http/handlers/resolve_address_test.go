@@ -168,7 +168,7 @@ func TestGetResolveAddress(t *testing.T) {
 				})
 				return req
 			}(),
-			"{\"code\":422,\"message\":\"no name servier resolver for chain.network configured\"}\n",
+			"{\"code\":422,\"message\":\"no nameserver for \\\"ethereum/mainnet\\\"\"}\n",
 			http.StatusUnprocessableEntity,
 		},
 		{

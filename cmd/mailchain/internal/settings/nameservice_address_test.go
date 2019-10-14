@@ -63,6 +63,17 @@ func TestAddressNameServices_Produce(t *testing.T) {
 		wantErr  bool
 	}{
 		{
+			"empty-client",
+			fields{
+				nil,
+			},
+			args{
+				"",
+			},
+			nil,
+			false,
+		},
+		{
 			"success",
 			fields{
 				map[string]NameServiceAddressClient{

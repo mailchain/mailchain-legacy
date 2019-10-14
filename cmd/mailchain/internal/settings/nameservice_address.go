@@ -35,7 +35,7 @@ func (s AddressNameServices) Output() output.Element {
 func (s AddressNameServices) Produce(client string) (nameservice.ReverseLookup, error) {
 	m, ok := s.clients[client]
 	if !ok {
-		return nil, errors.Errorf("%s not a supported address name service", client)
+		return nil, errors.Errorf("%q not a supported address name service", client)
 	}
 	return m.Produce()
 }

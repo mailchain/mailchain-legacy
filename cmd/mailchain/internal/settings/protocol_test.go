@@ -5,8 +5,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values/valuestest"
+	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,13 +40,13 @@ func TestProtocol_GetSenders(t *testing.T) {
 							m := valuestest.NewMockStore(mockCtrl)
 							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.sender").Return(false)
 							return m
-						}(), "ethereum", "mainnet"),
+						}(), "ethereum", "mainnet", defaults.EthereumNetworkAny()),
 					"ropsten": network(
 						func() values.Store {
 							m := valuestest.NewMockStore(mockCtrl)
 							m.EXPECT().IsSet("protocols.ethereum.networks.ropsten.sender").Return(false)
 							return m
-						}(), "ethereum", "ropsten")},
+						}(), "ethereum", "ropsten", defaults.EthereumNetworkAny())},
 				"ethereum",
 			},
 			args{
@@ -66,7 +69,7 @@ func TestProtocol_GetSenders(t *testing.T) {
 							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.sender").Return(true)
 							m.EXPECT().GetString("protocols.ethereum.networks.mainnet.sender").Return("invalid")
 							return m
-						}(), "ethereum", "mainnet"),
+						}(), "ethereum", "mainnet", defaults.EthereumNetworkAny()),
 				},
 				"ethereum",
 			},
@@ -130,13 +133,13 @@ func TestProtocol_GetReceivers(t *testing.T) {
 							m := valuestest.NewMockStore(mockCtrl)
 							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.receiver").Return(false)
 							return m
-						}(), "ethereum", "mainnet"),
+						}(), "ethereum", "mainnet", defaults.EthereumNetworkAny()),
 					"ropsten": network(
 						func() values.Store {
 							m := valuestest.NewMockStore(mockCtrl)
 							m.EXPECT().IsSet("protocols.ethereum.networks.ropsten.receiver").Return(false)
 							return m
-						}(), "ethereum", "ropsten")},
+						}(), "ethereum", "ropsten", defaults.EthereumNetworkAny())},
 				"ethereum",
 			},
 			args{
@@ -159,7 +162,7 @@ func TestProtocol_GetReceivers(t *testing.T) {
 							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.receiver").Return(true)
 							m.EXPECT().GetString("protocols.ethereum.networks.mainnet.receiver").Return("invalid")
 							return m
-						}(), "ethereum", "mainnet"),
+						}(), "ethereum", "mainnet", defaults.EthereumNetworkAny()),
 				},
 				"ethereum",
 			},
@@ -223,13 +226,13 @@ func TestProtocol_GetPublicKeyFinders(t *testing.T) {
 							m := valuestest.NewMockStore(mockCtrl)
 							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.public-key-finder").Return(false)
 							return m
-						}(), "ethereum", "mainnet"),
+						}(), "ethereum", "mainnet", defaults.EthereumNetworkAny()),
 					"ropsten": network(
 						func() values.Store {
 							m := valuestest.NewMockStore(mockCtrl)
 							m.EXPECT().IsSet("protocols.ethereum.networks.ropsten.public-key-finder").Return(false)
 							return m
-						}(), "ethereum", "ropsten")},
+						}(), "ethereum", "ropsten", defaults.EthereumNetworkAny())},
 				"ethereum",
 			},
 			args{
@@ -252,7 +255,7 @@ func TestProtocol_GetPublicKeyFinders(t *testing.T) {
 							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.public-key-finder").Return(true)
 							m.EXPECT().GetString("protocols.ethereum.networks.mainnet.public-key-finder").Return("invalid")
 							return m
-						}(), "ethereum", "mainnet"),
+						}(), "ethereum", "mainnet", defaults.EthereumNetworkAny()),
 				},
 				"ethereum",
 			},
@@ -294,8 +297,9 @@ func Test_protocol(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
-		s        values.Store
-		protocol string
+		s              values.Store
+		protocol       string
+		networkClients map[string]NetworkClient
 	}
 	tests := []struct {
 		name         string
@@ -312,6 +316,13 @@ func Test_protocol(t *testing.T) {
 					return m
 				}(),
 				"ethereum",
+				map[string]NetworkClient{
+					ethereum.Goerli:  network(valuestest.NewMockStore(mockCtrl), protocols.Ethereum, ethereum.Goerli, defaults.EthereumNetworkAny()),
+					ethereum.Kovan:   network(valuestest.NewMockStore(mockCtrl), protocols.Ethereum, ethereum.Kovan, defaults.EthereumNetworkAny()),
+					ethereum.Mainnet: network(valuestest.NewMockStore(mockCtrl), protocols.Ethereum, ethereum.Mainnet, defaults.EthereumNetworkAny()),
+					ethereum.Rinkeby: network(valuestest.NewMockStore(mockCtrl), protocols.Ethereum, ethereum.Rinkeby, defaults.EthereumNetworkAny()),
+					ethereum.Ropsten: network(valuestest.NewMockStore(mockCtrl), protocols.Ethereum, ethereum.Ropsten, defaults.EthereumNetworkAny()),
+				},
 			},
 			[]string{"goerli", "kovan", "mainnet", "rinkeby", "ropsten"},
 			false,
@@ -319,7 +330,7 @@ func Test_protocol(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := protocol(tt.args.s, tt.args.protocol)
+			got := protocol(tt.args.s, tt.args.protocol, tt.args.networkClients)
 			gotKeys := []string{}
 			for k := range got.Networks {
 				gotKeys = append(gotKeys, k)
@@ -362,13 +373,13 @@ func TestProtocol_GetAddressNameServices(t *testing.T) {
 							m := valuestest.NewMockStore(mockCtrl)
 							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.nameservice-address").Return(false)
 							return m
-						}(), "ethereum", "mainnet"),
+						}(), "ethereum", "mainnet", defaults.EthereumNetworkAny()),
 					"ropsten": network(
 						func() values.Store {
 							m := valuestest.NewMockStore(mockCtrl)
 							m.EXPECT().IsSet("protocols.ethereum.networks.ropsten.nameservice-address").Return(false)
 							return m
-						}(), "ethereum", "ropsten")},
+						}(), "ethereum", "ropsten", defaults.EthereumNetworkAny())},
 				"ethereum",
 				nil,
 			},
@@ -392,7 +403,7 @@ func TestProtocol_GetAddressNameServices(t *testing.T) {
 							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.nameservice-address").Return(true)
 							m.EXPECT().GetString("protocols.ethereum.networks.mainnet.nameservice-address").Return("invalid")
 							return m
-						}(), "ethereum", "mainnet"),
+						}(), "ethereum", "mainnet", defaults.EthereumNetworkAny()),
 				},
 				"ethereum",
 				nil,
@@ -459,13 +470,13 @@ func TestProtocol_GetDomainNameServices(t *testing.T) {
 							m := valuestest.NewMockStore(mockCtrl)
 							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.nameservice-domain-name").Return(false)
 							return m
-						}(), "ethereum", "mainnet"),
+						}(), "ethereum", "mainnet", defaults.EthereumNetworkAny()),
 					"ropsten": network(
 						func() values.Store {
 							m := valuestest.NewMockStore(mockCtrl)
 							m.EXPECT().IsSet("protocols.ethereum.networks.ropsten.nameservice-domain-name").Return(false)
 							return m
-						}(), "ethereum", "ropsten")},
+						}(), "ethereum", "ropsten", defaults.EthereumNetworkAny())},
 				"ethereum",
 				nil,
 			},
@@ -489,7 +500,7 @@ func TestProtocol_GetDomainNameServices(t *testing.T) {
 							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.nameservice-domain-name").Return(true)
 							m.EXPECT().GetString("protocols.ethereum.networks.mainnet.nameservice-domain-name").Return("invalid")
 							return m
-						}(), "ethereum", "mainnet"),
+						}(), "ethereum", "mainnet", defaults.EthereumNetworkAny()),
 				},
 				"ethereum",
 				nil,

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values/valuestest"
 	"github.com/stretchr/testify/assert"
@@ -17,6 +18,7 @@ func Test_network(t *testing.T) {
 		s        values.Store
 		protocol string
 		network  string
+		nd       defaults.NetworkDefaults
 	}
 	tests := []struct {
 		name                      string
@@ -43,6 +45,7 @@ func Test_network(t *testing.T) {
 				}(),
 				"ethereum",
 				"mainnet",
+				defaults.EthereumNetworkAny(),
 			},
 			"mailchain",
 			"mailchain",
@@ -54,7 +57,7 @@ func Test_network(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := network(tt.args.s, tt.args.protocol, tt.args.network)
+			got := network(tt.args.s, tt.args.protocol, tt.args.network, tt.args.nd)
 			assert.Equal(tt.wantNameServiceAddress, got.NameServiceAddress.Get())
 			assert.Equal(tt.wantNameServiceDomainName, got.NameServiceDomainName.Get())
 			assert.Equal(tt.wantPublicKeyFinder, got.PublicKeyFinder.Get())

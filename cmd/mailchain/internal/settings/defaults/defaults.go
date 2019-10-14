@@ -41,9 +41,6 @@ const (
 
 	Port = 8080
 
-	EthereumReceiver        = mailchain.ClientEtherscanNoAuth
-	EthereumPublicKeyFinder = mailchain.ClientEtherscanNoAuth
-
 	SubstratePublicKeyFinder = "substrate-public-key-finder"
 )
 

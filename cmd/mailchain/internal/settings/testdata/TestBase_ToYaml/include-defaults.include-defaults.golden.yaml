@@ -37,6 +37,16 @@ protocols:
         public-key-finder: "etherscan-no-auth"
         receiver: "etherscan-no-auth"
         sender: "ethereum-relay"
+  substrate:
+    disabled: false
+    networks:
+      edgeware-testnet:
+        disabled: false
+        nameservice-address: ""
+        nameservice-domain-name: ""
+        public-key-finder: "substrate-public-key-finder"
+        receiver: ""
+        sender: ""
 nameservice-address:
   mailchain:
     base-url: "https://ns.mailchain.xyz/"

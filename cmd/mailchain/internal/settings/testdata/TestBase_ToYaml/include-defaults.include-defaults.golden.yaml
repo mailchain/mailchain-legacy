@@ -1,40 +1,52 @@
-ethereum:
-  disabled: false
-  goerli:
+protocols:
+  ethereum:
     disabled: false
-    nameservice-address: "mailchain"
-    nameservice-domain-name: "mailchain"
-    public-key-finder: "etherscan-no-auth"
-    receiver: "etherscan-no-auth"
-    sender: "ethereum-relay"
-  kovan:
+    networks:
+      goerli:
+        disabled: false
+        nameservice-address: "mailchain"
+        nameservice-domain-name: "mailchain"
+        public-key-finder: "etherscan-no-auth"
+        receiver: "etherscan-no-auth"
+        sender: "ethereum-relay"
+      kovan:
+        disabled: false
+        nameservice-address: "mailchain"
+        nameservice-domain-name: "mailchain"
+        public-key-finder: "etherscan-no-auth"
+        receiver: "etherscan-no-auth"
+        sender: "ethereum-relay"
+      mainnet:
+        disabled: false
+        nameservice-address: "mailchain"
+        nameservice-domain-name: "mailchain"
+        public-key-finder: "etherscan-no-auth"
+        receiver: "etherscan-no-auth"
+        sender: "ethereum-relay"
+      rinkeby:
+        disabled: false
+        nameservice-address: "mailchain"
+        nameservice-domain-name: "mailchain"
+        public-key-finder: "etherscan-no-auth"
+        receiver: "etherscan-no-auth"
+        sender: "ethereum-relay"
+      ropsten:
+        disabled: false
+        nameservice-address: "mailchain"
+        nameservice-domain-name: "mailchain"
+        public-key-finder: "etherscan-no-auth"
+        receiver: "etherscan-no-auth"
+        sender: "ethereum-relay"
+  substrate:
     disabled: false
-    nameservice-address: "mailchain"
-    nameservice-domain-name: "mailchain"
-    public-key-finder: "etherscan-no-auth"
-    receiver: "etherscan-no-auth"
-    sender: "ethereum-relay"
-  mainnet:
-    disabled: false
-    nameservice-address: "mailchain"
-    nameservice-domain-name: "mailchain"
-    public-key-finder: "etherscan-no-auth"
-    receiver: "etherscan-no-auth"
-    sender: "ethereum-relay"
-  rinkeby:
-    disabled: false
-    nameservice-address: "mailchain"
-    nameservice-domain-name: "mailchain"
-    public-key-finder: "etherscan-no-auth"
-    receiver: "etherscan-no-auth"
-    sender: "ethereum-relay"
-  ropsten:
-    disabled: false
-    nameservice-address: "mailchain"
-    nameservice-domain-name: "mailchain"
-    public-key-finder: "etherscan-no-auth"
-    receiver: "etherscan-no-auth"
-    sender: "ethereum-relay"
+    networks:
+      edgeware-testnet:
+        disabled: false
+        nameservice-address: ""
+        nameservice-domain-name: ""
+        public-key-finder: "substrate-public-key-finder"
+        receiver: ""
+        sender: ""
 nameservice-address:
   mailchain:
     base-url: "https://ns.mailchain.xyz/"
@@ -70,6 +82,10 @@ public-key-finders:
       - "ethereum/mainnet"
       - "ethereum/rinkeby"
       - "ethereum/ropsten"
+  substrate-public-key-finder:
+    disabled: false
+    enabled-networks:
+      - "substrate/edgeware-testnet"
 receivers:
   etherscan:
     api-key: ""

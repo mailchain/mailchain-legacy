@@ -65,6 +65,12 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
+		sender, ok := senders[fmt.Sprintf("ethereum/%s", req.Network)]
+		if !ok {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender for \"%s/%s\"", req.Protocol, req.Network))
+			return
+		}
+
 		from, err := address.DecodeByProtocol(req.Body.from.ChainAddress, req.Protocol)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"))
@@ -72,11 +78,6 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 		}
 		if !ks.HasAddress(from) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Body.Message.Headers.From))
-			return
-		}
-		sender, ok := senders[fmt.Sprintf("ethereum/%s", req.Network)]
-		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender for ethereum/%s configured", req.Network))
 			return
 		}
 

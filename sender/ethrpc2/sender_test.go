@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/mailbox/signer/signertest"
 	"github.com/mailchain/mailchain/internal/testutil"

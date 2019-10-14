@@ -12,19 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package multikey
+package protocols
 
 import (
-	"github.com/mailchain/mailchain/internal/protocols"
-	"github.com/mailchain/mailchain/internal/encoding"
-	"github.com/pkg/errors"
+	"reflect"
+	"testing"
+
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 )
 
-func GetKeyTypeFromChain(chain string) (string, error) {
-	switch chain {
-	case protocols.Ethereum:
-		return encoding.SECP256K1, nil
-	default:
-		return "", errors.Errorf("no key type for specified chain")
+func TestNetworkNames(t *testing.T) {
+	type args struct {
+		chain string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{
+			"ethereum",
+			args{
+				"ethereum",
+			},
+			ethereum.Networks(),
+		},
+		{
+			"unknown",
+			args{
+				"unknown",
+			},
+			nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NetworkNames(tt.args.chain); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NetworkNames() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

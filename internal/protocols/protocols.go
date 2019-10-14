@@ -12,44 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package chains
+package protocols
 
 import (
-	"reflect"
-	"testing"
-
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 )
 
-func TestNetworkNames(t *testing.T) {
-	type args struct {
-		chain string
-	}
-	tests := []struct {
-		name string
-		args args
-		want []string
-	}{
-		{
-			"ethereum",
-			args{
-				"ethereum",
-			},
-			ethereum.Networks(),
-		},
-		{
-			"unknown",
-			args{
-				"unknown",
-			},
-			nil,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NetworkNames(tt.args.chain); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NetworkNames() = %v, want %v", got, tt.want)
-			}
-		})
+const (
+	Ethereum  = "ethereum"
+	Substrate = "substrate"
+)
+
+func NetworkNames(protocol string) []string {
+	switch protocol {
+	case Ethereum:
+		return ethereum.Networks()
+	default:
+		return nil
 	}
 }

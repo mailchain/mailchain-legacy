@@ -49,7 +49,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 		}
 		finder, ok := finders[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no public key finder for chain.network configured"))
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no public key finder for \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
 

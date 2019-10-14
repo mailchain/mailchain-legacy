@@ -12,19 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package multikey
+package substrate
 
-import (
-	"github.com/mailchain/mailchain/internal/protocols"
-	"github.com/mailchain/mailchain/internal/encoding"
-	"github.com/pkg/errors"
+const (
+	EdgewareTestnet = "edgeware-testnet"
 )
 
-func GetKeyTypeFromChain(chain string) (string, error) {
-	switch chain {
-	case protocols.Ethereum:
-		return encoding.SECP256K1, nil
-	default:
-		return "", errors.Errorf("no key type for specified chain")
-	}
+func Networks() []string {
+	return []string{"edgeware-testnet"}
 }

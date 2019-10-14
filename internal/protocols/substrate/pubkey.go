@@ -12,19 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package multikey
+package substrate
 
 import (
-	"github.com/mailchain/mailchain/internal/protocols"
-	"github.com/mailchain/mailchain/internal/encoding"
+	"context"
+
 	"github.com/pkg/errors"
 )
 
-func GetKeyTypeFromChain(chain string) (string, error) {
-	switch chain {
-	case protocols.Ethereum:
-		return encoding.SECP256K1, nil
-	default:
-		return "", errors.Errorf("no key type for specified chain")
+func NewPublicKeyFinder() *PublicKeyFinder {
+	return &PublicKeyFinder{}
+}
+
+type PublicKeyFinder struct {
+	supportedNetworks []string
+}
+
+func (pkf *PublicKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) ([]byte, error) {
+	if protocol != "substrate" {
+		return nil, errors.New("protocol must be 'substrate'")
 	}
+	if len(address) != 35 {
+		return nil, errors.New("address must be 35 bytes in length")
+	}
+
+	// Remove the 1st byte (network identifier)
+	// Remove last 2 bytes (blake2b hash)
+	newAddress := address[1:33]
+
+	return newAddress, nil
 }

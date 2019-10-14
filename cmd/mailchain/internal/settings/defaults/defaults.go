@@ -41,11 +41,7 @@ const (
 
 	Port = 8080
 
-	// Sender = mailchain.ClientRelay
-
-	// EthereumSender          = Sender
-	EthereumReceiver        = mailchain.ClientEtherscanNoAuth
-	EthereumPublicKeyFinder = mailchain.ClientEtherscanNoAuth
+	SubstratePublicKeyFinder = "substrate-public-key-finder"
 )
 
 func KeystorePath() string {

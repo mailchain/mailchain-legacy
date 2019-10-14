@@ -33,6 +33,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.4 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/mr-tron/base58 v1.1.0
 	github.com/multiformats/go-multihash v0.0.1
 	github.com/nicksnyder/go-i18n v1.10.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.1 // indirect

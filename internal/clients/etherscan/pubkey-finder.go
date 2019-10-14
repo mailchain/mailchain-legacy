@@ -19,7 +19,7 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/pkg/errors"
 )
 

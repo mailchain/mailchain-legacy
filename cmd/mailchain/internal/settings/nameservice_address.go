@@ -4,7 +4,7 @@ import (
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
 )
@@ -35,7 +35,7 @@ func (s AddressNameServices) Output() output.Element {
 func (s AddressNameServices) Produce(client string) (nameservice.ReverseLookup, error) {
 	m, ok := s.clients[client]
 	if !ok {
-		return nil, errors.Errorf("%s not a supported address name service", client)
+		return nil, errors.Errorf("%q not a supported address name service", client)
 	}
 	return m.Produce()
 }

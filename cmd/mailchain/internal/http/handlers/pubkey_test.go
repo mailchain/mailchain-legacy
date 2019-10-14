@@ -160,7 +160,7 @@ func TestGetPublicKey(t *testing.T) {
 				"network":  "mainnet",
 				"protocol": "ethereum",
 			},
-			"{\"code\":422,\"message\":\"no public key finder for chain.network configured\"}\n",
+			"{\"code\":422,\"message\":\"no public key finder for \\\"ethereum/mainnet\\\"\"}\n",
 			http.StatusUnprocessableEntity,
 		},
 		{

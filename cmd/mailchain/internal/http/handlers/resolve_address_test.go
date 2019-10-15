@@ -168,7 +168,22 @@ func TestGetResolveAddress(t *testing.T) {
 				})
 				return req
 			}(),
-			"{\"code\":422,\"message\":\"no nameserver for \\\"ethereum/mainnet\\\"\"}\n",
+			"{\"code\":422,\"message\":\"nameserver not supported on \\\"ethereum/mainnet\\\"\"}\n",
+			http.StatusUnprocessableEntity,
+		},
+		{
+			"nil-network-finder",
+			args{
+				map[string]nameservice.ReverseLookup{"ethereum/mainnet": nil},
+			},
+			func() *http.Request {
+				req := httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil)
+				req = mux.SetURLVars(req, map[string]string{
+					"address": "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+				})
+				return req
+			}(),
+			"{\"code\":422,\"message\":\"no nameserver configured for \\\"ethereum/mainnet\\\"\"}\n",
 			http.StatusUnprocessableEntity,
 		},
 		{

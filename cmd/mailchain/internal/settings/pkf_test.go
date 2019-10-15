@@ -76,6 +76,17 @@ func TestPublicKeyFinders_Produce(t *testing.T) {
 			false,
 		},
 		{
+			"err-nil-client",
+			fields{
+				nil,
+			},
+			args{
+				"",
+			},
+			true,
+			false,
+		},
+		{
 			"err-no-client",
 			fields{
 				nil,

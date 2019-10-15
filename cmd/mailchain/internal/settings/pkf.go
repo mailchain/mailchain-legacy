@@ -24,6 +24,9 @@ type PublicKeyFinders struct {
 }
 
 func (s PublicKeyFinders) Produce(client string) (mailbox.PubKeyFinder, error) {
+	if client == "" {
+		return nil, nil
+	}
 	m, ok := s.clients[client]
 	if !ok {
 		return nil, errors.Errorf("%s not a supported public key finder", client)

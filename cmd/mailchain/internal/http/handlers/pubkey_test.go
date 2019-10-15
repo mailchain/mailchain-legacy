@@ -160,7 +160,20 @@ func TestGetPublicKey(t *testing.T) {
 				"network":  "mainnet",
 				"protocol": "ethereum",
 			},
-			"{\"code\":422,\"message\":\"no public key finder for \\\"ethereum/mainnet\\\"\"}\n",
+			"{\"code\":422,\"message\":\"public key finder not supported on \\\"ethereum/mainnet\\\"\"}\n",
+			http.StatusUnprocessableEntity,
+		},
+		{
+			"nil-network-finder",
+			args{
+				map[string]mailbox.PubKeyFinder{"ethereum/mainnet": nil},
+			},
+			map[string]string{
+				"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+				"network":  "mainnet",
+				"protocol": "ethereum",
+			},
+			"{\"code\":422,\"message\":\"no public key finder configured for \\\"ethereum/mainnet\\\"\"}\n",
 			http.StatusUnprocessableEntity,
 		},
 		{

@@ -33,6 +33,9 @@ func (s DomainNameServices) Output() output.Element {
 }
 
 func (s DomainNameServices) Produce(client string) (nameservice.ForwardLookup, error) {
+	if client == "" {
+		return nil, nil
+	}
 	m, ok := s.clients[client]
 	if !ok {
 		return nil, errors.Errorf("%s not a supported address name service", client)

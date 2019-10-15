@@ -52,7 +52,11 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 		}
 		receiver, ok := receivers[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no receiver for \"%s/%s\"", req.Protocol, req.Network))
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("receiver not supported on \"%s/%s\"", req.Protocol, req.Network))
+			return
+		}
+		if receiver == nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no receiver configured for \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
 

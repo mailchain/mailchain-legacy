@@ -61,7 +61,7 @@ func produceConfig(s *settings.Base) (*config, error) {
 		name := s.Protocols[protocol].Kind
 		protocolPubKeyFinders, err := s.Protocols[protocol].GetPublicKeyFinders(s.PublicKeyFinders)
 		if err != nil {
-			return nil, errors.WithMessagef(err, "could not get %q receivers", name)
+			return nil, errors.WithMessagef(err, "could not get %q public key finders", name)
 		}
 		for k, v := range protocolPubKeyFinders {
 			publicKeyFinders[k] = v

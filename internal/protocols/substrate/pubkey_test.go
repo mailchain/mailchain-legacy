@@ -19,7 +19,6 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/internal/testutil"
-	// "github.com/decred/base58"
 	"github.com/mr-tron/base58"
 	"github.com/stretchr/testify/assert"
 )

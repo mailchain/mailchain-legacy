@@ -22,6 +22,9 @@ type Receivers struct {
 }
 
 func (s Receivers) Produce(client string) (mailbox.Receiver, error) {
+	if client == "" {
+		return nil, nil
+	}
 	m, ok := s.clients[client]
 	if !ok {
 		return nil, errors.Errorf("%s not a supported receiver", client)

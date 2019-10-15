@@ -67,7 +67,11 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 		}
 		sender, ok := senders[fmt.Sprintf("ethereum/%s", req.Network)]
 		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender for \"%s/%s\"", req.Protocol, req.Network))
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("sender not supported on \"%s/%s\"", req.Protocol, req.Network))
+			return
+		}
+		if sender == nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender configured for \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
 

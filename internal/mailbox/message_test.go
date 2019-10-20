@@ -43,10 +43,11 @@ func TestSendMessage(t *testing.T) {
 	defer mockCtrl.Finish()
 	msg := &mail.Message{
 		Headers: &mail.Headers{
-			From:    mail.Address{DisplayName: "From Display Name", FullAddress: "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
-			To:      mail.Address{DisplayName: "To Display Name", FullAddress: "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
-			Date:    time.Date(2018, 01, 02, 03, 04, 05, 06, time.UTC),
-			Subject: "test",
+			From:        mail.Address{DisplayName: "From Display Name", FullAddress: "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
+			To:          mail.Address{DisplayName: "To Display Name", FullAddress: "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
+			Date:        time.Date(2018, 01, 02, 03, 04, 05, 06, time.UTC),
+			Subject:     "test",
+			ContentType: "text/plain; charset=\"UTF-8\"",
 		},
 		ID:   []byte("2c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471002c47eca011e32b52c71005ad8a8f75e1b44c9@mailchain"),
 		Body: []byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet."),
@@ -110,10 +111,11 @@ func TestSendMessage(t *testing.T) {
 				ethereum.Mainnet,
 				&mail.Message{
 					Headers: &mail.Headers{
-						From:    mail.Address{DisplayName: "From Display Name", FullAddress: "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
-						To:      mail.Address{DisplayName: "To Display Name", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
-						Date:    time.Date(2018, 01, 02, 03, 04, 05, 06, time.UTC),
-						Subject: "test",
+						From:        mail.Address{DisplayName: "From Display Name", FullAddress: "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
+						To:          mail.Address{DisplayName: "To Display Name", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
+						Date:        time.Date(2018, 01, 02, 03, 04, 05, 06, time.UTC),
+						Subject:     "test",
+						ContentType: "text/plain; charset=\"UTF-8\"",
 					},
 					ID:   []byte("2c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471002c47eca011e32b52c71005ad8a8f75e1b44c9@mailchain"),
 					Body: []byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet."),
@@ -151,10 +153,11 @@ func TestSendMessage(t *testing.T) {
 				ethereum.Mainnet,
 				&mail.Message{
 					Headers: &mail.Headers{
-						From:    mail.Address{DisplayName: "From Display Name", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
-						To:      mail.Address{DisplayName: "To Display Name", FullAddress: "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
-						Date:    time.Date(2018, 01, 02, 03, 04, 05, 06, time.UTC),
-						Subject: "test",
+						From:        mail.Address{DisplayName: "From Display Name", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
+						To:          mail.Address{DisplayName: "To Display Name", FullAddress: "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
+						Date:        time.Date(2018, 01, 02, 03, 04, 05, 06, time.UTC),
+						Subject:     "test",
+						ContentType: "text/plain; charset=\"UTF-8\"",
 					},
 					ID:   []byte("2c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471002c47eca011e32b52c71005ad8a8f75e1b44c9@mailchain"),
 					Body: []byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet."),

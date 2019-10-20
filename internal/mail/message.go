@@ -15,6 +15,9 @@
 package mail
 
 import (
+	"fmt"
+	"net/http"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -26,9 +29,24 @@ func NewMessage(date time.Time, from, to Address, replyTo *Address, subject stri
 
 	return &Message{
 		ID:      id,
-		Headers: NewHeaders(date, from, to, replyTo, subject),
+		Headers: NewHeaders(date, from, to, replyTo, subject, detectContentType(body)),
 		Body:    body,
 	}, errors.WithMessage(err, "could not create ID")
+}
+
+func detectContentType(body []byte) string {
+	contentType := http.DetectContentType(body)
+	result := strings.Split(contentType, ";")
+
+	if len(result) == 1 {
+		return result[0]
+	} else if len(result) == 2 {
+		encodingParts := strings.Split(result[1], "=")
+		encoding := fmt.Sprintf("%s=\"%s\"", encodingParts[0], strings.ToUpper(encodingParts[1]))
+		return fmt.Sprintf("%s;%s", result[0], encoding)
+	}
+
+	return DefaultContentType
 }
 
 // Message Mailchain message.

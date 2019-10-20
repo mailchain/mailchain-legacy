@@ -18,22 +18,26 @@ import (
 	"time"
 )
 
+const DefaultContentType = "text/plain; charset=\"UTF-8\""
+
 // NewHeaders create the headers for sending a new message
-func NewHeaders(date time.Time, from, to Address, replyTo *Address, subject string) *Headers {
+func NewHeaders(date time.Time, from, to Address, replyTo *Address, subject string, contentType string) *Headers {
 	return &Headers{
-		From:    from,
-		To:      to,
-		ReplyTo: replyTo,
-		Subject: subject,
-		Date:    date,
+		From:        from,
+		To:          to,
+		ReplyTo:     replyTo,
+		Subject:     subject,
+		Date:        date,
+		ContentType: contentType,
 	}
 }
 
 // Headers for the message
 type Headers struct {
-	From    Address
-	To      Address
-	Date    time.Time
-	Subject string
-	ReplyTo *Address
+	From        Address
+	To          Address
+	Date        time.Time
+	Subject     string
+	ReplyTo     *Address
+	ContentType string
 }

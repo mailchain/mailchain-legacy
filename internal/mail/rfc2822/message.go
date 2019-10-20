@@ -31,7 +31,6 @@ func messageIDHeaderValue(id mail.ID) string {
 }
 
 func EncodeNewMessage(message *mail.Message) ([]byte, error) {
-	// headers["Content-Type"] = "text/html; charset=\"UTF-8\""
 	// TODO: implement base64 encoding too
 	// headers["Content-Transfer-Encoding"] = "base64"
 
@@ -49,7 +48,7 @@ func EncodeNewMessage(message *mail.Message) ([]byte, error) {
 	if message.Headers.ReplyTo != nil {
 		headers += fmt.Sprintf("Reply-To: %s\r\n", message.Headers.ReplyTo.String())
 	}
-	headers += "Content-Type: text/plain; charset=\"UTF-8\"\r\n"
+	headers += fmt.Sprintf("Content-Type: %s\r\n", message.Headers.ContentType)
 	headers += "Content-Transfer-Encoding: quoted-printable\r\n"
 	// 	// Thread-Topic TODO:
 	var ac bytes.Buffer

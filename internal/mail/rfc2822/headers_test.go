@@ -251,6 +251,61 @@ func Test_parseTo(t *testing.T) {
 	}
 }
 
+func Test_parseContentType(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		h nm.Header
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"success-plain-text",
+			args{
+				nm.Header{
+					"Content-Type": []string{"text/plain; charset=\"UTF-8\""},
+				},
+			},
+			"text/plain; charset=\"UTF-8\"",
+		},
+		{
+			"success-empty-header-to-default",
+			args{
+				nm.Header{},
+			},
+			"text/plain; charset=\"UTF-8\"",
+		},
+		{
+			"success-empty-header-value-to-default",
+			args{
+				nm.Header{
+					"Content-Type": []string{""},
+				},
+			},
+			"text/plain; charset=\"UTF-8\"",
+		},
+		{
+			"success-html-text",
+			args{
+				nm.Header{
+					"Content-Type": []string{"text/html; charset=\"UTF-8\""},
+				},
+			},
+			"text/html; charset=\"UTF-8\"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := parseContentType(tt.args.h)
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("parseTo() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func Test_parseHeaders(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
@@ -263,7 +318,47 @@ func Test_parseHeaders(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success",
+			"success-plain-text",
+			args{
+				nm.Header{
+					"Subject":      []string{"test subject"},
+					"To":           []string{"<5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum>"},
+					"From":         []string{"<4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum>"},
+					"Date":         []string{"Tue, 12 Mar 2019 20:23:13 UTC"},
+					"Content-Type": []string{"text/plain; charset=\"UTF-8\""},
+				},
+			},
+			&mail.Headers{
+				From:        mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
+				To:          mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
+				Date:        time.Date(2019, 03, 12, 20, 23, 13, 0, time.UTC),
+				Subject:     "test subject",
+				ReplyTo:     nil,
+				ContentType: "text/plain; charset=\"UTF-8\""},
+			false,
+		},
+		{
+			"success-plain-html",
+			args{
+				nm.Header{
+					"Subject":      []string{"test subject"},
+					"To":           []string{"<5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum>"},
+					"From":         []string{"<4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum>"},
+					"Date":         []string{"Tue, 12 Mar 2019 20:23:13 UTC"},
+					"Content-Type": []string{"text/html; charset=\"UTF-8\""},
+				},
+			},
+			&mail.Headers{
+				From:        mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
+				To:          mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
+				Date:        time.Date(2019, 03, 12, 20, 23, 13, 0, time.UTC),
+				Subject:     "test subject",
+				ReplyTo:     nil,
+				ContentType: "text/html; charset=\"UTF-8\""},
+			false,
+		},
+		{
+			"success-defaultContentType",
 			args{
 				nm.Header{
 					"Subject": []string{"test subject"},
@@ -273,11 +368,12 @@ func Test_parseHeaders(t *testing.T) {
 				},
 			},
 			&mail.Headers{
-				From:    mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
-				To:      mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
-				Date:    time.Date(2019, 03, 12, 20, 23, 13, 0, time.UTC),
-				Subject: "test subject",
-				ReplyTo: nil},
+				From:        mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
+				To:          mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
+				Date:        time.Date(2019, 03, 12, 20, 23, 13, 0, time.UTC),
+				Subject:     "test subject",
+				ReplyTo:     nil,
+				ContentType: "text/plain; charset=\"UTF-8\""},
 			false,
 		},
 		{

@@ -19,6 +19,7 @@ script:
   - rm coverage.out.tmp
   - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
   - go mod tidy
+  - git diff --exit-code
 deploy:
   - provider: script
     script: docker run -e GITHUB_TOKEN=$GITHUB_TOKEN --rm --privileged -v $TRAVIS_BUILD_DIR:/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo goreleaser --rm-dist

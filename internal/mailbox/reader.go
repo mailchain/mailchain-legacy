@@ -16,6 +16,7 @@ package mailbox
 
 import (
 	"bytes"
+	"encoding/hex"
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
@@ -62,7 +63,8 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 	if len(hash) != 0 {
 		messageHash := crypto.CreateMessageHash(rawMsg)
 		if !bytes.Equal(messageHash, hash) {
-			return nil, errors.Errorf("contents-hash invalid")
+			return nil, errors.Errorf("contents-hash invalid: message-hash = %v contents-hash = %v",
+				hex.EncodeToString(messageHash), hex.EncodeToString(hash))
 		}
 	}
 

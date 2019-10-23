@@ -26,7 +26,15 @@ func (pk PrivateKey) PublicKey() crypto.PublicKey {
 // PrivateKeyFromBytes get a private key from []byte
 func PrivateKeyFromBytes(pk []byte) (*PrivateKey, error) {
 	if len(pk) != ed25519.PrivateKeySize {
-		return nil, errors.Errorf("len must be %v", ed25519.PrivateKeySize)
+		return nil, errors.Errorf("ed25519: bad private key length: %v", len(pk))
 	}
 	return &PrivateKey{key: pk}, nil
+}
+
+// PrivateKeyFromBytes get a private key from []byte
+func PrivateKeyFromSeed(seed []byte) (*PrivateKey, error) {
+	if l := len(seed); l != ed25519.SeedSize {
+		return nil, errors.Errorf("ed25519: bad seed length: %v", l)
+	}
+	return &PrivateKey{key: ed25519.NewKeyFromSeed(seed)}, nil
 }

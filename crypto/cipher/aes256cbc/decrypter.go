@@ -28,12 +28,12 @@ import (
 
 // NewDecrypter create a new decrypter attaching the private key to it
 func NewDecrypter(privateKey crypto.PrivateKey) Decrypter {
-	return Decrypter{privateKey: &privateKey}
+	return Decrypter{privateKey: privateKey}
 }
 
 // Decrypter will decrypt data using AES256CBC method
 type Decrypter struct {
-	privateKey *crypto.PrivateKey
+	privateKey crypto.PrivateKey
 }
 
 // Decrypt data using recipient private key with AES in CBC mode.
@@ -43,10 +43,10 @@ func (d Decrypter) Decrypt(data mc.EncryptedContent) (mc.PlainContent, error) {
 		return nil, errors.WithMessage(err, "could not convert encryptedData")
 	}
 
-	return decryptEncryptedData(*d.privateKey, encryptedData)
+	return decryptEncryptedData(d.privateKey, encryptedData)
 }
 
-func decryptEncryptedData(privateKey crypto.PrivateKey, data *encryptedData) ([]byte, error) {
+func decryptEncryptedData(privKey crypto.PrivateKey, data *encryptedData) ([]byte, error) {
 	tmpEphemeralPublicKey, err := secp256k1.PublicKeyFromBytes(data.EphemeralPublicKey)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert ephemeralPublicKey")
@@ -56,12 +56,12 @@ func decryptEncryptedData(privateKey crypto.PrivateKey, data *encryptedData) ([]
 		return nil, errors.WithMessage(err, "could not convert to ecies")
 	}
 
-	rpk, err := asPrivateECIES(privateKey)
+	recipientPrivKey, err := asPrivateECIES(privKey)
 	if err != nil {
 		return nil, err
 	}
 
-	sharedSecret, err := deriveSharedSecret(ephemeralPublicKey, rpk)
+	sharedSecret, err := deriveSharedSecret(ephemeralPublicKey, recipientPrivKey)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not derive shared secret")
 	}

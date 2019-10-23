@@ -22,8 +22,8 @@ import (
 
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
@@ -66,53 +66,6 @@ func TestGenerateMac(t *testing.T) {
 	assert.Equal("4367ae8a54b65f99e4f2fd315ba65bf85e1138967a7bea451faf80f75cdf3404", hex.EncodeToString(actual))
 }
 
-func TestEncryptDecrypt(t *testing.T) {
-	assert := assert.New(t)
-	cases := []struct {
-		name                string
-		recipientPublicKey  crypto.PublicKey
-		recipientPrivateKey crypto.PrivateKey
-		data                []byte
-		err                 error
-	}{
-		{"to-sofia-short-text",
-			testutil.SofiaPublicKey,
-			testutil.SofiaPrivateKey,
-			[]byte("Hi Sofia"),
-			nil,
-		}, {"to-sofia-medium-text",
-			testutil.SofiaPublicKey,
-			testutil.SofiaPrivateKey,
-			[]byte("Hi Sofia, this is a little bit of a longer message to make sure there are no problems"),
-			nil,
-		},
-		{"to-charlotte-short-text",
-			testutil.CharlottePublicKey,
-			testutil.CharlottePrivateKey,
-			[]byte("Hi Charlotte"),
-			nil,
-		}, {"to-charlotte-medium-text",
-			testutil.CharlottePublicKey,
-			testutil.CharlottePrivateKey,
-			[]byte("Hi Charlotte, this is a little bit of a longer message to make sure there are no problems"),
-			nil,
-		},
-	}
-
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			encrypted, err := NewEncrypter().Encrypt(tc.recipientPublicKey, tc.data)
-			assert.Equal(tc.err, err)
-			assert.NotNil(encrypted)
-			decrypter := Decrypter{&tc.recipientPrivateKey}
-
-			decrypted, err := decrypter.Decrypt(encrypted)
-			assert.Equal(tc.err, err)
-			assert.Equal(tc.data, []byte(decrypted))
-		})
-	}
-}
-
 func Test_deriveSharedSecret(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
@@ -129,7 +82,7 @@ func Test_deriveSharedSecret(t *testing.T) {
 			"success",
 			args{
 				func() *ecies.PublicKey {
-					tp, ok := testutil.CharlottePublicKey.(secp256k1.PublicKey)
+					tp, ok := secp256k1test.CharlottePublicKey.(secp256k1.PublicKey)
 					if !ok {
 						t.Error("failed to cast")
 					}
@@ -140,7 +93,7 @@ func Test_deriveSharedSecret(t *testing.T) {
 					return pub
 				}(),
 				func() *ecies.PrivateKey {
-					pk, ok := testutil.SofiaPrivateKey.(*secp256k1.PrivateKey)
+					pk, ok := secp256k1test.SofiaPrivateKey.(*secp256k1.PrivateKey)
 					if !ok {
 						t.Error("Can not cast")
 					}
@@ -154,7 +107,7 @@ func Test_deriveSharedSecret(t *testing.T) {
 			"err-scalar-mult",
 			args{
 				func() *ecies.PublicKey {
-					tp, ok := testutil.CharlottePublicKey.(secp256k1.PublicKey)
+					tp, ok := secp256k1test.CharlottePublicKey.(secp256k1.PublicKey)
 					if !ok {
 						t.Error("failed to cast")
 					}
@@ -167,7 +120,7 @@ func Test_deriveSharedSecret(t *testing.T) {
 					return pub
 				}(),
 				func() *ecies.PrivateKey {
-					pk, ok := testutil.SofiaPrivateKey.(*secp256k1.PrivateKey)
+					pk, ok := secp256k1test.SofiaPrivateKey.(*secp256k1.PrivateKey)
 					if !ok {
 						t.Error("Can not cast")
 					}

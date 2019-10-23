@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf"
@@ -41,6 +42,7 @@ func (fs FileStore) Store(private crypto.PrivateKey, curveType string, deriveKey
 	if err != nil {
 		return nil, errors.WithMessage(err, "could seal storage key")
 	}
+
 	address := private.PublicKey().Address()
 	keyJSON := keystore.EncryptedKey{
 		Address:       hex.EncodeToString(address),
@@ -50,7 +52,7 @@ func (fs FileStore) Store(private crypto.PrivateKey, curveType string, deriveKey
 		ID:            uuid.New().String(),
 		KDF:           keyDefFunc,
 		Timestamp:     time.Now(),
-		Version:       "0.0.0", // TODO: get the actual version of this
+		Version:       mailchain.Version,
 	}
 	if keyDefFunc != kdf.Scrypt {
 		return nil, errors.Errorf("kdf not supported")

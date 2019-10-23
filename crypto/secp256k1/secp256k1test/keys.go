@@ -1,49 +1,29 @@
-// Copyright 2019 Finobo
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package secp256k1test
 
 import (
-	"crypto/ecdsa"
-	"encoding/hex"
 	"log"
 
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/secp256k1"
 )
 
-func ECDSAPrivateKeyA() ecdsa.PrivateKey {
-	b, _ := hex.DecodeString("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-	key, err := crypto.ToECDSA(b)
+var SofiaPrivateKey crypto.PrivateKey
+var SofiaPublicKey crypto.PublicKey
+var CharlottePrivateKey crypto.PrivateKey
+var CharlottePublicKey crypto.PublicKey
+
+func init() {
+	var err error
+	SofiaPrivateKey, err = secp256k1.PrivateKeyFromHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 	if err != nil {
 		log.Fatal(err)
 	}
-	return *key
-}
+	SofiaPublicKey = SofiaPrivateKey.PublicKey()
 
-func ECDSAPublicKeyA() ecdsa.PublicKey {
-	return ECDSAPrivateKeyA().PublicKey
-}
-
-func ECDSAPrivateKeyB() ecdsa.PrivateKey {
-	b, _ := hex.DecodeString("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
-	key, err := crypto.ToECDSA(b)
+	CharlottePrivateKey, err = secp256k1.PrivateKeyFromHex("DF4BA9F6106AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3")
 	if err != nil {
 		log.Fatal(err)
 	}
-	return *key
-}
 
-func ECDSAPublicKeyB() ecdsa.PublicKey {
-	return ECDSAPrivateKeyB().PublicKey
+	CharlottePublicKey = CharlottePrivateKey.PublicKey()
 }

@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 package secp256k1
 
 import (
@@ -20,7 +20,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -114,7 +113,7 @@ func TestPublicKey_Address(t *testing.T) {
 		{
 			"success",
 			fields{
-				secp256k1test.ECDSAPublicKeyA(),
+				ecdsaPublicKeyA(),
 			},
 			[]byte{0x8f, 0xd3, 0x79, 0x24, 0x68, 0x34, 0xea, 0xc7, 0x4b, 0x84, 0x19, 0xff, 0xda, 0x20, 0x2c, 0xf8, 0x5, 0x1f, 0x7a, 0x3},
 		},
@@ -132,7 +131,7 @@ func TestPublicKey_Address(t *testing.T) {
 }
 
 func TestPublicKeyFromBytes(t *testing.T) {
-	assert:=assert.New(t)
+	assert := assert.New(t)
 	type args struct {
 		keyBytes []byte
 	}
@@ -141,16 +140,16 @@ func TestPublicKeyFromBytes(t *testing.T) {
 		args    args
 		want    []byte
 		wantErr bool
-	}{ 
+	}{
 		{
 			"success",
 			args{
-				func()[]byte{
+				func() []byte {
 					pub := make([]byte, 65)
-		pub[0] = byte(4)
-		copy(pub[1:],  	secp256k1test.ECDSAPrivateKeyA().X.Bytes()) 
-		copy(pub[33:], secp256k1test.ECDSAPrivateKeyA().Y.Bytes())
-				return pub
+					pub[0] = byte(4)
+					copy(pub[1:], ecdsaPrivateKeyA().X.Bytes())
+					copy(pub[33:], ecdsaPrivateKeyA().Y.Bytes())
+					return pub
 				}(),
 			},
 			[]byte{0x2, 0x6a, 0x4, 0xab, 0x98, 0xd9, 0xe4, 0x77, 0x4a, 0xd8, 0x6, 0xe3, 0x2, 0xdd, 0xde, 0xb6, 0x3b, 0xea, 0x16, 0xb5, 0xcb, 0x5f, 0x22, 0x3e, 0xe7, 0x74, 0x78, 0xe8, 0x61, 0xbb, 0x58, 0x3e, 0xb3},
@@ -164,20 +163,19 @@ func TestPublicKeyFromBytes(t *testing.T) {
 			nil,
 			true,
 		},
-		
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := PublicKeyFromBytes(tt.args.keyBytes)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("PublicKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
-				return 
+				return
 			}
 			var gotBytes []byte
 			if got != nil {
 				gotBytes = got.Bytes()
 			}
-			if !assert.Equal( tt.want, gotBytes,) {
+			if !assert.Equal(tt.want, gotBytes) {
 				t.Errorf("PublicKeyFromBytes() = %v, want %v", gotBytes, tt.want)
 			}
 		})

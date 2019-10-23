@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package address
+package pubkey
 
 import (
 	"testing"
@@ -38,6 +38,16 @@ func TestEncodeByProtocol(t *testing.T) {
 			args{
 				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
 				"ethereum",
+			},
+			"0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+			encoding.TypeHex0XPrefix,
+			false,
+		},
+		{
+			"substrate",
+			args{
+				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				"substrate",
 			},
 			"0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
 			encoding.TypeHex0XPrefix,

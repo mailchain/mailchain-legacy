@@ -12,28 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package encoding
+package pubkey
 
 import (
-	"encoding/hex"
-	"strings"
-
+	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/pkg/errors"
 )
 
-func EncodeZeroX(in []byte) string {
-	out := make([]byte, len(in)*2+2)
-	copy(out, "0x")
-	hex.Encode(out[2:], in)
-	return string(out)
-}
-
-func DecodeZeroX(in string) ([]byte, error) {
-	if in == "" {
-		return nil, errors.Errorf("empty hex string")
+func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
+	switch protocol {
+	case protocols.Ethereum:
+		encoded, encodingType = encoding.EncodeZeroX(in)
+	case protocols.Substrate:
+		encoded, encodingType = encoding.EncodeZeroX(in)
+	default:
+		err = errors.Errorf("%q unsupported protocol", protocol)
 	}
-	if !strings.HasPrefix(in, "0x") {
-		return nil, errors.Errorf("missing \"0x\" prefix from hex string")
-	}
-	return hex.DecodeString(in[2:])
+	return encoded, encodingType, err
 }

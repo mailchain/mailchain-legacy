@@ -12,20 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package address
+package encoding
 
-import (
-	"github.com/mailchain/mailchain/internal/encoding"
-	"github.com/mailchain/mailchain/internal/protocols"
-	"github.com/pkg/errors"
-)
+import "github.com/mr-tron/base58"
 
-func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
-	switch protocol {
-	case protocols.Ethereum:
-		encoded, encodingType = encoding.EncodeZeroX(in)
-	default:
-		err = errors.Errorf("%q unsupported protocol", protocol)
-	}
-	return encoded, encodingType, err
+func DecodeBase58(in string) ([]byte, error) {
+	return base58.Decode(in)
 }

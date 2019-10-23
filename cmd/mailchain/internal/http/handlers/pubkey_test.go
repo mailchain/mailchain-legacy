@@ -224,7 +224,7 @@ func TestGetPublicKey(t *testing.T) {
 				"network":  "mainnet",
 				"protocol": "ethereum",
 			},
-			"{\"public_key\":\"0x3ada323710def1e02f3586710ae3624ceefba1638e9d9894f724a5401997cd792933ddfd0687874e515a8ab479a38646e6db9f3d8b74d27c4e4eae5a116f9f1400\"}\n",
+			"{\"public_key\":\"0x3ada323710def1e02f3586710ae3624ceefba1638e9d9894f724a5401997cd792933ddfd0687874e515a8ab479a38646e6db9f3d8b74d27c4e4eae5a116f9f1400\",\"public_key_encoding\":\"hex/0x-prefix\"}\n",
 			http.StatusOK,
 		},
 	}

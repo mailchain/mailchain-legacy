@@ -74,7 +74,7 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
-		encAddress, err := address.EncodeByProtocol(resolvedAddress, protocol)
+		encAddress, _, err := address.EncodeByProtocol(resolvedAddress, protocol)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"))
 			return

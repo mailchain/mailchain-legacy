@@ -91,10 +91,11 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			messages = append(messages, getMessage{
 				Body: string(message.Body),
 				Headers: &getHeaders{
-					To:        message.Headers.To.String(),
-					From:      message.Headers.From.String(),
-					Date:      message.Headers.Date,
-					MessageID: message.ID.HexString(),
+					To:          message.Headers.To.String(),
+					From:        message.Headers.From.String(),
+					Date:        message.Headers.Date,
+					MessageID:   message.ID.HexString(),
+					ContentType: message.Headers.ContentType,
 				},
 				Read:    readStatus,
 				Subject: message.Headers.Subject,
@@ -227,4 +228,9 @@ type getHeaders struct {
 	// example: 47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471@mailchain
 	// readOnly: true
 	MessageID string `json:"message-id"`
+	// The content type and the encoding of the message body
+	// readOnly: true
+	// example: text/plain; charset=\"UTF-8\",
+	// 			text/html; charset=\"UTF-8\"
+	ContentType string `json:"content-type"`
 }

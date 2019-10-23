@@ -48,13 +48,16 @@ func TestReadMessage(t *testing.T) {
 		{
 			"success",
 			args{
-				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
 				func() cipher.Decrypter {
-					m := ciphertest.NewMockDecrypter(mockCtrl)
-					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil)
-					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil)
 					decrypted, _ := ioutil.ReadFile("./testdata/simple.golden.eml")
-					m.EXPECT().Decrypt(gomock.Any()).Return(decrypted, nil)
+					m := ciphertest.NewMockDecrypter(mockCtrl)
+
+					gomock.InOrder(
+						m.EXPECT().Decrypt(cipher.EncryptedContent(testutil.MustHexDecodeString("7365637265742d6c6f636174696f6e"))).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil),
+						m.EXPECT().Decrypt(cipher.EncryptedContent(testutil.MustHexDecodeString("7365637265742d6c6f636174696f6e"))).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil),
+						m.EXPECT().Decrypt(cipher.EncryptedContent([]byte{0x54, 0x65, 0x73, 0x74, 0x52, 0x65, 0x61, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65})).Return(decrypted, nil),
+					)
 					return m
 				}(),
 			},

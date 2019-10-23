@@ -68,3 +68,45 @@ func TestNewMessage(t *testing.T) {
 		})
 	}
 }
+
+func Test_detectContentType(t *testing.T) {
+	type args struct {
+		body []byte
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"content-type-and-encoding",
+			args{
+				[]byte("this is plain text message"),
+			},
+			"text/plain; charset=\"UTF-8\"",
+		},
+		{
+			"content-type-and-encoding-html",
+			args{
+				[]byte("<h1>this is HTML text message</h1>"),
+			},
+			"text/html; charset=\"UTF-8\"",
+		},
+		{
+			"plain-with-some-html",
+			args{
+				[]byte("Hi, this is plain text with example html included <h1>An example html tag</h1>"),
+			},
+			"text/plain; charset=\"UTF-8\"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := detectContentType(tt.args.body)
+			if got != tt.want {
+				t.Errorf("detectContentType() got = %v, want %v", got, tt.want)
+				return
+			}
+		})
+	}
+}

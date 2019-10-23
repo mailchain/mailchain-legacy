@@ -40,10 +40,11 @@ func parseHeaders(h nm.Header) (*mail.Headers, error) {
 		return nil, errors.WithMessage(err, "failed to parse `from`")
 	}
 	return &mail.Headers{
-		Date:    *date,
-		Subject: subject,
-		To:      *to,
-		From:    *from,
+		Date:        *date,
+		Subject:     subject,
+		To:          *to,
+		From:        *from,
+		ContentType: parseContentType(h),
 	}, nil
 }
 
@@ -95,4 +96,13 @@ func parseSubject(h nm.Header) (string, error) {
 	}
 
 	return sources[0], nil
+}
+
+func parseContentType(h nm.Header) string {
+	sources, ok := h["Content-Type"]
+	if !ok || len(sources) == 0 || len(sources[0]) == 0 {
+		return mail.DefaultContentType
+	}
+
+	return sources[0]
 }

@@ -59,10 +59,9 @@ func (s LookupService) ResolveName(ctx context.Context, protocol, network, domai
 		return nil, err
 	}
 	if res.StatusCode == http.StatusOK {
-		type response struct {
+		var okRes struct {
 			Address string `json:"address"`
 		}
-		var okRes response
 
 		if err := json.NewDecoder(res.Body).Decode(&okRes); err != nil {
 			return nil, err
@@ -71,11 +70,10 @@ func (s LookupService) ResolveName(ctx context.Context, protocol, network, domai
 		return common.FromHex(okRes.Address), nil
 	}
 
-	type response struct {
+	var errRes struct {
 		Message string `json:"message"`
 		Code    int    `json:"code"`
 	}
-	var errRes response
 
 	if err := json.NewDecoder(res.Body).Decode(&errRes); err != nil {
 		return nil, err

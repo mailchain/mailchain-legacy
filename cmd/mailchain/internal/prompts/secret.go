@@ -33,6 +33,7 @@ func secretFromPrompt(promptLabel string, confirmPrompt bool) (string, error) {
 			Label: fmt.Sprintf("Repeat %s", promptLabel),
 			Mask:  '*',
 		}
+
 		confirm, err := confirmPromptValue.Run()
 		if err != nil {
 			fmt.Printf("Prompt failed %v\n", err)

@@ -11,17 +11,18 @@ const nonceSize = 24
 const secretKeySize = 32
 
 func easyOpen(box, key []byte) ([]byte, error) {
+	var secretKey [secretKeySize]byte
+
 	if len(key) != secretKeySize {
 		return nil, errors.New("secretbox: key length must be 32")
 	}
+
 	if len(box) < nonceSize {
 		return nil, errors.New("secretbox: message too short")
 	}
+
 	decryptNonce := new([nonceSize]byte)
 	copy(decryptNonce[:], box[:nonceSize])
-
-	var secretKey [secretKeySize]byte
-
 	copy(secretKey[:], key)
 
 	decrypted, ok := secretbox.Open([]byte{}, box[nonceSize:], decryptNonce, &secretKey)

@@ -36,14 +36,17 @@ openapi:
 	mailchain/goswagger-tool swagger generate spec -b ./cmd/mailchain/internal/http/handlers -o ./docs/openapi/spec.json
 
 	echo "" >>  ./docs/openapi/spec.json
-    echo "// nolint: gofmt" > ./docs/openapi/spec.json
+
+	echo "// nolint: gofmt" > ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo "package handlers" >  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo "" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	
 	echo "" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo "// nolint: lll" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo "// nolint: funlen" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo 'func spec() string {' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo '  return `' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
-	cat ./docs/openapi/spec.json | sed 's/`/``/g' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	cat ./docs/openapi/spec.json | sed 's/`/¬/g' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo '`' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo '}' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	addlicense -l apache -c Finobo ./cmd/mailchain/internal/http/handlers/openapi.go	

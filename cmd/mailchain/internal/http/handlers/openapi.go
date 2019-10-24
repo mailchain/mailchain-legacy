@@ -14,7 +14,9 @@
 
 package handlers
 
+
 // nolint: lll
+// nolint: funlen
 func spec() string {
   return `
 {
@@ -174,10 +176,11 @@ func spec() string {
     },
     "/messages/{message_id}/read": {
       "get": {
+        "description": "Messages can be either read or unread.",
         "tags": [
           "Messages"
         ],
-        "summary": "Get message read status.",
+        "summary": "Message read status.",
         "operationId": "GetRead",
         "responses": {
           "200": {
@@ -394,11 +397,11 @@ func spec() string {
     },
     "/public-key": {
       "get": {
-        "description": "Get the public key.",
+        "description": "This method will get the public key to use when encrypting messages and envelopes.\nProtocols and networks have different methods for retrieving or calculating a public key from an address.",
         "tags": [
           "PublicKey"
         ],
-        "summary": "Get public key from an address.",
+        "summary": "Public key from address.",
         "operationId": "GetPublicKey",
         "parameters": [
           {
@@ -476,6 +479,13 @@ func spec() string {
     "GetMessagesResponseHeaders": {
       "type": "object",
       "properties": {
+        "content-type": {
+          "description": "The content type and the encoding of the message body",
+          "type": "string",
+          "x-go-name": "ContentType",
+          "readOnly": true,
+          "example": "text/plain; charset=\\\"UTF-8\\\","
+        },
         "date": {
           "description": "When the message was created, this can be different to the transaction data of the message.",
           "type": "string",
@@ -578,14 +588,21 @@ func spec() string {
       "description": "GetBody body response",
       "type": "object",
       "required": [
-        "public_key"
+        "public_key",
+        "public_key_encoding"
       ],
       "properties": {
         "public_key": {
-          "description": "The public key",
+          "description": "The public key encoded as per ¬public_key_encoding¬",
           "type": "string",
           "x-go-name": "PublicKey",
           "example": "0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463"
+        },
+        "public_key_encoding": {
+          "description": "Encoding method used for encoding the ¬public_key¬",
+          "type": "string",
+          "x-go-name": "PublicKeyEncoding",
+          "example": "hex/0x-prefix"
         }
       },
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
@@ -618,6 +635,13 @@ func spec() string {
           "type": "string",
           "x-go-name": "Name",
           "example": "mailchain.eth"
+        },
+        "status": {
+          "description": "The rfc1035 error status, if present\nSince 0 status belongs to 'No Error', it's safe to use 'omitempty'",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Status",
+          "example": 3
         }
       },
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
@@ -634,6 +658,13 @@ func spec() string {
           "type": "string",
           "x-go-name": "Address",
           "example": "0x4ad2b251246aafc2f3bdf3b690de3bf906622c51"
+        },
+        "status": {
+          "description": "The rfc1035 error status, if present\nSince 0 status belongs to 'No Error', it's safe to use 'omitempty'",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Status",
+          "example": 3
         }
       },
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"

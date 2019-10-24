@@ -14,12 +14,18 @@
 
 package handlers
 
-import "net/http"
+import (
+	"net/http"
+	"strings"
+)
 
 // GetSpec returns a handler get spec
 func GetSpec() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(spec()))
+		var mdreplacer = strings.NewReplacer("¬", "`")
+
+		doc := mdreplacer.Replace(spec())
+		_, _ = w.Write([]byte(doc))
 	}
 }

@@ -28,5 +28,6 @@ func PrivateKeyFromBytes(pk []byte) (*PrivateKey, error) {
 	if l := len(pk); l != ed25519.SeedSize {
 		return nil, errors.Errorf("ed25519: bad seed length: %v", l)
 	}
+
 	return &PrivateKey{key: ed25519.NewKeyFromSeed(pk)}, nil
 }

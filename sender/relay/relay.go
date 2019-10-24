@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
-	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/sender/ethrpc2"
 	"github.com/pkg/errors"

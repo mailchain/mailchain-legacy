@@ -75,7 +75,7 @@ linters-settings:
       - style
       - experimental
     disabled-checks:
-      - wrapperFunc  
+      - wrapperFunc
   golangci-lint-version: 1.16.x
 linters:
   presets:
@@ -84,7 +84,10 @@ linters:
     - complexity
     - format
     - performance
-    - style    
+    - style
+  disable:
+    - govet
+    - lll
 
 # service:
 #   prepare:

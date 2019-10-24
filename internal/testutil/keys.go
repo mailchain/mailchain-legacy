@@ -21,11 +21,12 @@ import (
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 )
 
-var SofiaPrivateKey crypto.PrivateKey
-var SofiaPublicKey crypto.PublicKey
-var CharlottePrivateKey crypto.PrivateKey
-var CharlottePublicKey crypto.PublicKey
+var SofiaPrivateKey crypto.PrivateKey     // nolint: gochecknoglobals
+var SofiaPublicKey crypto.PublicKey       // nolint: gochecknoglobals
+var CharlottePrivateKey crypto.PrivateKey // nolint: gochecknoglobals
+var CharlottePublicKey crypto.PublicKey   // nolint: gochecknoglobals
 
+// nolint: gochecknoinits
 func init() {
 	var err error
 	SofiaPrivateKey, err = secp256k1.PrivateKeyFromHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")

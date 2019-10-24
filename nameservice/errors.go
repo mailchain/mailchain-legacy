@@ -27,8 +27,8 @@ const (
 	couldNotParseAddressErrorMsg = "could not parse address"
 )
 
+// RFC 1035 error interpretation
 var (
-	// RFC 1035 error interpretation
 	ErrFormat   = errors.New("Format Error")
 	ErrServFail = errors.New("Server Failure")
 	ErrNXDomain = errors.New("Non-Existent Domain")

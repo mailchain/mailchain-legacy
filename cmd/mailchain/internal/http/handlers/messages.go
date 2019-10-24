@@ -31,6 +31,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// nolint: gocyclo
 // GetMessages returns a handler get spec
 func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {

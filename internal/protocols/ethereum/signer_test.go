@@ -56,7 +56,7 @@ func TestSigner_Sign(t *testing.T) {
 		privateKey crypto.PrivateKey
 	}
 	type args struct {
-		opts signer.SignerOpts
+		opts signer.Options
 	}
 	tests := []struct {
 		name    string

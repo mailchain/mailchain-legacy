@@ -21,6 +21,7 @@ type config struct {
 	sentStore         stores.Sent
 }
 
+// nolint: gocyclo
 func produceConfig(s *settings.Base) (*config, error) {
 	mailboxStore, err := s.MailboxState.Produce()
 	if err != nil {

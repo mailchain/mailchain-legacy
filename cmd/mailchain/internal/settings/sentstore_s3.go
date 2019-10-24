@@ -27,14 +27,14 @@ func (s SentStoreS3) Produce() (*s3store.Sent, error) {
 	return s3store.NewSent(s.Region.Get(), s.Bucket.Get(), s.AccessKeyID.Get(), s.SecretAccessKey.Get())
 }
 
-func (ss SentStoreS3) Output() output.Element {
+func (s SentStoreS3) Output() output.Element {
 	return output.Element{
 		FullName: "sentstore.s3",
 		Attributes: []output.Attribute{
-			ss.Bucket.Attribute(),
-			ss.Region.Attribute(),
-			ss.AccessKeyID.Attribute(),
-			ss.SecretAccessKey.Attribute(),
+			s.Bucket.Attribute(),
+			s.Region.Attribute(),
+			s.AccessKeyID.Attribute(),
+			s.SecretAccessKey.Attribute(),
 		},
 	}
 }

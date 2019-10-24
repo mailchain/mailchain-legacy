@@ -2,16 +2,18 @@ package ed25519test
 
 import (
 	"log"
+
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519"
 	"github.com/mailchain/mailchain/internal/testutil"
 )
 
-var SofiaPrivateKey crypto.PrivateKey
-var SofiaPublicKey crypto.PublicKey
-var CharlottePrivateKey crypto.PrivateKey
-var CharlottePublicKey crypto.PublicKey
+var SofiaPrivateKey crypto.PrivateKey     // nolint: gochecknoglobals
+var SofiaPublicKey crypto.PublicKey       // nolint: gochecknoglobals
+var CharlottePrivateKey crypto.PrivateKey // nolint: gochecknoglobals
+var CharlottePublicKey crypto.PublicKey   // nolint: gochecknoglobals
 
+// nolint: gochecknoinits
 func init() {
 	var err error
 	SofiaPrivateKey, err = ed25519.PrivateKeyFromSeed(testutil.MustHexDecodeString("0d9b4a3c10721991c6b806f0f343535dc2b46c74bece50a0a0d6b9f0070d3157"))

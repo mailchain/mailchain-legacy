@@ -17,8 +17,8 @@ package signer
 
 // Signer return a signed transaction
 type Signer interface {
-	Sign(opts SignerOpts) (signedTransaction interface{}, err error)
+	Sign(opts Options) (signedTransaction interface{}, err error)
 }
 
-// SignerOpts options related to different signers
-type SignerOpts interface{}
+// Options options related to different signers
+type Options interface{}

@@ -15,8 +15,8 @@
 package multikey
 
 import (
-	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/pkg/errors"
 )
 

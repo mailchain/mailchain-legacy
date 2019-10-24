@@ -17,7 +17,6 @@ func GetVersion() func(w http.ResponseWriter, r *http.Request) {
 	//
 	// Responses:
 	//   200: GetVersionResponseBody
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(GetVersionResponseBody{

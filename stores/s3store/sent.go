@@ -36,7 +36,9 @@ func NewSent(region, bucket, id, secret string) (*Sent, error) {
 	if bucket == "" {
 		return nil, errors.Errorf("`bucket` must be specified")
 	}
+
 	var creds *credentials.Credentials
+
 	if id != "" && secret != "" {
 		creds = credentials.NewStaticCredentials(id, secret, "")
 	}

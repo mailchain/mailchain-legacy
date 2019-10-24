@@ -15,6 +15,7 @@ func Secret(suppliedSecret, prePromptNote, promptLabel string, allowEmpty, confi
 	if allowEmpty {
 		return "", nil
 	}
+
 	fmt.Println(prePromptNote)
 	return secretFromPrompt(promptLabel, confirmPrompt)
 }
@@ -24,10 +25,12 @@ func secretFromPrompt(promptLabel string, confirmPrompt bool) (string, error) {
 		Label: promptLabel,
 		Mask:  '*',
 	}
+
 	secret, err := prompt.Run()
 	if err != nil {
 		return "", errors.Errorf("failed read %q", promptLabel)
 	}
+
 	if confirmPrompt {
 		confirmPromptValue := promptui.Prompt{
 			Label: fmt.Sprintf("Repeat %s", promptLabel),

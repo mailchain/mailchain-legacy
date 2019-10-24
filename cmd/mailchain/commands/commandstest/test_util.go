@@ -17,6 +17,7 @@ func ExecuteCommandC(root *cobra.Command, args []string, flags map[string]string
 
 	root.SetOutput(buf)
 	root.SetArgs(args)
+
 	for x := range flags {
 		_ = root.Flags().Set(x, flags[x])
 	}

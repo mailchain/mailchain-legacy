@@ -24,6 +24,7 @@ func (d DefaultBool) Get() bool {
 	if d.store.IsSet(d.setting) {
 		return d.store.GetBool(d.setting)
 	}
+
 	return d.def
 }
 

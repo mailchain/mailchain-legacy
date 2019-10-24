@@ -39,6 +39,7 @@ func yamlAttributeDefault(a Attribute, out io.Writer, tabsize, indent int, comme
 	if excludeDefaults && a.IsDefault {
 		return
 	}
+
 	createNamePortion(a.ShortName(), a.IsDefault, false, commentDefaults, excludeDefaults, out, tabsize, indent)
 	fmt.Fprintf(out, yamlValueFormat(a.Value), a.Value)
 	fmt.Fprint(out, "\n")
@@ -79,6 +80,7 @@ func createNamePortion(name string, isDefault, trailingNewLine, commentDefaults,
 	if isDefault && commentDefaults {
 		fmt.Fprintf(out, "# ")
 	}
+
 	fmt.Fprintf(out, "%s%s:", strings.Repeat(" ", tabsize*indent), name)
 
 	if trailingNewLine {

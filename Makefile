@@ -37,11 +37,10 @@ openapi:
 
 	echo "" >>  ./docs/openapi/spec.json
 
-	echo "// nolint: gofmt" > ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo "package handlers" >  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo "" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	
-	echo "" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo "// nolint: gofmt" >> ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo "// nolint: lll" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo "// nolint: funlen" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo 'func spec() string {' >>  ./cmd/mailchain/internal/http/handlers/openapi.go

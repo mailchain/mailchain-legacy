@@ -44,7 +44,6 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 	// Responses:
 	//   200: GetMessagesResponse
 	//   422: ValidationError
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		req, err := parseGetMessagesRequest(r)

@@ -26,7 +26,9 @@ func Unmarshal(buf []byte) (Data, error) {
 		return nil, errors.Errorf("buffer is empty")
 	}
 	var err error
+
 	var envData Data
+
 	switch buf[0] {
 	case Kind0x01:
 		data := &ZeroX01{}

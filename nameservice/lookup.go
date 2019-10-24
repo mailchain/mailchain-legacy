@@ -63,6 +63,7 @@ func (s LookupService) ResolveName(ctx context.Context, protocol, network, domai
 			Address string `json:"address"`
 		}
 		var okRes response
+
 		if err := json.NewDecoder(res.Body).Decode(&okRes); err != nil {
 			return nil, err
 		}

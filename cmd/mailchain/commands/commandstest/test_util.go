@@ -9,10 +9,11 @@ import (
 )
 
 func ExecuteCommandC(root *cobra.Command, args []string, flags map[string]string) (c *cobra.Command, output string, err error) {
-	buf := new(bytes.Buffer)
 	if err := root.ValidateArgs(args); err != nil {
 		return nil, "", err
 	}
+	buf := new(bytes.Buffer)
+
 	root.SetOutput(buf)
 	root.SetArgs(args)
 	for x := range flags {

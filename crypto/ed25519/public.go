@@ -17,5 +17,4 @@ func (pk PublicKey) Bytes() []byte {
 // Address returns the byte representation of the address
 func (pk PublicKey) Address() []byte {
 	return nil
-	// return pk.key.ethcrypto.PubkeyToAddress(pk.ecdsa).Bytes()
 }

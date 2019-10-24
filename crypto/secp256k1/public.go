@@ -55,6 +55,7 @@ func PublicKeyFromHex(input string) (*PublicKey, error) {
 	if err != nil {
 		return nil, err
 	}
+	
 	switch len(keyBytes) {
 	case 64:
 		pub := make([]byte, 65)

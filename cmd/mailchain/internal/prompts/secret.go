@@ -21,7 +21,7 @@ func Secret(suppliedSecret, prePromptNote, promptLabel string, allowEmpty, confi
 
 func secretFromPrompt(promptLabel string, confirmPrompt bool) (string, error) {
 	prompt := promptui.Prompt{
-		Label: fmt.Sprintf("%s", promptLabel),
+		Label: promptLabel,
 		Mask:  '*',
 	}
 	secret, err := prompt.Run()

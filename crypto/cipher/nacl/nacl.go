@@ -1,23 +1,30 @@
 package nacl
 
 import (
+	"encoding/hex"
 	"errors"
+	"fmt"
 	"io"
 
 	"golang.org/x/crypto/nacl/secretbox"
 )
 
 const nonceSize = 24
+const secretKeySize = 32
 
 func easyOpen(box, key []byte) ([]byte, error) {
+	if len(key) != secretKeySize {
+		return nil, errors.New("secretbox: key length must be 32")
+	}
 	if len(box) < nonceSize {
 		return nil, errors.New("secretbox: message too short")
 	}
 	decryptNonce := new([nonceSize]byte)
 	copy(decryptNonce[:], box[:nonceSize])
 
-	var secretKey [32]byte
+	var secretKey [secretKeySize]byte
 	copy(secretKey[:], key)
+	fmt.Println(hex.EncodeToString(key) + hex.EncodeToString(secretKey[:]))
 
 	decrypted, ok := secretbox.Open([]byte{}, box[nonceSize:], decryptNonce, &secretKey)
 	if !ok {
@@ -32,7 +39,7 @@ func easySeal(message, key []byte, rand io.Reader) ([]byte, error) {
 		return nil, err
 	}
 
-	var secretKey [32]byte
+	var secretKey [secretKeySize]byte
 	copy(secretKey[:], key)
 	return secretbox.Seal(nonce[:], message, nonce, &secretKey), nil
 }

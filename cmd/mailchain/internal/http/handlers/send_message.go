@@ -39,7 +39,7 @@ import (
 
 // SendMessage handler http
 func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store,
-	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
+	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { // nolint: funlen
 	encrypter := aes256cbc.NewEncrypter()
 	// Post swagger:route POST /messages Send SendMessage
 	//
@@ -104,7 +104,6 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 		}
 
 		w.WriteHeader(http.StatusOK)
-		return
 	}
 }
 

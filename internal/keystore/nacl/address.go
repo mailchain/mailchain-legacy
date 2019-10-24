@@ -29,6 +29,7 @@ func (fs FileStore) HasAddress(address []byte) bool {
 	if err != nil {
 		return false
 	}
+
 	defer fd.Close()
 
 	return true
@@ -41,6 +42,7 @@ func (fs FileStore) GetAddresses() ([][]byte, error) {
 		return nil, err
 	}
 	addresses := [][]byte{}
+
 	for _, f := range files {
 		fileName := f.Name()
 		if !strings.HasSuffix(fileName, ".json") {

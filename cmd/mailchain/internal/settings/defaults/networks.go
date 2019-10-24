@@ -13,8 +13,8 @@ type NetworkDefaults struct {
 	Disabled              bool
 }
 
-func EthereumNetworkAny() NetworkDefaults {
-	return NetworkDefaults{
+func EthereumNetworkAny() *NetworkDefaults {
+	return &NetworkDefaults{
 		NameServiceAddress:    NameServiceAddressKind,
 		NameServiceDomainName: NameServiceDomainNameKind,
 		PublicKeyFinder:       mailchain.ClientEtherscanNoAuth,
@@ -24,8 +24,8 @@ func EthereumNetworkAny() NetworkDefaults {
 	}
 }
 
-func SubstrateNetworkAny() NetworkDefaults {
-	return NetworkDefaults{
+func SubstrateNetworkAny() *NetworkDefaults {
+	return &NetworkDefaults{
 		// NameServiceAddress:    NameServiceAddressKind,
 		// NameServiceDomainName: NameServiceDomainNameKind,
 		PublicKeyFinder: SubstratePublicKeyFinder,

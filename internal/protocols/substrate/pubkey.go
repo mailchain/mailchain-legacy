@@ -32,6 +32,7 @@ func (pkf *PublicKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, 
 	if protocol != "substrate" {
 		return nil, errors.New("protocol must be 'substrate'")
 	}
+
 	if len(address) != 35 {
 		return nil, errors.New("address must be 35 bytes in length")
 	}

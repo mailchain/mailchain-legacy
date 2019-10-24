@@ -40,6 +40,7 @@ func (fs FileStore) getEncryptedKey(address []byte) (*keystore.EncryptedKey, err
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not find key file")
 	}
+
 	defer fd.Close()
 
 	encryptedKey := new(keystore.EncryptedKey)

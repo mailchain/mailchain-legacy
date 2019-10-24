@@ -39,6 +39,7 @@ func yamlAttributeDefault(a Attribute, out io.Writer, tabsize, indent int, comme
 	if excludeDefaults && a.IsDefault {
 		return
 	}
+
 	createNamePortion(a.ShortName(), a.IsDefault, false, commentDefaults, excludeDefaults, out, tabsize, indent)
 	fmt.Fprintf(out, yamlValueFormat(a.Value), a.Value)
 	fmt.Fprint(out, "\n")
@@ -55,15 +56,18 @@ func yamlAttributeStringSlice(fullName string, val []string, isDefault bool, out
 	if len(val) == 0 {
 		createNamePortion(shortKey, isDefault, false, commentDefaults, excludeDefaults, out, tabsize, indent)
 		fmt.Fprint(out, " []\n")
+
 		return
 	}
 
 	createNamePortion(shortKey, isDefault, true, commentDefaults, excludeDefaults, out, tabsize, indent)
+
 	for _, item := range val {
 		itemFormat := "%s- %q\n"
 		if commentDefaults && isDefault {
 			itemFormat = "# " + itemFormat
 		}
+
 		fmt.Fprintf(out, itemFormat, strings.Repeat(" ", tabsize*(indent+1)), item)
 	}
 }
@@ -72,10 +76,13 @@ func createNamePortion(name string, isDefault, trailingNewLine, commentDefaults,
 	if isDefault && excludeDefaults {
 		return
 	}
+
 	if isDefault && commentDefaults {
 		fmt.Fprintf(out, "# ")
 	}
+
 	fmt.Fprintf(out, "%s%s:", strings.Repeat(" ", tabsize*indent), name)
+
 	if trailingNewLine {
 		fmt.Fprintf(out, "\n")
 	}

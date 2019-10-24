@@ -21,7 +21,7 @@ import (
 const DefaultContentType = "text/plain; charset=\"UTF-8\""
 
 // NewHeaders create the headers for sending a new message
-func NewHeaders(date time.Time, from, to Address, replyTo *Address, subject string, contentType string) *Headers {
+func NewHeaders(date time.Time, from, to Address, replyTo *Address, subject, contentType string) *Headers {
 	return &Headers{
 		From:        from,
 		To:          to,

@@ -9,56 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPrivateKeyFromSeed(t *testing.T) {
-	assert := assert.New(t)
-	type args struct {
-		seed []byte
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    *PrivateKey
-		wantErr bool
-	}{
-		{
-			"success-sofia",
-			args{
-				sofiaSeed(),
-			},
-			sofiaPrivateKey(),
-			false,
-		},
-		{
-			"success-charlotte",
-			args{
-				charlotteSeed(),
-			},
-			charlottePrivateKey(),
-			false,
-		},
-		{
-			"err-len",
-			args{
-				testutil.MustHexDecodeString("39d4c9"),
-			},
-			nil,
-			true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := PrivateKeyFromSeed(tt.args.seed)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("PrivateKeyFromSeed() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !assert.Equal(tt.want, got) {
-				t.Errorf("PrivateKeyFromSeed() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestPrivateKey_Bytes(t *testing.T) {
 	assert := assert.New(t)
 	tests := []struct {
@@ -105,7 +55,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 		{
 			"success-sofia",
 			args{
-				sofiaPrivateKeyBytes(),
+				sofiaSeed(),
 			},
 			sofiaPrivateKey(),
 			false,
@@ -113,7 +63,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 		{
 			"success-charlotte",
 			args{
-				charlottePrivateKeyBytes(),
+				charlotteSeed(),
 			},
 			charlottePrivateKey(),
 			false,

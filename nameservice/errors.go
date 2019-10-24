@@ -63,8 +63,8 @@ func WrapError(err error) error {
 	return err
 }
 
-func isErrorOfAnyType(err error, errors []string) bool {
-	for _, errorMsg := range errors {
+func isErrorOfAnyType(err error, errorStrings []string) bool {
+	for _, errorMsg := range errorStrings {
 		if strings.Contains(err.Error(), errorMsg) {
 			return true
 		}

@@ -93,6 +93,7 @@ func (s SentStore) PutMessage(messageID mail.ID, contentsHash, msg []byte, heade
 
 func responseAsError(r *http.Response) error {
 	var httpError errs.HTTPError
+
 	if r.StatusCode != http.StatusCreated {
 		if err := json.NewDecoder(r.Body).Decode(&httpError); err != nil {
 			return errors.WithMessage(err, "failed to read response")

@@ -15,24 +15,28 @@ func Secret(suppliedSecret, prePromptNote, promptLabel string, allowEmpty, confi
 	if allowEmpty {
 		return "", nil
 	}
+
 	fmt.Println(prePromptNote)
 	return secretFromPrompt(promptLabel, confirmPrompt)
 }
 
 func secretFromPrompt(promptLabel string, confirmPrompt bool) (string, error) {
 	prompt := promptui.Prompt{
-		Label: fmt.Sprintf("%s", promptLabel),
+		Label: promptLabel,
 		Mask:  '*',
 	}
+
 	secret, err := prompt.Run()
 	if err != nil {
 		return "", errors.Errorf("failed read %q", promptLabel)
 	}
+
 	if confirmPrompt {
 		confirmPromptValue := promptui.Prompt{
 			Label: fmt.Sprintf("Repeat %s", promptLabel),
 			Mask:  '*',
 		}
+
 		confirm, err := confirmPromptValue.Run()
 		if err != nil {
 			fmt.Printf("Prompt failed %v\n", err)

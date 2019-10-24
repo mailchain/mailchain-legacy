@@ -22,6 +22,7 @@ func (f RelayFunc) HandleRequest(w http.ResponseWriter, req *http.Request) {
 		errs.JSONWriter(w, http.StatusBadGateway, err)
 		return
 	}
+
 	defer resp.Body.Close()
 	copyHeader(resp.Header, w.Header())
 	w.WriteHeader(resp.StatusCode)

@@ -18,7 +18,7 @@ func Test_network(t *testing.T) {
 		s        values.Store
 		protocol string
 		network  string
-		nd       defaults.NetworkDefaults
+		nd       *defaults.NetworkDefaults
 	}
 	tests := []struct {
 		name                      string

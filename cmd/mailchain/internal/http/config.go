@@ -22,7 +22,7 @@ type config struct {
 }
 
 // nolint: gocyclo
-func produceConfig(s *settings.Base) (*config, error) {
+func produceConfig(s *settings.Base) (*config, error) { // nolint: funlen
 	mailboxStore, err := s.MailboxState.Produce()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config mailbox store")

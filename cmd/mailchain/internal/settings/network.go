@@ -11,7 +11,7 @@ import (
 	"github.com/mailchain/mailchain/sender"
 )
 
-func network(s values.Store, protocol, network string, nd defaults.NetworkDefaults) *Network {
+func network(s values.Store, protocol, network string, nd *defaults.NetworkDefaults) *Network {
 	k := &Network{
 		kind:     network,
 		protocol: protocol,

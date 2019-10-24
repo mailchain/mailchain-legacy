@@ -30,13 +30,13 @@ import (
 const nonceSize = 24
 
 func easyOpen(box, key []byte) ([]byte, error) {
+	var secretKey [32]byte
+
 	if len(box) < nonceSize {
 		return nil, errors.New("secretbox: message too short")
 	}
 	decryptNonce := new([nonceSize]byte)
 	copy(decryptNonce[:], box[:nonceSize])
-
-	var secretKey [32]byte
 	copy(secretKey[:], key)
 
 	decrypted, ok := secretbox.Open([]byte{}, box[nonceSize:], decryptNonce, &secretKey)
@@ -53,6 +53,7 @@ func easySeal(message, key []byte) ([]byte, error) {
 	}
 
 	var secretKey [32]byte
+
 	copy(secretKey[:], key)
 	return secretbox.Seal(nonce[:], message, nonce, &secretKey), nil
 }

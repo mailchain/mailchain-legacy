@@ -102,6 +102,7 @@ func SetupFlags(cmd *cobra.Command) error {
 
 func CreateNegroni(config *settings.Server, router http.Handler) *negroni.Negroni {
 	n := negroni.New()
+
 	if !config.CORS.Disabled.Get() {
 		n.Use(cors.New(cors.Options{
 			AllowedOrigins: config.CORS.AllowedOrigins.Get(),

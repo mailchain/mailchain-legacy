@@ -9,10 +9,12 @@ func SS58AddressFormat(network string, publicKey []byte) ([]byte, error) {
 	if len(publicKey) != 32 {
 		return nil, errors.Errorf("public key must be 32 bytes")
 	}
+
 	prefixedKey, err := prefixWithNetwork(network, publicKey)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	hash := blake2b.Sum512(addSS58Prefix(prefixedKey))
 
 	// take first 2 bytes of hash since public key

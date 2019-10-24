@@ -62,6 +62,7 @@ func getFromResultHash(address string, txResult *txList) (common.Hash, error) {
 	if len(txResult.Result) == 0 {
 		return common.Hash{}, errors.Errorf("No transactions found for address: %v", address)
 	}
+
 	for i := range txResult.Result {
 		x := txResult.Result[i]
 		if strings.EqualFold(x.From, address) {
@@ -69,5 +70,4 @@ func getFromResultHash(address string, txResult *txList) (common.Hash, error) {
 		}
 	}
 	return common.Hash{}, errors.Errorf("No transactions from address found")
-
 }

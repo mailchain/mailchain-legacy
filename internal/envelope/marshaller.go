@@ -22,12 +22,12 @@ import (
 // Unmarshal parses the envelope buffer representation in buf and places the
 // decoded result in data.
 func Unmarshal(buf []byte) (Data, error) {
+	var err error
+	var envData Data
+
 	if len(buf) == 0 {
 		return nil, errors.Errorf("buffer is empty")
 	}
-	var err error
-
-	var envData Data
 
 	switch buf[0] {
 	case Kind0x01:

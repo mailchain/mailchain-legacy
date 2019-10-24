@@ -70,6 +70,7 @@ func (h Sent) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers ma
 	metadata := map[string]*string{
 		"Version": aws.String(mailchain.Version),
 	}
+
 	for k, v := range headers {
 		metadata[k] = aws.String(v)
 	}

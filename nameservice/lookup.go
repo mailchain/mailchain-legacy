@@ -76,6 +76,7 @@ func (s LookupService) ResolveName(ctx context.Context, protocol, network, domai
 		Code    int    `json:"code"`
 	}
 	var errRes response
+
 	if err := json.NewDecoder(res.Body).Decode(&errRes); err != nil {
 		return nil, err
 	}

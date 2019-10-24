@@ -25,15 +25,14 @@ func ExecuteCommandC(root *cobra.Command, args []string, flags map[string]string
 }
 
 func AssertCommandOutput(t *testing.T, cmd *cobra.Command, err error, out, wantOutput string) bool {
-	assert := assert.New(t)
 	if err == nil {
-		if !assert.Equal(wantOutput, out) {
+		if !assert.Equal(t, wantOutput, out) {
 			t.Errorf("cmd().Execute().out = %v, want %v", out, wantOutput)
 			return false
 		}
 	}
 	if err != nil {
-		if !assert.Equal(wantOutput+"\n"+cmd.UsageString()+"\n", out) {
+		if !assert.Equal(t, wantOutput+"\n"+cmd.UsageString()+"\n", out) {
 			t.Errorf("cmd().Execute().out = %v, want %v", out, wantOutput)
 			return false
 		}

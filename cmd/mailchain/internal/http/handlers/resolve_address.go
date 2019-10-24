@@ -31,7 +31,7 @@ import (
 
 // GetResolveAddress returns a handler get spec
 func GetResolveAddress(resolvers map[string]nameservice.ReverseLookup) func(w http.ResponseWriter, r *http.Request) {
-	// Get swagger:route GET /nameservice/address/{address}/resolve?network={network}&protocol={protocol} ResolveAddress NameService GetResolveAddress
+	// Get swagger:route GET /nameservice/address/{address}/resolve?network={network}&protocol={protocol} NameService GetResolveAddress
 	//
 	// Resolve Address Against Name Service
 	//
@@ -142,10 +142,16 @@ type GetResolveAddressResponseBody struct {
 	// example: mailchain.eth
 	Name string `json:"name"`
 
-	// The rfc1035 error status, if present
-	// Since 0 status belongs to 'No Error', it's safe to use 'omitempty'
+	// The rfc1035 status code describing the outcome of the lookup
+	//
+	// + 0 - No Error
+	// + 1 - Format Error
+	// + 2 - Server Failure
+	// + 3 - Non-Existent Domain
+	// + 4 - Not Implemented
+	// + 5 - Query Refused
 	//
 	// Required: false
 	// example: 3
-	Status int `json:"status,omitempty"`
+	Status int `json:"status"`
 }

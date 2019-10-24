@@ -92,9 +92,6 @@ func SetupFlags(cmd *cobra.Command) error {
 	if err := viper.BindPFlag("server.cors.disabled", cmd.Flags().Lookup("cors-disabled")); err != nil {
 		return err
 	}
-	// if err := viper.BindPFlag("server.cors.allowed-origins", cmd.Flags().Lookup("cors-allowed-origins")); err != nil {
-	// 	return err
-	// }
 
 	cmd.PersistentFlags().String("passphrase", "", "Passphrase to encrypt/decrypt key with")
 	return nil

@@ -23,6 +23,7 @@ import (
 // decoded result in data.
 func Unmarshal(buf []byte) (Data, error) {
 	var err error
+
 	var envData Data
 
 	if len(buf) == 0 {

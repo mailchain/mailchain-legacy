@@ -29,6 +29,7 @@ func easyOpen(box, key []byte) ([]byte, error) {
 	if !ok {
 		return nil, errors.New("secretbox: could not decrypt data with private key")
 	}
+
 	return decrypted, nil
 }
 

@@ -12,12 +12,13 @@ func ExecuteCommandC(root *cobra.Command, args []string, flags map[string]string
 	if err := root.ValidateArgs(args); err != nil {
 		return nil, "", err
 	}
+
 	buf := new(bytes.Buffer)
 
 	root.SetOutput(buf)
 	root.SetArgs(args)
 	for x := range flags {
-		root.Flags().Set(x, flags[x])
+		_ = root.Flags().Set(x, flags[x])
 	}
 	c, err = root.ExecuteC()
 

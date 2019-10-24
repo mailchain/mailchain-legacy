@@ -174,10 +174,11 @@ func spec() string {
     },
     "/messages/{message_id}/read": {
       "get": {
+        "description": "Messages can be either read or unread.",
         "tags": [
           "Messages"
         ],
-        "summary": "Get message read status.",
+        "summary": "Message read status.",
         "operationId": "GetRead",
         "responses": {
           "200": {
@@ -253,7 +254,6 @@ func spec() string {
       "get": {
         "description": "Get name for supplied address. The name is typically a human-readable value that can be used in place of the address.\nResolve will query the protocol's name service to find the human-readable name for the supplied address.",
         "tags": [
-          "ResolveAddress",
           "NameService"
         ],
         "summary": "Resolve Address Against Name Service",
@@ -314,7 +314,6 @@ func spec() string {
       "get": {
         "description": "Get address for supplied name. The name is typically a human-readable value that can be used in place of the address.\nResolve will query the protocol's name service to find the address for supplied human-readable name.",
         "tags": [
-          "ResolveName",
           "NameService"
         ],
         "summary": "Resolve Name Against Name Service",
@@ -394,11 +393,11 @@ func spec() string {
     },
     "/public-key": {
       "get": {
-        "description": "Get the public key.",
+        "description": "This method will get the public key to use when encrypting messages and envelopes.\nProtocols and networks have different methods for retrieving or calculating a public key from an address.",
         "tags": [
           "PublicKey"
         ],
-        "summary": "Get public key from an address.",
+        "summary": "Public key from address.",
         "operationId": "GetPublicKey",
         "parameters": [
           {
@@ -476,6 +475,13 @@ func spec() string {
     "GetMessagesResponseHeaders": {
       "type": "object",
       "properties": {
+        "content-type": {
+          "description": "The content type and the encoding of the message body",
+          "type": "string",
+          "x-go-name": "ContentType",
+          "readOnly": true,
+          "example": "text/plain; charset=\\\"UTF-8\\\","
+        },
         "date": {
           "description": "When the message was created, this can be different to the transaction data of the message.",
           "type": "string",
@@ -618,6 +624,13 @@ func spec() string {
           "type": "string",
           "x-go-name": "Name",
           "example": "mailchain.eth"
+        },
+        "status": {
+          "description": "The rfc1035 status code describing the outcome of the lookup\n\n+ 0 - No Error\n+ 1 - Format Error\n+ 2 - Server Failure\n+ 3 - Non-Existent Domain\n+ 4 - Not Implemented\n+ 5 - Query Refused",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Status",
+          "example": 3
         }
       },
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
@@ -634,6 +647,13 @@ func spec() string {
           "type": "string",
           "x-go-name": "Address",
           "example": "0x4ad2b251246aafc2f3bdf3b690de3bf906622c51"
+        },
+        "status": {
+          "description": "The rfc1035 status code describing the outcome of the lookup\n\n+ 0 - No Error\n+ 1 - Format Error\n+ 2 - Server Failure\n+ 3 - Non-Existent Domain\n+ 4 - Not Implemented\n+ 5 - Query Refused",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Status",
+          "example": 3
         }
       },
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"

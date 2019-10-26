@@ -3,6 +3,8 @@ package substrate
 import (
 	"testing"
 
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
@@ -11,7 +13,7 @@ func Test_prefixWithNetwork(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
 		network   string
-		publicKey []byte
+		publicKey crypto.PublicKey
 	}
 	tests := []struct {
 		name    string
@@ -23,16 +25,16 @@ func Test_prefixWithNetwork(t *testing.T) {
 			"edgeware-testnet",
 			args{
 				"edgeware-testnet",
-				testutil.MustHexDecodeString("b14d4c84eedf30aabd53ae71286b392f1caaf77597c5a525ea7cc856f91de4a3"),
+				ed25519test.SofiaPublicKey,
 			},
-			[]byte{0x2a, 0xb1, 0x4d, 0x4c, 0x84, 0xee, 0xdf, 0x30, 0xaa, 0xbd, 0x53, 0xae, 0x71, 0x28, 0x6b, 0x39, 0x2f, 0x1c, 0xaa, 0xf7, 0x75, 0x97, 0xc5, 0xa5, 0x25, 0xea, 0x7c, 0xc8, 0x56, 0xf9, 0x1d, 0xe4, 0xa3},
+			[]byte{0x2a, 0x72, 0x3c, 0xaa, 0x23, 0xa5, 0xb5, 0x11, 0xaf, 0x5a, 0xd7, 0xb7, 0xef, 0x60, 0x76, 0xe4, 0x14, 0xab, 0x7e, 0x75, 0xa9, 0xdc, 0x91, 0xe, 0xa6, 0xe, 0x41, 0x7a, 0x2b, 0x77, 0xa, 0x56, 0x71},
 			false,
 		},
 		{
 			"invalid",
 			args{
 				"invalid",
-				testutil.MustHexDecodeString("b14d4c84eedf30aabd53ae71286b392f1caaf77597c5a525ea7cc856f91de4a3"),
+				ed25519test.SofiaPublicKey,
 			},
 			nil,
 			true,
@@ -83,7 +85,7 @@ func TestSS58AddressFormat(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
 		network   string
-		publicKey []byte
+		publicKey crypto.PublicKey
 	}
 	tests := []struct {
 		name    string
@@ -95,16 +97,16 @@ func TestSS58AddressFormat(t *testing.T) {
 			"success",
 			args{
 				"edgeware-testnet",
-				testutil.MustHexDecodeString("b14d4c84eedf30aabd53ae71286b392f1caaf77597c5a525ea7cc856f91de4a3"),
+				ed25519test.SofiaPublicKey,
 			},
-			[]byte{0x2a, 0xb1, 0x4d, 0x4c, 0x84, 0xee, 0xdf, 0x30, 0xaa, 0xbd, 0x53, 0xae, 0x71, 0x28, 0x6b, 0x39, 0x2f, 0x1c, 0xaa, 0xf7, 0x75, 0x97, 0xc5, 0xa5, 0x25, 0xea, 0x7c, 0xc8, 0x56, 0xf9, 0x1d, 0xe4, 0xa3, 0x83, 0x20},
+			[]byte{0x2a, 0x72, 0x3c, 0xaa, 0x23, 0xa5, 0xb5, 0x11, 0xaf, 0x5a, 0xd7, 0xb7, 0xef, 0x60, 0x76, 0xe4, 0x14, 0xab, 0x7e, 0x75, 0xa9, 0xdc, 0x91, 0xe, 0xa6, 0xe, 0x41, 0x7a, 0x2b, 0x77, 0xa, 0x56, 0x71, 0x63, 0x83},
 			false,
 		},
 		{
 			"err-network",
 			args{
 				"invalid",
-				testutil.MustHexDecodeString("b14d4c84eedf30aabd53ae71286b392f1caaf77597c5a525ea7cc856f91de4a3"),
+				ed25519test.SofiaPublicKey,
 			},
 			nil,
 			true,
@@ -113,7 +115,7 @@ func TestSS58AddressFormat(t *testing.T) {
 			"err-key-length",
 			args{
 				"edgeware-testnet",
-				testutil.MustHexDecodeString("b14d"),
+				nil,
 			},
 			nil,
 			true,

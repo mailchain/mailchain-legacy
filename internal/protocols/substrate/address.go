@@ -1,13 +1,14 @@
 package substrate
 
 import (
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/minio/blake2b-simd"
 	"github.com/pkg/errors"
 )
 
-func SS58AddressFormat(network string, publicKey []byte) ([]byte, error) {
-	if len(publicKey) != 32 {
-		return nil, errors.Errorf("public key must be 32 bytes")
+func SS58AddressFormat(network string, publicKey crypto.PublicKey) ([]byte, error) {
+	if publicKey == nil {
+		return nil, errors.Errorf("public key must not be nil")
 	}
 
 	prefixedKey, err := prefixWithNetwork(network, publicKey)
@@ -26,12 +27,12 @@ func addSS58Prefix(pubKey []byte) []byte {
 	return append(prefix, pubKey...)
 }
 
-func prefixWithNetwork(network string, publicKey []byte) ([]byte, error) {
+func prefixWithNetwork(network string, publicKey crypto.PublicKey) ([]byte, error) {
 	// https://github.com/paritytech/substrate/wiki/External-Address-Format-(SS58)#address-type defines different prefixes by network
 	switch network {
 	case EdgewareTestnet:
 		// 42 = 0x2a
-		return append([]byte{0x2a}, publicKey...), nil
+		return append([]byte{0x2a}, publicKey.Bytes()...), nil
 	default:
 		return nil, errors.Errorf("unknown address prefix for %q", network)
 	}

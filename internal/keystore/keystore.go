@@ -16,7 +16,6 @@
 package keystore
 
 import (
-	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -30,10 +29,4 @@ type Store interface {
 	Store(private crypto.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) (address []byte, err error)
 	HasAddress(address []byte) bool
 	GetAddresses() ([][]byte, error)
-}
-
-func KeystoreNames() []string {
-	return []string{
-		mailchain.StoreNACLFilestore,
-	}
 }

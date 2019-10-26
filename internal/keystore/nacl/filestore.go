@@ -18,25 +18,24 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
 
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
+	"github.com/spf13/afero"
 )
 
 // NewFileStore create a new filestore with the path specified
 func NewFileStore(path string) FileStore {
-	return FileStore{path: path}
+	return FileStore{fs: afero.NewBasePathFs(afero.NewOsFs(), path)}
 }
 
 // FileStore object
 type FileStore struct {
-	path string
+	fs afero.Fs
 }
 
-func (fs FileStore) getEncryptedKey(address []byte) (*keystore.EncryptedKey, error) {
-	fd, err := os.Open(fs.filename(address))
+func (f FileStore) getEncryptedKey(address []byte) (*keystore.EncryptedKey, error) {
+	fd, err := f.fs.Open(f.filename(address))
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not find key file")
 	}
@@ -54,6 +53,6 @@ func (fs FileStore) getEncryptedKey(address []byte) (*keystore.EncryptedKey, err
 	return encryptedKey, nil
 }
 
-func (fs FileStore) filename(address []byte) string {
-	return filepath.Join(fs.path, fmt.Sprintf("%s.json", hex.EncodeToString(address)))
+func (f FileStore) filename(address []byte) string {
+	return fmt.Sprintf("%s.json", hex.EncodeToString(address))
 }

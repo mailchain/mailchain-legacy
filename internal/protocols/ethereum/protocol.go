@@ -12,20 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package nacl
+package ethereum
 
-import (
-	"github.com/mailchain/mailchain/internal/keystore"
-	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
-	"github.com/mailchain/mailchain/internal/mailbox/signer"
-	"github.com/pkg/errors"
-)
+import "github.com/mailchain/mailchain/internal/encoding"
 
-// GetSigner return a transaction signer based on the supplied address.
-func (f FileStore) GetSigner(address []byte, chain string, deriveKeyOptions multi.OptionsBuilders) (signer.Signer, error) {
-	pk, err := f.getPrivateKey(address, deriveKeyOptions)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-	return keystore.Signer(chain, pk)
+type Protocol struct {
+}
+
+func (p Protocol) Name() string {
+	return "ethereum" // TODO:
+}
+
+func (p Protocol) AddressDecodeString(in string) ([]byte, error) {
+	return encoding.DecodeZeroX(in)
 }

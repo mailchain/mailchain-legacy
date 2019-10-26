@@ -16,16 +16,15 @@ package nacl
 
 import (
 	"encoding/hex"
-	"io/ioutil"
-	"os"
 	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/spf13/afero"
 )
 
 // HasAddress check for the presence of the address in the store
-func (fs FileStore) HasAddress(address []byte) bool {
-	fd, err := os.Open(fs.filename(address))
+func (f FileStore) HasAddress(address []byte) bool {
+	fd, err := f.fs.Open(f.filename(address))
 	if err != nil {
 		return false
 	}
@@ -36,15 +35,15 @@ func (fs FileStore) HasAddress(address []byte) bool {
 }
 
 // GetAddresses list all the address this key store has
-func (fs FileStore) GetAddresses() ([][]byte, error) {
-	files, err := ioutil.ReadDir(fs.path)
+func (f FileStore) GetAddresses() ([][]byte, error) {
+	files, err := afero.ReadDir(f.fs, "./")
 	if err != nil {
 		return nil, err
 	}
 	addresses := [][]byte{}
 
-	for _, f := range files {
-		fileName := f.Name()
+	for _, file := range files {
+		fileName := file.Name()
 		if !strings.HasSuffix(fileName, ".json") {
 			continue
 		}
@@ -55,7 +54,8 @@ func (fs FileStore) GetAddresses() ([][]byte, error) {
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}
-		encryptedKey, err := fs.getEncryptedKey(address)
+
+		encryptedKey, err := f.getEncryptedKey(address)
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}

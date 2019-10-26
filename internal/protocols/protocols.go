@@ -23,11 +23,28 @@ const (
 	Substrate = "substrate"
 )
 
+type Protocol interface {
+	Name() string
+	// PublicKeyToAddress(pubKey crypto.PublicKey) ([]byte, error)
+	// PublicKeyEncodeToString(in crypto.PublicKey) string
+	// AddressEncodeToString(in crypto.PublicKey) string
+	AddressDecodeString(in string) ([]byte, error)
+}
+
 func NetworkNames(protocol string) []string {
 	switch protocol {
 	case Ethereum:
 		return ethereum.Networks()
 	default:
 		return nil
+	}
+}
+
+func Get(name string) (Protocol, error) {
+	switch name {
+	case "ethereum":
+		return ethereum.Protocol{}, nil
+	default:
+		return nil, nil
 	}
 }

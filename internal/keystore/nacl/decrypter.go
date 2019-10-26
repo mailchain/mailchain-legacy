@@ -22,8 +22,8 @@ import (
 )
 
 // GetDecrypter the decrypter for the specified address.
-func (fs FileStore) GetDecrypter(address []byte, decrypterType byte, deriveKeyOptions multi.OptionsBuilders) (cipher.Decrypter, error) {
-	pk, err := fs.getPrivateKey(address, deriveKeyOptions)
+func (f FileStore) GetDecrypter(address []byte, decrypterType byte, deriveKeyOptions multi.OptionsBuilders) (cipher.Decrypter, error) {
+	pk, err := f.getPrivateKey(address, deriveKeyOptions)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

@@ -72,8 +72,8 @@ func deriveKey(ek *keystore.EncryptedKey, deriveKeyOptions multi.OptionsBuilders
 	}
 }
 
-func (fs FileStore) getPrivateKey(address []byte, deriveKeyOptions multi.OptionsBuilders) (crypto.PrivateKey, error) {
-	encryptedKey, err := fs.getEncryptedKey(address)
+func (f FileStore) getPrivateKey(address []byte, deriveKeyOptions multi.OptionsBuilders) (crypto.PrivateKey, error) {
+	encryptedKey, err := f.getEncryptedKey(address)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

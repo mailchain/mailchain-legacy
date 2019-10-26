@@ -18,6 +18,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
+	"github.com/mailchain/mailchain/crypto/cipher/nacl"
 	"github.com/pkg/errors"
 )
 
@@ -28,6 +29,9 @@ func Decrypter(cipherType byte, pk crypto.PrivateKey) (cipher.Decrypter, error) 
 	table := map[byte]decrypterFunc{
 		cipher.AES256CBC: func(pk crypto.PrivateKey) (cipher.Decrypter, error) {
 			return aes256cbc.NewDecrypter(pk), nil
+		},
+		cipher.NACL: func(pk crypto.PrivateKey) (cipher.Decrypter, error) {
+			return nacl.NewDecrypter(pk), nil
 		},
 	}
 

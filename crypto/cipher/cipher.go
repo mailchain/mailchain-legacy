@@ -21,8 +21,9 @@ import (
 
 // Cipher lookup
 const (
-	AES256CBC   byte = 0x2e
 	NoOperation byte = 0x20
+	NACL        byte = 0x2a
+	AES256CBC   byte = 0x2e
 )
 
 // EncryptedContent typed version of byte array that holds encrypted data

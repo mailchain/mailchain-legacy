@@ -18,19 +18,13 @@ func TestPrivateKey_Bytes(t *testing.T) {
 	}{
 		{
 			"sofia",
-			func() PrivateKey {
-				v := sofiaPrivateKey()
-				return *v
-			}(),
-			sofiaPrivateKeyBytes(),
+			sofiaPrivateKey,
+			sofiaPrivateKeyBytes,
 		},
 		{
 			"charlotte",
-			func() PrivateKey {
-				v := charlottePrivateKey()
-				return *v
-			}(),
-			charlottePrivateKeyBytes(),
+			charlottePrivateKey,
+			charlottePrivateKeyBytes,
 		},
 	}
 	for _, tt := range tests {
@@ -55,17 +49,17 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 		{
 			"success-sofia",
 			args{
-				sofiaSeed(),
+				sofiaSeed,
 			},
-			sofiaPrivateKey(),
+			&sofiaPrivateKey,
 			false,
 		},
 		{
 			"success-charlotte",
 			args{
-				charlotteSeed(),
+				charlotteSeed,
 			},
-			charlottePrivateKey(),
+			&charlottePrivateKey,
 			false,
 		},
 		{
@@ -99,19 +93,13 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 	}{
 		{
 			"sofia",
-			func() PrivateKey {
-				v := sofiaPrivateKey()
-				return *v
-			}(),
-			sofiaPublicKey(),
+			sofiaPrivateKey,
+			sofiaPublicKey,
 		},
 		{
 			"charlotte",
-			func() PrivateKey {
-				v := charlottePrivateKey()
-				return *v
-			}(),
-			charlottePublicKey(),
+			charlottePrivateKey,
+			charlottePublicKey,
 		},
 	}
 	for _, tt := range tests {

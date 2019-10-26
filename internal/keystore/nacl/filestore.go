@@ -15,9 +15,11 @@
 package nacl
 
 import (
+	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
@@ -26,12 +28,16 @@ import (
 
 // NewFileStore create a new filestore with the path specified
 func NewFileStore(path string) FileStore {
-	return FileStore{fs: afero.NewBasePathFs(afero.NewOsFs(), path)}
+	return FileStore{
+		fs:   afero.NewBasePathFs(afero.NewOsFs(), path),
+		rand: rand.Reader,
+	}
 }
 
 // FileStore object
 type FileStore struct {
-	fs afero.Fs
+	fs   afero.Fs
+	rand io.Reader
 }
 
 func (f FileStore) getEncryptedKey(address []byte) (*keystore.EncryptedKey, error) {

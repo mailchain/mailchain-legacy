@@ -32,12 +32,12 @@ import (
 )
 
 // Store the private key with the storage key and curve type
-func (f FileStore) Store(private crypto.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) ([]byte, error) {
+func (f FileStore) Store(private crypto.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) (pubKey []byte, err error) {
 	storageKey, keyDefFunc, err := multi.DeriveKey(deriveKeyOptions)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not derive storage key")
 	}
-	encrypted, err := easySeal(private.Bytes(), storageKey)
+	encrypted, err := easySeal(private.Bytes(), storageKey, f.rand)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could seal storage key")
 	}

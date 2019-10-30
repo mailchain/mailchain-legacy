@@ -37,6 +37,6 @@ func DecodeZeroX(in string) ([]byte, error) {
 	if !strings.HasPrefix(in, "0x") {
 		return nil, errors.Errorf("missing \"0x\" prefix from hex string")
 	}
-	
+
 	return hex.DecodeString(in[2:])
 }

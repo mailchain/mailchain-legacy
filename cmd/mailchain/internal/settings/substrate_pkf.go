@@ -43,6 +43,7 @@ func (r SubstratePublicKeyFinder) Supports() map[string]bool {
 	for _, np := range r.EnabledProtocolNetworks.Get() {
 		m[np] = true
 	}
+
 	return m
 }
 

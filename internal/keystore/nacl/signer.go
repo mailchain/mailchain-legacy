@@ -27,9 +27,11 @@ func (f FileStore) GetSigner(address []byte, protocol, network string, deriveKey
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	pk, err := f.getPrivateKey(encryptedKey, deriveKeyOptions)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	return keystore.Signer(protocol, pk)
 }

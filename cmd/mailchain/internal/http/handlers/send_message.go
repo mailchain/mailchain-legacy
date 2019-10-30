@@ -257,16 +257,6 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
 	}
-	// TODO: Consider if and how to check if address is related to the public key
-	// pkAddress := p.publicKey.Address()
-	// toAddress, err := address.DecodeByProtocol(p.to.ChainAddress, protocol)
-	// if err != nil {
-	// 	return errors.WithMessage(err, "failed to decode address")
-	// }
-
-	// if !bytes.Equal(pkAddress, toAddress) {
-	// 	return errors.Errorf("`public-key` does not match to address")
-	// }
 
 	return nil
 }

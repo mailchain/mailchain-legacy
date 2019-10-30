@@ -64,7 +64,6 @@ func PublicKeyFromBytes(keyBytes []byte) (crypto.PublicKey, error) {
 	}
 }
 
-// TODO: This should be removed in favor of from bytes, looks like need to pull in some of the logic to deal with different lengths
 // PublicKeyFromHex create a public key from hex
 func PublicKeyFromHex(input string) (crypto.PublicKey, error) {
 	input = strings.TrimPrefix(input, "0x")

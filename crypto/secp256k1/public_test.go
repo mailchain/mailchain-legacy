@@ -102,36 +102,6 @@ func TestPublicKeyFromHex(t *testing.T) {
 	}
 }
 
-func TestPublicKey_Address(t *testing.T) {
-	assert := assert.New(t)
-	type fields struct {
-		ecdsa ecdsa.PublicKey
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   []byte
-	}{
-		{
-			"success",
-			fields{
-				ecdsaPublicKeySofia(),
-			},
-			[]byte{0xd5, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			pk := PublicKey{
-				ecdsa: tt.fields.ecdsa,
-			}
-			if got := pk.Address(); !assert.Equal(tt.want, got) {
-				t.Errorf("PublicKey.Address() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestPublicKeyFromBytes(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {

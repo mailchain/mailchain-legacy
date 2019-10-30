@@ -3,6 +3,9 @@ package ed25519
 import (
 	"reflect"
 	"testing"
+
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPublicKey_Bytes(t *testing.T) {
@@ -32,13 +35,14 @@ func TestPublicKey_Bytes(t *testing.T) {
 }
 
 func TestPublicKeyFromBytes(t *testing.T) {
+	assert := assert.New(t)
 	type args struct {
 		keyBytes []byte
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    *PublicKey
+		want    crypto.PublicKey
 		wantErr bool
 	}{
 		{
@@ -65,7 +69,7 @@ func TestPublicKeyFromBytes(t *testing.T) {
 				t.Errorf("PublicKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if !assert.Equal(tt.want, got) {
 				t.Errorf("PublicKeyFromBytes() = %v, want %v", got, tt.want)
 			}
 		})

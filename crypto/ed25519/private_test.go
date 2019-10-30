@@ -47,7 +47,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-sofia",
+			"success-sofia-seed",
 			args{
 				sofiaSeed,
 			},
@@ -55,9 +55,25 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 			false,
 		},
 		{
-			"success-charlotte",
+			"success-sofia-bytes",
+			args{
+				sofiaPrivateKeyBytes,
+			},
+			&sofiaPrivateKey,
+			false,
+		},
+		{
+			"success-charlotte-seed",
 			args{
 				charlotteSeed,
+			},
+			&charlottePrivateKey,
+			false,
+		},
+		{
+			"success-charlotte-bytes",
+			args{
+				charlottePrivateKeyBytes,
 			},
 			&charlottePrivateKey,
 			false,
@@ -106,6 +122,26 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.pk.PublicKey(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("PrivateKey.PublicKey() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPrivateKey_Kind(t *testing.T) {
+	tests := []struct {
+		name string
+		want string
+	}{
+		{
+			"success",
+			"ed25519",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			pk := PrivateKey{}
+			if got := pk.Kind(); got != tt.want {
+				t.Errorf("PrivateKey.Kind() = %v, want %v", got, tt.want)
 			}
 		})
 	}

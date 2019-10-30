@@ -17,30 +17,40 @@ package multikey
 import (
 	"testing"
 
-	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPrivateKeyFromBytes(t *testing.T) {
+func TestPublicKeyFromBytes(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
 		hex     string
 		keyType []byte
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    crypto.PrivateKey
-		wantErr bool
+		name      string
+		args      args
+		wantBytes []byte
+		wantErr   bool
 	}{
 		{
-			"ethereum",
+			"secp256k1",
 			args{
 				"secp256k1",
-				testutil.MustHexDecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F"),
+				secp256k1test.SofiaPublicKey.Bytes(),
 			},
-			testutil.SofiaPrivateKey,
+			secp256k1test.SofiaPublicKey.Bytes(),
+			false,
+		},
+		{
+			"ed25519",
+			args{
+				"ed25519",
+				ed25519test.SofiaPublicKey.Bytes(),
+			},
+			ed25519test.SofiaPublicKey.Bytes(),
 			false,
 		},
 		{
@@ -55,14 +65,21 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := PrivateKeyFromBytes(tt.args.hex, tt.args.keyType)
+			got, err := PublicKeyFromBytes(tt.args.hex, tt.args.keyType)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("PrivateKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
-				return
+				t.Errorf("PublicKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if !assert.Equal(tt.want, got) {
-				t.Errorf("PrivateKeyFromBytes() = %v, want %v", got, tt.want)
+			if got != nil {
+				if !assert.EqualValues(tt.wantBytes, got.Bytes()) {
+					t.Errorf("PublicKeyFromBytes() = %v, want %v", got, tt.wantBytes)
+				}
 			}
+			if got == nil {
+				if !assert.Nil(tt.wantBytes) {
+					t.Errorf("PublicKeyFromBytes() = %v, want %v", got, tt.wantBytes)
+				}
+			}
+
 		})
 	}
 }

@@ -35,11 +35,6 @@ func (pk PublicKey) Bytes() []byte {
 	return ethcrypto.CompressPubkey(&pk.ecdsa)
 }
 
-// Address returns the byte representation of the address
-func (pk PublicKey) Address() []byte {
-	return ethcrypto.PubkeyToAddress(pk.ecdsa).Bytes()
-}
-
 // PublicKeyFromBytes create a public key from []byte
 func PublicKeyFromBytes(keyBytes []byte) (crypto.PublicKey, error) {
 	switch len(keyBytes) {

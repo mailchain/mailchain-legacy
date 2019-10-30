@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
@@ -36,8 +37,19 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 	//   404: NotFoundError
 	//   422: ValidationError
 	return func(w http.ResponseWriter, r *http.Request) {
+		protocol, err := params.QueryRequireProtocol(r)
+		if err != nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+			return
+		}
+
+		network, err := params.QueryRequireNetwork(r)
+		if err != nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+			return
+		}
 		addresses := []string{}
-		rawAddresses, err := ks.GetAddresses()
+		rawAddresses, err := ks.GetAddresses(protocol, network)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
@@ -57,4 +69,23 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 type GetAddressesResponse struct {
 	// in: body
 	Addresses []string `json:"addresses"`
+}
+
+// swagger:parameters GetAddresses
+type GetAddressesRequest struct {
+	// Network to use when finding addresses.
+	//
+	// enum: mainnet,goerli,ropsten,rinkeby,local
+	// in: query
+	// required: true
+	// example: goerli
+	Network string `json:"network"`
+
+	// Protocol to use when finding addresses.
+	//
+	// enum: ethereum, substrate
+	// in: query
+	// required: true
+	// example: ethereum
+	Protocol string `json:"protocol"`
 }

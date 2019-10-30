@@ -15,7 +15,6 @@
 package nacl
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"path/filepath"
 	"time"
@@ -32,7 +31,7 @@ import (
 )
 
 // Store the private key with the storage key and curve type
-func (f FileStore) Store(private crypto.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) (pubKey []byte, err error) {
+func (f FileStore) Store(private crypto.PrivateKey, deriveKeyOptions multi.OptionsBuilders) (crypto.PublicKey, error) {
 	storageKey, keyDefFunc, err := multi.DeriveKey(deriveKeyOptions)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not derive storage key")
@@ -42,16 +41,15 @@ func (f FileStore) Store(private crypto.PrivateKey, curveType string, deriveKeyO
 		return nil, errors.WithMessage(err, "could seal storage key")
 	}
 
-	address := private.PublicKey().Address()
 	keyJSON := keystore.EncryptedKey{
-		Address:       hex.EncodeToString(address),
-		StorageCipher: "nacl",
-		CipherText:    encrypted,
-		CurveType:     curveType,
-		ID:            uuid.New().String(),
-		KDF:           keyDefFunc,
-		Timestamp:     time.Now(),
-		Version:       mailchain.Version,
+		PublicKeyBytes: private.PublicKey().Bytes(),
+		StorageCipher:  "nacl",
+		CipherText:     encrypted,
+		CurveType:      private.Kind(),
+		ID:             uuid.New().String(),
+		KDF:            keyDefFunc,
+		Timestamp:      time.Now(),
+		Version:        mailchain.Version,
 	}
 	if keyDefFunc != kdf.Scrypt {
 		return nil, errors.Errorf("kdf not supported")
@@ -63,12 +61,12 @@ func (f FileStore) Store(private crypto.PrivateKey, curveType string, deriveKeyO
 		return nil, err
 	}
 	// Write into temporary file
-	tmpName, err := writeTemporaryKeyFile(f.fs, f.filename(address), content)
+	tmpName, err := writeTemporaryKeyFile(f.fs, f.filename(private.PublicKey().Bytes()), content)
 	if err != nil {
 		return nil, err
 	}
 
-	return address, f.fs.Rename(tmpName, f.filename(address))
+	return private.PublicKey(), f.fs.Rename(tmpName, f.filename(private.PublicKey().Bytes()))
 }
 
 func writeTemporaryKeyFile(fs afero.Fs, file string, content []byte) (string, error) {

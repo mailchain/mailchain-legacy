@@ -1,17 +1,3 @@
-// Copyright 2019 Finobo
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package handlers
 
 import (
@@ -37,15 +23,40 @@ func TestGetAddresses(t *testing.T) {
 	tests := []struct {
 		name       string
 		args       args
+		req        *http.Request
 		wantBody   string
 		wantStatus int
 	}{
+		{
+			"err-missing-protocol",
+			args{
+				func() keystore.Store {
+					store := keystoretest.NewMockStore(mockCtrl)
+					return store
+				}(),
+			},
+			httptest.NewRequest("GET", "/?network=mainnet", nil),
+			"{\"code\":422,\"message\":\"'protocol' must be specified exactly once\"}\n",
+			http.StatusUnprocessableEntity,
+		},
+		{
+			"err-missing-network",
+			args{
+				func() keystore.Store {
+					store := keystoretest.NewMockStore(mockCtrl)
+					return store
+				}(),
+			},
+			httptest.NewRequest("GET", "/?protocol=ethereum", nil),
+			"{\"code\":422,\"message\":\"'network' must be specified exactly once\"}\n",
+			http.StatusUnprocessableEntity,
+		},
 		{
 			"err-GetAddresses",
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().GetAddresses().Return(
+					store.EXPECT().GetAddresses("ethereum", "mainnet").Return(
 						nil,
 						errors.Errorf("error getting address"),
 					).Times(1)
@@ -53,6 +64,7 @@ func TestGetAddresses(t *testing.T) {
 					return store
 				}(),
 			},
+			httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil),
 			"{\"code\":500,\"message\":\"error getting address\"}\n",
 			http.StatusInternalServerError,
 		},
@@ -61,7 +73,7 @@ func TestGetAddresses(t *testing.T) {
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().GetAddresses().Return(
+					store.EXPECT().GetAddresses("ethereum", "mainnet").Return(
 						[][]byte{},
 						nil,
 					).Times(1)
@@ -69,6 +81,7 @@ func TestGetAddresses(t *testing.T) {
 					return store
 				}(),
 			},
+			httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil),
 			"{\"addresses\":[]}\n",
 			http.StatusOK,
 		},
@@ -77,7 +90,7 @@ func TestGetAddresses(t *testing.T) {
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().GetAddresses().Return(
+					store.EXPECT().GetAddresses("ethereum", "mainnet").Return(
 						[][]byte{testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")},
 						nil,
 					).Times(1)
@@ -85,6 +98,7 @@ func TestGetAddresses(t *testing.T) {
 					return store
 				}(),
 			},
+			httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil),
 			"{\"addresses\":[\"5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\"]}\n",
 			http.StatusOK,
 		},
@@ -93,7 +107,7 @@ func TestGetAddresses(t *testing.T) {
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().GetAddresses().Return(
+					store.EXPECT().GetAddresses("ethereum", "mainnet").Return(
 						[][]byte{
 							testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
 							testutil.MustHexDecodeString("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
@@ -104,23 +118,20 @@ func TestGetAddresses(t *testing.T) {
 					return store
 				}(),
 			},
+			httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil),
 			"{\"addresses\":[\"5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\",\"4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2\"]}\n",
 			http.StatusOK,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			req, err := http.NewRequest("GET", "/", nil)
-			if err != nil {
-				t.Fatal(err)
-			}
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 			rr := httptest.NewRecorder()
 			handler := http.HandlerFunc(GetAddresses(tt.args.ks))
 
 			// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
 			// directly and pass in our Request and ResponseRecorder.
-			handler.ServeHTTP(rr, req)
+			handler.ServeHTTP(rr, tt.req)
 
 			// Check the status code is what we expect.
 			if !assert.Equal(tt.wantStatus, rr.Code) {
@@ -131,6 +142,7 @@ func TestGetAddresses(t *testing.T) {
 				t.Errorf("handler returned unexpected body: got %v want %v",
 					rr.Body.String(), tt.wantBody)
 			}
+
 		})
 	}
 }

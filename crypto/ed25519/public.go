@@ -1,6 +1,7 @@
 package ed25519
 
 import (
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/ed25519"
 )
@@ -15,14 +16,9 @@ func (pk PublicKey) Bytes() []byte {
 	return pk.key
 }
 
-// Address returns the byte representation of the address
-func (pk PublicKey) Address() []byte {
-	return nil
-}
-
 // PublicKeyFromBytes create a public key from []byte
-func PublicKeyFromBytes(keyBytes []byte) (*PublicKey, error) {
-	if len(keyBytes) != 32 {
+func PublicKeyFromBytes(keyBytes []byte) (crypto.PublicKey, error) {
+	if len(keyBytes) != ed25519.PublicKeySize {
 		return nil, errors.Errorf("public key must be 32 bytes")
 	}
 	return &PublicKey{key: keyBytes}, nil

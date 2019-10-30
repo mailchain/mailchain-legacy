@@ -24,6 +24,7 @@ run:
   skip-dirs:
     - internal/pkg/testutil
     - crypto/secp256k1/secp256k1test
+    - crypto/ed25519/ed25519test
     
   # which files to skip: they will be analyzed, but issues from them
   # won't be reported. Default value is empty list, but there is

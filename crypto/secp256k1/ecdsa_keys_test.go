@@ -22,8 +22,8 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-func ecdsaPrivateKeyA() ecdsa.PrivateKey {
-	b, _ := hex.DecodeString("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+func ecdsaPrivateKeySofia() ecdsa.PrivateKey {
+	b, _ := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 	key, err := crypto.ToECDSA(b)
 	if err != nil {
 		log.Fatal(err)
@@ -31,12 +31,12 @@ func ecdsaPrivateKeyA() ecdsa.PrivateKey {
 	return *key
 }
 
-func ecdsaPublicKeyA() ecdsa.PublicKey {
-	return ecdsaPrivateKeyA().PublicKey
+func ecdsaPublicKeySofia() ecdsa.PublicKey {
+	return ecdsaPrivateKeySofia().PublicKey
 }
 
-func ecdsaPrivateKeyB() ecdsa.PrivateKey {
-	b, _ := hex.DecodeString("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
+func ecdsaPrivateKeyCharlotte() ecdsa.PrivateKey {
+	b, _ := hex.DecodeString("DF4BA9F6106AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3")
 	key, err := crypto.ToECDSA(b)
 	if err != nil {
 		log.Fatal(err)
@@ -44,6 +44,6 @@ func ecdsaPrivateKeyB() ecdsa.PrivateKey {
 	return *key
 }
 
-func ecdsaPublicKeyB() ecdsa.PublicKey {
-	return ecdsaPrivateKeyB().PublicKey
+func ecdsaPublicKeyCharlotte() ecdsa.PublicKey {
+	return ecdsaPrivateKeyCharlotte().PublicKey
 }

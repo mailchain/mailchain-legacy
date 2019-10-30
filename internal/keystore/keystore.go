@@ -16,7 +16,6 @@
 package keystore
 
 import (
-	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -25,15 +24,10 @@ import (
 
 // Store private keys but does not return them, instead return decrypter or signer.
 type Store interface {
-	GetSigner(address []byte, chain string, deriveKeyOptions multi.OptionsBuilders) (signer.Signer, error)
-	GetDecrypter(address []byte, decrypterType byte, deriveKeyOptions multi.OptionsBuilders) (cipher.Decrypter, error)
-	Store(private crypto.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) (address []byte, err error)
+	GetSigner(address []byte, protocol, network string, deriveKeyOptions multi.OptionsBuilders) (signer.Signer, error)
+	GetDecrypter(address []byte, protocol, network string, decrypterType byte, deriveKeyOptions multi.OptionsBuilders) (cipher.Decrypter, error)
+	Store(private crypto.PrivateKey, deriveKeyOptions multi.OptionsBuilders) (crypto.PublicKey, error)
 	HasAddress(address []byte) bool
-	GetAddresses() ([][]byte, error)
-}
-
-func KeystoreNames() []string {
-	return []string{
-		mailchain.StoreNACLFilestore,
-	}
+	GetAddresses(protocol, address string) ([][]byte, error)
+	GetPublicKeys() ([]crypto.PublicKey, error)
 }

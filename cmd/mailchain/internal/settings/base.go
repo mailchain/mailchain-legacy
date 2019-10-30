@@ -57,16 +57,16 @@ type Base struct {
 }
 
 func (o *Base) ToYaml(out io.Writer, tabsize int, commentDefaults, excludeDefaults bool) {
-	protocols := []output.Element{}
+	protocolElements := []output.Element{}
 	for _, v := range o.Protocols {
-		protocols = append(protocols, v.Output())
+		protocolElements = append(protocolElements, v.Output())
 	}
 
 	output.ToYaml(output.Root{
 		Elements: []output.Element{
 			output.Element{
 				FullName: "protocols",
-				Elements: protocols,
+				Elements: protocolElements,
 			},
 
 			o.AddressNameServices.Output(),

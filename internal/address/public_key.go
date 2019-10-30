@@ -12,31 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate mockgen -source=keystore.go -package=keystoretest -destination=./keystoretest/keystore_mock.go
-package keystore
+package address
 
 import (
-	"reflect"
-	"testing"
-
-	"github.com/mailchain/mailchain"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/substrate"
+	"github.com/pkg/errors"
 )
 
-func TestKeystoreNames(t *testing.T) {
-	tests := []struct {
-		name string
-		want []string
-	}{
-		{
-			"success",
-			[]string{mailchain.StoreNACLFilestore},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := KeystoreNames(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("KeystoreNames() = %v, want %v", got, tt.want)
-			}
-		})
+func FromPublicKey(pubKey crypto.PublicKey, protocol, network string) (address []byte, err error) {
+	switch protocol {
+	case protocols.Ethereum:
+		return ethereum.Address(pubKey)
+	case protocols.Substrate:
+		return substrate.SS58AddressFormat(network, pubKey)
+	default:
+		return nil, errors.Errorf("%q unsupported protocol", protocol)
 	}
 }

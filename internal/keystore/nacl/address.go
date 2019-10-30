@@ -15,17 +15,18 @@
 package nacl
 
 import (
-	"encoding/hex"
-	"io/ioutil"
-	"os"
-	"strings"
+	"bytes"
 
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/multikey"
+	"github.com/mailchain/mailchain/internal/address"
+	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
 )
 
 // HasAddress check for the presence of the address in the store
-func (fs FileStore) HasAddress(address []byte) bool {
-	fd, err := os.Open(fs.filename(address))
+func (f FileStore) HasAddress(in []byte) bool {
+	fd, err := f.fs.Open(f.filename(in))
 	if err != nil {
 		return false
 	}
@@ -35,56 +36,68 @@ func (fs FileStore) HasAddress(address []byte) bool {
 	return true
 }
 
-// GetAddresses list all the address this key store has
-func (fs FileStore) GetAddresses() ([][]byte, error) {
-	files, err := ioutil.ReadDir(fs.path)
+func (f FileStore) GetPublicKeys() ([]crypto.PublicKey, error) {
+	rawKeys, err := f.getEncryptedKeys()
 	if err != nil {
 		return nil, err
 	}
-	addresses := [][]byte{}
 
-	for _, f := range files {
-		fileName := f.Name()
-		if !strings.HasSuffix(fileName, ".json") {
+	publicKeys := []crypto.PublicKey{}
+
+	for i := range rawKeys {
+		pubKey, err := multikey.PublicKeyFromBytes(rawKeys[i].CurveType, rawKeys[i].PublicKeyBytes)
+		if err != nil {
 			continue
 		}
-		fileName = strings.TrimSuffix(fileName, ".json")
-		splits := strings.Split(fileName, "/")
-		addressPortion := splits[len(splits)-1]
-		address, err := hex.DecodeString(addressPortion)
-		if err != nil {
-			return nil, errors.WithStack(err)
-		}
-		encryptedKey, err := fs.getEncryptedKey(address)
-		if err != nil {
-			return nil, errors.WithStack(err)
-		}
-		addresses = append(addresses, HexToAddress(encryptedKey.Address))
+
+		publicKeys = append(publicKeys, pubKey)
 	}
+
+	return publicKeys, nil
+}
+
+// GetAddresses list all the address this key store has
+func (f FileStore) GetAddresses(protocol, network string) ([][]byte, error) {
+	addresses := [][]byte{}
+
+	keys, err := f.GetPublicKeys()
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	for _, pubKey := range keys {
+		pubkeyAddress, err := address.FromPublicKey(pubKey, protocol, network)
+		if err != nil {
+			continue
+		}
+
+		addresses = append(addresses, pubkeyAddress)
+	}
+
 	return addresses, nil
 }
 
-// TODO: this needs to be removed only works for ethereum, using mailchain address package instead, or rethink how keys are stored. Should public key be the index then generate address
-func HexToAddress(s string) []byte {
-	return FromHex(s)
-}
+func (f FileStore) getEncryptedKeyByAddress(searchAddress []byte, protocol, network string) (*keystore.EncryptedKey, error) {
+	rawKeys, err := f.getEncryptedKeys()
+	if err != nil {
+		return nil, err
+	}
 
-// FromHex returns the bytes represented by the hexadecimal string s.
-// s may be prefixed with "0x".
-func FromHex(s string) []byte {
-	if len(s) > 1 {
-		if s[0:2] == "0x" || s[0:2] == "0X" {
-			s = s[2:]
+	for i := range rawKeys {
+		pubKey, err := multikey.PublicKeyFromBytes(rawKeys[i].CurveType, rawKeys[i].PublicKeyBytes)
+		if err != nil {
+			continue
+		}
+
+		pubkeyAddress, err := address.FromPublicKey(pubKey, protocol, network)
+		if err != nil {
+			continue
+		}
+
+		if bytes.Equal(pubkeyAddress, searchAddress) {
+			return &rawKeys[i], nil
 		}
 	}
-	if len(s)%2 == 1 {
-		s = "0" + s
-	}
-	return Hex2Bytes(s)
-}
 
-// Hex2Bytes returns the bytes represented by the hexadecimal string str.
-func Hex2Bytes(str string) []byte {
-	h, _ := hex.DecodeString(str)
-	return h
+	return nil, errors.Errorf("not found")
 }

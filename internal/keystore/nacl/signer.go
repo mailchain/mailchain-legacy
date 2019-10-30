@@ -22,10 +22,16 @@ import (
 )
 
 // GetSigner return a transaction signer based on the supplied address.
-func (fs FileStore) GetSigner(address []byte, chain string, deriveKeyOptions multi.OptionsBuilders) (signer.Signer, error) {
-	pk, err := fs.getPrivateKey(address, deriveKeyOptions)
+func (f FileStore) GetSigner(address []byte, protocol, network string, deriveKeyOptions multi.OptionsBuilders) (signer.Signer, error) {
+	encryptedKey, err := f.getEncryptedKeyByAddress(address, protocol, network)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	return keystore.Signer(chain, pk)
+
+	pk, err := f.getPrivateKey(encryptedKey, deriveKeyOptions)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return keystore.Signer(protocol, pk)
 }

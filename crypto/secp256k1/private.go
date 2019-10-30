@@ -39,6 +39,10 @@ func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	return PublicKey{ecdsa: pk.ecdsa.PublicKey}
 }
 
+func (pk PrivateKey) Kind() string {
+	return crypto.SECP256K1
+}
+
 func (pk PrivateKey) ECIES() *ecies.PrivateKey {
 	return ecies.ImportECDSA(&pk.ecdsa)
 }

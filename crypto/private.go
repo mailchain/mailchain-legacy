@@ -20,4 +20,6 @@ type PrivateKey interface {
 	Bytes() []byte
 	// PublicKey from the PrivateKey
 	PublicKey() PublicKey
+
+	Kind() string
 }

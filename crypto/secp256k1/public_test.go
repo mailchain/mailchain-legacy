@@ -17,9 +17,11 @@ package secp256k1
 import (
 	"crypto/ecdsa"
 	"encoding/hex"
+	"log"
 	"reflect"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -100,36 +102,6 @@ func TestPublicKeyFromHex(t *testing.T) {
 	}
 }
 
-func TestPublicKey_Address(t *testing.T) {
-	assert := assert.New(t)
-	type fields struct {
-		ecdsa ecdsa.PublicKey
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   []byte
-	}{
-		{
-			"success",
-			fields{
-				ecdsaPublicKeyA(),
-			},
-			[]byte{0x8f, 0xd3, 0x79, 0x24, 0x68, 0x34, 0xea, 0xc7, 0x4b, 0x84, 0x19, 0xff, 0xda, 0x20, 0x2c, 0xf8, 0x5, 0x1f, 0x7a, 0x3},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			pk := PublicKey{
-				ecdsa: tt.fields.ecdsa,
-			}
-			if got := pk.Address(); !assert.Equal(tt.want, got) {
-				t.Errorf("PublicKey.Address() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestPublicKeyFromBytes(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
@@ -142,23 +114,44 @@ func TestPublicKeyFromBytes(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success",
+			"success-65",
 			args{
 				func() []byte {
 					pub := make([]byte, 65)
 					pub[0] = byte(4)
-					copy(pub[1:], ecdsaPrivateKeyA().X.Bytes())
-					copy(pub[33:], ecdsaPrivateKeyA().Y.Bytes())
+					copy(pub[1:], ecdsaPrivateKeySofia().X.Bytes())
+					copy(pub[33:], ecdsaPrivateKeySofia().Y.Bytes())
 					return pub
 				}(),
 			},
-			[]byte{0x2, 0x6a, 0x4, 0xab, 0x98, 0xd9, 0xe4, 0x77, 0x4a, 0xd8, 0x6, 0xe3, 0x2, 0xdd, 0xde, 0xb6, 0x3b, 0xea, 0x16, 0xb5, 0xcb, 0x5f, 0x22, 0x3e, 0xe7, 0x74, 0x78, 0xe8, 0x61, 0xbb, 0x58, 0x3e, 0xb3},
+			[]byte{0x2, 0x69, 0xd9, 0x8, 0x51, 0xe, 0x35, 0x5b, 0xeb, 0x1d, 0x5b, 0xf2, 0xdf, 0x81, 0x29, 0xe5, 0xb6, 0x40, 0x1e, 0x19, 0x69, 0x89, 0x1e, 0x80, 0x16, 0xa0, 0xb2, 0x30, 0x7, 0x39, 0xbb, 0xb0, 0x6},
 			false,
 		},
 		{
-			"fail-no-prefix",
+			"success-64",
+			args{
+				func() []byte {
+					pub := make([]byte, 64)
+					copy(pub, ecdsaPrivateKeySofia().X.Bytes())
+					copy(pub[32:], ecdsaPrivateKeySofia().Y.Bytes())
+					return pub
+				}(),
+			},
+			[]byte{0x2, 0x69, 0xd9, 0x8, 0x51, 0xe, 0x35, 0x5b, 0xeb, 0x1d, 0x5b, 0xf2, 0xdf, 0x81, 0x29, 0xe5, 0xb6, 0x40, 0x1e, 0x19, 0x69, 0x89, 0x1e, 0x80, 0x16, 0xa0, 0xb2, 0x30, 0x7, 0x39, 0xbb, 0xb0, 0x6},
+			false,
+		},
+		{
+			"success-32",
 			args{
 				charlottePublicKey().Bytes(),
+			},
+			[]byte{0x3, 0xbd, 0xf6, 0xfb, 0x97, 0xc9, 0x7c, 0x12, 0x6b, 0x49, 0x21, 0x86, 0xa4, 0xd5, 0xb2, 0x8f, 0x34, 0xf0, 0x67, 0x1a, 0x5a, 0xac, 0xc9, 0x74, 0xda, 0x3b, 0xde, 0xb, 0xe9, 0x3e, 0x45, 0xa1, 0xc5},
+			false,
+		},
+		{
+			"err",
+			args{
+				[]byte{0x3, 0xbd, 0xf6, 0xfb, 0x97},
 			},
 			nil,
 			true,
@@ -177,6 +170,43 @@ func TestPublicKeyFromBytes(t *testing.T) {
 			}
 			if !assert.Equal(tt.want, gotBytes) {
 				t.Errorf("PublicKeyFromBytes() = %v, want %v", gotBytes, tt.want)
+			}
+		})
+	}
+}
+
+func TestPublicKey_Bytes(t *testing.T) {
+	assert := assert.New(t)
+	type fields struct {
+		ecdsa ecdsa.PublicKey
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   []byte
+	}{
+		{
+			"charlotte",
+			fields{
+				func() ecdsa.PublicKey {
+					b, _ := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					key, err := crypto.ToECDSA(b)
+					if err != nil {
+						log.Fatal(err)
+					}
+					return key.PublicKey
+				}(),
+			},
+			[]byte{0x2, 0x69, 0xd9, 0x8, 0x51, 0xe, 0x35, 0x5b, 0xeb, 0x1d, 0x5b, 0xf2, 0xdf, 0x81, 0x29, 0xe5, 0xb6, 0x40, 0x1e, 0x19, 0x69, 0x89, 0x1e, 0x80, 0x16, 0xa0, 0xb2, 0x30, 0x7, 0x39, 0xbb, 0xb0, 0x6},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			pk := PublicKey{
+				ecdsa: tt.fields.ecdsa,
+			}
+			if got := pk.Bytes(); !assert.Equal(tt.want, got) {
+				t.Errorf("PublicKey.Bytes() = %v, want %v", got, tt.want)
 			}
 		})
 	}

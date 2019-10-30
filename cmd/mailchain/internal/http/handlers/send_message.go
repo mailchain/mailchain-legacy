@@ -15,7 +15,6 @@
 package handlers
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -90,7 +89,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		signer, err := ks.GetSigner(from, req.Protocol, deriveKeyOptions)
+		signer, err := ks.GetSigner(from, req.Protocol, req.Network, deriveKeyOptions)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
 			return
@@ -257,15 +256,6 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 	p.publicKey, err = secp256k1.PublicKeyFromHex(p.Message.PublicKey)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
-	}
-	pkAddress := p.publicKey.Address()
-	toAddress, err := address.DecodeByProtocol(p.to.ChainAddress, protocol)
-	if err != nil {
-		return errors.WithMessage(err, "failed to decode address")
-	}
-
-	if !bytes.Equal(pkAddress, toAddress) {
-		return errors.Errorf("`public-key` does not match to address")
 	}
 
 	return nil

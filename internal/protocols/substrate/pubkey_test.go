@@ -25,9 +25,6 @@ import (
 
 func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 	assert := assert.New(t)
-	type fields struct {
-		supportedNetworks []string
-	}
 	type args struct {
 		ctx      context.Context
 		protocol string
@@ -36,14 +33,12 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
 		want    []byte
 		wantErr bool
 	}{
 		{
 			"success",
-			fields{},
 			args{
 				context.Background(),
 				"substrate",
@@ -62,7 +57,6 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 		},
 		{
 			"err-invalid-length",
-			fields{},
 			args{
 				context.Background(),
 				"substrate",
@@ -81,7 +75,6 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 		},
 		{
 			"err-protocol",
-			fields{},
 			args{
 				context.Background(),
 				"invalid",
@@ -101,9 +94,7 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			pkf := &PublicKeyFinder{
-				supportedNetworks: tt.fields.supportedNetworks,
-			}
+			pkf := &PublicKeyFinder{}
 			got, err := pkf.PublicKeyFromAddress(tt.args.ctx, tt.args.protocol, tt.args.network, tt.args.address)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("PublicKeyFinder.PublicKeyFromAddress() error = %v, wantErr %v", err, tt.wantErr)

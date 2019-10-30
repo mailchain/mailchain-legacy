@@ -22,12 +22,12 @@ import (
 
 // EncryptedKey the data object when storing or retrieving a private key
 type EncryptedKey struct {
-	Address    string    `json:"address"`
-	CipherText []byte    `json:"cipher-text"`
-	CurveType  string    `json:"curve-type"`
-	ID         string    `json:"id"`
-	Timestamp  time.Time `json:"timestamp"`
-	Version    string    `json:"version"`
+	PublicKeyBytes []byte    `json:"public-key"`
+	CipherText     []byte    `json:"cipher-text"`
+	CurveType      string    `json:"curve-type"`
+	ID             string    `json:"id"`
+	Timestamp      time.Time `json:"timestamp"`
+	Version        string    `json:"version"`
 	// KDF Key Definition Function
 	StorageCipher string             `json:"storage-cipher"`
 	KDF           string             `json:"kdf"`

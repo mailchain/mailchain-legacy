@@ -15,10 +15,7 @@
 package nacl
 
 import (
-	"encoding/hex"
 	"encoding/json"
-	"io/ioutil"
-	"os"
 	"path/filepath"
 	"time"
 
@@ -30,65 +27,71 @@ import (
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
 	"github.com/pkg/errors"
+	"github.com/spf13/afero"
 )
 
 // Store the private key with the storage key and curve type
-func (fs FileStore) Store(private crypto.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) ([]byte, error) {
+func (f FileStore) Store(private crypto.PrivateKey, deriveKeyOptions multi.OptionsBuilders) (crypto.PublicKey, error) {
 	storageKey, keyDefFunc, err := multi.DeriveKey(deriveKeyOptions)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not derive storage key")
 	}
-	encrypted, err := easySeal(private.Bytes(), storageKey)
+
+	encrypted, err := easySeal(private.Bytes(), storageKey, f.rand)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could seal storage key")
 	}
 
-	address := private.PublicKey().Address()
-	keyJSON := keystore.EncryptedKey{
-		Address:       hex.EncodeToString(address),
-		StorageCipher: "nacl",
-		CipherText:    encrypted,
-		CurveType:     curveType,
-		ID:            uuid.New().String(),
-		KDF:           keyDefFunc,
-		Timestamp:     time.Now(),
-		Version:       mailchain.Version,
-	}
 	if keyDefFunc != kdf.Scrypt {
 		return nil, errors.Errorf("kdf not supported")
 	}
 
-	keyJSON.ScryptParams = scrypt.CreateOptions(deriveKeyOptions.Scrypt)
+	keyJSON := keystore.EncryptedKey{
+		PublicKeyBytes: private.PublicKey().Bytes(),
+		StorageCipher:  "nacl",
+		CipherText:     encrypted,
+		CurveType:      private.Kind(),
+		ID:             uuid.New().String(),
+		KDF:            keyDefFunc,
+		Timestamp:      time.Now(),
+		Version:        mailchain.Version,
+		ScryptParams:   scrypt.CreateOptions(deriveKeyOptions.Scrypt),
+	}
+
 	content, err := json.Marshal(keyJSON)
 	if err != nil {
 		return nil, err
 	}
 	// Write into temporary file
-	tmpName, err := writeTemporaryKeyFile(fs.filename(address), content)
+	tmpName, err := writeTemporaryKeyFile(f.fs, f.filename(private.PublicKey().Bytes()), content)
 	if err != nil {
 		return nil, err
 	}
-	return address, os.Rename(tmpName, fs.filename(address))
+
+	return private.PublicKey(), f.fs.Rename(tmpName, f.filename(private.PublicKey().Bytes()))
 }
 
-func writeTemporaryKeyFile(file string, content []byte) (string, error) {
+func writeTemporaryKeyFile(fs afero.Fs, file string, content []byte) (string, error) {
 	// Create the keystore directory with appropriate permissions
 	// in case it is not present yet.
 	const dirPerm = 0700
-	if err := os.MkdirAll(filepath.Dir(file), dirPerm); err != nil {
+	if err := fs.MkdirAll(filepath.Dir(file), dirPerm); err != nil {
 		return "", err
 	}
+
 	// Atomic write: create a temporary hidden file first
 	// then move it into place. TempFile assigns mode 0600.
-	f, err := ioutil.TempFile(filepath.Dir(file), "."+filepath.Base(file)+".tmp")
+	f, err := afero.TempFile(fs, filepath.Dir(file), "."+filepath.Base(file)+".tmp")
 	if err != nil {
 		return "", err
 	}
+
 	if _, err := f.Write(content); err != nil {
 		f.Close()
-		os.Remove(f.Name())
-		return "", err
+
+		return "", fs.Remove(f.Name())
 	}
 	f.Close()
+
 	return f.Name(), nil
 }

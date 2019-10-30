@@ -51,7 +51,8 @@ func decryptEncryptedData(privKey crypto.PrivateKey, data *encryptedData) ([]byt
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert ephemeralPublicKey")
 	}
-	ephemeralPublicKey, err := tmpEphemeralPublicKey.ECIES()
+
+	ephemeralPublicKey, err := tmpEphemeralPublicKey.(*secp256k1.PublicKey).ECIES()
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert to ecies")
 	}

@@ -16,24 +16,19 @@ package multikey
 
 import (
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/ed25519"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/pkg/errors"
 )
 
-type keyFunc func(data []byte) (crypto.PrivateKey, error)
-
-// PrivateKeyFromBytes use the correct function to get the private key from bytes
-func PrivateKeyFromBytes(keyType string, data []byte) (crypto.PrivateKey, error) {
-	table := map[string]keyFunc{
-		encoding.SECP256K1: func(data []byte) (crypto.PrivateKey, error) {
-			return secp256k1.PrivateKeyFromBytes(data)
-		},
-	}
-
-	keyFunc, ok := table[keyType]
-	if !ok {
+// PublicKeyFromBytes use the correct function to get the private key from bytes
+func PublicKeyFromBytes(keyType string, data []byte) (crypto.PublicKey, error) {
+	switch keyType {
+	case crypto.SECP256K1:
+		return secp256k1.PublicKeyFromBytes(data)
+	case crypto.ED25519:
+		return ed25519.PublicKeyFromBytes(data)
+	default:
 		return nil, errors.Errorf("unsupported curve type")
 	}
-	return keyFunc(data)
 }

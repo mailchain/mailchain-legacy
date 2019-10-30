@@ -45,6 +45,37 @@ func spec() string {
         ],
         "summary": "Get addresses.",
         "operationId": "GetAddresses",
+        "parameters": [
+          {
+            "enum": [
+              "mainnet",
+              "goerli",
+              "ropsten",
+              "rinkeby",
+              "local"
+            ],
+            "type": "string",
+            "example": "goerli",
+            "x-go-name": "Network",
+            "description": "Network to use when finding addresses.",
+            "name": "network",
+            "in": "query",
+            "required": true
+          },
+          {
+            "enum": [
+              "ethereum",
+              " substrate"
+            ],
+            "type": "string",
+            "example": "ethereum",
+            "x-go-name": "Protocol",
+            "description": "Protocol to use when finding addresses.",
+            "name": "protocol",
+            "in": "query",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "$ref": "#/responses/GetAddressesResponse"

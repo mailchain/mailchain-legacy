@@ -18,19 +18,13 @@ func TestPrivateKey_Bytes(t *testing.T) {
 	}{
 		{
 			"sofia",
-			func() PrivateKey {
-				v := sofiaPrivateKey()
-				return *v
-			}(),
-			sofiaPrivateKeyBytes(),
+			sofiaPrivateKey,
+			sofiaPrivateKeyBytes,
 		},
 		{
 			"charlotte",
-			func() PrivateKey {
-				v := charlottePrivateKey()
-				return *v
-			}(),
-			charlottePrivateKeyBytes(),
+			charlottePrivateKey,
+			charlottePrivateKeyBytes,
 		},
 	}
 	for _, tt := range tests {
@@ -53,19 +47,35 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-sofia",
+			"success-sofia-seed",
 			args{
-				sofiaSeed(),
+				sofiaSeed,
 			},
-			sofiaPrivateKey(),
+			&sofiaPrivateKey,
 			false,
 		},
 		{
-			"success-charlotte",
+			"success-sofia-bytes",
 			args{
-				charlotteSeed(),
+				sofiaPrivateKeyBytes,
 			},
-			charlottePrivateKey(),
+			&sofiaPrivateKey,
+			false,
+		},
+		{
+			"success-charlotte-seed",
+			args{
+				charlotteSeed,
+			},
+			&charlottePrivateKey,
+			false,
+		},
+		{
+			"success-charlotte-bytes",
+			args{
+				charlottePrivateKeyBytes,
+			},
+			&charlottePrivateKey,
 			false,
 		},
 		{
@@ -99,25 +109,39 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 	}{
 		{
 			"sofia",
-			func() PrivateKey {
-				v := sofiaPrivateKey()
-				return *v
-			}(),
-			sofiaPublicKey(),
+			sofiaPrivateKey,
+			sofiaPublicKey,
 		},
 		{
 			"charlotte",
-			func() PrivateKey {
-				v := charlottePrivateKey()
-				return *v
-			}(),
-			charlottePublicKey(),
+			charlottePrivateKey,
+			charlottePublicKey,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.pk.PublicKey(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("PrivateKey.PublicKey() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPrivateKey_Kind(t *testing.T) {
+	tests := []struct {
+		name string
+		want string
+	}{
+		{
+			"success",
+			"ed25519",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			pk := PrivateKey{}
+			if got := pk.Kind(); got != tt.want {
+				t.Errorf("PrivateKey.Kind() = %v, want %v", got, tt.want)
 			}
 		})
 	}

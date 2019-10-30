@@ -25,10 +25,6 @@ const (
 )
 
 const (
-	SECP256K1 = "secp256k1"
-)
-
-const (
 	TypeHex                    = "hex/plain"
 	TypeHex0XPrefix            = "hex/0x-prefix"
 	TypeBase58                 = "base58/plain"

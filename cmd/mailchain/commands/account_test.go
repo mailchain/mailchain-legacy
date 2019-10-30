@@ -21,80 +21,16 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/commands/commandstest"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts/promptstest"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/multikey"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/keystoretest"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
-
-func Test_getKeyType(t *testing.T) {
-	type args struct {
-		cmd *cobra.Command
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    string
-		wantErr bool
-	}{
-		{
-			"key-type",
-			args{
-				func() *cobra.Command {
-					c := &cobra.Command{}
-					c.Flags().StringP("key-type", "", "", "Select the key type [secp256k1]")
-					c.Flags().Set("key-type", "secp256k1")
-					return c
-				}(),
-			},
-			"secp256k1",
-			false,
-		},
-		{
-			"chain",
-			args{
-				func() *cobra.Command {
-					c := &cobra.Command{}
-					c.Flags().StringP("key-type", "", "", "")
-					c.Flags().StringP("chain", "", "", "")
-					c.Flags().Set("chain", "ethereum")
-					return c
-				}(),
-			},
-			"secp256k1",
-			false,
-		},
-		{
-			"err-not-specified",
-			args{
-				func() *cobra.Command {
-					c := &cobra.Command{}
-					c.Flags().StringP("key-type", "", "", "")
-					c.Flags().StringP("chain", "", "", "")
-					return c
-				}(),
-			},
-			"",
-			true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := getKeyType(tt.args.cmd)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("getKeyType() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("getKeyType() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 func Test_accountListCmd(t *testing.T) {
 	assert := assert.New(t)
@@ -116,7 +52,7 @@ func Test_accountListCmd(t *testing.T) {
 			args{
 				func() keystore.Store {
 					m := keystoretest.NewMockStore(mockCtrl)
-					m.EXPECT().GetAddresses().Return([][]byte{
+					m.EXPECT().GetAddresses("ethereum", "mainnet").Return([][]byte{
 						testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
 						testutil.MustHexDecodeString("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
 					}, nil)
@@ -124,7 +60,10 @@ func Test_accountListCmd(t *testing.T) {
 				}(),
 			},
 			nil,
-			map[string]string{},
+			map[string]string{
+				"protocol": "ethereum",
+				"network":  "mainnet",
+			},
 			"5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\n4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2\n",
 			false,
 		},
@@ -133,13 +72,48 @@ func Test_accountListCmd(t *testing.T) {
 			args{
 				func() keystore.Store {
 					m := keystoretest.NewMockStore(mockCtrl)
-					m.EXPECT().GetAddresses().Return([][]byte{}, errors.Errorf("failed"))
+					m.EXPECT().GetAddresses("ethereum", "mainnet").Return([][]byte{}, errors.Errorf("failed"))
 					return m
 				}(),
 			},
 			nil,
-			map[string]string{},
+			map[string]string{
+				"protocol": "ethereum",
+				"network":  "mainnet",
+			},
 			"Error: could not get addresses: failed",
+			true,
+		},
+		{
+			"err-empty-protocol",
+			args{
+				func() keystore.Store {
+					m := keystoretest.NewMockStore(mockCtrl)
+					return m
+				}(),
+			},
+			nil,
+			map[string]string{
+				"protocol": "",
+				"network":  "mainnet",
+			},
+			"Error: `--protocol` must be specified to return address list",
+			true,
+		},
+		{
+			"err-empty-network",
+			args{
+				func() keystore.Store {
+					m := keystoretest.NewMockStore(mockCtrl)
+					return m
+				}(),
+			},
+			nil,
+			map[string]string{
+				"protocol": "ethereum",
+				"network":  "",
+			},
+			"Error: `--network` must be specified to return address list",
 			true,
 		},
 	}
@@ -183,8 +157,8 @@ func Test_accountAddCmd(t *testing.T) {
 			args{
 				func() keystore.Store {
 					m := keystoretest.NewMockStore(mockCtrl)
-					pk, _ := multikey.PrivateKeyFromHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F", "secp256k1")
-					m.EXPECT().Store(pk, "secp256k1", gomock.Any()).Return(testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"), nil)
+					pk, _ := multikey.PrivateKeyFromBytes(secp256k1test.SofiaPrivateKey.Kind(), secp256k1test.SofiaPrivateKey.Bytes())
+					m.EXPECT().Store(pk, gomock.Any()).Return(secp256k1test.SofiaPublicKey, nil)
 					return m
 				}(),
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
@@ -192,9 +166,9 @@ func Test_accountAddCmd(t *testing.T) {
 			},
 			nil,
 			map[string]string{
-				"key-type": "secp256k1",
+				"key-type": crypto.SECP256K1,
 			},
-			"\x1b[32mPrivate key added\x1b[39m for address=5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\n",
+			"\x1b[32mPrivate key added\n\x1b[39mPublic key=0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006\n",
 			false,
 		},
 		{
@@ -202,8 +176,8 @@ func Test_accountAddCmd(t *testing.T) {
 			args{
 				func() keystore.Store {
 					m := keystoretest.NewMockStore(mockCtrl)
-					pk, _ := multikey.PrivateKeyFromHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F", "secp256k1")
-					m.EXPECT().Store(pk, "secp256k1", gomock.Any()).Return(nil, errors.Errorf("failed"))
+					pk, _ := multikey.PrivateKeyFromBytes(secp256k1test.SofiaPrivateKey.Kind(), secp256k1test.SofiaPrivateKey.Bytes())
+					m.EXPECT().Store(pk, gomock.Any()).Return(nil, errors.Errorf("failed"))
 					return m
 				}(),
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
@@ -211,7 +185,7 @@ func Test_accountAddCmd(t *testing.T) {
 			},
 			nil,
 			map[string]string{
-				"key-type": "secp256k1",
+				"key-type": crypto.SECP256K1,
 			},
 			"Error: key could not be stored: failed",
 			true,
@@ -228,7 +202,7 @@ func Test_accountAddCmd(t *testing.T) {
 			},
 			nil,
 			map[string]string{
-				"key-type": "secp256k1",
+				"key-type": crypto.SECP256K1,
 			},
 			"Error: could not get `passphrase`: failed",
 			true,
@@ -245,9 +219,9 @@ func Test_accountAddCmd(t *testing.T) {
 			},
 			nil,
 			map[string]string{
-				"key-type": "secp256k1",
+				"key-type": crypto.SECP256K1,
 			},
-			"Error: `private-key` could not be decoded: invalid hex string",
+			"Error: `private-key` could not be decoded: encoding/hex: odd length hex string",
 			true,
 		},
 		{
@@ -262,7 +236,7 @@ func Test_accountAddCmd(t *testing.T) {
 			},
 			nil,
 			map[string]string{
-				"key-type": "secp256k1",
+				"key-type": crypto.SECP256K1,
 			},
 			"Error: could not get private key: failed",
 			true,
@@ -274,14 +248,31 @@ func Test_accountAddCmd(t *testing.T) {
 					m := keystoretest.NewMockStore(mockCtrl)
 					return m
 				}(),
-				nil,
-				nil,
+				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
+				promptstest.MockRequiredSecret(t, "01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F", nil),
 			},
 			nil,
 			map[string]string{
-				"chain": "invalid",
+				"key-type": "invalid",
 			},
-			"Error: could not determine `key-type`: no key type for specified chain",
+			"Error: `private-key` could not be created from bytes: unsupported key type: \"invalid\"",
+			true,
+		},
+		{
+			"err-empty-key-type",
+			args{
+				func() keystore.Store {
+					m := keystoretest.NewMockStore(mockCtrl)
+					return m
+				}(),
+				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
+				promptstest.MockRequiredSecret(t, "01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F", nil),
+			},
+			nil,
+			map[string]string{
+				"key-type": "",
+			},
+			"Error: `key-type` must be specified",
 			true,
 		},
 	}

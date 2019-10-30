@@ -18,20 +18,10 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 )
 
-type invalidPrivateKey struct {
-}
-
-func (i invalidPrivateKey) Bytes() []byte             { return []byte{} }
-func (i invalidPrivateKey) PublicKey() crypto.PublicKey { return nil }
-
-type invalidPublicKey struct {
-}
-
-func (i invalidPublicKey) Bytes() []byte   { return []byte{} }
-func (i invalidPublicKey) Address() []byte { return nil }
 func Test_asPrivateECIES(t *testing.T) {
 	type args struct {
 		pk crypto.PrivateKey
@@ -87,9 +77,7 @@ func Test_asPrivateECIES(t *testing.T) {
 		{
 			"err-unsupported",
 			args{
-				func() invalidPrivateKey {
-					return invalidPrivateKey{}
-				}(),
+				ed25519test.SofiaPrivateKey,
 			},
 			true,
 			true,
@@ -137,9 +125,7 @@ func Test_asPublicECIES(t *testing.T) {
 		{
 			"err-invalid",
 			args{
-				func() invalidPublicKey {
-					return invalidPublicKey{}
-				}(),
+				ed25519test.SofiaPublicKey,
 			},
 			true,
 			true,

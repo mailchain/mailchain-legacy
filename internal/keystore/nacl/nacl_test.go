@@ -1,3 +1,17 @@
+// Copyright 2019 Finobo
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package nacl
 
 import (
@@ -92,7 +106,7 @@ func Test_easyOpen(t *testing.T) {
 			"err-nonce-size",
 			args{
 				[]byte{0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47},
-				ed25519test.CharlottePrivateKey.Bytes()[32:],
+				ed25519test.CharlottePrivateKey.Bytes(),
 			},
 			nil,
 			true,
@@ -101,7 +115,7 @@ func Test_easyOpen(t *testing.T) {
 			"err-input",
 			args{
 				[]byte{0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x5b, 0x19, 0x83, 0xe5, 0x6e, 0x7f, 0xed, 0xfe, 0xbb, 0xd0, 0x70, 0x34, 0xce, 0x25, 0x49, 0x76, 0xa3, 0x50, 0x78, 0x91, 0x18, 0xe6, 0xe3},
-				ed25519test.SofiaPrivateKey.Bytes()[32:],
+				ed25519test.SofiaPrivateKey.Bytes(),
 			},
 			nil,
 			true,

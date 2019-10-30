@@ -12,58 +12,53 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package keystore
+package multikey
 
 import (
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/cipher"
-	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
-	"github.com/mailchain/mailchain/crypto/cipher/nacl"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDecrypter(t *testing.T) {
+func TestPrivateKeyFromBytes(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
-		cipherType byte
-		pk         crypto.PrivateKey
+		hex     string
+		keyType []byte
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    cipher.Decrypter
+		want    crypto.PrivateKey
 		wantErr bool
 	}{
 		{
-			"aes256cbc",
+			"secp256k1",
 			args{
-				cipher.AES256CBC,
-				testutil.CharlottePrivateKey,
+				"secp256k1",
+				testutil.MustHexDecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F"),
 			},
-			aes256cbc.NewDecrypter(testutil.CharlottePrivateKey),
+			secp256k1test.SofiaPrivateKey,
 			false,
 		},
 		{
-			"nacl",
+			"ed25519",
 			args{
-				cipher.NACL,
-				ed25519test.CharlottePrivateKey,
+				"ed25519",
+				testutil.MustHexDecodeString("0d9b4a3c10721991c6b806f0f343535dc2b46c74bece50a0a0d6b9f0070d3157"),
 			},
-			func() cipher.Decrypter {
-				m, _ := nacl.NewDecrypter(ed25519test.CharlottePrivateKey)
-				return m
-			}(),
+			ed25519test.SofiaPrivateKey,
 			false,
 		},
 		{
 			"err",
 			args{
-				0xFF,
-				testutil.CharlottePrivateKey,
+				"unknown",
+				testutil.MustHexDecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F"),
 			},
 			nil,
 			true,
@@ -71,13 +66,13 @@ func TestDecrypter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Decrypter(tt.args.cipherType, tt.args.pk)
+			got, err := PrivateKeyFromBytes(tt.args.hex, tt.args.keyType)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Decrypter() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("PrivateKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !assert.Equal(tt.want, got) {
-				t.Errorf("Decrypter() = %v, want %v", got, tt.want)
+				t.Errorf("PrivateKeyFromBytes() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -15,28 +15,73 @@
 package nacl
 
 import (
+	"bytes"
+	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
+	"io"
+	"strings"
 
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
+	"github.com/spf13/afero"
 )
 
 // NewFileStore create a new filestore with the path specified
-func NewFileStore(path string) FileStore {
-	return FileStore{path: path}
+func NewFileStore(path string, logger io.Writer) FileStore {
+	return FileStore{
+		fs:     afero.NewBasePathFs(afero.NewOsFs(), path),
+		rand:   rand.Reader,
+		logger: logger,
+	}
 }
 
 // FileStore object
 type FileStore struct {
-	path string
+	fs     afero.Fs
+	rand   io.Reader
+	logger io.Writer
 }
 
-func (fs FileStore) getEncryptedKey(address []byte) (*keystore.EncryptedKey, error) {
-	fd, err := os.Open(fs.filename(address))
+func (f FileStore) getEncryptedKeys() ([]keystore.EncryptedKey, error) {
+	files, err := afero.ReadDir(f.fs, "./")
+	if err != nil {
+		return nil, err
+	}
+
+	encryptedKeys := []keystore.EncryptedKey{}
+
+	for _, file := range files {
+		fileName := file.Name()
+		if !strings.HasSuffix(fileName, ".json") {
+			fmt.Fprintf(f.logger, "skipping non .json filename %s\n", fileName)
+			continue
+		}
+
+		fileName = strings.TrimSuffix(fileName, ".json")
+		splits := strings.Split(fileName, "/")
+		pubKeyPortion := splits[len(splits)-1]
+
+		pubKeyBytes, err := hex.DecodeString(pubKeyPortion)
+		if err != nil {
+			fmt.Fprintf(f.logger, "skipping invalid filename %s: %v\n", fileName, err)
+		}
+
+		encryptedKey, err := f.getEncryptedKey(pubKeyBytes)
+		if err != nil {
+			fmt.Fprintf(f.logger, "skipping invalid file %s: %v\n", fileName, err)
+			continue
+		}
+
+		encryptedKeys = append(encryptedKeys, *encryptedKey)
+	}
+
+	return encryptedKeys, nil
+}
+
+func (f FileStore) getEncryptedKey(pubKeyBytes []byte) (*keystore.EncryptedKey, error) {
+	fd, err := f.fs.Open(f.filename(pubKeyBytes))
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not find key file")
 	}
@@ -47,13 +92,14 @@ func (fs FileStore) getEncryptedKey(address []byte) (*keystore.EncryptedKey, err
 	if err := json.NewDecoder(fd).Decode(encryptedKey); err != nil {
 		return nil, err
 	}
-	if encryptedKey.Address != hex.EncodeToString(address) {
-		return nil, fmt.Errorf("key content mismatch: have address %x, want %x", encryptedKey.Address, hex.EncodeToString(address))
+
+	if !bytes.Equal(encryptedKey.PublicKeyBytes, pubKeyBytes) {
+		return nil, fmt.Errorf("key content mismatch: have pubKey %x, want %x", encryptedKey.PublicKeyBytes, pubKeyBytes)
 	}
 
 	return encryptedKey, nil
 }
 
-func (fs FileStore) filename(address []byte) string {
-	return filepath.Join(fs.path, fmt.Sprintf("%s.json", hex.EncodeToString(address)))
+func (f FileStore) filename(pubKeyBytes []byte) string {
+	return fmt.Sprintf("%s.json", hex.EncodeToString(pubKeyBytes))
 }

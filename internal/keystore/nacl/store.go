@@ -36,7 +36,6 @@ func (f FileStore) Store(private crypto.PrivateKey, deriveKeyOptions multi.Optio
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not derive storage key")
 	}
-	
 	encrypted, err := easySeal(private.Bytes(), storageKey, f.rand)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could seal storage key")

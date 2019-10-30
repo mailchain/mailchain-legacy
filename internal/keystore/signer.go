@@ -16,25 +16,18 @@ package keystore
 
 import (
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/internal/chains"
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
+	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/pkg/errors"
 )
 
-type signerFunc func(pk crypto.PrivateKey) (signer.Signer, error)
-
 // Signer use the correct function to get the decrypter from private key
-func Signer(chain string, pk crypto.PrivateKey) (signer.Signer, error) {
-	table := map[string]signerFunc{
-		chains.Ethereum: func(pk crypto.PrivateKey) (signer.Signer, error) {
-			return ethereum.NewSigner(pk), nil
-		},
-	}
-
-	f, ok := table[chain]
-	if !ok {
+func Signer(protocol string, pk crypto.PrivateKey) (signer.Signer, error) {
+	switch protocol {
+	case protocols.Ethereum:
+		return ethereum.NewSigner(pk), nil
+	default:
 		return nil, errors.Errorf("unsupported signer type")
 	}
-	return f(pk)
 }

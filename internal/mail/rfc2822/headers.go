@@ -100,7 +100,7 @@ func parseSubject(h nm.Header) (string, error) {
 
 func parseContentType(h nm.Header) string {
 	sources, ok := h["Content-Type"]
-	if !ok || len(sources) == 0 || len(sources[0]) == 0 {
+	if !ok || len(sources) == 0 || sources[0] == "" {
 		return mail.DefaultContentType
 	}
 

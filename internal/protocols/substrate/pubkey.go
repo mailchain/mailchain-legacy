@@ -12,44 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package chains
+package substrate
 
 import (
-	"reflect"
-	"testing"
+	"context"
 
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
+	"github.com/pkg/errors"
 )
 
-func TestNetworkNames(t *testing.T) {
-	type args struct {
-		chain string
+func NewPublicKeyFinder() *PublicKeyFinder {
+	return &PublicKeyFinder{}
+}
+
+type PublicKeyFinder struct {
+}
+
+func (pkf *PublicKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) ([]byte, error) {
+	if protocol != "substrate" {
+		return nil, errors.New("protocol must be 'substrate'")
 	}
-	tests := []struct {
-		name string
-		args args
-		want []string
-	}{
-		{
-			"ethereum",
-			args{
-				"ethereum",
-			},
-			ethereum.Networks(),
-		},
-		{
-			"unknown",
-			args{
-				"unknown",
-			},
-			nil,
-		},
+
+	if len(address) != 35 {
+		return nil, errors.New("address must be 35 bytes in length")
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NetworkNames(tt.args.chain); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NetworkNames() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+
+	// Remove the 1st byte (network identifier)
+	// Remove last 2 bytes (blake2b hash)
+	newAddress := address[1:33]
+
+	return newAddress, nil
 }

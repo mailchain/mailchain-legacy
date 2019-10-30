@@ -21,7 +21,8 @@ type config struct {
 	sentStore         stores.Sent
 }
 
-func produceConfig(s *settings.Base) (*config, error) {
+// nolint: gocyclo
+func produceConfig(s *settings.Base) (*config, error) { // nolint: funlen
 	mailboxStore, err := s.MailboxState.Produce()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config mailbox store")
@@ -46,6 +47,7 @@ func produceConfig(s *settings.Base) (*config, error) {
 		if err != nil {
 			return nil, errors.WithMessage(err, "could not get address name service")
 		}
+
 		for k, v := range ans {
 			nsAddressResolvers[k] = v
 		}
@@ -54,6 +56,7 @@ func produceConfig(s *settings.Base) (*config, error) {
 		if err != nil {
 			return nil, errors.WithMessage(err, "could not get domain name service")
 		}
+
 		for k, v := range dns {
 			nsDomainResolvers[k] = v
 		}
@@ -61,8 +64,9 @@ func produceConfig(s *settings.Base) (*config, error) {
 		name := s.Protocols[protocol].Kind
 		protocolPubKeyFinders, err := s.Protocols[protocol].GetPublicKeyFinders(s.PublicKeyFinders)
 		if err != nil {
-			return nil, errors.WithMessagef(err, "could not get %q receivers", name)
+			return nil, errors.WithMessagef(err, "could not get %q public key finders", name)
 		}
+
 		for k, v := range protocolPubKeyFinders {
 			publicKeyFinders[k] = v
 		}

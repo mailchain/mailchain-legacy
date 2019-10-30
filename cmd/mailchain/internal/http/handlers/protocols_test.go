@@ -45,6 +45,8 @@ func TestGetProtocols(t *testing.T) {
 					m := valuestest.NewMockStore(mockCtrl)
 					m.EXPECT().IsSet("protocols.ethereum.disabled").Return(true)
 					m.EXPECT().GetBool("protocols.ethereum.disabled").Return(true)
+					m.EXPECT().IsSet("protocols.substrate.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.substrate.disabled").Return(true)
 					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
 					return settings.FromStore(m)
 				}(),
@@ -59,6 +61,8 @@ func TestGetProtocols(t *testing.T) {
 					m := valuestest.NewMockStore(mockCtrl)
 					m.EXPECT().IsSet("protocols.ethereum.networks.goerli.disabled").Return(true)
 					m.EXPECT().GetBool("protocols.ethereum.networks.goerli.disabled").Return(true)
+					m.EXPECT().IsSet("protocols.substrate.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.substrate.disabled").Return(true)
 					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
 					return settings.FromStore(m)
 				}(),
@@ -67,10 +71,12 @@ func TestGetProtocols(t *testing.T) {
 			http.StatusOK,
 		},
 		{
-			"multi-address",
+			"default-ethereum",
 			args{
 				func() *settings.Base {
 					m := valuestest.NewMockStore(mockCtrl)
+					m.EXPECT().IsSet("protocols.substrate.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.substrate.disabled").Return(true)
 					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
 					return settings.FromStore(m)
 				}(),

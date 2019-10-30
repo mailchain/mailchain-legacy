@@ -15,16 +15,18 @@
 package address
 
 import (
-	"github.com/mailchain/mailchain/internal/chains"
 	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/pkg/errors"
 )
 
-func EncodeByProtocol(in []byte, protocol string) (string, error) {
+func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
 	switch protocol {
-	case chains.Ethereum:
-		return encoding.EncodeZeroX(in), nil
+	case protocols.Ethereum:
+		encoded, encodingType = encoding.EncodeZeroX(in)
 	default:
-		return "", errors.Errorf("%q unsupported protocol", protocol)
+		err = errors.Errorf("%q unsupported protocol", protocol)
 	}
+
+	return encoded, encodingType, err
 }

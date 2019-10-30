@@ -25,5 +25,8 @@ const (
 )
 
 const (
-	SECP256K1 = "secp256k1"
+	TypeHex                    = "hex/plain"
+	TypeHex0XPrefix            = "hex/0x-prefix"
+	TypeBase58                 = "base58/plain"
+	TypeBase58SubstrateAddress = "base58/ss58-address"
 )

@@ -5,24 +5,17 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/sender"
 )
 
-func protocol(s values.Store, protocol string) *Protocol {
+func protocol(s values.Store, protocol string, networkClients map[string]NetworkClient) *Protocol {
 	return &Protocol{
 		Disabled: values.NewDefaultBool(false, s,
 			fmt.Sprintf("protocols.%s.disabled", protocol)),
-		Kind: protocol,
-		Networks: map[string]NetworkClient{
-			ethereum.Goerli:  network(s, protocol, ethereum.Goerli),
-			ethereum.Kovan:   network(s, protocol, ethereum.Kovan),
-			ethereum.Mainnet: network(s, protocol, ethereum.Mainnet),
-			ethereum.Rinkeby: network(s, protocol, ethereum.Rinkeby),
-			ethereum.Ropsten: network(s, protocol, ethereum.Ropsten),
-		},
+		Kind:     protocol,
+		Networks: networkClients,
 	}
 }
 
@@ -65,6 +58,7 @@ func (p Protocol) GetPublicKeyFinders(publicKeyFinders *PublicKeyFinders) (map[s
 		}
 		msg[p.Kind+"/"+network] = s
 	}
+
 	return msg, nil
 }
 
@@ -93,15 +87,20 @@ func (p Protocol) GetDomainNameServices(ans *DomainNameServices) (map[string]nam
 }
 
 func (p Protocol) Output() output.Element {
-	elements := []output.Element{}
+	networkElements := []output.Element{}
 	for _, c := range p.Networks {
-		elements = append(elements, c.Output())
+		networkElements = append(networkElements, c.Output())
 	}
 	return output.Element{
 		FullName: "protocols." + p.Kind,
 		Attributes: []output.Attribute{
 			p.Disabled.Attribute(),
 		},
-		Elements: elements,
+		Elements: []output.Element{
+			{
+				FullName: "protocols." + p.Kind + ".networks",
+				Elements: networkElements,
+			},
+		},
 	}
 }

@@ -21,6 +21,7 @@ import (
 
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/pkg/errors"
 )
 
@@ -34,27 +35,43 @@ func (pk PublicKey) Bytes() []byte {
 	return ethcrypto.CompressPubkey(&pk.ecdsa)
 }
 
-// Address returns the byte representation of the address
-func (pk PublicKey) Address() []byte {
-	return ethcrypto.PubkeyToAddress(pk.ecdsa).Bytes()
-}
-
 // PublicKeyFromBytes create a public key from []byte
-func PublicKeyFromBytes(keyBytes []byte) (*PublicKey, error) {
-	rpk, err := ethcrypto.UnmarshalPubkey(keyBytes)
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not convert pk")
+func PublicKeyFromBytes(keyBytes []byte) (crypto.PublicKey, error) {
+	switch len(keyBytes) {
+	case 65:
+		rpk, err := ethcrypto.UnmarshalPubkey(keyBytes)
+		if err != nil {
+			return nil, errors.WithMessage(err, "could not convert pk")
+		}
+
+		return &PublicKey{ecdsa: *rpk}, nil
+	case 64:
+		rpk, err := ethcrypto.UnmarshalPubkey(append([]byte{byte(4)}, keyBytes...))
+		if err != nil {
+			return nil, errors.WithMessage(err, "could not convert pk")
+		}
+
+		return &PublicKey{ecdsa: *rpk}, nil
+	case 33:
+		pk, err := ethcrypto.DecompressPubkey(keyBytes)
+		if err != nil {
+			return nil, errors.WithMessage(err, "could not decompress pk")
+		}
+
+		return &PublicKey{ecdsa: *pk}, nil
+	default:
+		return nil, errors.Errorf("invalid key length %v", len(keyBytes))
 	}
-	return &PublicKey{ecdsa: *rpk}, nil
 }
 
 // PublicKeyFromHex create a public key from hex
-func PublicKeyFromHex(input string) (*PublicKey, error) {
+func PublicKeyFromHex(input string) (crypto.PublicKey, error) {
 	input = strings.TrimPrefix(input, "0x")
 	keyBytes, err := hex.DecodeString(input)
 	if err != nil {
 		return nil, err
 	}
+
 	switch len(keyBytes) {
 	case 64:
 		pub := make([]byte, 65)

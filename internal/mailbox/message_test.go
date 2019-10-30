@@ -24,12 +24,12 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
-	"github.com/mailchain/mailchain/internal/chains"
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/mailbox/signer/signertest"
+	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/sender/sendertest"
@@ -74,7 +74,7 @@ func TestSendMessage(t *testing.T) {
 			"success",
 			args{
 				context.Background(),
-				chains.Ethereum,
+				protocols.Ethereum,
 				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
@@ -107,7 +107,7 @@ func TestSendMessage(t *testing.T) {
 			"invalid-to",
 			args{
 				context.Background(),
-				chains.Ethereum,
+				protocols.Ethereum,
 				ethereum.Mainnet,
 				&mail.Message{
 					Headers: &mail.Headers{
@@ -149,7 +149,7 @@ func TestSendMessage(t *testing.T) {
 			"invalid-from",
 			args{
 				context.Background(),
-				chains.Ethereum,
+				protocols.Ethereum,
 				ethereum.Mainnet,
 				&mail.Message{
 					Headers: &mail.Headers{
@@ -191,7 +191,7 @@ func TestSendMessage(t *testing.T) {
 			"err-send",
 			args{
 				context.Background(),
-				chains.Ethereum,
+				protocols.Ethereum,
 				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
@@ -224,7 +224,7 @@ func TestSendMessage(t *testing.T) {
 			"err-new-envelope",
 			args{
 				context.Background(),
-				chains.Ethereum,
+				protocols.Ethereum,
 				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
@@ -255,7 +255,7 @@ func TestSendMessage(t *testing.T) {
 			"err-invalid-loc-code",
 			args{
 				context.Background(),
-				chains.Ethereum,
+				protocols.Ethereum,
 				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
@@ -286,7 +286,7 @@ func TestSendMessage(t *testing.T) {
 			"err-sent-store",
 			args{
 				context.Background(),
-				chains.Ethereum,
+				protocols.Ethereum,
 				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
@@ -317,7 +317,7 @@ func TestSendMessage(t *testing.T) {
 			"err-encrypt",
 			args{
 				context.Background(),
-				chains.Ethereum,
+				protocols.Ethereum,
 				ethereum.Mainnet,
 				msg,
 				testutil.CharlottePublicKey,
@@ -347,7 +347,7 @@ func TestSendMessage(t *testing.T) {
 			"err-msg-encode",
 			args{
 				context.Background(),
-				chains.Ethereum,
+				protocols.Ethereum,
 				ethereum.Mainnet,
 				nil,
 				testutil.CharlottePublicKey,

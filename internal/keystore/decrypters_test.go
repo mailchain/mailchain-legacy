@@ -20,6 +20,8 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
+	"github.com/mailchain/mailchain/crypto/cipher/nacl"
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
@@ -37,12 +39,24 @@ func TestDecrypter(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"ethereum",
+			"aes256cbc",
 			args{
 				cipher.AES256CBC,
 				testutil.CharlottePrivateKey,
 			},
 			aes256cbc.NewDecrypter(testutil.CharlottePrivateKey),
+			false,
+		},
+		{
+			"nacl",
+			args{
+				cipher.NACL,
+				ed25519test.CharlottePrivateKey,
+			},
+			func() cipher.Decrypter {
+				m, _ := nacl.NewDecrypter(ed25519test.CharlottePrivateKey)
+				return m
+			}(),
 			false,
 		},
 		{

@@ -31,6 +31,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// nolint: gocyclo
+// nolint: funlen
 // GetMessages returns a handler get spec
 func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +44,6 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 	// Responses:
 	//   200: GetMessagesResponse
 	//   422: ValidationError
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		req, err := parseGetMessagesRequest(r)
@@ -52,7 +53,11 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 		}
 		receiver, ok := receivers[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no receiver for chain.network configured"))
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("receiver not supported on \"%s/%s\"", req.Protocol, req.Network))
+			return
+		}
+		if receiver == nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no receiver configured for \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
 
@@ -69,7 +74,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
-		decrypter, err := ks.GetDecrypter(req.addressBytes, cipher.AES256CBC, deriveKeyOptions)
+		decrypter, err := ks.GetDecrypter(req.addressBytes, req.Protocol, req.Network, cipher.AES256CBC, deriveKeyOptions)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not get `decrypter`"))
 			return

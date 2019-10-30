@@ -37,7 +37,7 @@ type Signer struct {
 	privateKey crypto.PrivateKey
 }
 
-func (e Signer) Sign(opts signer.SignerOpts) (signedTransaction interface{}, err error) {
+func (e Signer) Sign(opts signer.Options) (signedTransaction interface{}, err error) {
 	if opts == nil {
 		return nil, errors.New("opts must not be nil")
 	}
@@ -49,6 +49,7 @@ func (e Signer) Sign(opts signer.SignerOpts) (signedTransaction interface{}, err
 	if err != nil {
 		return nil, err
 	}
+
 	switch opts := opts.(type) {
 	case SignerOptions:
 		// Depending on the presence of the chain ID, sign with EIP155 or homestead

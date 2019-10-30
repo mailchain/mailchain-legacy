@@ -51,7 +51,11 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 		}
 		resolver, ok := resolvers[fmt.Sprintf("%s/%s", protocol, network)]
 		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no name servier resolver for chain.network configured"))
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("nameserver not supported on \"%s/%s\"", protocol, network))
+			return
+		}
+		if resolver == nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no nameserver configured for \"%s/%s\"", protocol, network))
 			return
 		}
 
@@ -70,7 +74,7 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
-		encAddress, err := address.EncodeByProtocol(resolvedAddress, protocol)
+		encAddress, _, err := address.EncodeByProtocol(resolvedAddress, protocol)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"))
 			return

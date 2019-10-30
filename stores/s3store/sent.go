@@ -36,7 +36,9 @@ func NewSent(region, bucket, id, secret string) (*Sent, error) {
 	if bucket == "" {
 		return nil, errors.Errorf("`bucket` must be specified")
 	}
+
 	var creds *credentials.Credentials
+
 	if id != "" && secret != "" {
 		creds = credentials.NewStaticCredentials(id, secret, "")
 	}
@@ -70,6 +72,7 @@ func (h Sent) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers ma
 	metadata := map[string]*string{
 		"Version": aws.String(mailchain.Version),
 	}
+
 	for k, v := range headers {
 		metadata[k] = aws.String(v)
 	}

@@ -3,9 +3,13 @@ package settings
 import (
 	"io"
 
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
-	"github.com/mailchain/mailchain/internal/chains"
+	"github.com/mailchain/mailchain/internal/protocols"
+
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
 func FromStore(s values.Store) *Base {
@@ -17,7 +21,16 @@ func FromStore(s values.Store) *Base {
 		PublicKeyFinders:    publicKeyFinders(s),
 		// Protocols these contain the networks
 		Protocols: map[string]*Protocol{
-			chains.Ethereum: protocol(s, chains.Ethereum),
+			protocols.Ethereum: protocol(s, protocols.Ethereum, map[string]NetworkClient{
+				ethereum.Goerli:  network(s, protocols.Ethereum, ethereum.Goerli, defaults.EthereumNetworkAny()),
+				ethereum.Kovan:   network(s, protocols.Ethereum, ethereum.Kovan, defaults.EthereumNetworkAny()),
+				ethereum.Mainnet: network(s, protocols.Ethereum, ethereum.Mainnet, defaults.EthereumNetworkAny()),
+				ethereum.Rinkeby: network(s, protocols.Ethereum, ethereum.Rinkeby, defaults.EthereumNetworkAny()),
+				ethereum.Ropsten: network(s, protocols.Ethereum, ethereum.Ropsten, defaults.EthereumNetworkAny()),
+			}),
+			protocols.Substrate: protocol(s, protocols.Substrate, map[string]NetworkClient{
+				substrate.EdgewareTestnet: network(s, protocols.Substrate, substrate.EdgewareTestnet, defaults.SubstrateNetworkAny()),
+			}),
 		},
 		// other
 		Keystore:     keystore(s),
@@ -44,14 +57,18 @@ type Base struct {
 }
 
 func (o *Base) ToYaml(out io.Writer, tabsize int, commentDefaults, excludeDefaults bool) {
-	protocols := []output.Element{}
+	protocolElements := []output.Element{}
 	for _, v := range o.Protocols {
-		protocols = append(protocols, v.Output())
+		protocolElements = append(protocolElements, v.Output())
 	}
 
 	output.ToYaml(output.Root{
-		Elements: append(
-			protocols,
+		Elements: []output.Element{
+			{
+				FullName: "protocols",
+				Elements: protocolElements,
+			},
+
 			o.AddressNameServices.Output(),
 			o.DomainNameServices.Output(),
 
@@ -63,6 +80,6 @@ func (o *Base) ToYaml(out io.Writer, tabsize int, commentDefaults, excludeDefaul
 			o.MailboxState.Output(),
 			o.SentStore.Output(),
 			o.Server.Output(),
-		),
+		},
 	}, out, 2, commentDefaults, excludeDefaults)
 }

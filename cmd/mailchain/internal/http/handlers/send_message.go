@@ -15,7 +15,6 @@
 package handlers
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -39,7 +38,7 @@ import (
 
 // SendMessage handler http
 func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store,
-	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
+	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { // nolint: funlen
 	encrypter := aes256cbc.NewEncrypter()
 	// Post swagger:route POST /messages Send SendMessage
 	//
@@ -65,6 +64,16 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
+		messageSender, ok := senders[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
+		if !ok {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("sender not supported on \"%s/%s\"", req.Protocol, req.Network))
+			return
+		}
+		if messageSender == nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender configured for \"%s/%s\"", req.Protocol, req.Network))
+			return
+		}
+
 		from, err := address.DecodeByProtocol(req.Body.from.ChainAddress, req.Protocol)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"))
@@ -74,18 +83,13 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Body.Message.Headers.From))
 			return
 		}
-		sender, ok := senders[fmt.Sprintf("ethereum/%s", req.Network)]
-		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender for ethereum/%s configured", req.Network))
-			return
-		}
 
 		msg, err := mail.NewMessage(time.Now(), *req.Body.from, *req.Body.to, req.Body.replyTo, req.Body.Message.Subject, []byte(req.Body.Message.Body))
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		signer, err := ks.GetSigner(from, req.Protocol, deriveKeyOptions)
+		signer, err := ks.GetSigner(from, req.Protocol, req.Network, deriveKeyOptions)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
 			return
@@ -93,13 +97,12 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 
 		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network,
 			msg, req.Body.publicKey,
-			encrypter, sender, sent, signer, envelope.Kind0x01); err != nil {
+			encrypter, messageSender, sent, signer, envelope.Kind0x01); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}
 
 		w.WriteHeader(http.StatusOK)
-		return
 	}
 }
 
@@ -253,15 +256,6 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 	p.publicKey, err = secp256k1.PublicKeyFromHex(p.Message.PublicKey)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
-	}
-	pkAddress := p.publicKey.Address()
-	toAddress, err := address.DecodeByProtocol(p.to.ChainAddress, protocol)
-	if err != nil {
-		return errors.WithMessage(err, "failed to decode address")
-	}
-
-	if !bytes.Equal(pkAddress, toAddress) {
-		return errors.Errorf("`public-key` does not match to address")
 	}
 
 	return nil

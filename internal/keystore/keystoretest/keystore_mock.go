@@ -51,48 +51,48 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 }
 
 // GetSigner mocks base method
-func (m *MockStore) GetSigner(address []byte, chain string, deriveKeyOptions multi.OptionsBuilders) (signer.Signer, error) {
+func (m *MockStore) GetSigner(address []byte, protocol, network string, deriveKeyOptions multi.OptionsBuilders) (signer.Signer, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSigner", address, chain, deriveKeyOptions)
+	ret := m.ctrl.Call(m, "GetSigner", address, protocol, network, deriveKeyOptions)
 	ret0, _ := ret[0].(signer.Signer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetSigner indicates an expected call of GetSigner
-func (mr *MockStoreMockRecorder) GetSigner(address, chain, deriveKeyOptions interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) GetSigner(address, protocol, network, deriveKeyOptions interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSigner", reflect.TypeOf((*MockStore)(nil).GetSigner), address, chain, deriveKeyOptions)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSigner", reflect.TypeOf((*MockStore)(nil).GetSigner), address, protocol, network, deriveKeyOptions)
 }
 
 // GetDecrypter mocks base method
-func (m *MockStore) GetDecrypter(address []byte, decrypterType byte, deriveKeyOptions multi.OptionsBuilders) (cipher.Decrypter, error) {
+func (m *MockStore) GetDecrypter(address []byte, protocol, network string, decrypterType byte, deriveKeyOptions multi.OptionsBuilders) (cipher.Decrypter, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDecrypter", address, decrypterType, deriveKeyOptions)
+	ret := m.ctrl.Call(m, "GetDecrypter", address, protocol, network, decrypterType, deriveKeyOptions)
 	ret0, _ := ret[0].(cipher.Decrypter)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetDecrypter indicates an expected call of GetDecrypter
-func (mr *MockStoreMockRecorder) GetDecrypter(address, decrypterType, deriveKeyOptions interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) GetDecrypter(address, protocol, network, decrypterType, deriveKeyOptions interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDecrypter", reflect.TypeOf((*MockStore)(nil).GetDecrypter), address, decrypterType, deriveKeyOptions)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDecrypter", reflect.TypeOf((*MockStore)(nil).GetDecrypter), address, protocol, network, decrypterType, deriveKeyOptions)
 }
 
 // Store mocks base method
-func (m *MockStore) Store(private crypto.PrivateKey, curveType string, deriveKeyOptions multi.OptionsBuilders) ([]byte, error) {
+func (m *MockStore) Store(private crypto.PrivateKey, deriveKeyOptions multi.OptionsBuilders) (crypto.PublicKey, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Store", private, curveType, deriveKeyOptions)
-	ret0, _ := ret[0].([]byte)
+	ret := m.ctrl.Call(m, "Store", private, deriveKeyOptions)
+	ret0, _ := ret[0].(crypto.PublicKey)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Store indicates an expected call of Store
-func (mr *MockStoreMockRecorder) Store(private, curveType, deriveKeyOptions interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) Store(private, deriveKeyOptions interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockStore)(nil).Store), private, curveType, deriveKeyOptions)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockStore)(nil).Store), private, deriveKeyOptions)
 }
 
 // HasAddress mocks base method
@@ -110,16 +110,31 @@ func (mr *MockStoreMockRecorder) HasAddress(address interface{}) *gomock.Call {
 }
 
 // GetAddresses mocks base method
-func (m *MockStore) GetAddresses() ([][]byte, error) {
+func (m *MockStore) GetAddresses(protocol, address string) ([][]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAddresses")
+	ret := m.ctrl.Call(m, "GetAddresses", protocol, address)
 	ret0, _ := ret[0].([][]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAddresses indicates an expected call of GetAddresses
-func (mr *MockStoreMockRecorder) GetAddresses() *gomock.Call {
+func (mr *MockStoreMockRecorder) GetAddresses(protocol, address interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddresses", reflect.TypeOf((*MockStore)(nil).GetAddresses))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddresses", reflect.TypeOf((*MockStore)(nil).GetAddresses), protocol, address)
+}
+
+// GetPublicKeys mocks base method
+func (m *MockStore) GetPublicKeys() ([]crypto.PublicKey, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPublicKeys")
+	ret0, _ := ret[0].([]crypto.PublicKey)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPublicKeys indicates an expected call of GetPublicKeys
+func (mr *MockStoreMockRecorder) GetPublicKeys() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPublicKeys", reflect.TypeOf((*MockStore)(nil).GetPublicKeys))
 }

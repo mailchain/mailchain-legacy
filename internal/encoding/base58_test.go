@@ -12,50 +12,41 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package multikey
+package encoding
 
 import (
+	"reflect"
 	"testing"
-
-	"github.com/mailchain/mailchain/internal/encoding"
 )
 
-func TestGetKeyTypeFromChain(t *testing.T) {
+func TestDecodeBase58(t *testing.T) {
 	type args struct {
-		chain string
+		in string
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    string
+		want    []byte
 		wantErr bool
 	}{
 		{
-			"ethereum",
+			"success",
 			args{
-				"ethereum",
+				"5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzPD",
 			},
-			encoding.SECP256K1,
+			[]byte{0x9, 0x86, 0xc6, 0x71, 0x43, 0xad, 0x96, 0x6f, 0xa5, 0x79, 0xc9, 0x1b, 0x30, 0xc6, 0x7f, 0x95, 0xe7, 0x4b, 0xcc, 0xe3, 0xc5, 0xec, 0xb9, 0x5c, 0x96, 0xbf, 0xb5, 0x82, 0x87, 0x65, 0x64, 0xe4, 0x9c, 0x8, 0x3f, 0x1c},
 			false,
-		},
-		{
-			"unknown",
-			args{
-				"unknown",
-			},
-			"",
-			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetKeyTypeFromChain(tt.args.chain)
+			got, err := DecodeBase58(tt.args.in)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("GetKeyTypeFromChain() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("DecodeBase58() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if got != tt.want {
-				t.Errorf("GetKeyTypeFromChain() = %v, want %v", got, tt.want)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("DecodeBase58() = %v, want %v", got, tt.want)
 			}
 		})
 	}

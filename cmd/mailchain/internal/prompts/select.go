@@ -29,6 +29,7 @@ func SelectItemSkipable(label string, items []string, skipable bool) (selected s
 	if skipable {
 		items = append([]string{"skip"}, items...)
 	}
+
 	prompt := promptui.Select{
 		Label: label,
 		Items: items,

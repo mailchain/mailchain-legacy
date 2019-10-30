@@ -36,6 +36,7 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 	}
 	res := []cipher.EncryptedContent{}
 	txHashes := map[string]bool{}
+
 	for i := range txResult.Result { // TODO: paging
 		x := txResult.Result[i]
 		if !strings.HasPrefix(x.Input, "0x6d61696c636861696e") {

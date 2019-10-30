@@ -16,6 +16,10 @@ func (pk PrivateKey) Bytes() []byte {
 	return pk.key
 }
 
+func (pk PrivateKey) Kind() string {
+	return crypto.ED25519
+}
+
 // PublicKey return the public key that is derived from the private key
 func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	publicKey := make([]byte, ed25519.PublicKeySize)
@@ -23,10 +27,14 @@ func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	return PublicKey{key: publicKey}
 }
 
-// PrivateKeyFromBytes get a private key from []byte
-func PrivateKeyFromBytes(pk []byte) (*PrivateKey, error) {
-	if len(pk) != ed25519.PrivateKeySize {
-		return nil, errors.Errorf("len must be %v", ed25519.PrivateKeySize)
+// PrivateKeyFromBytes get a private key from seed []byte
+func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
+	switch len(privKey) {
+	case ed25519.SeedSize:
+		return &PrivateKey{key: ed25519.NewKeyFromSeed(privKey)}, nil
+	case ed25519.PrivateKeySize:
+		return &PrivateKey{key: privKey}, nil
+	default:
+		return nil, errors.Errorf("ed25519: bad key length")
 	}
-	return &PrivateKey{key: pk}, nil
 }

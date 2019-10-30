@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mailchain/mailchain/internal/chains"
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
+	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/sender/ethrpc2"
 	"github.com/pkg/errors"
@@ -24,8 +24,9 @@ func (c Client) Send(ctx context.Context, network string, to, from, data []byte,
 // NewClient create new API client
 func NewClient(baseURL string) (*Client, error) {
 	senders := map[string]sender.Message{}
+
 	for _, network := range []string{ethereum.Mainnet, ethereum.Ropsten, ethereum.Kovan, ethereum.Rinkeby, ethereum.Goerli} {
-		client, err := ethrpc2.New(createAddress(baseURL, chains.Ethereum, network))
+		client, err := ethrpc2.New(createAddress(baseURL, protocols.Ethereum, network))
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}

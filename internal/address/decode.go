@@ -15,15 +15,18 @@
 package address
 
 import (
-	"github.com/mailchain/mailchain/internal/chains"
 	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mr-tron/base58"
 	"github.com/pkg/errors"
 )
 
 func DecodeByProtocol(in, protocol string) ([]byte, error) {
 	switch protocol {
-	case chains.Ethereum:
+	case protocols.Ethereum:
 		return encoding.DecodeZeroX(in)
+	case protocols.Substrate:
+		return base58.Decode(in)
 	default:
 		return nil, errors.Errorf("%q unsupported protocol", protocol)
 	}

@@ -18,22 +18,18 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
+	"github.com/mailchain/mailchain/crypto/cipher/nacl"
 	"github.com/pkg/errors"
 )
 
-type decrypterFunc func(pk crypto.PrivateKey) (cipher.Decrypter, error)
-
 // Decrypter use the correct function to get the decrypter from private key
 func Decrypter(cipherType byte, pk crypto.PrivateKey) (cipher.Decrypter, error) {
-	table := map[byte]decrypterFunc{
-		cipher.AES256CBC: func(pk crypto.PrivateKey) (cipher.Decrypter, error) {
-			return aes256cbc.NewDecrypter(pk), nil
-		},
-	}
-
-	f, ok := table[cipherType]
-	if !ok {
+	switch cipherType {
+	case cipher.AES256CBC:
+		return aes256cbc.NewDecrypter(pk), nil
+	case cipher.NACL:
+		return nacl.NewDecrypter(pk)
+	default:
 		return nil, errors.Errorf("unsupported decrypter type")
 	}
-	return f(pk)
 }

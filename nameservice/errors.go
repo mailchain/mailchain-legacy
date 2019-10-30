@@ -27,8 +27,8 @@ const (
 	couldNotParseAddressErrorMsg = "could not parse address"
 )
 
+// RFC 1035 error interpretation
 var (
-	// RFC 1035 error interpretation
 	ErrFormat   = errors.New("Format Error")
 	ErrServFail = errors.New("Server Failure")
 	ErrNXDomain = errors.New("Non-Existent Domain")
@@ -63,8 +63,8 @@ func WrapError(err error) error {
 	return err
 }
 
-func isErrorOfAnyType(err error, errors []string) bool {
-	for _, errorMsg := range errors {
+func isErrorOfAnyType(err error, errorStrings []string) bool {
+	for _, errorMsg := range errorStrings {
 		if strings.Contains(err.Error(), errorMsg) {
 			return true
 		}

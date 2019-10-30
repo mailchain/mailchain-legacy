@@ -12,28 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package multikey
+package pubkey
 
 import (
-	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/pkg/errors"
 )
 
-// PrivateKeyFromHex get private key from hex.
-func PrivateKeyFromHex(hex, keyType string) (crypto.PrivateKey, error) {
-	table := map[string]privateKeyFromHex{
-		encoding.SECP256K1: func(hex string) (crypto.PrivateKey, error) {
-			return secp256k1.PrivateKeyFromHex(hex)
-		},
+func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
+	switch protocol {
+	case protocols.Ethereum:
+		encoded, encodingType = encoding.EncodeZeroX(in)
+	case protocols.Substrate:
+		encoded, encodingType = encoding.EncodeZeroX(in)
+	default:
+		err = errors.Errorf("%q unsupported protocol", protocol)
 	}
 
-	f, ok := table[keyType]
-	if !ok {
-		return nil, errors.Errorf("func for key type %v not registered", keyType)
-	}
-	return f(hex)
+	return encoded, encodingType, err
 }
-
-type privateKeyFromHex func(hex string) (crypto.PrivateKey, error)

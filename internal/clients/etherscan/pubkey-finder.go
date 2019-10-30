@@ -19,12 +19,12 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/pkg/errors"
 )
 
 // PublicKeyFromAddress get public key from the recipient address, this will only work if the recipient has previously sent a message.
-func (c APIClient) PublicKeyFromAddress(ctx context.Context, network string, address []byte) ([]byte, error) {
+func (c APIClient) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) ([]byte, error) {
 	if !c.isNetworkSupported(network) {
 		return nil, errors.Errorf("network not supported")
 	}
@@ -60,8 +60,9 @@ func (c APIClient) PublicKeyFromAddress(ctx context.Context, network string, add
 
 func getFromResultHash(address string, txResult *txList) (common.Hash, error) {
 	if len(txResult.Result) == 0 {
-		return common.Hash{}, errors.Errorf("No transactions found for `address`")
+		return common.Hash{}, errors.Errorf("No transactions found for address: %v", address)
 	}
+
 	for i := range txResult.Result {
 		x := txResult.Result[i]
 		if strings.EqualFold(x.From, address) {
@@ -69,5 +70,4 @@ func getFromResultHash(address string, txResult *txList) (common.Hash, error) {
 		}
 	}
 	return common.Hash{}, errors.Errorf("No transactions from address found")
-
 }

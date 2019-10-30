@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
+// nolint: lll
 package handlers
 
 import (
@@ -19,11 +19,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/internal/pubkey"
 	"github.com/pkg/errors"
 )
 
@@ -49,11 +49,15 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 		}
 		finder, ok := finders[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no public key finder for chain.network configured"))
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("public key finder not supported on \"%s/%s\"", req.Protocol, req.Network))
+			return
+		}
+		if finder == nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no public key finder configured for \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
 
-		publicKey, err := finder.PublicKeyFromAddress(ctx, req.Network, req.addressBytes)
+		publicKey, err := finder.PublicKeyFromAddress(ctx, req.Protocol, req.Network, req.addressBytes)
 		if mailbox.IsNetworkNotSupportedError(err) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("network %q not supported", req.Network))
 			return
@@ -62,10 +66,16 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
+		encodedKey, encodingType, err := pubkey.EncodeByProtocol(publicKey, req.Protocol)
+		if err != nil {
+			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+			return
+		}
 
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(GetPublicKeyResponseBody{
-			PublicKey: hexutil.Encode(publicKey),
+			PublicKey:         encodedKey,
+			PublicKeyEncoding: encodingType,
 		})
 	}
 }
@@ -116,7 +126,7 @@ func parseGetPublicKey(r *http.Request) (*GetPublicKeyRequest, error) {
 	}
 	addressBytes, err := address.DecodeByProtocol(addr, protocol)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, errors.WithMessage(err, "failed to decode public key")
 	}
 
 	return &GetPublicKeyRequest{
@@ -139,10 +149,15 @@ type GetPublicKeyResponse struct {
 //
 // swagger:model GetPublicKeyResponseBody
 type GetPublicKeyResponseBody struct {
-	// The public key
+	// The public key encoded as per `public_key_encoding`
 	//
 	// Required: true
-	// nolint: lll
 	// example: 0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463
 	PublicKey string `json:"public_key"`
+
+	// Encoding method used for encoding the `public_key`
+	//
+	// Required: true
+	// example: hex/0x-prefix
+	PublicKeyEncoding string `json:"public_key_encoding"`
 }

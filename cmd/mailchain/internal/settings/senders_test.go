@@ -6,7 +6,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values/valuestest"
-	"github.com/mailchain/mailchain/internal/chains"
+	"github.com/mailchain/mailchain/internal/protocols"
 )
 
 func Test_senders(t *testing.T) {
@@ -66,7 +66,7 @@ func TestSenders_Produce(t *testing.T) {
 					"client": func() SenderClient {
 						s := valuestest.NewMockStore(mockCtrl)
 						s.EXPECT().IsSet("senders.ethereum-relay.base-url").Return(false)
-						return relaySender(s, chains.Ethereum)
+						return relaySender(s, protocols.Ethereum)
 					}(),
 				},
 			},
@@ -76,13 +76,24 @@ func TestSenders_Produce(t *testing.T) {
 			false,
 			false,
 		},
+
 		{
+			"err-nil-client",
+			fields{
+				nil,
+			},
+			args{
+				"",
+			},
+			true,
+			false,
+		}, {
 			"err-no-client",
 			fields{
 				map[string]SenderClient{
 					"client": func() SenderClient {
 						s := valuestest.NewMockStore(mockCtrl)
-						return relaySender(s, chains.Ethereum)
+						return relaySender(s, protocols.Ethereum)
 					}(),
 				},
 			},

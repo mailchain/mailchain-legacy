@@ -31,8 +31,10 @@ require (
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
+	github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/mr-tron/base58 v1.1.0
 	github.com/multiformats/go-multihash v0.0.1
 	github.com/nicksnyder/go-i18n v1.10.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
@@ -41,6 +43,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/rs/cors v1.6.0
 	github.com/sirupsen/logrus v1.4.1
+	github.com/spf13/afero v1.1.2
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.4.0
 	github.com/status-im/keycard-go v0.0.0-20190424133014-d95853db0f48 // indirect

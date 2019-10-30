@@ -24,6 +24,7 @@ func (d DefaultString) Get() string {
 	if d.store.IsSet(d.setting) {
 		return d.store.GetString(d.setting)
 	}
+
 	return d.def
 }
 

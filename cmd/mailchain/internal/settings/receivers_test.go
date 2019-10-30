@@ -75,6 +75,18 @@ func TestReceivers_Produce(t *testing.T) {
 			false,
 			false,
 		},
+
+		{
+			"err-nil-client",
+			fields{
+				nil,
+			},
+			args{
+				"",
+			},
+			true,
+			false,
+		},
 		{
 			"err-no-client",
 			fields{

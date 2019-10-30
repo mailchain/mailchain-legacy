@@ -19,6 +19,7 @@ func (e Element) SortedElements() []Element {
 	sort.Slice(e.Elements, func(i, j int) bool {
 		return e.Elements[i].FullName < e.Elements[j].FullName
 	})
+
 	return e.Elements
 }
 
@@ -26,11 +27,13 @@ func (e Element) SortedAttributes() []Attribute {
 	sort.Slice(e.Attributes, func(i, j int) bool {
 		return e.Attributes[i].FullName < e.Attributes[j].FullName
 	})
+
 	return e.Attributes
 }
 
 func (e Element) ShortName() string {
 	dots := strings.Split(e.FullName, ".")
+
 	return dots[len(dots)-1]
 }
 

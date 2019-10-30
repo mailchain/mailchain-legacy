@@ -19,8 +19,8 @@ package commands
 
 // 	"github.com/mailchain/mailchain/cmd/mailchain/internal/config/defaults"
 // 	"github.com/mailchain/mailchain/cmd/mailchain/internal/setup"
-// 	"github.com/mailchain/mailchain/internal/chains"
-// 	"github.com/mailchain/mailchain/internal/chains/ethereum"
+// 	"github.com/mailchain/mailchain/internal/protocols"
+// 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 // 	"github.com/spf13/cobra"
 // )
 

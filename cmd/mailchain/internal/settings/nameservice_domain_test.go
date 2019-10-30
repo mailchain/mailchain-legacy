@@ -80,6 +80,17 @@ func TestDomainNameServices_Produce(t *testing.T) {
 			false,
 		},
 		{
+			"empty-client",
+			fields{
+				nil,
+			},
+			args{
+				"",
+			},
+			nil,
+			false,
+		},
+		{
 			"err-no-client",
 			fields{
 				nil,

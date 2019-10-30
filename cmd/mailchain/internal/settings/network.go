@@ -11,21 +11,21 @@ import (
 	"github.com/mailchain/mailchain/sender"
 )
 
-func network(s values.Store, protocol, network string) *Network {
+func network(s values.Store, protocol, network string, nd *defaults.NetworkDefaults) *Network {
 	k := &Network{
 		kind:     network,
 		protocol: protocol,
-		NameServiceAddress: values.NewDefaultString(defaults.NameServiceAddressKind, s,
+		NameServiceAddress: values.NewDefaultString(nd.NameServiceAddress, s,
 			fmt.Sprintf("protocols.%s.networks.%s.nameservice-address", protocol, network)),
-		NameServiceDomainName: values.NewDefaultString(defaults.NameServiceDomainNameKind, s,
+		NameServiceDomainName: values.NewDefaultString(nd.NameServiceDomainName, s,
 			fmt.Sprintf("protocols.%s.networks.%s.nameservice-domain-name", protocol, network)),
-		PublicKeyFinder: values.NewDefaultString(defaults.EthereumReceiver, s,
+		PublicKeyFinder: values.NewDefaultString(nd.PublicKeyFinder, s,
 			fmt.Sprintf("protocols.%s.networks.%s.public-key-finder", protocol, network)),
-		Receiver: values.NewDefaultString(defaults.EthereumReceiver, s,
+		Receiver: values.NewDefaultString(nd.Receiver, s,
 			fmt.Sprintf("protocols.%s.networks.%s.receiver", protocol, network)),
-		Sender: values.NewDefaultString(fmt.Sprintf("%s-relay", protocol), s,
+		Sender: values.NewDefaultString(nd.Sender, s,
 			fmt.Sprintf("protocols.%s.networks.%s.sender", protocol, network)),
-		disabled: values.NewDefaultBool(false, s,
+		disabled: values.NewDefaultBool(nd.Disabled, s,
 			fmt.Sprintf("protocols.%s.networks.%s.disabled", protocol, network)),
 	}
 	return k

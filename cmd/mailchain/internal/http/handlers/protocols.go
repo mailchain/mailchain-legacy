@@ -32,6 +32,7 @@ func GetProtocols(base *settings.Base) func(w http.ResponseWriter, r *http.Reque
 		if protocol.Disabled.Get() {
 			continue
 		}
+
 		networks := []string{}
 		for _, network := range protocol.Networks {
 			if !network.Disabled() {

@@ -63,6 +63,7 @@ func (d *ZeroX01) URL(decrypter cipher.Decrypter) (*url.URL, error) {
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	locationHash := UInt64Bytes(decrypted)
 
 	code, hash, err := locationHash.Values()

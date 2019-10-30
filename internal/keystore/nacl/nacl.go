@@ -15,79 +15,47 @@
 package nacl
 
 import (
-	"crypto/rand"
+	"io"
 
-	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/multikey"
-	"github.com/mailchain/mailchain/internal/keystore"
-	"github.com/mailchain/mailchain/internal/keystore/kdf"
-	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
-	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/nacl/secretbox"
 )
 
 const nonceSize = 24
+const secretKeySize = 32
 
 func easyOpen(box, key []byte) ([]byte, error) {
+	var secretKey [secretKeySize]byte
+
+	if len(key) != secretKeySize {
+		return nil, errors.New("secretbox: key length must be 32")
+	}
+
 	if len(box) < nonceSize {
 		return nil, errors.New("secretbox: message too short")
 	}
+
 	decryptNonce := new([nonceSize]byte)
 	copy(decryptNonce[:], box[:nonceSize])
-
-	var secretKey [32]byte
 	copy(secretKey[:], key)
 
 	decrypted, ok := secretbox.Open([]byte{}, box[nonceSize:], decryptNonce, &secretKey)
 	if !ok {
-		return nil, errors.New("secretbox: Could not decrypt invalid input")
+		return nil, errors.New("secretbox: could not decrypt data with private key")
 	}
+
 	return decrypted, nil
 }
 
-func easySeal(message, key []byte) ([]byte, error) {
+func easySeal(message, key []byte, rand io.Reader) ([]byte, error) {
 	nonce := new([nonceSize]byte)
 	if _, err := rand.Read(nonce[:]); err != nil {
 		return nil, err
 	}
 
-	var secretKey [32]byte
+	var secretKey [secretKeySize]byte
+
 	copy(secretKey[:], key)
+
 	return secretbox.Seal(nonce[:], message, nonce, &secretKey), nil
-}
-
-func deriveKey(ek *keystore.EncryptedKey, deriveKeyOptions multi.OptionsBuilders) ([]byte, error) {
-	switch ek.KDF {
-	case kdf.Scrypt:
-		if ek.ScryptParams == nil {
-			return nil, errors.New("scryptParams are required")
-		}
-		storageOpts := scrypt.FromEncryptedKey(ek.ScryptParams.Len, ek.ScryptParams.N, ek.ScryptParams.P, ek.ScryptParams.R, ek.ScryptParams.Salt)
-
-		return scrypt.DeriveKey(append(deriveKeyOptions.Scrypt, storageOpts))
-	default:
-		return nil, errors.New("KDF is not supported")
-	}
-}
-
-func (fs FileStore) getPrivateKey(address []byte, deriveKeyOptions multi.OptionsBuilders) (crypto.PrivateKey, error) {
-	encryptedKey, err := fs.getEncryptedKey(address)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	storageKey, err := deriveKey(encryptedKey, deriveKeyOptions)
-	if err != nil {
-		return nil, errors.WithMessage(err, "storage key could not be derived")
-	}
-	pkBytes, err := easyOpen(encryptedKey.CipherText, storageKey)
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not decrypt key file")
-	}
-	pk, err := multikey.PrivateKeyFromBytes(encryptedKey.CurveType, pkBytes)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-	return pk, nil
 }

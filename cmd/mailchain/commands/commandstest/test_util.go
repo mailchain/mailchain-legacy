@@ -9,14 +9,17 @@ import (
 )
 
 func ExecuteCommandC(root *cobra.Command, args []string, flags map[string]string) (c *cobra.Command, output string, err error) {
-	buf := new(bytes.Buffer)
 	if err := root.ValidateArgs(args); err != nil {
 		return nil, "", err
 	}
+
+	buf := new(bytes.Buffer)
+
 	root.SetOutput(buf)
 	root.SetArgs(args)
+
 	for x := range flags {
-		root.Flags().Set(x, flags[x])
+		_ = root.Flags().Set(x, flags[x])
 	}
 	c, err = root.ExecuteC()
 
@@ -24,15 +27,14 @@ func ExecuteCommandC(root *cobra.Command, args []string, flags map[string]string
 }
 
 func AssertCommandOutput(t *testing.T, cmd *cobra.Command, err error, out, wantOutput string) bool {
-	assert := assert.New(t)
 	if err == nil {
-		if !assert.Equal(wantOutput, out) {
+		if !assert.Equal(t, wantOutput, out) {
 			t.Errorf("cmd().Execute().out = %v, want %v", out, wantOutput)
 			return false
 		}
 	}
 	if err != nil {
-		if !assert.Equal(wantOutput+"\n"+cmd.UsageString()+"\n", out) {
+		if !assert.Equal(t, wantOutput+"\n"+cmd.UsageString()+"\n", out) {
 			t.Errorf("cmd().Execute().out = %v, want %v", out, wantOutput)
 			return false
 		}

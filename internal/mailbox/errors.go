@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package chains
+package mailbox
 
 import (
-	"github.com/mailchain/mailchain/internal/chains/ethereum"
+	"fmt"
+
+	"github.com/pkg/errors"
 )
 
-const Ethereum = "ethereum"
+var (
+	errNetworkNotSupported = errors.New("network not supported")
+)
 
-func NetworkNames(chain string) []string {
-	switch chain {
-	case Ethereum:
-		return ethereum.Networks()
-	default:
-		return nil
-	}
+// IsNetworkNotSupportedError network not supported errors can be resolved by selecting a different client or configuring the network.
+func IsNetworkNotSupportedError(err error) bool {
+	return fmt.Sprintf("%v", errors.Cause(err)) == fmt.Sprintf("%v", errors.Cause(errNetworkNotSupported))
 }

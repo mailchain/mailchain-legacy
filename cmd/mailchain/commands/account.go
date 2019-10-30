@@ -1,17 +1,3 @@
-// Copyright 2019 Finobo
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package commands
 
 import (
@@ -50,7 +36,6 @@ Make sure you backup your keys regularly.`,
 		return nil, errors.WithMessage(err, "could not create `keystore`")
 	}
 
-	cmd.PersistentFlags().StringP("key-type", "", "", "Select the chain [secp256k1]")
 	cmd.AddCommand(accountAddCmd(ks, prompts.Secret, prompts.Secret))
 	cmd.AddCommand(accountListCmd(ks))
 
@@ -62,23 +47,24 @@ func accountAddCmd(ks keystore.Store, passphrasePrompt, privateKeyPrompt prompts
 		Use:   "add",
 		Short: "Add private key",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			keytype, err := getKeyType(cmd)
-			if err != nil {
-				return errors.WithMessage(err, "could not determine `key-type`")
+			keyType, _ := cmd.Flags().GetString("key-type")
+			if keyType == "" {
+				return errors.New("`key-type` must be specified")
 			}
+
 			cmdPK, _ := cmd.Flags().GetString("private-key")
-			privateKey, err := privateKeyPrompt(cmdPK,
-				"",
-				"Private Key",
-				false,
-				false,
-			)
+			privateKey, err := privateKeyPrompt(cmdPK, "", "Private Key", false, false)
 			if err != nil {
 				return errors.WithMessage(err, "could not get private key")
 			}
-			pk, err := multikey.PrivateKeyFromHex(privateKey, keytype)
+
+			privKeyBytes, err := hex.DecodeString(privateKey)
 			if err != nil {
 				return errors.WithMessage(err, "`private-key` could not be decoded")
+			}
+			privKey, err := multikey.PrivateKeyFromBytes(keyType, privKeyBytes)
+			if err != nil {
+				return errors.WithMessage(err, "`private-key` could not be created from bytes")
 			}
 			cmdPassphrase, _ := cmd.Flags().GetString("passphrase")
 			passphrase, err := passphrasePrompt(cmdPassphrase,
@@ -94,7 +80,7 @@ func accountAddCmd(ks keystore.Store, passphrasePrompt, privateKeyPrompt prompts
 			if err != nil {
 				return errors.WithMessage(err, "could not create `random salt`")
 			}
-			address, err := ks.Store(pk, keytype,
+			pubKey, err := ks.Store(privKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{
 						scrypt.DefaultDeriveOptions(),
@@ -106,25 +92,33 @@ func accountAddCmd(ks keystore.Store, passphrasePrompt, privateKeyPrompt prompts
 				return errors.WithMessage(err, "key could not be stored")
 			}
 
-			cmd.Printf(chalk.Green.Color("Private key added")+" for address=%s\n", hex.EncodeToString(address))
+			cmd.Printf(chalk.Green.Color("Private key added\n"))
+			cmd.Printf("Public key=%s\n", hex.EncodeToString(pubKey.Bytes()))
 			return nil
 		},
 	}
 
-	cmd.Flags().StringP("key-type", "", "", "Select the key type [secp256k1]")
-	cmd.Flags().StringP("chain", "C", "", "Select the chain [ethereum]")
-	cmd.Flags().StringP("private-key", "K", "", "Specify the private key to store")
+	cmd.Flags().StringP("key-type", "", "", "Select the key type [secp256k1, ed25519]")
+	cmd.Flags().StringP("private-key", "K", "", "Private key to store")
 	cmd.Flags().String("passphrase", "", "Passphrase to encrypt/decrypt key with")
 
 	return cmd
 }
 
 func accountListCmd(ks keystore.Store) *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "List accounts",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			addresses, err := ks.GetAddresses()
+			protocol, _ := cmd.Flags().GetString("protocol")
+			if protocol == "" {
+				return errors.New("`--protocol` must be specified to return address list")
+			}
+			network, _ := cmd.Flags().GetString("network")
+			if network == "" {
+				return errors.New("`--network` must be specified to return address list")
+			}
+			addresses, err := ks.GetAddresses(protocol, network)
 			if err != nil {
 				return errors.WithMessage(err, "could not get addresses")
 			}
@@ -134,16 +128,8 @@ func accountListCmd(ks keystore.Store) *cobra.Command {
 			return nil
 		},
 	}
-}
+	cmd.Flags().StringP("protocol", "", "", "Protocol to search for")
+	cmd.Flags().StringP("network", "", "", "Network to search for")
 
-func getKeyType(cmd *cobra.Command) (string, error) {
-	keyType, _ := cmd.Flags().GetString("key-type")
-	if keyType != "" {
-		return keyType, nil
-	}
-	chain, _ := cmd.Flags().GetString("chain")
-	if chain == "" {
-		return "", errors.Errorf("either `key-type` or `chain` must be specified")
-	}
-	return multikey.GetKeyTypeFromChain(chain)
+	return cmd
 }

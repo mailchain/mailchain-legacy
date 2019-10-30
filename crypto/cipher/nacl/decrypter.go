@@ -13,6 +13,7 @@ func NewDecrypter(privateKey crypto.PrivateKey) (*Decrypter, error) {
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	return &Decrypter{privateKey: privateKey}, nil
 }
 
@@ -27,6 +28,7 @@ func (d Decrypter) Decrypt(data cipher.EncryptedContent) (cipher.PlainContent, e
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	return easyOpen(data, privKeyBytes)
 }
 

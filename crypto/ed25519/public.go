@@ -21,5 +21,6 @@ func PublicKeyFromBytes(keyBytes []byte) (crypto.PublicKey, error) {
 	if len(keyBytes) != ed25519.PublicKeySize {
 		return nil, errors.Errorf("public key must be 32 bytes")
 	}
+
 	return &PublicKey{key: keyBytes}, nil
 }

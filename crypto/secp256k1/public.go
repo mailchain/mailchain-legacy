@@ -46,10 +46,7 @@ func PublicKeyFromBytes(keyBytes []byte) (crypto.PublicKey, error) {
 
 		return &PublicKey{ecdsa: *rpk}, nil
 	case 64:
-		pub := make([]byte, 65)
-		pub[0] = byte(4)
-		copy(pub[1:], keyBytes)
-		rpk, err := ethcrypto.UnmarshalPubkey(pub)
+		rpk, err := ethcrypto.UnmarshalPubkey(append([]byte{byte(4)}, keyBytes...))
 		if err != nil {
 			return nil, errors.WithMessage(err, "could not convert pk")
 		}

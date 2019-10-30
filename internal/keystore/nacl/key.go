@@ -34,9 +34,8 @@ func deriveKey(ek *keystore.EncryptedKey, deriveKeyOptions multi.OptionsBuilders
 		if ek.ScryptParams == nil {
 			return nil, errors.New("scryptParams are required")
 		}
-		storageOpts := scrypt.FromEncryptedKey(ek.ScryptParams.Len, ek.ScryptParams.N, ek.ScryptParams.P, ek.ScryptParams.R, ek.ScryptParams.Salt)
 
-		return scrypt.DeriveKey(append(deriveKeyOptions.Scrypt, storageOpts))
+		return scrypt.DeriveKey(append(deriveKeyOptions.Scrypt, scrypt.FromEncryptedKey(ek.ScryptParams.Len, ek.ScryptParams.N, ek.ScryptParams.P, ek.ScryptParams.R, ek.ScryptParams.Salt)))
 	default:
 		return nil, errors.New("KDF is not supported")
 	}
@@ -51,13 +50,16 @@ func (f FileStore) getPrivateKey(encryptedKey *keystore.EncryptedKey, deriveKeyO
 	if err != nil {
 		return nil, errors.WithMessage(err, "storage key could not be derived")
 	}
+
 	pkBytes, err := easyOpen(encryptedKey.CipherText, storageKey)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not decrypt key file")
 	}
+
 	pk, err := multikey.PrivateKeyFromBytes(encryptedKey.CurveType, pkBytes)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	return pk, nil
 }

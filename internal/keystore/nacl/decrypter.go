@@ -27,9 +27,11 @@ func (f FileStore) GetDecrypter(address []byte, protocol, network string, decryp
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	pk, err := f.getPrivateKey(encryptedKey, deriveKeyOptions)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	return keystore.Decrypter(decrypterType, pk)
 }

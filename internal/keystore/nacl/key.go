@@ -28,6 +28,7 @@ func deriveKey(ek *keystore.EncryptedKey, deriveKeyOptions multi.OptionsBuilders
 	if ek == nil {
 		return nil, errors.New("encryptedKey must not be nil")
 	}
+
 	switch ek.KDF {
 	case kdf.Scrypt:
 		if ek.ScryptParams == nil {

@@ -41,6 +41,10 @@ func (f FileStore) Store(private crypto.PrivateKey, deriveKeyOptions multi.Optio
 		return nil, errors.WithMessage(err, "could seal storage key")
 	}
 
+	if keyDefFunc != kdf.Scrypt {
+		return nil, errors.Errorf("kdf not supported")
+	}
+
 	keyJSON := keystore.EncryptedKey{
 		PublicKeyBytes: private.PublicKey().Bytes(),
 		StorageCipher:  "nacl",
@@ -50,12 +54,9 @@ func (f FileStore) Store(private crypto.PrivateKey, deriveKeyOptions multi.Optio
 		KDF:            keyDefFunc,
 		Timestamp:      time.Now(),
 		Version:        mailchain.Version,
-	}
-	if keyDefFunc != kdf.Scrypt {
-		return nil, errors.Errorf("kdf not supported")
+		ScryptParams:   scrypt.CreateOptions(deriveKeyOptions.Scrypt),
 	}
 
-	keyJSON.ScryptParams = scrypt.CreateOptions(deriveKeyOptions.Scrypt)
 	content, err := json.Marshal(keyJSON)
 	if err != nil {
 		return nil, err

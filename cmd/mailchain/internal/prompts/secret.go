@@ -12,6 +12,7 @@ func Secret(suppliedSecret, prePromptNote, promptLabel string, allowEmpty, confi
 	if suppliedSecret != "" {
 		return suppliedSecret, nil
 	}
+
 	if allowEmpty {
 		return "", nil
 	}
@@ -42,6 +43,7 @@ func secretFromPrompt(promptLabel string, confirmPrompt bool) (string, error) {
 			fmt.Printf("Prompt failed %v\n", err)
 			return "", errors.Errorf("failed read passphrase confirmation")
 		}
+
 		if secret != confirm {
 			return "", errors.Errorf("%s do not match", promptLabel)
 		}

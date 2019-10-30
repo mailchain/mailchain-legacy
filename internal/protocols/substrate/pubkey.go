@@ -25,7 +25,6 @@ func NewPublicKeyFinder() *PublicKeyFinder {
 }
 
 type PublicKeyFinder struct {
-	supportedNetworks []string
 }
 
 func (pkf *PublicKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) ([]byte, error) {

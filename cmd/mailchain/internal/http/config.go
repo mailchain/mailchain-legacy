@@ -47,6 +47,7 @@ func produceConfig(s *settings.Base) (*config, error) { // nolint: funlen
 		if err != nil {
 			return nil, errors.WithMessage(err, "could not get address name service")
 		}
+
 		for k, v := range ans {
 			nsAddressResolvers[k] = v
 		}
@@ -55,6 +56,7 @@ func produceConfig(s *settings.Base) (*config, error) { // nolint: funlen
 		if err != nil {
 			return nil, errors.WithMessage(err, "could not get domain name service")
 		}
+
 		for k, v := range dns {
 			nsDomainResolvers[k] = v
 		}
@@ -64,6 +66,7 @@ func produceConfig(s *settings.Base) (*config, error) { // nolint: funlen
 		if err != nil {
 			return nil, errors.WithMessagef(err, "could not get %q public key finders", name)
 		}
+
 		for k, v := range protocolPubKeyFinders {
 			publicKeyFinders[k] = v
 		}

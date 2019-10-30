@@ -58,6 +58,7 @@ func (p Protocol) GetPublicKeyFinders(publicKeyFinders *PublicKeyFinders) (map[s
 		}
 		msg[p.Kind+"/"+network] = s
 	}
+
 	return msg, nil
 }
 

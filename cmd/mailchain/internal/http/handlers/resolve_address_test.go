@@ -278,7 +278,7 @@ func TestGetResolveAddress(t *testing.T) {
 				})
 				return req
 			}(),
-			"{\"name\":\"name.ens\"}\n",
+			"{\"name\":\"name.ens\",\"status\":0}\n",
 			http.StatusOK,
 		},
 	}

@@ -261,7 +261,7 @@ func TestGetResolveName(t *testing.T) {
 				})
 				return req
 			}(),
-			"{\"address\":\"0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\"}\n",
+			"{\"address\":\"0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\",\"status\":0}\n",
 			http.StatusOK,
 		},
 	}

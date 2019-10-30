@@ -31,7 +31,7 @@ import (
 
 // GetResolveName returns a handler get spec
 func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.ResponseWriter, r *http.Request) {
-	// Get swagger:route GET /nameservice/name/{domain-name}/resolve?network={network}&protocol={protocol} ResolveName NameService GetResolveName
+	// Get swagger:route GET /nameservice/name/{domain-name}/resolve?network={network}&protocol={protocol} NameService GetResolveName
 	//
 	// Resolve Name Against Name Service
 	//
@@ -146,10 +146,16 @@ type GetResolveNameResponseBody struct {
 	// example: 0x4ad2b251246aafc2f3bdf3b690de3bf906622c51
 	Address string `json:"address"`
 
-	// The rfc1035 error status, if present
-	// Since 0 status belongs to 'No Error', it's safe to use 'omitempty'
+	// The rfc1035 status code describing the outcome of the lookup
+	//
+	// + 0 - No Error
+	// + 1 - Format Error
+	// + 2 - Server Failure
+	// + 3 - Non-Existent Domain
+	// + 4 - Not Implemented
+	// + 5 - Query Refused
 	//
 	// Required: false
 	// example: 3
-	Status int `json:"status,omitempty"`
+	Status int `json:"status"`
 }

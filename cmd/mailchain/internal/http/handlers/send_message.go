@@ -64,12 +64,12 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		sender, ok := senders[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
+		messageSender, ok := senders[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("sender not supported on \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
-		if sender == nil {
+		if messageSender == nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender configured for \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
@@ -97,7 +97,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 
 		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network,
 			msg, req.Body.publicKey,
-			encrypter, sender, sent, signer, envelope.Kind0x01); err != nil {
+			encrypter, messageSender, sent, signer, envelope.Kind0x01); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}

@@ -66,7 +66,6 @@ func PrivateKeyFromBytes(pk []byte) (*PrivateKey, error) {
 	return &PrivateKey{ecdsa: *rpk}, nil
 }
 
-// TODO: this method should be removed in favor of PrivateKeyFromBytes and doing decoding the hex before, see encoding package.
 // PrivateKeyFromHex get a private key from hex string
 func PrivateKeyFromHex(hexkey string) (*PrivateKey, error) {
 	b, err := hex.DecodeString(hexkey)

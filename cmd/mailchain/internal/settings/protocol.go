@@ -97,7 +97,7 @@ func (p Protocol) Output() output.Element {
 			p.Disabled.Attribute(),
 		},
 		Elements: []output.Element{
-			output.Element{
+			{
 				FullName: "protocols." + p.Kind + ".networks",
 				Elements: networkElements,
 			},

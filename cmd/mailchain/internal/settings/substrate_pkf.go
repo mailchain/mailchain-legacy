@@ -19,11 +19,13 @@ type SubstratePublicKeyFinder struct {
 }
 
 func substratePublicKeyFinder(s values.Store) *SubstratePublicKeyFinder {
+	kind := defaults.SubstratePublicKeyFinder
+
 	enabledNetworks := []string{}
 	for _, n := range substrate.Networks() {
 		enabledNetworks = append(enabledNetworks, protocols.Substrate+"/"+n)
 	}
-	kind := defaults.SubstratePublicKeyFinder
+
 	return &SubstratePublicKeyFinder{
 		kind: kind,
 		Disabled: values.NewDefaultBool(false, s,

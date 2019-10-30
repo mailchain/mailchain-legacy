@@ -25,6 +25,7 @@ func EncodeZeroX(in []byte) (encoded, encoding string) {
 	out := make([]byte, len(in)*2+2)
 	copy(out, "0x")
 	hex.Encode(out[2:], in)
+
 	return string(out), TypeHex0XPrefix
 }
 
@@ -36,5 +37,6 @@ func DecodeZeroX(in string) ([]byte, error) {
 	if !strings.HasPrefix(in, "0x") {
 		return nil, errors.Errorf("missing \"0x\" prefix from hex string")
 	}
+	
 	return hex.DecodeString(in[2:])
 }

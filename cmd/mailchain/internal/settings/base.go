@@ -64,7 +64,7 @@ func (o *Base) ToYaml(out io.Writer, tabsize int, commentDefaults, excludeDefaul
 
 	output.ToYaml(output.Root{
 		Elements: []output.Element{
-			output.Element{
+			{
 				FullName: "protocols",
 				Elements: protocolElements,
 			},

@@ -29,5 +29,6 @@ func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string,
 	default:
 		err = errors.Errorf("%q unsupported protocol", protocol)
 	}
+
 	return encoded, encodingType, err
 }

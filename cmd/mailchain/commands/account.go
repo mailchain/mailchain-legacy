@@ -98,6 +98,7 @@ func accountAddCmd(ks keystore.Store, passphrasePrompt, privateKeyPrompt prompts
 		},
 	}
 
+	cmd.Flags().StringP("protocol","P","","Select the protocol [ethereum]")
 	cmd.Flags().StringP("key-type", "", "", "Select the key type [secp256k1, ed25519]")
 	cmd.Flags().StringP("private-key", "K", "", "Private key to store")
 	cmd.Flags().String("passphrase", "", "Passphrase to encrypt/decrypt key with")

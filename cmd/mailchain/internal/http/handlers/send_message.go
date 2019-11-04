@@ -15,6 +15,7 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -253,7 +254,11 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 	}
 
 	// TODO: be more general when getting key from hex
-	p.publicKey, err = secp256k1.PublicKeyFromBytes(p.Message.PublicKey)
+	structToBytes := new(bytes.Buffer)
+	json.NewEncoder(structToBytes).Encode(p.Message)
+	encodeMessage := structToBytes.Bytes()
+
+	p.publicKey, err = secp256k1.PublicKeyFromBytes(encodeMessage)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
 	}

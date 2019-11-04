@@ -36,7 +36,7 @@ func Test_asPrivateECIES(t *testing.T) {
 			"success-secp256k1-val",
 			args{
 				func() secp256k1.PrivateKey {
-					k, err := secp256k1.PrivateKeyFromHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					k, err := secp256k1.PrivateKeyFromBytes("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					if err != nil {
 						t.Error(err)
 					}
@@ -50,7 +50,7 @@ func Test_asPrivateECIES(t *testing.T) {
 			"success-secp256k1-pointer",
 			args{
 				func() *secp256k1.PrivateKey {
-					k, err := secp256k1.PrivateKeyFromHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					k, err := secp256k1.PrivateKeyFromBytes("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					if err != nil {
 						t.Error(err)
 					}
@@ -64,7 +64,7 @@ func Test_asPrivateECIES(t *testing.T) {
 			"success-secp256k1-pointer",
 			args{
 				func() *secp256k1.PrivateKey {
-					k, err := secp256k1.PrivateKeyFromHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					k, err := secp256k1.PrivateKeyFromBytes("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					if err != nil {
 						t.Error(err)
 					}
@@ -112,7 +112,7 @@ func Test_asPublicECIES(t *testing.T) {
 			"success-val",
 			args{
 				func() crypto.PublicKey {
-					k, err := secp256k1.PrivateKeyFromHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					k, err := secp256k1.PrivateKeyFromBytes("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					if err != nil {
 						t.Error(err)
 					}

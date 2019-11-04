@@ -253,7 +253,7 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 	}
 
 	// TODO: be more general when getting key from hex
-	p.publicKey, err = secp256k1.PublicKeyFromHex(p.Message.PublicKey)
+	p.publicKey, err = secp256k1.PublicKeyFromBytes(p.Message.PublicKey)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
 	}

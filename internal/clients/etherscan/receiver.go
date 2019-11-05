@@ -36,7 +36,7 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 	res := []cipher.EncryptedContent{}
 	txHashes := map[string]bool{}
 
-	for i := range txResult.Result { // TODO: paging
+	for i := range txResult.Result { //nolint TODO: paging
 		x := txResult.Result[i]
 
 		_, ok := txHashes[x.Hash]
@@ -49,6 +49,7 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 		if err != nil {
 			return nil, errors.WithMessage(err, "can not decode `data`")
 		}
+
 		if !bytes.HasPrefix(encryptedTransactionData, encoding.DataPrefix()) {
 			return nil, errors.New("missing `mailchain` prefix")
 		}

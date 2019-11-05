@@ -15,9 +15,9 @@
 package aes256cbc
 
 import (
+	"encoding/hex"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
@@ -28,16 +28,17 @@ func Test_asPrivateECIES(t *testing.T) {
 		pk crypto.PrivateKey
 	}
 	tests := []struct {
-		name    string
-		args    args
-		wantNil bool
-		wantErr bool
+		name         string
+		args         args
+		wantNil      bool
+		wantErr      bool
+		encryptedKey byte
 	}{
 		{
 			"success-secp256k1-val",
 			args{
 				func() secp256k1.PrivateKey {
-					encryptedKey, err := hexoutil.Decode("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					encryptedKey, err := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					if err != nil {
 						t.Error(err)
 					}
@@ -55,6 +56,10 @@ func Test_asPrivateECIES(t *testing.T) {
 			"success-secp256k1-pointer",
 			args{
 				func() *secp256k1.PrivateKey {
+					encryptedKey, err := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					if err != nil {
+						t.Error(err)
+					}
 					k, err := secp256k1.PrivateKeyFromBytes(encryptedKey)
 					if err != nil {
 						t.Error(err)
@@ -69,6 +74,10 @@ func Test_asPrivateECIES(t *testing.T) {
 			"success-secp256k1-pointer",
 			args{
 				func() *secp256k1.PrivateKey {
+					encryptedKey, err := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					if err != nil {
+						t.Error(err)
+					}
 					k, err := secp256k1.PrivateKeyFromBytes(encryptedKey)
 					if err != nil {
 						t.Error(err)
@@ -118,7 +127,7 @@ func Test_asPublicECIES(t *testing.T) {
 			args{
 				func() crypto.PublicKey {
 
-					encryptedPublicKey, err := hexoutil.Decode("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					encryptedPublicKey, err := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					if err != nil {
 						t.Error(err)
 					}

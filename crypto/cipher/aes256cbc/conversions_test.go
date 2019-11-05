@@ -17,6 +17,7 @@ package aes256cbc
 import (
 	"testing"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
@@ -36,6 +37,10 @@ func Test_asPrivateECIES(t *testing.T) {
 			"success-secp256k1-val",
 			args{
 				func() secp256k1.PrivateKey {
+					encryptedKey, err := hexoutil.Decode("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					if err != nil {
+						t.Error(err)
+					}
 					k, err := secp256k1.PrivateKeyFromBytes("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					if err != nil {
 						t.Error(err)

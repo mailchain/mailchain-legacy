@@ -3,6 +3,7 @@ package secp256k1test
 import (
 	"log"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 )
@@ -15,13 +16,18 @@ var CharlottePublicKey crypto.PublicKey   //nolint: gochecknoglobals
 //nolint: gochecknoinits
 func init() {
 	var err error
-	SofiaPrivateKey, err = secp256k1.PrivateKeyFromBytes("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+
+	encryptedSofiaPrivateKey, err := hexutil.Decode("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+	if err != nil {
+		log.Fatal(err)
+	}
+	SofiaPrivateKey, err = secp256k1.PrivateKeyFromBytes(encryptedSofiaPrivateKey)
 	if err != nil {
 		log.Fatal(err)
 	}
 	SofiaPublicKey = SofiaPrivateKey.PublicKey()
 
-	CharlottePrivateKey, err = secp256k1.PrivateKeyFromBytes("DF4BA9F6106AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3")
+	CharlottePrivateKey, err = secp256k1.PrivateKeyFromBytes(encryptedSofiaPrivateKey)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -22,7 +22,7 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
+	"github.com/mailchain/mailchain/crypto/cipher/encrypter"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
@@ -39,7 +39,6 @@ import (
 // SendMessage handler http
 func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { // nolint: funlen
-	encrypter := aes256cbc.NewEncrypter()
 	// Post swagger:route POST /messages Send SendMessage
 	//
 	// Send message.
@@ -93,6 +92,10 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
 			return
+		}
+		encrypter, err := encrypter.GetEncrypter(req.Body.encryption)
+		if err != nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `encrypter`")))
 		}
 
 		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network,
@@ -200,11 +203,12 @@ type PostMessage struct {
 // swagger:model SendMessageRequestBody
 type PostRequestBody struct {
 	// required: true
-	Message   PostMessage `json:"message"`
-	to        *mail.Address
-	from      *mail.Address
-	replyTo   *mail.Address
-	publicKey crypto.PublicKey
+	Message    PostMessage `json:"message"`
+	to         *mail.Address
+	from       *mail.Address
+	replyTo    *mail.Address
+	publicKey  crypto.PublicKey
+	encryption string
 }
 
 func checkForEmpties(msg PostMessage) error {

@@ -15,7 +15,6 @@
 package handlers
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -39,8 +38,8 @@ import (
 )
 
 // SendMessage handler http
-func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store,
-	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { // nolint: funlen
+func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store, //nolint: funlen
+	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { //nolint: funlen
 	encrypter := aes256cbc.NewEncrypter()
 	// Post swagger:route POST /messages Send SendMessage
 	//
@@ -213,15 +212,19 @@ func checkForEmpties(msg PostMessage) error {
 	if msg.Headers == nil {
 		return errors.Errorf("headers must not be nil")
 	}
+
 	if msg.Body == "" {
 		return errors.Errorf("`body` can not be empty")
 	}
+
 	if msg.Subject == "" {
 		return errors.Errorf("`subject` can not be empty")
 	}
+
 	if msg.PublicKey == "" {
 		return errors.Errorf("`public-key` can not be empty")
 	}
+
 	return nil
 }
 
@@ -229,16 +232,18 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 	if p == nil {
 		return errors.New("PostRequestBody must not be nil")
 	}
+
 	if err := checkForEmpties(p.Message); err != nil {
 		return err
 	}
+
 	var err error
 
 	p.to, err = mail.ParseAddress(p.Message.Headers.To, protocol, network)
 	if err != nil {
 		return errors.WithMessage(err, "`to` is invalid")
 	}
-	// TODO: figure this out
+	//nolint TODO: figure this out
 	// if !ethereup.IsAddressValid(p.to.ChainAddress) {
 	// 	return errors.Errorf("'address' is invalid")
 	// }
@@ -254,17 +259,13 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		}
 	}
 
-	// TODO: be more general when getting key from hex
-	structToBytes := new(bytes.Buffer)
-	json.NewEncoder(structToBytes).Encode(p.Message)
-	encodeMessage := hexutil.Encode(structToBytes.Bytes())
-
-	encodeMessageHex, err := hexutil.Decode(encodeMessage)
+	//nolint TODO: be more general when getting key from hex
+	encodeMessage, err := hexutil.Decode(p.Message.PublicKey)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `data`")
 	}
 
-	p.publicKey, err = secp256k1.PublicKeyFromBytes(encodeMessageHex.PublicKey)
+	p.publicKey, err = secp256k1.PublicKeyFromBytes(encodeMessage)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
 	}

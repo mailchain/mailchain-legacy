@@ -17,7 +17,6 @@ package etherscan
 import (
 	"bytes"
 	"context"
-	"strings"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/mailchain/mailchain/crypto/cipher"
@@ -37,13 +36,9 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 	res := []cipher.EncryptedContent{}
 	txHashes := map[string]bool{}
 
-	for i := range txResult.Result { // TODO: paging
+	for i := range txResult.Result { //nolint TODO: paging
 		x := txResult.Result[i]
-		if !strings.HasPrefix(x.Input, "0x6d61696c636861696e") {
-			continue
-		}
 
-		// remove duplicates, eg. messages sent to self
 		_, ok := txHashes[x.Hash]
 		if ok {
 			continue
@@ -54,6 +49,7 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 		if err != nil {
 			return nil, errors.WithMessage(err, "can not decode `data`")
 		}
+
 		if !bytes.HasPrefix(encryptedTransactionData, encoding.DataPrefix()) {
 			return nil, errors.New("missing `mailchain` prefix")
 		}

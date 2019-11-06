@@ -28,11 +28,10 @@ func Test_asPrivateECIES(t *testing.T) {
 		pk crypto.PrivateKey
 	}
 	tests := []struct {
-		name         string
-		args         args
-		wantNil      bool
-		wantErr      bool
-		encryptedKey byte
+		name    string
+		args    args
+		wantNil bool
+		wantErr bool
 	}{
 		{
 			"success-secp256k1-val",

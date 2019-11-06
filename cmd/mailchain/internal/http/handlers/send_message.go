@@ -97,6 +97,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `encrypter`")))
 		}
+
 		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network,
 			msg, req.Body.publicKey,
 			encrypter, messageSender, sent, signer, envelope.Kind0x01); err != nil {
@@ -202,12 +203,14 @@ type PostMessage struct {
 // swagger:model SendMessageRequestBody
 type PostRequestBody struct {
 	// required: true
-	Message    PostMessage `json:"message"`
-	to         *mail.Address
-	from       *mail.Address
-	replyTo    *mail.Address
-	publicKey  crypto.PublicKey
-	encryption byte
+	Message   PostMessage `json:"message"`
+	to        *mail.Address
+	from      *mail.Address
+	replyTo   *mail.Address
+	publicKey crypto.PublicKey
+	// encryption method to use
+	// required: false
+	encryption byte `json:"encryption-method"`
 }
 
 func checkForEmpties(msg PostMessage) error {

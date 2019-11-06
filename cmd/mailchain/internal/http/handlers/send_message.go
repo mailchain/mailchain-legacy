@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
@@ -256,9 +257,14 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 	// TODO: be more general when getting key from hex
 	structToBytes := new(bytes.Buffer)
 	json.NewEncoder(structToBytes).Encode(p.Message)
-	encodeMessage := structToBytes.Bytes()
+	encodeMessage := hexutil.Encode(structToBytes.Bytes())
 
-	p.publicKey, err = secp256k1.PublicKeyFromBytes(encodeMessage)
+	encodeMessageHex, err := hexutil.Decode(encodeMessage)
+	if err != nil {
+		return errors.WithMessage(err, "invalid `data`")
+	}
+
+	p.publicKey, err = secp256k1.PublicKeyFromBytes(encodeMessageHex.PublicKey)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
 	}

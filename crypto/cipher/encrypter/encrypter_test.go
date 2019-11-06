@@ -19,13 +19,14 @@ import (
 
 	crypto "github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
+	"github.com/mailchain/mailchain/crypto/cipher/nacl"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewEnvelope(t *testing.T) {
+func TestGetEnrypter(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
-		encrypter string
+		encrypter byte
 	}
 	tests := []struct {
 		name    string
@@ -36,7 +37,7 @@ func TestNewEnvelope(t *testing.T) {
 		{
 			"invalid",
 			args{
-				"",
+				0x0,
 			},
 			nil,
 			true,
@@ -44,9 +45,17 @@ func TestNewEnvelope(t *testing.T) {
 		{
 			"aes",
 			args{
-				"aes256cbc",
+				crypto.AES256CBC,
 			},
 			aes256cbc.NewEncrypter(),
+			false,
+		},
+		{
+			"nacl",
+			args{
+				crypto.NACL,
+			},
+			nacl.NewEncrypter(),
 			false,
 		},
 	}

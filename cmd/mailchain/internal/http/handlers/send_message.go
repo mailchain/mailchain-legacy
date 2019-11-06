@@ -207,7 +207,7 @@ type PostRequestBody struct {
 	from       *mail.Address
 	replyTo    *mail.Address
 	publicKey  crypto.PublicKey
-	encryption string
+	encryption byte
 }
 
 func checkForEmpties(msg PostMessage) error {

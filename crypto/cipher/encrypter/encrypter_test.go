@@ -17,29 +17,49 @@ package encrypter
 import (
 	"testing"
 
+	crypto "github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAesGetEncrypter(t *testing.T) {
+func TestNewEnvelope(t *testing.T) {
 	assert := assert.New(t)
-	method := "aes256cbc"
-	encrypter, err := GetEncrypter(method)
-	assert.NotNil(encrypter)
-	assert.NoError(err)
-}
-
-func TestNalcGetEncrypter(t *testing.T) {
-	assert := assert.New(t)
-	method := "nalc"
-	encrypter, err := GetEncrypter(method)
-	assert.NotNil(encrypter)
-	assert.NoError(err)
-}
-
-func TestFailGetEncrypter(t *testing.T) {
-	assert := assert.New(t)
-	method := "fail"
-	encrypter, err := GetEncrypter(method)
-	assert.Error(err)
-	assert.Nil(encrypter)
+	type args struct {
+		encrypter string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    crypto.Encrypter
+		wantErr bool
+	}{
+		{
+			"invalid",
+			args{
+				"",
+			},
+			nil,
+			true,
+		},
+		{
+			"aes",
+			args{
+				"aes256cbc",
+			},
+			aes256cbc.NewEncrypter(),
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetEncrypter(tt.args.encrypter)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetEncrypter() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.IsType(tt.want, got) {
+				t.Errorf("GetEncrypter() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

@@ -97,7 +97,6 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `encrypter`")))
 		}
-
 		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network,
 			msg, req.Body.publicKey,
 			encrypter, messageSender, sent, signer, envelope.Kind0x01); err != nil {

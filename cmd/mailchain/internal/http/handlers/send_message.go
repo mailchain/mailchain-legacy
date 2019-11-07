@@ -93,7 +93,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
 			return
 		}
-		encrypter, err := encrypter.GetEncrypter(req.Body.encryption)
+		encrypter, err := encrypter.GetEncrypter(req.Body.Encryption)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `encrypter`")))
 		}
@@ -210,7 +210,7 @@ type PostRequestBody struct {
 	publicKey crypto.PublicKey
 	// encryption method to use
 	// required: false
-	encryption byte `json:"encryption-method"`
+	Encryption byte `json:"encryption-method"`
 }
 
 func checkForEmpties(msg PostMessage) error {

@@ -26,8 +26,6 @@ var SofiaPrivateKey crypto.PrivateKey     //nolint: gochecknoglobals
 var SofiaPublicKey crypto.PublicKey       //nolint: gochecknoglobals
 var CharlottePrivateKey crypto.PrivateKey //nolint: gochecknoglobals
 var CharlottePublicKey crypto.PublicKey   //nolint: gochecknoglobals
-var encodeSofiaPrivateKey []byte          //nolint: gochecknoglobals
-var encodeCharlottePublicKey []byte       //nolint: gochecknoglobals
 
 //nolint: gochecknoinits
 func init() {

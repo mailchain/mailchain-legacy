@@ -17,7 +17,7 @@ package commands
 import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper" // nolint: depguard
+	"github.com/spf13/viper" //nolint: depguard
 )
 
 func rootCmd(v *viper.Viper) (*cobra.Command, error) {

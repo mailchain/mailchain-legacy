@@ -24,6 +24,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// PathMessageID extract `message_id` from the url
 func PathMessageID(r *http.Request) (mail.ID, error) {
 	id, err := mail.FromHexString(mux.Vars(r)["message_id"])
 	if err != nil {

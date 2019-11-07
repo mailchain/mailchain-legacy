@@ -24,6 +24,7 @@ func (d DefaultStringSlice) Get() []string {
 	if d.store.IsSet(d.setting) {
 		return d.store.GetStringSlice(d.setting)
 	}
+
 	return d.def
 }
 

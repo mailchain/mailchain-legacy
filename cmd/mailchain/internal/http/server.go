@@ -27,9 +27,9 @@ import (
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
-	log "github.com/sirupsen/logrus" // nolint:depguard
+	log "github.com/sirupsen/logrus" //nolint:depguard
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper" // nolint:depguard
+	"github.com/spf13/viper" //nolint:depguard
 	"github.com/ttacon/chalk"
 	"github.com/urfave/negroni"
 )
@@ -62,7 +62,7 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 
 	api.HandleFunc("/addresses", handlers.GetAddresses(config.keystore)).Methods("GET")
 
-	api.HandleFunc("/messages", handlers.GetMessages(config.mailboxStateStore, config.receivers, config.keystore, deriveKeyOptions)).Methods("GET") // nolint:lll
+	api.HandleFunc("/messages", handlers.GetMessages(config.mailboxStateStore, config.receivers, config.keystore, deriveKeyOptions)).Methods("GET") //nolint:lll
 	api.HandleFunc("/messages", handlers.SendMessage(config.sentStore, config.senders, config.keystore, deriveKeyOptions)).Methods("POST")
 
 	api.HandleFunc("/messages/{message_id}/read", handlers.GetRead(config.mailboxStateStore)).Methods("GET")

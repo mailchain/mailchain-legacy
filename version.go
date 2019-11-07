@@ -14,7 +14,7 @@
 
 package mailchain
 
-// nolint: gochecknoglobals
+//nolint: gochecknoglobals
 var (
 	Version = "dev"
 	Commit  = "none"

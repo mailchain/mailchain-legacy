@@ -24,6 +24,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
@@ -77,11 +78,11 @@ func TestSendMessage(t *testing.T) {
 				protocols.Ethereum,
 				ethereum.Mainnet,
 				msg,
-				testutil.CharlottePublicKey,
+				secp256k1test.CharlottePublicKey,
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-uint64-bytes"), nil)
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-uint64-bytes"), nil)
 
 					return m
 				}(),
@@ -120,11 +121,11 @@ func TestSendMessage(t *testing.T) {
 					ID:   []byte("2c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471002c47eca011e32b52c71005ad8a8f75e1b44c9@mailchain"),
 					Body: []byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet."),
 				},
-				testutil.CharlottePublicKey,
+				secp256k1test.CharlottePublicKey,
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-uint64-bytes"), nil)
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-uint64-bytes"), nil)
 
 					return m
 				}(),
@@ -162,11 +163,11 @@ func TestSendMessage(t *testing.T) {
 					ID:   []byte("2c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471002c47eca011e32b52c71005ad8a8f75e1b44c9@mailchain"),
 					Body: []byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet."),
 				},
-				testutil.CharlottePublicKey,
+				secp256k1test.CharlottePublicKey,
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-uint64-bytes"), nil)
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-uint64-bytes"), nil)
 
 					return m
 				}(),
@@ -194,11 +195,11 @@ func TestSendMessage(t *testing.T) {
 				protocols.Ethereum,
 				ethereum.Mainnet,
 				msg,
-				testutil.CharlottePublicKey,
+				secp256k1test.CharlottePublicKey,
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-uint64-bytes"), nil)
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-uint64-bytes"), nil)
 
 					return m
 				}(),
@@ -227,10 +228,10 @@ func TestSendMessage(t *testing.T) {
 				protocols.Ethereum,
 				ethereum.Mainnet,
 				msg,
-				testutil.CharlottePublicKey,
+				secp256k1test.CharlottePublicKey,
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
 
 					return m
 				}(),
@@ -258,10 +259,10 @@ func TestSendMessage(t *testing.T) {
 				protocols.Ethereum,
 				ethereum.Mainnet,
 				msg,
-				testutil.CharlottePublicKey,
+				secp256k1test.CharlottePublicKey,
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
 
 					return m
 				}(),
@@ -289,10 +290,10 @@ func TestSendMessage(t *testing.T) {
 				protocols.Ethereum,
 				ethereum.Mainnet,
 				msg,
-				testutil.CharlottePublicKey,
+				secp256k1test.CharlottePublicKey,
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return([]byte("encrypted-message"), nil)
 
 					return m
 				}(),
@@ -320,10 +321,10 @@ func TestSendMessage(t *testing.T) {
 				protocols.Ethereum,
 				ethereum.Mainnet,
 				msg,
-				testutil.CharlottePublicKey,
+				secp256k1test.CharlottePublicKey,
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return(nil, errors.Errorf("failed"))
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.AssignableToTypeOf([]byte{})).Return(nil, errors.Errorf("failed"))
 
 					return m
 				}(),
@@ -350,7 +351,7 @@ func TestSendMessage(t *testing.T) {
 				protocols.Ethereum,
 				ethereum.Mainnet,
 				nil,
-				testutil.CharlottePublicKey,
+				secp256k1test.CharlottePublicKey,
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m

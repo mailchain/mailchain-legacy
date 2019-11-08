@@ -296,7 +296,7 @@ func Test_accountAddCmd(t *testing.T) {
 
 func Test_accountCmd(t *testing.T) {
 	type args struct {
-		config *settings.Base
+		config *settings.Root
 	}
 	tests := []struct {
 		name        string
@@ -310,7 +310,7 @@ func Test_accountCmd(t *testing.T) {
 		{
 			"success",
 			args{
-				func() *settings.Base {
+				func() *settings.Root {
 					v := viper.New()
 					config := settings.FromStore(v)
 					return config
@@ -325,7 +325,7 @@ func Test_accountCmd(t *testing.T) {
 		{
 			"err-keystore",
 			args{
-				func() *settings.Base {
+				func() *settings.Root {
 					v := viper.New()
 					v.Set("keystore.kind", "invalid")
 					config := settings.FromStore(v)

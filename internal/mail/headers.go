@@ -18,6 +18,7 @@ import (
 	"time"
 )
 
+// DefaultContentType value.
 const DefaultContentType = "text/plain; charset=\"UTF-8\""
 
 // NewHeaders create the headers for sending a new message

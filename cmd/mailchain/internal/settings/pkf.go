@@ -19,10 +19,12 @@ func publicKeyFinders(s values.Store) *PublicKeyFinders {
 	}
 }
 
+// PublicKeyFinders configuration element.
 type PublicKeyFinders struct {
 	clients map[string]PublicKeyFinderClient
 }
 
+// Produce `mailbox.PublicKeyFinder` based on configuration settings.
 func (s PublicKeyFinders) Produce(client string) (mailbox.PubKeyFinder, error) {
 	if client == "" {
 		return nil, nil
@@ -34,6 +36,7 @@ func (s PublicKeyFinders) Produce(client string) (mailbox.PubKeyFinder, error) {
 	return m.Produce()
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (s PublicKeyFinders) Output() output.Element {
 	elements := []output.Element{}
 	for _, c := range s.clients {

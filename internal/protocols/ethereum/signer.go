@@ -24,19 +24,23 @@ import (
 	"github.com/pkg/errors"
 )
 
+// SignerOptions options that can be set when signing an ethereum transaction.
 type SignerOptions struct {
 	Tx      *types.Transaction
 	ChainID *big.Int
 }
 
+// NewSigner returns a new ethereum signer that can be used to sign transactions.
 func NewSigner(privateKey crypto.PrivateKey) Signer {
 	return Signer{privateKey: privateKey}
 }
 
+// Signer for ethereum.
 type Signer struct {
 	privateKey crypto.PrivateKey
 }
 
+// Sign an ethereum transaction with the private key.
 func (e Signer) Sign(opts signer.Options) (signedTransaction interface{}, err error) {
 	if opts == nil {
 		return nil, errors.New("opts must not be nil")

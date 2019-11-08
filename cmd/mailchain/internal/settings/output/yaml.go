@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// ToYaml create a yaml output of the configuration. Tab size, comment out default values, or exclude default values are configurable options.
 func ToYaml(root Root, out io.Writer, tabsize int, commentDefaults, excludeDefaults bool) {
 	for _, em := range root.Elements {
 		yamlElement(em, out, tabsize, 0, commentDefaults, excludeDefaults)

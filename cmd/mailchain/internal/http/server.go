@@ -34,7 +34,8 @@ import (
 	"github.com/urfave/negroni"
 )
 
-func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
+// CreateRouter configure a router with all api resources.
+func CreateRouter(s *settings.Root, cmd *cobra.Command) (http.Handler, error) {
 	r := mux.NewRouter()
 	api := r.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/spec.json", handlers.GetSpec()).Methods("GET")
@@ -82,6 +83,7 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 	return r, nil
 }
 
+// SetupFlags created default flags and bind's the values to configuration settings.
 func SetupFlags(cmd *cobra.Command) error {
 	cmd.Flags().Int("port", defaults.Port, "Port to run server on")
 	cmd.Flags().Bool("cors-disabled", defaults.CORSDisabled, "Disable CORS on the server")
@@ -97,6 +99,7 @@ func SetupFlags(cmd *cobra.Command) error {
 	return nil
 }
 
+// CreateNegroni returns a server, with CORS and endpoints configured
 func CreateNegroni(config *settings.Server, router http.Handler) *negroni.Negroni {
 	n := negroni.New()
 

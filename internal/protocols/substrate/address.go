@@ -21,6 +21,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// SS58AddressFormat creates the address `[]byte` from substrate network and a public key.
 func SS58AddressFormat(network string, pubKey crypto.PublicKey) ([]byte, error) {
 	if err := validPublicKeyType(pubKey); err != nil {
 		return nil, errors.WithStack(err)

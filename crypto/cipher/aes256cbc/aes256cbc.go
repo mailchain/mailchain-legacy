@@ -12,5 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// package aes256cbc Advanced Encryption Standard, with a 256 bit key length, operating in the Chain Block Cipher mode (AES-256-CBC).
+// Package aes256cbc Advanced Encryption Standard, with a 256 bit key length, operating in the Chain Block Cipher mode (AES-256-CBC).
 package aes256cbc

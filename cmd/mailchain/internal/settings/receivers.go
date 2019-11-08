@@ -17,10 +17,12 @@ func receivers(s values.Store) *Receivers {
 	}
 }
 
+// Receivers configuration element.
 type Receivers struct {
 	clients map[string]ReceiverClient
 }
 
+// Produce `mailbox.Receiver` based on configuration settings.
 func (s Receivers) Produce(client string) (mailbox.Receiver, error) {
 	if client == "" {
 		return nil, nil
@@ -32,6 +34,7 @@ func (s Receivers) Produce(client string) (mailbox.Receiver, error) {
 	return m.Produce()
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (s Receivers) Output() output.Element {
 	elements := []output.Element{}
 	for _, c := range s.clients {

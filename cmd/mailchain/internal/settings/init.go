@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/viper"         //nolint: depguard
 )
 
+// InitStore creates and loads the configuration storage.
 func InitStore(v *viper.Viper, cfgFile, logLevel string, createFile bool) error {
 	if cfgFile == "" {
 		cfgFile = filepath.Join(defaults.MailchainHome(), defaults.ConfigFileName+"."+defaults.ConfigFileKind)

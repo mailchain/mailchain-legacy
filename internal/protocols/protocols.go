@@ -19,10 +19,13 @@ import (
 )
 
 const (
-	Ethereum  = "ethereum"
+	// Ethereum protocol name.
+	Ethereum = "ethereum"
+	// Substrate protocol name.
 	Substrate = "substrate"
 )
 
+// NetworkNames supported by protocol.
 func NetworkNames(protocol string) []string {
 	switch protocol {
 	case Ethereum:

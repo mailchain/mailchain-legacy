@@ -16,6 +16,7 @@ func (pk PrivateKey) Bytes() []byte {
 	return pk.key
 }
 
+// Kind is the type of private key.
 func (pk PrivateKey) Kind() string {
 	return crypto.ED25519
 }

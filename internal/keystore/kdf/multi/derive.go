@@ -19,6 +19,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// DeriveKey from the options provided create a storage key to securely store protocol private keys.
 func DeriveKey(options OptionsBuilders) (storageKey []byte, kdf string, err error) {
 	if options.Scrypt != nil {
 		storageKey, err = scrypt.DeriveKey(options.Scrypt)

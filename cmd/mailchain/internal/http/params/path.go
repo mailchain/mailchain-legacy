@@ -24,6 +24,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// PathMessageID extract `message_id` from the url
 func PathMessageID(r *http.Request) (mail.ID, error) {
 	id, err := mail.FromHexString(mux.Vars(r)["message_id"])
 	if err != nil {
@@ -35,10 +36,12 @@ func PathMessageID(r *http.Request) (mail.ID, error) {
 	return id, nil
 }
 
+// PathNetwork extract `network` from the url
 func PathNetwork(r *http.Request) string {
 	return strings.ToLower(mux.Vars(r)["network"])
 }
 
+// PathProtocol extract `protocol` from the url
 func PathProtocol(r *http.Request) (string, error) {
 	v := strings.ToLower(mux.Vars(r)["protocol"])
 	if v == "" {
@@ -47,6 +50,7 @@ func PathProtocol(r *http.Request) (string, error) {
 	return v, nil
 }
 
+// PathAddress extract `address` from the url
 func PathAddress(r *http.Request, protocol string) ([]byte, error) {
 	addr := strings.ToLower(mux.Vars(r)["address"])
 	if addr == "" {

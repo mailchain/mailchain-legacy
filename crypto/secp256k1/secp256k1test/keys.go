@@ -8,10 +8,14 @@ import (
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 )
 
-var SofiaPrivateKey crypto.PrivateKey     //nolint: gochecknoglobals
-var SofiaPublicKey crypto.PublicKey       //nolint: gochecknoglobals
+// SofiaPrivateKey secp256k1 key for testing purposes. Key is compromised do not use on mainnet's.
+var SofiaPrivateKey crypto.PrivateKey //nolint: gochecknoglobals
+// SofiaPublicKey secp256k1 key for testing purposes. Key is compromised do not use on mainnet's.
+var SofiaPublicKey crypto.PublicKey //nolint: gochecknoglobals
+// CharlottePrivateKey secp256k1 key for testing purposes. Key is compromised do not use on mainnet's.
 var CharlottePrivateKey crypto.PrivateKey //nolint: gochecknoglobals
-var CharlottePublicKey crypto.PublicKey   //nolint: gochecknoglobals
+// CharlottePublicKey secp256k1 key for testing purposes. Key is compromised do not use on mainnet's.
+var CharlottePublicKey crypto.PublicKey //nolint: gochecknoglobals
 
 //nolint: gochecknoinits
 func init() {

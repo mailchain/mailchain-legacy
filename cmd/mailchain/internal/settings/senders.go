@@ -22,10 +22,12 @@ func senders(s values.Store) *Senders {
 	}
 }
 
+// Senders configuration element.
 type Senders struct {
 	clients map[string]SenderClient
 }
 
+// Produce `sender.Message` based on configuration settings.
 func (s Senders) Produce(client string) (sender.Message, error) {
 	if client == "" {
 		return nil, nil
@@ -37,6 +39,7 @@ func (s Senders) Produce(client string) (sender.Message, error) {
 	return m.Produce()
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (s Senders) Output() output.Element {
 	elements := []output.Element{}
 	for _, c := range s.clients {

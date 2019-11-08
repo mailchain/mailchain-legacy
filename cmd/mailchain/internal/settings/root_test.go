@@ -49,7 +49,7 @@ func TestFromStore(t *testing.T) {
 	}
 }
 
-func TestBase_ToYaml(t *testing.T) {
+func TestRoot_ToYaml(t *testing.T) {
 	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()

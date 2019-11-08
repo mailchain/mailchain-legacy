@@ -16,12 +16,14 @@ package scrypt
 
 import "golang.org/x/crypto/scrypt"
 
+// DeriveKey from the options provided.
 func DeriveKey(o []DeriveOptionsBuilder) ([]byte, error) {
 	opts := &DeriveOpts{}
 	apply(opts, o)
 	return scrypt.Key([]byte(opts.Passphrase), opts.Salt, opts.N, opts.R, opts.P, opts.Len)
 }
 
+// CreateOptions that can be stored.
 func CreateOptions(o []DeriveOptionsBuilder) *DeriveOpts {
 	opts := &DeriveOpts{}
 	apply(opts, o)

@@ -36,6 +36,7 @@ func (f FileStore) HasAddress(in []byte) bool {
 	return true
 }
 
+// GetPublicKeys that are stored on disk.
 func (f FileStore) GetPublicKeys() ([]crypto.PublicKey, error) {
 	rawKeys, err := f.getEncryptedKeys()
 	if err != nil {

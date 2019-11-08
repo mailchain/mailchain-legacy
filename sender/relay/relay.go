@@ -13,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Send a transaction via the relay.
 func (c Client) Send(ctx context.Context, network string, to, from, data []byte, signer signer.Signer, opts sender.SendOpts) error {
 	s, ok := c.senders[network]
 	if !ok {

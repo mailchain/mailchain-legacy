@@ -22,6 +22,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// FromPublicKey creates an address from public key.
 func FromPublicKey(pubKey crypto.PublicKey, protocol, network string) (address []byte, err error) {
 	switch protocol {
 	case protocols.Ethereum:

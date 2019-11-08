@@ -8,6 +8,7 @@ import (
 	relayer "github.com/mailchain/mailchain/sender/relay"
 )
 
+// RelaySender configuration element
 type RelaySender struct {
 	EnabledProtocolNetworks values.StringSlice
 	BaseURL                 values.String
@@ -28,6 +29,7 @@ func relaySender(s values.Store, network string) *RelaySender {
 	}
 }
 
+// Supports a map of what protocol and network combinations are supported.
 func (r RelaySender) Supports() map[string]bool {
 	m := map[string]bool{}
 	for _, np := range r.EnabledProtocolNetworks.Get() {
@@ -36,10 +38,12 @@ func (r RelaySender) Supports() map[string]bool {
 	return m
 }
 
+// Produce `sender.Message` based on configuration settings.
 func (r RelaySender) Produce() (sender.Message, error) {
 	return relayer.NewClient(r.BaseURL.Get())
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (r RelaySender) Output() output.Element {
 	return output.Element{
 		FullName: "senders.ethereum-relay",

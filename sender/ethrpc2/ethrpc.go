@@ -21,11 +21,13 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
+// Options to use when sending an ethereum transaction.
 type Options struct {
 	Tx      *types.Transaction
 	ChainID *big.Int
 }
 
+// New ethereum RPC2 sender is created that dials the address.
 func New(address string) (*EthRPC2, error) {
 	client, err := ethclient.Dial(address)
 	if err != nil {
@@ -34,6 +36,7 @@ func New(address string) (*EthRPC2, error) {
 	return &EthRPC2{client: client}, nil
 }
 
+// EthRPC2 ethereum JSON-RPC2 client that is used to send transactions.
 type EthRPC2 struct {
 	client Client
 }

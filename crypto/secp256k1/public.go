@@ -89,6 +89,7 @@ func PublicKeyFromHex(input string) (crypto.PublicKey, error) {
 	}
 }
 
+// ECIES returns an ECIES representation of the public key.
 func (pk PublicKey) ECIES() (*ecies.PublicKey, error) {
 	rpk, err := ethcrypto.DecompressPubkey(pk.Bytes())
 	if err != nil {

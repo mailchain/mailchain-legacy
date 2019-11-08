@@ -38,12 +38,12 @@ func rootCmd() (*cobra.Command, error) {
 			)
 			if err != nil {
 				return err
-			} 
+			}
 			r.HandleFunc("/", handlers.PostHandler(base, store, stores.SizeMegabyte*2)).Methods("POST")
 
 			n := negroni.New()
 			n.UseHandler(r)
-			port, err:=cmd.Flags().GetInt("port")
+			port, err := cmd.Flags().GetInt("port")
 			if err != nil {
 				return err
 			}

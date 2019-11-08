@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate mockgen -source=cipher.go -package=ciphertest -destination=./ciphertest/cipher_mock.go
-package cipher
+package cipher //go:generate mockgen -source=cipher.go -package=ciphertest -destination=./ciphertest/cipher_mock.go
 
 import (
 	"github.com/mailchain/mailchain/crypto"

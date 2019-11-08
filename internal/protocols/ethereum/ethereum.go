@@ -14,15 +14,21 @@
 
 package ethereum
 
+// Networks supported by ethereum package.
 func Networks() []string {
 	return []string{Goerli, Kovan, Mainnet, Rinkeby, Ropsten}
 }
 
 // Ethereum
 const (
-	Goerli  = "goerli"
-	Kovan   = "kovan"
+	// Goerli network name.
+	Goerli = "goerli"
+	// Kovan network name.
+	Kovan = "kovan"
+	// Mainnet network name.
 	Mainnet = "mainnet"
+	// Rinkeby network name.
 	Rinkeby = "rinkeby"
+	// Ropsten network name.
 	Ropsten = "ropsten"
 )

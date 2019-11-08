@@ -1,5 +1,4 @@
-//nolint: dupl
-package settings
+package settings //nolint: dupl
 
 import (
 	"github.com/mailchain/mailchain"
@@ -10,6 +9,7 @@ import (
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 )
 
+// EtherscanReceiver configuration element.
 type EtherscanReceiver struct {
 	kind                    string
 	EnabledProtocolNetworks values.StringSlice
@@ -40,6 +40,7 @@ func etherscanReceiverAny(s values.Store, kind string) *EtherscanReceiver {
 	}
 }
 
+// Supports a map of what protocol and network combinations are supported.
 func (r EtherscanReceiver) Supports() map[string]bool {
 	m := map[string]bool{}
 	for _, np := range r.EnabledProtocolNetworks.Get() {
@@ -48,10 +49,12 @@ func (r EtherscanReceiver) Supports() map[string]bool {
 	return m
 }
 
+// Produce `mailbox.Receiver` based on configuration settings.
 func (r EtherscanReceiver) Produce() (mailbox.Receiver, error) {
 	return etherscan.NewAPIClient(r.APIKey.Get())
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (r EtherscanReceiver) Output() output.Element {
 	return output.Element{
 		FullName: r.kind,

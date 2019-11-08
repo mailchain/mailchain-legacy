@@ -21,8 +21,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
-	"github.com/mailchain/mailchain/internal/testutil"
 )
 
 func TestNewSigner(t *testing.T) {
@@ -37,9 +37,9 @@ func TestNewSigner(t *testing.T) {
 		{
 			"success",
 			args{
-				testutil.CharlottePrivateKey,
+				secp256k1test.CharlottePrivateKey,
 			},
-			Signer{testutil.CharlottePrivateKey},
+			Signer{secp256k1test.CharlottePrivateKey},
 		},
 	}
 	for _, tt := range tests {
@@ -79,7 +79,7 @@ func TestSigner_Sign(t *testing.T) {
 		{
 			"err-invalid-SignerOptions",
 			fields{
-				testutil.CharlottePrivateKey,
+				secp256k1test.CharlottePrivateKey,
 			},
 			args{
 				func() interface{} {
@@ -95,7 +95,7 @@ func TestSigner_Sign(t *testing.T) {
 		{
 			"success-SignerOptions",
 			fields{
-				testutil.CharlottePrivateKey,
+				secp256k1test.CharlottePrivateKey,
 			},
 			args{
 				SignerOptions{
@@ -109,7 +109,7 @@ func TestSigner_Sign(t *testing.T) {
 		{
 			"success-SignerOptions-chainid-nil",
 			fields{
-				testutil.CharlottePrivateKey,
+				secp256k1test.CharlottePrivateKey,
 			},
 			args{
 				SignerOptions{

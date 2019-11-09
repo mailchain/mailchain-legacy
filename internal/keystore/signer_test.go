@@ -43,7 +43,10 @@ func TestSigner(t *testing.T) {
 				protocols.Ethereum,
 				secp256k1test.CharlottePrivateKey,
 			},
-			ethereum.NewSigner(secp256k1test.CharlottePrivateKey),
+			func() signer.Signer {
+				m, _ := ethereum.NewSigner(secp256k1test.CharlottePrivateKey)
+				return m
+			}(),
 			false,
 		},
 		{

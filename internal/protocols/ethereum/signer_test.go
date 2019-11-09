@@ -16,35 +16,54 @@ package ethereum
 
 import (
 	"math/big"
-	"reflect"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewSigner(t *testing.T) {
+	assert := assert.New(t)
 	type args struct {
 		privateKey crypto.PrivateKey
 	}
 	tests := []struct {
-		name string
-		args args
-		want Signer
+		name    string
+		args    args
+		want    *Signer
+		wantErr bool
 	}{
 		{
 			"success",
 			args{
 				secp256k1test.CharlottePrivateKey,
 			},
-			Signer{secp256k1test.CharlottePrivateKey},
+			&Signer{
+				secp256k1test.CharlottePrivateKey,
+			},
+			false,
+		},
+		{
+			"invalid-key",
+			args{
+				ed25519test.CharlottePrivateKey,
+			},
+			nil,
+			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewSigner(tt.args.privateKey); !reflect.DeepEqual(got, tt.want) {
+			got, err := NewSigner(tt.args.privateKey)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewSigner() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if !assert.Equal(tt.want, got) {
 				t.Errorf("NewSigner() = %v, want %v", got, tt.want)
 			}
 		})
@@ -132,6 +151,48 @@ func TestSigner_Sign(t *testing.T) {
 			}
 			if (gotSignedTransaction == nil) != tt.wantNil {
 				t.Errorf("Signer.Sign() = %v, wantErr %v", gotSignedTransaction, tt.wantNil)
+				return
+			}
+		})
+	}
+}
+
+func Test_validatePrivateKeyType(t *testing.T) {
+	type args struct {
+		pk crypto.PrivateKey
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			"success-secp256k1-charlotte",
+			args{
+				secp256k1test.CharlottePrivateKey,
+			},
+			false,
+		},
+		{
+			"err-ed25519-charlotte",
+			args{
+				ed25519test.CharlottePrivateKey,
+			},
+			true,
+		},
+		{
+			"err-nil",
+			args{
+				nil,
+			},
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validatePrivateKeyType(tt.args.pk)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("validatePrivateKeyType() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 		})

@@ -121,42 +121,42 @@ func TestDecrypter_Decrypt(t *testing.T) {
 }
 
 func Test_validatePrivateKeyType(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		pk crypto.PrivateKey
 	}
 	tests := []struct {
 		name    string
 		args    args
-		want    []byte
 		wantErr bool
 	}{
 		{
-			"success-ed25519-sofia",
+			"success-ed25519-charlotte",
 			args{
 				ed25519test.CharlottePrivateKey,
 			},
-			[]byte{0x2e, 0x32, 0x2f, 0x87, 0x40, 0xc6, 0x1, 0x72, 0x11, 0x1a, 0xc8, 0xea, 0xdc, 0xdd, 0xa2, 0x51, 0x2f, 0x90, 0xd0, 0x6d, 0xe, 0x50, 0x3e, 0xf1, 0x89, 0x97, 0x9a, 0x15, 0x9b, 0xec, 0xe1, 0xe8},
 			false,
 		},
 		{
-			"err-secp256k1-sofia",
+			"err-secp256k1-charlotte",
 			args{
 				secp256k1test.CharlottePrivateKey,
 			},
-			nil,
+			true,
+		},
+		{
+			"err-nil",
+			args{
+				nil,
+			},
 			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := validatePrivateKeyType(tt.args.pk)
+			err := validatePrivateKeyType(tt.args.pk)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("validatePrivateKeyType() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if !assert.Equal(tt.want, got) {
-				t.Errorf("validatePrivateKeyType() = %v, want %v", got, tt.want)
 			}
 		})
 	}

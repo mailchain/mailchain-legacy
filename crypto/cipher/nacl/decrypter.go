@@ -9,8 +9,7 @@ import (
 
 // NewDecrypter create a new decrypter attaching the private key to it
 func NewDecrypter(privateKey crypto.PrivateKey) (*Decrypter, error) {
-	_, err := validatePrivateKeyType(privateKey)
-	if err != nil {
+	if err := validatePrivateKeyType(privateKey); err != nil {
 		return nil, errors.WithStack(err)
 	}
 
@@ -24,19 +23,14 @@ type Decrypter struct {
 
 // Decrypt data using recipient private key with AES in CBC mode.
 func (d Decrypter) Decrypt(data cipher.EncryptedContent) (cipher.PlainContent, error) {
-	privKeyBytes, err := validatePrivateKeyType(d.privateKey)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	return easyOpen(data, privKeyBytes)
+	return easyOpen(data, d.privateKey.Bytes()[32:])
 }
 
-func validatePrivateKeyType(pk crypto.PrivateKey) ([]byte, error) {
-	switch pk := pk.(type) {
+func validatePrivateKeyType(pk crypto.PrivateKey) error {
+	switch pk.(type) {
 	case ed25519.PrivateKey, *ed25519.PrivateKey:
-		return pk.Bytes()[32:], nil
+		return nil
 	default:
-		return nil, errors.Errorf("invalid public key type for nacl encryption")
+		return errors.Errorf("invalid public key type for nacl encryption")
 	}
 }

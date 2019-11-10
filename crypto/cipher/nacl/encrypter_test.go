@@ -2,6 +2,7 @@ package nacl
 
 import (
 	"bytes"
+	"crypto/rand"
 	"io"
 	"testing"
 
@@ -10,8 +11,55 @@ import (
 	"github.com/mailchain/mailchain/crypto/ed25519"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestNewEncrypter(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		publicKey crypto.PublicKey
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Encrypter
+		wantErr bool
+	}{
+		{
+			"success",
+			args{
+				ed25519test.CharlottePublicKey,
+			},
+			&Encrypter{
+				rand:      rand.Reader,
+				publicKey: ed25519test.CharlottePublicKey,
+			},
+			false,
+		},
+		{
+			"invalid-key",
+			args{
+				secp256k1test.CharlottePublicKey,
+			},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewEncrypter(tt.args.publicKey)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewEncrypter() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("NewEncrypter() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
 func Test_validatePublicKeyType(t *testing.T) {
 	type args struct {
@@ -49,11 +97,11 @@ func Test_validatePublicKeyType(t *testing.T) {
 func TestEncrypter_Encrypt(t *testing.T) {
 	assert := assert.New(t)
 	type fields struct {
-		rand io.Reader
+		rand      io.Reader
+		publicKey crypto.PublicKey
 	}
 	type args struct {
-		recipientPublicKey crypto.PublicKey
-		message            cipher.PlainContent
+		message cipher.PlainContent
 	}
 	tests := []struct {
 		name    string
@@ -66,33 +114,34 @@ func TestEncrypter_Encrypt(t *testing.T) {
 			"success-charlotte",
 			fields{
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
+				ed25519test.CharlottePublicKey,
 			},
 			args{
-				ed25519test.CharlottePublicKey,
 				[]byte("message"),
 			},
 			cipher.EncryptedContent{0x2a, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x5b, 0x19, 0x83, 0xe5, 0x6e, 0x7f, 0xed, 0xfe, 0xbb, 0xd0, 0x70, 0x34, 0xce, 0x25, 0x49, 0x76, 0xa3, 0x50, 0x78, 0x91, 0x18, 0xe6, 0xe3},
 			false,
 		},
 		{
-			"err-key-type",
+			"success-sofia",
 			fields{
-				nil,
+				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
+				ed25519test.SofiaPublicKey,
 			},
 			args{
-				secp256k1.PublicKey{},
-				[]byte("message"),
+				[]byte("egassem"),
 			},
-			nil,
-			true,
+			cipher.EncryptedContent{0x2a, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0xff, 0xb3, 0x7f, 0x9b, 0x80, 0xe9, 0x85, 0x1f, 0x47, 0xfd, 0xb6, 0xdf, 0x1a, 0x94, 0xc4, 0x7b, 0x92, 0x91, 0x34, 0xf7, 0x76, 0x7e, 0xd4},
+			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := Encrypter{
-				rand: tt.fields.rand,
+				rand:      tt.fields.rand,
+				publicKey: tt.fields.publicKey,
 			}
-			got, err := e.Encrypt(tt.args.recipientPublicKey, tt.args.message)
+			got, err := e.Encrypt(tt.args.message)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Encrypter.Encrypt() error = %v, wantErr %v", err, tt.wantErr)
 				return

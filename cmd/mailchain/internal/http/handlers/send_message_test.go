@@ -22,8 +22,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/internal/address/addresstest"
 	"github.com/mailchain/mailchain/encoding"
+	"github.com/mailchain/mailchain/internal/address/addresstest"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/sender"

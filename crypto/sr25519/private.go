@@ -8,7 +8,6 @@ import (
 
 	"github.com/gtank/merlin"
 	r255 "github.com/gtank/ristreto255"
-	"golang.org/x/crypto/ed25519"
 )
 
 type MiniSecretKey struct {
@@ -22,7 +21,10 @@ type PrivateKey struct {
 
 // Bytes returns the byte representation of the private key
 func (pk PrivateKey) Bytes() []byte {
-	return pk.key
+	return pk{
+		key,
+		nonce,
+	}
 }
 
 // Kind is the type of private key.

@@ -5,7 +5,7 @@ import (
 	"crypto/sha512"
 	"crypto/sr25519"
 
-	r255 "github.com/gtank/ristretto255"
+	r255 "github.com/developerfred/ristretto255"
 	"github.com/pkg/errors"
 )
 

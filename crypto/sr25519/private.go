@@ -4,8 +4,8 @@ import (
 	"crypto/rand"
 	"crypto/sha512"
 
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/developerfred/merlin"
+	"github.com/mailchain/mailchain/crypto"	
 	r255 "github.com/developerfred/ristretto255"
 )
 

@@ -6,7 +6,7 @@ import (
 
 	"github.com/mailchain/mailchain/crypto"
 
-	"github.com/gtank/merlin"
+	"github.com/developerfred/merlin"
 	r255 "github.com/gtank/ristretto255"
 )
 
@@ -17,14 +17,7 @@ type MiniSecretKey struct {
 type PrivateKey struct {
 	key   [32]byte
 	nonce [32]byte
-}
-
-// Bytes returns the byte representation of the private key
-func (pk PrivateKey) Bytes() []byte {
-	return pk{
-		key,
-		nonce,
-	}
+	Kind  [32]byte
 }
 
 // Kind is the type of private key.
@@ -157,4 +150,21 @@ func (s *MiniSecretKey) ExpandEd25519() *SecretKey {
 	copy(sk.nonce[:], h[32:])
 
 	return sk
+}
+
+// PrivateKeyFromBytes get a private key from seed []byte
+
+func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
+	switch len(privKey) {
+	case ed25519.SeedSize:
+		return &PrivateKey{key: privKey.ExpandUniform()}, nil
+	case ed25519.PrivateKeySize:
+		secret := NewMiniSecretKey(privKey)
+		pk := secret.ExpandUhiform()
+
+		return &PrivateKey{key: pk}
+	default:
+		return nil, erros.Errorf("sr25519: bad key length")
+	}
+
 }

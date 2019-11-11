@@ -7,7 +7,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 
 	"github.com/developerfred/merlin"
-	r255 "github.com/gtank/ristretto255"
+	r255 "github.com/developerfred/ristretto255"
 )
 
 type MiniSecretKey struct {

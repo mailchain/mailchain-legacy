@@ -5,8 +5,8 @@ import (
 	"crypto/sha512"
 
 	"github.com/developerfred/merlin"
-	"github.com/mailchain/mailchain/crypto"	
 	r255 "github.com/developerfred/ristretto255"
+	"github.com/mailchain/mailchain/crypto"
 )
 
 type MiniSecretKey struct {

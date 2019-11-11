@@ -7,8 +7,8 @@ require (
 	github.com/aws/aws-sdk-go v1.19.11
 	github.com/btcsuite/btcd v0.0.0-20190410025418-9bfb2ca0346b // indirect
 	github.com/cespare/cp v1.1.1 // indirect
-	github.com/developerfred/merlin v0.1.2
-	github.com/developerfred/ristretto255 v0.1.1
+	github.com/developerfred/merlin v0.1.2 // indirect
+	github.com/developerfred/ristretto255 v0.1.2 // indirect
 	github.com/docker/docker v1.13.1 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/elastic/gosigar v0.10.5 // indirect
@@ -40,7 +40,6 @@ require (
 	github.com/mr-tron/base58 v1.1.0
 	github.com/multiformats/go-multihash v0.0.1
 	github.com/nicksnyder/go-i18n v1.10.0 // indirect
-	github.com/noot/ristretto255 v0.1.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/oschwald/maxminddb-golang v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.4.0 // indirect

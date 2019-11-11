@@ -49,6 +49,10 @@ contributing changes.
 This project is for everyone. We ask that our users and contributors take a few
 minutes to review our [code of conduct](CODE_OF_CONDUCT.md).
 
+## Development Guide
+
+See [development guide](DEVELOPMENT_GUIDE.md) for information on getting started as a developer.
+
 ## License
 
 Copyright 2019, Finobo. All rights reserved.

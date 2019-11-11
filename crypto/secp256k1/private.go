@@ -84,3 +84,8 @@ func PrivateKeyFromHex(hexkey string) (*PrivateKey, error) {
 	}
 	return PrivateKeyFromBytes(b)
 }
+
+// Sign - return signature and byte
+func Sing(message []byte) (signature []byte, err error) {
+	message, err := hex.DecodeString(message)
+}

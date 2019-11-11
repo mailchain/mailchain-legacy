@@ -1,8 +1,9 @@
 package sr25519
 
 import (
-	"github.com/mailchain/mailchain/internal/testutil"
 	"crypto/sr25519"
+
+	"github.com/mailchain/mailchain/internal/testutil"
 )
 
 var (

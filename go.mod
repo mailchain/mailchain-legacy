@@ -7,8 +7,8 @@ require (
 	github.com/aws/aws-sdk-go v1.19.11
 	github.com/btcsuite/btcd v0.0.0-20190410025418-9bfb2ca0346b // indirect
 	github.com/cespare/cp v1.1.1 // indirect
-	github.com/developerfred/ristretto255 v0.1.1 // indirect
-	github.com/developerfred/merlin v0.1.1 // indirect
+	github.com/developerfred/merlin v0.1.2
+	github.com/developerfred/ristretto255 v0.1.1
 	github.com/docker/docker v1.13.1 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/elastic/gosigar v0.10.5 // indirect
@@ -22,6 +22,7 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.1
 	github.com/graph-gophers/graphql-go v0.0.0-20190902214650-641ae197eec7 // indirect
+	github.com/gtank/ristretto255 v0.1.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/huin/goupnp v1.0.0 // indirect
@@ -33,13 +34,13 @@ require (
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
-	github.com/mimoo/StrobeGo v0.0.0-20181016162300-f8f6d4d2b643 // indirect
 	github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/mr-tron/base58 v1.1.0
 	github.com/multiformats/go-multihash v0.0.1
 	github.com/nicksnyder/go-i18n v1.10.0 // indirect
+	github.com/noot/ristretto255 v0.1.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.1 // indirect
 	github.com/oschwald/maxminddb-golang v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.4.0 // indirect

@@ -31,12 +31,20 @@ type EncryptedContent []byte
 // PlainContent typed version of byte array that holds plain data
 type PlainContent []byte
 
-// Decrypter will decrypt data using specified method
+// A Decrypter uses the PrivateKey to decrypt the supplied data.
+//
+// The decryption method used is dependant on the implementation and
+// must check that the data can be decrypted before continuing.
+// Returned data should be the plain bytes that were supplied
+// originally to the Encrypter.
 type Decrypter interface {
 	Decrypt(EncryptedContent) (PlainContent, error)
 }
 
-// Encrypter will encrypt data using public key
+// An Encrypt uses the PublicKey to encrypt the supplied data.
+// The encryption method used is dependant on the implementation and must be included in the response.
+// Returned encrypted data must include what encryption method was used as the first byte.
+// The data can be decrypted using the corresponding PrivateKey and Decrypter method.
 type Encrypter interface {
-	Encrypt(pub crypto.PublicKey, plain PlainContent) (EncryptedContent, error)
+	Encrypt(pubKey crypto.PublicKey, plain PlainContent) (EncryptedContent, error)
 }

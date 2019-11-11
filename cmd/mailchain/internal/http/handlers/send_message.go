@@ -80,7 +80,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"))
 			return
 		}
-		if !ks.HasAddress(from) {
+		if !ks.HasAddress(from, req.Protocol, req.Network) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Body.Message.Headers.From))
 			return
 		}

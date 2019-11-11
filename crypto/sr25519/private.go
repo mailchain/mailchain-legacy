@@ -5,7 +5,6 @@ import (
 	"crypto/sha512"
 
 	"github.com/mailchain/mailchain/crypto"
-
 	"github.com/developerfred/merlin"
 	r255 "github.com/developerfred/ristretto255"
 )

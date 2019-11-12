@@ -21,6 +21,15 @@ func (pk PrivateKey) Kind() string {
 	return crypto.ED25519
 }
 
+// Sign signs the message with the private key and returns the signature.
+func (pk PrivateKey) Sign(message []byte) (signature []byte, err error) {
+	if len(pk.key) != ed25519.PrivateKeySize {
+		return nil, errors.New("invalid key length")
+	}
+
+	return ed25519.Sign(pk.key, message), nil
+}
+
 // PublicKey return the public key that is derived from the private key
 func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	publicKey := make([]byte, ed25519.PublicKeySize)

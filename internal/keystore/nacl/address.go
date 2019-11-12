@@ -25,15 +25,9 @@ import (
 )
 
 // HasAddress check for the presence of the address in the store
-func (f FileStore) HasAddress(in []byte) bool {
-	fd, err := f.fs.Open(f.filename(in))
-	if err != nil {
-		return false
-	}
-
-	defer fd.Close()
-
-	return true
+func (f FileStore) HasAddress(searchAddress []byte, protocol, network string) bool {
+	_, err := f.getEncryptedKeyByAddress(searchAddress, protocol, network)
+	return err == nil
 }
 
 // GetPublicKeys that are stored on disk.

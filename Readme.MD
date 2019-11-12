@@ -19,7 +19,7 @@ This is the primary repo for the Mailchain development.
 The primary Mailchain repositories to be aware of are:
 
 * [mailchain](https://github.com/mailchain/mailchain): Main Mailchain repo, API and CLI
-* [mailchain-web](https://github.com/mailchain/mailchain-web): Inbox web client, the repository for https://inbox.mailchain.xyy/
+* [mailchain-web](https://github.com/mailchain/mailchain-web): Inbox web client, the repository for https://inbox.mailchain.xyz/
 * [docs.mailchain.xyz](https://github.com/mailchain/docs.mailchain.xyz): Documentation hosted at https://docs.mailchain.xyz
 * [mailchain-specification](https://github.com/mailchain/mailchain-specification): Original specification and design documents
 * [community](https://github.com/mailchain/community): We are building a community.
@@ -48,6 +48,10 @@ contributing changes.
 
 This project is for everyone. We ask that our users and contributors take a few
 minutes to review our [code of conduct](CODE_OF_CONDUCT.md).
+
+## Development Guide
+
+See [development guide](DEVELOPMENT_GUIDE.md) for information on getting started as a developer.
 
 ## License
 

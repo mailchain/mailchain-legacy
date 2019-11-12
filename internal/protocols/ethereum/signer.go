@@ -15,6 +15,7 @@
 package ethereum
 
 import (
+	"crypto/ecdsa"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/core/types"
@@ -31,8 +32,12 @@ type SignerOptions struct {
 }
 
 // NewSigner returns a new ethereum signer that can be used to sign transactions.
-func NewSigner(privateKey crypto.PrivateKey) Signer {
-	return Signer{privateKey: privateKey}
+func NewSigner(privateKey crypto.PrivateKey) (*Signer, error) {
+	if _, err := validatePrivateKeyType(privateKey); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return &Signer{privateKey: privateKey}, nil
 }
 
 // Signer for ethereum.
@@ -45,11 +50,8 @@ func (e Signer) Sign(opts signer.Options) (signedTransaction interface{}, err er
 	if opts == nil {
 		return nil, errors.New("opts must not be nil")
 	}
-	pk, ok := e.privateKey.(*secp256k1.PrivateKey)
-	if !ok {
-		return nil, errors.Errorf("invalid key type")
-	}
-	ecdsa, err := pk.ECDSA()
+
+	ecdsaPrivKey, err := validatePrivateKeyType(e.privateKey)
 	if err != nil {
 		return nil, err
 	}
@@ -58,10 +60,22 @@ func (e Signer) Sign(opts signer.Options) (signedTransaction interface{}, err er
 	case SignerOptions:
 		// Depending on the presence of the chain ID, sign with EIP155 or homestead
 		if opts.ChainID != nil {
-			return types.SignTx(opts.Tx, types.NewEIP155Signer(opts.ChainID), ecdsa)
+			return types.SignTx(opts.Tx, types.NewEIP155Signer(opts.ChainID), ecdsaPrivKey)
 		}
-		return types.SignTx(opts.Tx, types.HomesteadSigner{}, ecdsa)
+
+		return types.SignTx(opts.Tx, types.HomesteadSigner{}, ecdsaPrivKey)
 	default:
 		return nil, errors.New("invalid options for ethereum signing")
+	}
+}
+
+func validatePrivateKeyType(pk crypto.PrivateKey) (*ecdsa.PrivateKey, error) {
+	switch pk := pk.(type) {
+	case secp256k1.PrivateKey:
+		return pk.ECDSA()
+	case *secp256k1.PrivateKey:
+		return pk.ECDSA()
+	default:
+		return nil, errors.New("invalid key type")
 	}
 }

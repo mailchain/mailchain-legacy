@@ -47,11 +47,11 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 
 		encryptedTransactionData, err := hexutil.Decode(x.Input)
 		if err != nil {
-			return nil, errors.WithMessage(err, "can not decode `data`")
+			continue // invalid data should move to next record
 		}
 
 		if !bytes.HasPrefix(encryptedTransactionData, encoding.DataPrefix()) {
-			return nil, errors.New("missing `mailchain` prefix")
+			continue
 		}
 
 		res = append(res, encryptedTransactionData[len(encoding.DataPrefix()):])

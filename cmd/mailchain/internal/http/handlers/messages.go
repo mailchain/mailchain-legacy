@@ -61,7 +61,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			return
 		}
 
-		if !ks.HasAddress(req.addressBytes) {
+		if !ks.HasAddress(req.addressBytes, req.Protocol, req.Network) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for address"))
 			return
 		}

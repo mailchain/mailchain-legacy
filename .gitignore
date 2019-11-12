@@ -26,3 +26,4 @@ tmp
 
 # Debug
 strobe/debug.go
+.ionide

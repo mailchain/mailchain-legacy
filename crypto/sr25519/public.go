@@ -3,7 +3,6 @@ package sr25519
 import (
 	"crypto/ed25519"
 	"crypto/sha512"
-	"github.com/mailchain/mailchain/crypto/sr25519"
 
 	r255 "github.com/developerfred/ristretto255"
 	"github.com/pkg/errors"

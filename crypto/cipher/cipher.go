@@ -13,7 +13,6 @@
 // limitations under the License.
 
 // Package cipher collects common cryptographic constants and interfaces.
-
 package cipher //go:generate mockgen -source=cipher.go -package=ciphertest -destination=./ciphertest/cipher_mock.go
 
 import (
@@ -51,7 +50,8 @@ type Decrypter interface {
 	Decrypt(EncryptedContent) (PlainContent, error)
 }
 
-// An Encrypt uses the PublicKey to encrypt the supplied data.
+// An Encrypter uses the PublicKey to encrypt the supplied data.
+//
 // The encryption method used is dependant on the implementation and must be included in the response.
 // Returned encrypted data must include what encryption method was used as the first byte.
 // The data can be decrypted using the corresponding PrivateKey and Decrypter method.

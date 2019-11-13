@@ -38,9 +38,9 @@ openapi:
 	mailchain/goswagger-tool swagger generate spec -b ./cmd/mailchain/internal/http/handlers -o ./docs/openapi/spec.json
 
 	echo "\n""package handlers""\n" > $(OPENAPIFILE)
-	echo 'const _spec = `' >> $(OPENAPIFILE)
-	cat ./docs/openapi/spec.json | sed 's/`/¬/g' >> $(OPENAPIFILE)
-	echo '`'"\n" >>  $(OPENAPIFILE)
+	echo 'const spec = `' >> $(OPENAPIFILE)
+	cat ./docs/openapi/spec.json | sed 's/`/`+"`"+`/g' >> $(OPENAPIFILE)
+	echo '`' >>  $(OPENAPIFILE)
 
 	addlicense -l apache -c Finobo $(OPENAPIFILE)
 	rm -rf vendor

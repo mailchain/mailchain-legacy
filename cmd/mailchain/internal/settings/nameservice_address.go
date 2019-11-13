@@ -1,7 +1,7 @@
 package settings //nolint: dupl
 
 import (
-	"github.com/mailchain/mailchain"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
@@ -12,7 +12,7 @@ import (
 func addressNameServices(s values.Store) *AddressNameServices {
 	return &AddressNameServices{
 		clients: map[string]NameServiceAddressClient{
-			mailchain.Mailchain: mailchainAddressNameServices(s),
+			defaults.Mailchain: mailchainAddressNameServices(s),
 		},
 	}
 }

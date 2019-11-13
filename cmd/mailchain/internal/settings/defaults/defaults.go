@@ -18,22 +18,23 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/mailchain/mailchain"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 )
 
 const (
+	Mailchain = "mailchain"
+
 	// Empty default value.
 	Empty = ""
 	// KeystoreKind default value.
 	KeystoreKind = "nacl-filestore"
 	// SentStoreKind default value.
-	SentStoreKind = mailchain.Mailchain
+	SentStoreKind = Mailchain
 	// NameServiceAddressKind default value.
-	NameServiceAddressKind = mailchain.Mailchain
+	NameServiceAddressKind = Mailchain
 	// NameServiceDomainNameKind default value.
-	NameServiceDomainNameKind = mailchain.Mailchain
+	NameServiceDomainNameKind = Mailchain
 	// MailboxStateKind default value.
 	MailboxStateKind = "leveldb"
 	// ConfigFileName default value.

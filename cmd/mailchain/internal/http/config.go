@@ -75,6 +75,7 @@ func produceConfig(s *settings.Root) (*config, error) { //nolint: funlen
 		if err != nil {
 			return nil, errors.WithMessagef(err, "Could not get %q receivers", name)
 		}
+
 		for k, v := range protocolReceivers {
 			receivers[k] = v
 		}
@@ -83,6 +84,7 @@ func produceConfig(s *settings.Root) (*config, error) { //nolint: funlen
 		if err != nil {
 			return nil, errors.WithMessagef(err, "Could not get %q senders", name)
 		}
+
 		for k, v := range protocolSenders {
 			senders[k] = v
 		}

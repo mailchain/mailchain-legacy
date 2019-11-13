@@ -97,6 +97,7 @@ func (s LookupService) ResolveAddress(ctx context.Context, protocol, network str
 		type response struct {
 			Name string `json:"name"`
 		}
+
 		var okRes response
 		if err := json.NewDecoder(res.Body).Decode(&okRes); err != nil {
 			return "", err
@@ -109,6 +110,7 @@ func (s LookupService) ResolveAddress(ctx context.Context, protocol, network str
 		Message string `json:"message"`
 		Code    int    `json:"code"`
 	}
+
 	var errRes response
 	if err := json.NewDecoder(res.Body).Decode(&errRes); err != nil {
 		return "", err

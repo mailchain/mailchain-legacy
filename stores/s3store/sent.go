@@ -60,10 +60,12 @@ type Sent struct {
 	bucket   string
 }
 
+// Key of resource stored.
 func (h Sent) Key(messageID mail.ID, contentsHash, msg []byte) string {
 	return hex.EncodeToString(contentsHash)
 }
 
+// PutMessage stores the message in S3.
 func (h Sent) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers map[string]string) (
 	address, resource string, mli uint64, err error) {
 	if msg == nil {

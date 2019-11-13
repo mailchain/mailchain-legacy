@@ -82,6 +82,7 @@ func (s LookupService) ResolveName(ctx context.Context, protocol, network, domai
 	return nil, WrapError(errors.Errorf(errRes.Message))
 }
 
+// ResolveAddress looks up an address on the related protocol and network pair.
 func (s LookupService) ResolveAddress(ctx context.Context, protocol, network string, address []byte) (string, error) {
 	// {protocol}/{network}/address?address={address}
 	req, err := s.newRequest("GET", fmt.Sprintf("%s/%s/%s/address?address=%s", s.baseURL, protocol, network, common.BytesToAddress(address).Hex()), nil)

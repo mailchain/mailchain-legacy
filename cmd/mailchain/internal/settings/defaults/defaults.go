@@ -51,6 +51,13 @@ const (
 	SubstratePublicKeyFinder = "substrate-public-key-finder"
 )
 
+const (
+	ClientEtherscan       = "etherscan"
+	ClientEtherscanNoAuth = "etherscan-no-auth"
+	ClientEthereumRPC2    = "ethereum-rpc2"
+	ClientRelay           = "relay"
+)
+
 // KeystorePath default value.
 func KeystorePath() string {
 	return filepath.Join(MailchainHome(), ".keystore")

@@ -26,31 +26,25 @@ go-generate:
 .PHONY: generate
 generate: go-generate license	
 
+OPENAPIFILE := ./cmd/mailchain/internal/http/handlers/openapi.go
 openapi:
 	go mod vendor
 	rm -rf vendor/github.com/ethereum
+
 	docker run --rm -i \
 	-e GOPATH=/go \
 	-v $(CURDIR):/go/src/github.com/mailchain/mailchain \
 	-w /go/src/github.com/mailchain/mailchain \
 	mailchain/goswagger-tool swagger generate spec -b ./cmd/mailchain/internal/http/handlers -o ./docs/openapi/spec.json
 
-	echo "" >>  ./docs/openapi/spec.json
+	echo "\n""package handlers""\n" > $(OPENAPIFILE)
+	echo 'const _spec = `' >> $(OPENAPIFILE)
+	cat ./docs/openapi/spec.json | sed 's/`/¬/g' >> $(OPENAPIFILE)
+	echo '`'"\n" >>  $(OPENAPIFILE)
 
-	echo "package handlers" >  ./cmd/mailchain/internal/http/handlers/openapi.go
-	echo "" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
-	
-	echo "//nolint: gofmt" >> ./cmd/mailchain/internal/http/handlers/openapi.go
-	echo "//nolint: lll" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
-	echo "//nolint: funlen" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
-	echo 'func spec() string {' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
-	echo '  return `' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
-	cat ./docs/openapi/spec.json | sed 's/`/¬/g' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
-	echo '`' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
-	echo '}' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
-	addlicense -l apache -c Finobo ./cmd/mailchain/internal/http/handlers/openapi.go	
+	addlicense -l apache -c Finobo $(OPENAPIFILE)
 	rm -rf vendor
-	
+
 snapshot:
 	docker run --rm --privileged -v $(CURDIR):/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo goreleaser --snapshot --rm-dist
 

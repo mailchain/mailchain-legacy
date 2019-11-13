@@ -14,11 +14,7 @@
 
 package handlers
 
-//nolint: gofmt
-//nolint: lll
-//nolint: funlen
-func spec() string {
-  return `
+const spec = `
 {
   "consumes": [
     "application/json"
@@ -894,4 +890,3 @@ func spec() string {
   }
 }
 `
-}

@@ -18,7 +18,7 @@ import (
 	"log"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/commands"
-	"github.com/spf13/viper"
+	"github.com/spf13/viper" //nolint: depguard
 )
 
 func main() {
@@ -26,4 +26,3 @@ func main() {
 		log.Fatalln(err)
 	}
 }
- 

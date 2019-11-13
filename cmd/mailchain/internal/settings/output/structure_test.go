@@ -20,9 +20,9 @@ func TestElement_IsDefault(t *testing.T) {
 			"non-default-elements",
 			fields{
 				"name",
-				[]Attribute{Attribute{}, Attribute{}},
+				[]Attribute{{}, {}},
 				[]Element{
-					Element{}, Element{Attributes: []Attribute{Attribute{}, Attribute{IsDefault: true}}},
+					{}, {Attributes: []Attribute{{}, {IsDefault: true}}},
 				},
 			},
 			false,
@@ -31,7 +31,7 @@ func TestElement_IsDefault(t *testing.T) {
 			"non-default-attributes",
 			fields{
 				"name",
-				[]Attribute{Attribute{}, Attribute{IsDefault: true}},
+				[]Attribute{{}, {IsDefault: true}},
 				[]Element{},
 			},
 			false,
@@ -40,8 +40,8 @@ func TestElement_IsDefault(t *testing.T) {
 			"default-attributes",
 			fields{
 				"name",
-				[]Attribute{Attribute{IsDefault: true}},
-				[]Element{Element{}},
+				[]Attribute{{IsDefault: true}},
+				[]Element{{}},
 			},
 			true,
 		},
@@ -153,10 +153,10 @@ func TestElement_SortedAttributes(t *testing.T) {
 			"success",
 			fields{
 				"simple",
-				[]Attribute{Attribute{FullName: "D"}, Attribute{FullName: "F"}, Attribute{FullName: "A"}},
+				[]Attribute{{FullName: "D"}, {FullName: "F"}, {FullName: "A"}},
 				nil,
 			},
-			[]Attribute{Attribute{FullName: "A"}, Attribute{FullName: "D"}, Attribute{FullName: "F"}},
+			[]Attribute{{FullName: "A"}, {FullName: "D"}, {FullName: "F"}},
 		},
 	}
 	for _, tt := range tests {

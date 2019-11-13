@@ -12,6 +12,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Forward handle forward domain lookups where an address is looked up to find a domain name.
 func Forward(resolver nameservice.ForwardLookup) func(w http.ResponseWriter, r *http.Request) {
 	type response struct {
 		Address string `json:"address"`

@@ -12,6 +12,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Reverse handle forward domain lookups where a domain name is looked up to find an address.
 func Reverse(resolver nameservice.ReverseLookup) func(w http.ResponseWriter, r *http.Request) {
 	type response struct {
 		Name string `json:"name"`

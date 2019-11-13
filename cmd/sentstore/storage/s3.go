@@ -15,7 +15,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Implements the sent store using S3.
+// S3Store implements the sent store using S3.
 type S3Store struct {
 	headObjectFunc func(input *s3.HeadObjectInput) (*s3.HeadObjectOutput, error)
 	sent           stores.Sent

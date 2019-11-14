@@ -22,10 +22,11 @@ import (
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus" // nolint: depguard
-	"github.com/spf13/viper"         // nolint: depguard
+	log "github.com/sirupsen/logrus" //nolint: depguard
+	"github.com/spf13/viper"         //nolint: depguard
 )
 
+// InitStore creates and loads the configuration storage.
 func InitStore(v *viper.Viper, cfgFile, logLevel string, createFile bool) error {
 	if cfgFile == "" {
 		cfgFile = filepath.Join(defaults.MailchainHome(), defaults.ConfigFileName+"."+defaults.ConfigFileKind)

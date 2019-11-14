@@ -1,5 +1,4 @@
-// nolint: dupl
-package settings
+package settings //nolint: dupl
 
 import (
 	"github.com/mailchain/mailchain"
@@ -10,6 +9,7 @@ import (
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 )
 
+// EtherscanPublicKeyFinder configuration settings.
 type EtherscanPublicKeyFinder struct {
 	EnabledProtocolNetworks values.StringSlice
 	APIKey                  values.String
@@ -40,6 +40,7 @@ func etherscanPublicKeyFinderAny(s values.Store, kind string) *EtherscanPublicKe
 	}
 }
 
+// Supports a map of what protocol and network combinations are supported.
 func (r EtherscanPublicKeyFinder) Supports() map[string]bool {
 	m := map[string]bool{}
 	for _, np := range r.EnabledProtocolNetworks.Get() {
@@ -48,10 +49,12 @@ func (r EtherscanPublicKeyFinder) Supports() map[string]bool {
 	return m
 }
 
+// Produce `mailbox.PubKeyFinder` based on configuration settings.
 func (r EtherscanPublicKeyFinder) Produce() (mailbox.PubKeyFinder, error) {
 	return etherscan.NewAPIClient(r.APIKey.Get())
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (r EtherscanPublicKeyFinder) Output() output.Element {
 	return output.Element{
 		FullName: "public-key-finders." + r.kind,

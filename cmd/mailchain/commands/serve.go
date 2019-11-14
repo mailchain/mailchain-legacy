@@ -20,7 +20,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper" // nolint: depguard
+	"github.com/spf13/viper" //nolint: depguard
 	"github.com/ttacon/chalk"
 )
 

@@ -22,7 +22,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
 	"github.com/mailchain/mailchain/crypto/cipher/nacl"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,9 +42,9 @@ func TestDecrypter(t *testing.T) {
 			"aes256cbc",
 			args{
 				cipher.AES256CBC,
-				testutil.CharlottePrivateKey,
+				secp256k1test.CharlottePrivateKey,
 			},
-			aes256cbc.NewDecrypter(testutil.CharlottePrivateKey),
+			aes256cbc.NewDecrypter(secp256k1test.CharlottePrivateKey),
 			false,
 		},
 		{
@@ -63,7 +63,7 @@ func TestDecrypter(t *testing.T) {
 			"err",
 			args{
 				0xFF,
-				testutil.CharlottePrivateKey,
+				secp256k1test.CharlottePrivateKey,
 			},
 			nil,
 			true,

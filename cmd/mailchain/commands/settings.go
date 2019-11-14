@@ -19,7 +19,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func settingsCmd(config *settings.Base) *cobra.Command {
+func settingsCmd(config *settings.Root) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "settings",
 		Short: "Settings of the mailchain application",
@@ -28,7 +28,7 @@ func settingsCmd(config *settings.Base) *cobra.Command {
 	return cmd
 }
 
-func settingsViewAll(config *settings.Base) *cobra.Command {
+func settingsViewAll(config *settings.Root) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "view",
 		Short: "View the current config",

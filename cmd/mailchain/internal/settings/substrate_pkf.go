@@ -1,5 +1,4 @@
-// nolint: dupl
-package settings
+package settings //nolint: dupl
 
 import (
 	"fmt"
@@ -12,6 +11,7 @@ import (
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
+// SubstratePublicKeyFinder configuration element.
 type SubstratePublicKeyFinder struct {
 	EnabledProtocolNetworks values.StringSlice
 	kind                    string
@@ -38,6 +38,7 @@ func substratePublicKeyFinder(s values.Store) *SubstratePublicKeyFinder {
 	}
 }
 
+// Supports a map of what protocol and network combinations are supported.
 func (r SubstratePublicKeyFinder) Supports() map[string]bool {
 	m := map[string]bool{}
 	for _, np := range r.EnabledProtocolNetworks.Get() {
@@ -47,10 +48,12 @@ func (r SubstratePublicKeyFinder) Supports() map[string]bool {
 	return m
 }
 
+// Produce a `mailbox.PubKeyFinder` base on the configuration.
 func (r SubstratePublicKeyFinder) Produce() (mailbox.PubKeyFinder, error) {
 	return substrate.NewPublicKeyFinder(), nil
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (r SubstratePublicKeyFinder) Output() output.Element {
 	return output.Element{
 		FullName: "public-key-finders." + r.kind,

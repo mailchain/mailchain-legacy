@@ -40,9 +40,9 @@ openapi:
 	echo "package handlers" >  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo "" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	
-	echo "// nolint: gofmt" >> ./cmd/mailchain/internal/http/handlers/openapi.go
-	echo "// nolint: lll" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
-	echo "// nolint: funlen" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo "//nolint: gofmt" >> ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo "//nolint: lll" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
+	echo "//nolint: funlen" >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo 'func spec() string {' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo '  return `' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	cat ./docs/openapi/spec.json | sed 's/`/¬/g' >>  ./cmd/mailchain/internal/http/handlers/openapi.go

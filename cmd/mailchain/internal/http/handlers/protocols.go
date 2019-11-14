@@ -23,7 +23,7 @@ import (
 )
 
 // GetProtocols returns a handler get spec
-func GetProtocols(base *settings.Base) func(w http.ResponseWriter, r *http.Request) {
+func GetProtocols(base *settings.Root) func(w http.ResponseWriter, r *http.Request) {
 	res := GetProtocolsResponse{
 		Protocols: []GetProtocolsProtocol{},
 	}

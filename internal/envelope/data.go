@@ -21,10 +21,15 @@ import (
 )
 
 const (
-	Kind0x01 byte = 0x01 // Message locator
-	Kind0x50 byte = 0x50 // Alpha
+	// Kind0x01 envelope identifier for Message Location Identifier Envelope.
+	// The first byte of the envelope is used to identify which programmable envelope is used.
+	Kind0x01 byte = 0x01
+	// Kind0x50 envelope identifier for Alpha Envelope.
+	// The first byte of the envelope is used to identify which programmable envelope is used.
+	Kind0x50 byte = 0x50
 )
 
+// Data definition for programmable envelopes.
 type Data interface {
 	// URL returns the addressable location of the message, the URL may be encrypted requiring decrypter to be supplied.
 	URL(decrypter cipher.Decrypter) (*url.URL, error)
@@ -34,5 +39,6 @@ type Data interface {
 	// This can be used to verify the contents of the message have not been tampered with.
 	ContentsHash(decrypter cipher.Decrypter) ([]byte, error)
 	// Valid will verify the contents of the envelope.
+	// Checks the envelopes contents for no integrity issues which would prevent the envelope from being read.
 	Valid() error
 }

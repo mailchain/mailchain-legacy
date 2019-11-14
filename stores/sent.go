@@ -15,7 +15,6 @@
 package stores
 
 import (
-	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/internal/mail"
 )
 
@@ -26,11 +25,4 @@ type Sent interface {
 	// PutMessage should write the message contents to the underlying storage service. Return the final location information or any error.
 	PutMessage(messageID mail.ID, contentsHash, msg []byte, headers map[string]string) (address, resource string, mli uint64, err error)
 	Key(messageID mail.ID, contentsHash, msg []byte) string
-}
-
-func SentStoreNames() []string {
-	return []string{
-		mailchain.Mailchain,
-		mailchain.StoreS3,
-	}
 }

@@ -1,5 +1,4 @@
-// nolint: dupl
-package settings
+package settings //nolint: dupl
 
 import (
 	"github.com/mailchain/mailchain"
@@ -18,10 +17,12 @@ func domainNameServices(s values.Store) *DomainNameServices {
 	}
 }
 
+// DomainNameServices configuration element.
 type DomainNameServices struct {
 	clients map[string]NameServiceDomainClient
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (s DomainNameServices) Output() output.Element {
 	elements := []output.Element{}
 	for _, c := range s.clients {
@@ -33,6 +34,7 @@ func (s DomainNameServices) Output() output.Element {
 	}
 }
 
+// Produce `nameservice.ForwardLookup` based on configuration settings.
 func (s DomainNameServices) Produce(client string) (nameservice.ForwardLookup, error) {
 	if client == "" {
 		return nil, nil
@@ -59,15 +61,18 @@ func mailchainDomainNameServices(s values.Store) *MailchainDomainNameServices {
 	}
 }
 
+// MailchainDomainNameServices configuration element.
 type MailchainDomainNameServices struct {
 	BaseURL                 values.String
 	EnabledProtocolNetworks values.StringSlice
 }
 
+// Produce `nameservice.ForwardLookup` based on configuration settings.
 func (s MailchainDomainNameServices) Produce() (nameservice.ForwardLookup, error) {
 	return nameservice.NewLookupService(s.BaseURL.Get()), nil
 }
 
+// Supports a map of what protocol and network combinations are supported.
 func (s MailchainDomainNameServices) Supports() map[string]bool {
 	m := map[string]bool{}
 	for _, np := range s.EnabledProtocolNetworks.Get() {
@@ -76,6 +81,7 @@ func (s MailchainDomainNameServices) Supports() map[string]bool {
 	return m
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (s MailchainDomainNameServices) Output() output.Element {
 	return output.Element{
 		FullName: "nameservice-domain-name.mailchain",

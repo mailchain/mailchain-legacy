@@ -20,13 +20,16 @@ import (
 	"github.com/pkg/errors"
 )
 
+// NewPublicKeyFinder create a default substrate public key finder.
 func NewPublicKeyFinder() *PublicKeyFinder {
 	return &PublicKeyFinder{}
 }
 
+// PublicKeyFinder for substrate.
 type PublicKeyFinder struct {
 }
 
+// PublicKeyFromAddress returns the public key from the address.
 func (pkf *PublicKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) ([]byte, error) {
 	if protocol != "substrate" {
 		return nil, errors.New("protocol must be 'substrate'")

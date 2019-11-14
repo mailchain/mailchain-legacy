@@ -68,7 +68,7 @@ func TestFileStore_GetSigner(t *testing.T) {
 					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("test")},
 				},
 			},
-			ethereum.Signer{},
+			&ethereum.Signer{},
 			false,
 		},
 		{

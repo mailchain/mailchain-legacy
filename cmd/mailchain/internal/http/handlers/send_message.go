@@ -37,7 +37,7 @@ import (
 )
 
 // SendMessage handler http
-func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store,
+func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store, // nolint: funlen
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { // nolint: funlen
 	// Post swagger:route POST /messages Send SendMessage
 	//

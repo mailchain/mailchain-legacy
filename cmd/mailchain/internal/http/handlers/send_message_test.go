@@ -215,7 +215,7 @@ func Test_isValid(t *testing.T) {
 						},
 						Subject:   "subject-value",
 						Body:      "body-value",
-						PublicKey: "0x" + hex.EncodeToString(testutil.CharlottePublicKey.Bytes()),
+						PublicKey: hex.EncodeToString(addresstest.EthereumSofia),
 					},
 				},
 				"ethereum",

@@ -26,7 +26,7 @@ import (
 func TestGetEnrypter(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
-		encrypter byte
+		encrypter string
 	}
 	tests := []struct {
 		name    string
@@ -37,7 +37,7 @@ func TestGetEnrypter(t *testing.T) {
 		{
 			"invalid",
 			args{
-				0x50,
+				"test-invalid",
 			},
 			nil,
 			true,
@@ -45,7 +45,7 @@ func TestGetEnrypter(t *testing.T) {
 		{
 			"empty",
 			args{
-				0x0,
+				"empty",
 			},
 			nil,
 			true,
@@ -53,7 +53,7 @@ func TestGetEnrypter(t *testing.T) {
 		{
 			"aes",
 			args{
-				crypto.AES256CBC,
+				"aes256cbc",
 			},
 			aes256cbc.NewEncrypter(),
 			false,
@@ -61,7 +61,7 @@ func TestGetEnrypter(t *testing.T) {
 		{
 			"nacl",
 			args{
-				crypto.NACL,
+				"nacl",
 			},
 			nacl.NewEncrypter(),
 			false,

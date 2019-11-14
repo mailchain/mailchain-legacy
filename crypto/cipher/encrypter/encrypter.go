@@ -7,14 +7,22 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Cipher Name lookup
+const (
+	NoOperation string = "noop"
+	NACL        string = "nacl"
+	AES256CBC   string = "aes256cbc"
+	EmptyCipher string = "empty"
+)
+
 // GetEncrypter is an `Encrypter` factory that returns an encrypter
-func GetEncrypter(encryption byte) (crypto.Encrypter, error) {
+func GetEncrypter(encryption string) (crypto.Encrypter, error) {
 	switch encryption {
-	case crypto.AES256CBC:
+	case AES256CBC:
 		return aes256cbc.NewEncrypter(), nil
-	case crypto.NACL:
+	case NACL:
 		return nacl.NewEncrypter(), nil
-	case crypto.NullCipher:
+	case EmptyCipher:
 		return nil, errors.Errorf("`encryption` provided is set to empty")
 	default:
 		return nil, errors.Errorf("`encryption` provided is invalid")

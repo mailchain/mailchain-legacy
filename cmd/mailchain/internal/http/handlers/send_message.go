@@ -93,7 +93,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
 			return
 		}
-		encrypter, err := ec.GetEncrypter(req.Body.Encryption)
+		encrypter, err := ec.GetEncrypter(req.Body.EncryptionName)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not get `encrypter`"))
 		}
@@ -208,12 +208,8 @@ type PostRequestBody struct {
 	from      *mail.Address
 	replyTo   *mail.Address
 	publicKey crypto.PublicKey
-	// Encryption method to use in bytes
-	// required: false
-	// enum: 0x20, 0x2a, 0x2e, 0x0
-	Encryption byte `json:"encryption-method"`
 	// Encryption method name
-	// required: false
+	// required: true
 	// enum: aes256cbc, nacl, noop
 	EncryptionName string `json:"encryption-method-name"`
 }
@@ -267,6 +263,10 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 	p.publicKey, err = secp256k1.PublicKeyFromHex(p.Message.PublicKey)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
+	}
+
+	if p.EncryptionName == "" {
+		return errors.Errorf("`encryption-method-name` can not be empty")
 	}
 
 	return nil

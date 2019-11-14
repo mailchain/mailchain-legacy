@@ -20,6 +20,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// EncodeByProtocol takes an address as `[]byte` then selects the relevant encoding method to encode it as string.
 func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
 	switch protocol {
 	case protocols.Ethereum:

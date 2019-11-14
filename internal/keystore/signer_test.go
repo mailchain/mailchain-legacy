@@ -18,10 +18,10 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
-	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -41,16 +41,19 @@ func TestSigner(t *testing.T) {
 			"ethereum",
 			args{
 				protocols.Ethereum,
-				testutil.CharlottePrivateKey,
+				secp256k1test.CharlottePrivateKey,
 			},
-			ethereum.NewSigner(testutil.CharlottePrivateKey),
+			func() signer.Signer {
+				m, _ := ethereum.NewSigner(secp256k1test.CharlottePrivateKey)
+				return m
+			}(),
 			false,
 		},
 		{
 			"err",
 			args{
 				"invalid",
-				testutil.CharlottePrivateKey,
+				secp256k1test.CharlottePrivateKey,
 			},
 			nil,
 			true,

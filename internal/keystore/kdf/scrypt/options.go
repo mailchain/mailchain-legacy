@@ -24,6 +24,7 @@ import (
 // DeriveOptionsBuilder creates the options to derive a key from scrypt.
 type DeriveOptionsBuilder func(*DeriveOpts)
 
+// DeriveOpts available for scrypt key derivation.
 type DeriveOpts struct {
 	Len        int    `json:"len"`
 	N          int    `json:"n"`
@@ -33,6 +34,7 @@ type DeriveOpts struct {
 	Passphrase string `json:"-"`
 }
 
+// KDF name.
 func (d DeriveOpts) KDF() string { return "scrypt" }
 
 // WithPassphrase adds passphrase to the dervive options
@@ -40,6 +42,7 @@ func WithPassphrase(passphrase string) DeriveOptionsBuilder {
 	return func(o *DeriveOpts) { o.Passphrase = passphrase }
 }
 
+// RandomSalt use a secure random number to use as the salt.
 func RandomSalt() (DeriveOptionsBuilder, error) {
 	salt := make([]byte, 32)
 	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
@@ -48,6 +51,7 @@ func RandomSalt() (DeriveOptionsBuilder, error) {
 	return func(o *DeriveOpts) { o.Salt = salt }, nil
 }
 
+// DefaultDeriveOptions for deriving an encryption.
 func DefaultDeriveOptions() DeriveOptionsBuilder {
 	return func(o *DeriveOpts) {
 		// N is the N parameter of Scrypt encryption algorithm, using 256MB
@@ -62,6 +66,7 @@ func DefaultDeriveOptions() DeriveOptionsBuilder {
 	}
 }
 
+// FromEncryptedKey generate the options builder from an encrypted key.
 func FromEncryptedKey(length, n, p, r int, salt []byte) DeriveOptionsBuilder {
 	return func(o *DeriveOpts) {
 		o.Len = length

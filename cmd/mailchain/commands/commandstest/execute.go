@@ -21,6 +21,7 @@ func ExecuteCommandC(root *cobra.Command, args []string, flags map[string]string
 	for x := range flags {
 		_ = root.Flags().Set(x, flags[x])
 	}
+
 	c, err = root.ExecuteC()
 
 	return c, buf.String(), err
@@ -33,6 +34,7 @@ func AssertCommandOutput(t *testing.T, cmd *cobra.Command, err error, out, wantO
 			return false
 		}
 	}
+
 	if err != nil {
 		if !assert.Equal(t, wantOutput+"\n"+cmd.UsageString()+"\n", out) {
 			t.Errorf("cmd().Execute().out = %v, want %v", out, wantOutput)

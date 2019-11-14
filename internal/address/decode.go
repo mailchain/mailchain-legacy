@@ -21,6 +21,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// DecodeByProtocol returns the raw `[]byte` from the supplied address.
 func DecodeByProtocol(in, protocol string) ([]byte, error) {
 	switch protocol {
 	case protocols.Ethereum:

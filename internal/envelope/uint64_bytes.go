@@ -20,30 +20,37 @@ import (
 	"github.com/pkg/errors"
 )
 
+// UInt64Bytes is a new "data type" that combines a variable size integer with a byte array to efficiently store both values.
 type UInt64Bytes []byte
 
-func NewUInt64Bytes(i uint64, b []byte) UInt64Bytes {
+// NewUInt64Bytes creates a `UInt64Bytes` with the identifier and data added.
+func NewUInt64Bytes(i uint64, data []byte) UInt64Bytes {
 	loc := make([]byte, binary.MaxVarintLen64)
 	n := binary.PutUvarint(loc, i)
 
-	buf := make([]byte, len(loc[:n])+1+len(b))
+	buf := make([]byte, len(loc[:n])+1+len(data))
 	buf[0] = byte(n)
 	copy(buf[1:], loc[:n])
-	copy(buf[1+n:], b)
+	copy(buf[1+n:], data)
 
 	return buf
 }
 
+// UInt64 extracts the identified portion.
 func (u UInt64Bytes) UInt64() (uint64, error) {
 	i, _, err := parseUInt64Bytes(u)
 	return i, err
 }
 
+// Bytes extracts the data portion.
 func (u UInt64Bytes) Bytes() ([]byte, error) {
 	_, b, err := parseUInt64Bytes(u)
 	return b, err
 }
 
+// Values returns the identified and data from UInt64Bytes.
+// Identified is of type `uint64`.
+// Data is of type `[]byte`.
 func (u UInt64Bytes) Values() (i uint64, b []byte, err error) {
 	return parseUInt64Bytes(u)
 }

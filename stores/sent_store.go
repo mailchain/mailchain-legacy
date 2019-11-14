@@ -33,6 +33,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// NewSentStore create Mailchain sent store.
 func NewSentStore() *SentStore {
 	client := http.Client{
 		Timeout: 5 * time.Second,
@@ -44,16 +45,19 @@ func NewSentStore() *SentStore {
 	}
 }
 
+// SentStore type for storing sent Mailchain messages.
 type SentStore struct {
 	domain     string
 	newRequest func(method string, url string, body io.Reader) (*http.Request, error)
 	doRequest  func(req *http.Request) (*http.Response, error)
 }
 
+// Key gets the key of a Mailchain message.
 func (s SentStore) Key(messageID mail.ID, contentsHash, msg []byte) string {
 	return hex.EncodeToString(contentsHash)
 }
 
+// PutMessage stores message contents.
 func (s SentStore) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers map[string]string) (
 	address, resource string, mli uint64, err error) {
 	hash := crypto.CreateIntegrityHash(msg)

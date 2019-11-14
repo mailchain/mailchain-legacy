@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate mockgen -source=keystore.go -package=keystoretest -destination=./keystoretest/keystore_mock.go
 package keystore
 
+//go:generate mockgen -source=keystore.go -package=keystoretest -destination=./keystoretest/keystore_mock.go
 import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
@@ -27,7 +27,7 @@ type Store interface {
 	GetSigner(address []byte, protocol, network string, deriveKeyOptions multi.OptionsBuilders) (signer.Signer, error)
 	GetDecrypter(address []byte, protocol, network string, decrypterType byte, deriveKeyOptions multi.OptionsBuilders) (cipher.Decrypter, error)
 	Store(private crypto.PrivateKey, deriveKeyOptions multi.OptionsBuilders) (crypto.PublicKey, error)
-	HasAddress(address []byte) bool
+	HasAddress(searchAddress []byte, protocol, network string) bool
 	GetAddresses(protocol, address string) ([][]byte, error)
 	GetPublicKeys() ([]crypto.PublicKey, error)
 }

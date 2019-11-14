@@ -18,12 +18,14 @@ func sentStore(s values.Store) *SentStore {
 	return ss
 }
 
+// SentStore configuration element
 type SentStore struct {
 	Kind      values.String
 	s3        *SentStoreS3
 	mailchain *SentStoreMailchain
 }
 
+// Produce `stores.Sent` based on configuration settings.
 func (ss SentStore) Produce() (stores.Sent, error) {
 	switch ss.Kind.Get() {
 	case mailchain.StoreS3:
@@ -35,6 +37,7 @@ func (ss SentStore) Produce() (stores.Sent, error) {
 	}
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (ss SentStore) Output() output.Element {
 	return output.Element{
 		FullName:   "sentstore",

@@ -6,6 +6,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// QueryRequireProtocol verify presence and return value of `protocol` url query parameter
 func QueryRequireProtocol(r *http.Request) (string, error) {
 	protocols := r.URL.Query()["protocol"]
 	if len(protocols) != 1 {
@@ -17,6 +18,7 @@ func QueryRequireProtocol(r *http.Request) (string, error) {
 	return protocols[0], nil
 }
 
+// QueryRequireNetwork verify presence and return value of `network` url query parameter
 func QueryRequireNetwork(r *http.Request) (string, error) {
 	networks := r.URL.Query()["network"]
 	if len(networks) != 1 {
@@ -28,6 +30,7 @@ func QueryRequireNetwork(r *http.Request) (string, error) {
 	return networks[0], nil
 }
 
+// QueryRequireAddress verify presence and return value of `address` url query parameter
 func QueryRequireAddress(r *http.Request) (string, error) {
 	addresses := r.URL.Query()["address"]
 	if len(addresses) != 1 {

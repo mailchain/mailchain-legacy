@@ -25,6 +25,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// NewZeroX01 creates a new envelope of type ZeroX01.
+// ZeroX01 envelope allows sending private messages with the minimal bytes by using `Uint64Bytes`.
 func NewZeroX01(encrypter cipher.Encrypter, pubkey crypto.PublicKey, opts *CreateOpts) (*ZeroX01, error) {
 	if opts.Location == 0 {
 		return nil, errors.Errorf("location must be set")
@@ -58,6 +60,10 @@ func NewZeroX01(encrypter cipher.Encrypter, pubkey crypto.PublicKey, opts *Creat
 	return env, nil
 }
 
+// URL returns the addressable location of the message, the URL may be encrypted requiring decrypter to be supplied.
+// URL is contained in the UIBEncryptedLocationHash which must first be decrypted.
+// The decrypted data is converted to `UInt64Bytes`. The extracted identified is used to look up the Message Location Indicator (MLI).
+// MLI address and hash are combined to make an addressable URL.
 func (d *ZeroX01) URL(decrypter cipher.Decrypter) (*url.URL, error) {
 	decrypted, err := decrypter.Decrypt(d.UIBEncryptedLocationHash)
 	if err != nil {
@@ -83,6 +89,9 @@ func (d *ZeroX01) URL(decrypter cipher.Decrypter) (*url.URL, error) {
 		"/"))
 }
 
+// ContentsHash returns a hash of the decrypted content.
+// This can be used to verify the contents of the message have not been tampered with.
+// UIBEncryptedLocationHash is decrypted to get a location hash. This is a UInt64Bytes and the data portion is the value for ContentsHash.
 func (d *ZeroX01) ContentsHash(decrypter cipher.Decrypter) ([]byte, error) {
 	decrypted, err := decrypter.Decrypt(d.UIBEncryptedLocationHash)
 	if err != nil {
@@ -94,10 +103,13 @@ func (d *ZeroX01) ContentsHash(decrypter cipher.Decrypter) ([]byte, error) {
 	// TODO: validate hash
 }
 
+// IntegrityHash returns a hash of the encrypted content. This can be used to validate the integrity of the contents before decrypting.
+// Returns the value stored in EncryptedHash.
 func (d *ZeroX01) IntegrityHash(decrypter cipher.Decrypter) ([]byte, error) {
 	return d.EncryptedHash, nil
 }
 
+// Valid checks the envelopes contents for no integrity issues which would prevent the envelope from being read.
 func (d *ZeroX01) Valid() error {
 	if len(d.UIBEncryptedLocationHash) == 0 {
 		return errors.Errorf("`EncryptedLocationHash` must not be empty")

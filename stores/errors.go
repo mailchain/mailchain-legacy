@@ -25,6 +25,7 @@ var (
 	errNotFound = errors.New("not found")
 )
 
+// IsNotFoundError checks if the error supplied is an not found error. It checks against known errors from supported stores, S3 and leveldb.
 func IsNotFoundError(err error) bool {
 	switch fmt.Sprintf("%v", errors.Cause(err)) {
 	case fmt.Sprintf("%v", errors.Cause(errNotFound)),

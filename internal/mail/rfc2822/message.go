@@ -30,6 +30,7 @@ func messageIDHeaderValue(id mail.ID) string {
 	return fmt.Sprintf("%s@mailchain", id.HexString())
 }
 
+// EncodeNewMessage Mailchain message in a `[]byte` based on rfc2822 standard.
 func EncodeNewMessage(message *mail.Message) ([]byte, error) {
 	// TODO: implement base64 encoding too
 	// headers["Content-Transfer-Encoding"] = "base64"
@@ -67,6 +68,7 @@ func EncodeNewMessage(message *mail.Message) ([]byte, error) {
 	return ret, nil
 }
 
+// DecodeNewMessage from reader into a Mailchain message based on rfc2822 standard.
 func DecodeNewMessage(r io.Reader) (*mail.Message, error) {
 	netMsg, err := nm.ReadMessage(r)
 	if err != nil {

@@ -26,7 +26,7 @@ import (
 func Signer(protocol string, pk crypto.PrivateKey) (signer.Signer, error) {
 	switch protocol {
 	case protocols.Ethereum:
-		return ethereum.NewSigner(pk), nil
+		return ethereum.NewSigner(pk)
 	default:
 		return nil, errors.Errorf("unsupported signer type")
 	}

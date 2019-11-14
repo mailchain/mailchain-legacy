@@ -7,13 +7,13 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/protocols"
-
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
-func FromStore(s values.Store) *Base {
-	return &Base{
+// FromStore creates root settings from a configuration storage
+func FromStore(s values.Store) *Root {
+	return &Root{
 		DomainNameServices:  domainNameServices(s),
 		AddressNameServices: addressNameServices(s),
 		Senders:             senders(s),
@@ -40,7 +40,8 @@ func FromStore(s values.Store) *Base {
 	}
 }
 
-type Base struct {
+// Root configuration element.
+type Root struct {
 	AddressNameServices *AddressNameServices
 	DomainNameServices  *DomainNameServices
 	Senders             *Senders
@@ -56,7 +57,8 @@ type Base struct {
 	Server       *Server
 }
 
-func (o *Base) ToYaml(out io.Writer, tabsize int, commentDefaults, excludeDefaults bool) {
+// ToYaml converts settings to yaml
+func (o *Root) ToYaml(out io.Writer, tabsize int, commentDefaults, excludeDefaults bool) {
 	protocolElements := []output.Element{}
 	for _, v := range o.Protocols {
 		protocolElements = append(protocolElements, v.Output())

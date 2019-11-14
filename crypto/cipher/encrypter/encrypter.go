@@ -14,7 +14,9 @@ func GetEncrypter(encryption byte) (crypto.Encrypter, error) {
 		return aes256cbc.NewEncrypter(), nil
 	case crypto.NACL:
 		return nacl.NewEncrypter(), nil
+	case crypto.NullCipher:
+		return nil, errors.Errorf("`encryption` provided is set to empty")
 	default:
-		return nil, errors.Errorf("string provided is invalid")
+		return nil, errors.Errorf("`encryption` provided is invalid")
 	}
 }

@@ -37,6 +37,14 @@ func TestGetEnrypter(t *testing.T) {
 		{
 			"invalid",
 			args{
+				0x50,
+			},
+			nil,
+			true,
+		},
+		{
+			"empty",
+			args{
 				0x0,
 			},
 			nil,

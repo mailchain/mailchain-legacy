@@ -22,7 +22,7 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/cipher/encrypter"
+	ec "github.com/mailchain/mailchain/crypto/cipher/encrypter"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
@@ -93,9 +93,9 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
 			return
 		}
-		encrypter, err := encrypter.GetEncrypter(req.Body.Encryption)
+		encrypter, err := ec.GetEncrypter(req.Body.Encryption)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `encrypter`")))
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not get `encrypter`"))
 		}
 
 		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network,
@@ -208,9 +208,14 @@ type PostRequestBody struct {
 	from      *mail.Address
 	replyTo   *mail.Address
 	publicKey crypto.PublicKey
-	// encryption method to use
+	// Encryption method to use in bytes
 	// required: false
+	// enum: 0x20, 0x2a, 0x2e, 0x0
 	Encryption byte `json:"encryption-method"`
+	// Encryption method name
+	// required: false
+	// enum: aes256cbc, nacl, noop
+	EncryptionName string `json:"encryption-method-name"`
 }
 
 func checkForEmpties(msg PostMessage) error {

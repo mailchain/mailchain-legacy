@@ -24,6 +24,7 @@ const (
 	NoOperation byte = 0x20
 	NACL        byte = 0x2a
 	AES256CBC   byte = 0x2e
+	NullCipher  byte = 0x0
 )
 
 // EncryptedContent typed version of byte array that holds encrypted data

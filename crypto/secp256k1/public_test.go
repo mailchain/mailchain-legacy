@@ -235,3 +235,40 @@ func TestPublicKey_Bytes(t *testing.T) {
 		})
 	}
 }
+
+func TestPublicKey_Kind(t *testing.T) {
+	assert := assert.New(t)
+	type fields struct {
+		ecdsa ecdsa.PublicKey
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			"charlotte",
+			fields{
+				func() ecdsa.PublicKey {
+					b, _ := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					key, err := crypto.ToECDSA(b)
+					if err != nil {
+						log.Fatal(err)
+					}
+					return key.PublicKey
+				}(),
+			},
+			"secp256k1",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			pk := PublicKey{
+				ecdsa: tt.fields.ecdsa,
+			}
+			if got := pk.Kind(); !assert.Equal(tt.want, got) {
+				t.Errorf("PublicKey.Kind() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

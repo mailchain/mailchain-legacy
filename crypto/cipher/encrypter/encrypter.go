@@ -12,7 +12,6 @@ const (
 	NoOperation string = "noop"
 	NACL        string = "nacl"
 	AES256CBC   string = "aes256cbc"
-	EmptyCipher string = "empty"
 )
 
 // GetEncrypter is an `Encrypter` factory that returns an encrypter
@@ -22,7 +21,7 @@ func GetEncrypter(encryption string) (crypto.Encrypter, error) {
 		return aes256cbc.NewEncrypter(), nil
 	case NACL:
 		return nacl.NewEncrypter(), nil
-	case EmptyCipher:
+	case "":
 		return nil, errors.Errorf("`encryption` provided is set to empty")
 	default:
 		return nil, errors.Errorf("`encryption` provided is invalid")

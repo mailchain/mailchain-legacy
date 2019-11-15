@@ -45,7 +45,7 @@ func TestGetEnrypter(t *testing.T) {
 		{
 			"empty",
 			args{
-				"empty",
+				"",
 			},
 			nil,
 			true,

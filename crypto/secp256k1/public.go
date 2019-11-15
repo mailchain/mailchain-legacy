@@ -30,6 +30,11 @@ type PublicKey struct {
 	ecdsa ecdsa.PublicKey
 }
 
+// Kind returns the key type
+func (pk PublicKey) Kind() string {
+	return crypto.SECP256K1
+}
+
 // Bytes returns the byte representation of the public key
 func (pk PublicKey) Bytes() []byte {
 	return ethcrypto.CompressPubkey(&pk.ecdsa)

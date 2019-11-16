@@ -16,7 +16,7 @@ import (
 )
 
 // account represents the say command
-func accountCmd(config *settings.Base) (*cobra.Command, error) {
+func accountCmd(config *settings.Root) (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "account",
 		Short: "Manage Accounts",

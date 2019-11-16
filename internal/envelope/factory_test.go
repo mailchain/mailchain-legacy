@@ -22,7 +22,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -64,7 +64,7 @@ func TestNewEnvelope(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				testutil.CharlottePublicKey,
+				secp256k1test.CharlottePublicKey,
 				opts(0x00),
 			},
 			nil,
@@ -75,10 +75,10 @@ func TestNewEnvelope(t *testing.T) {
 			args{
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(testutil.CharlottePublicKey, gomock.Any()).Return([]byte("encrypted"), nil)
+					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.Any()).Return([]byte("encrypted"), nil)
 					return m
 				}(),
-				testutil.CharlottePublicKey,
+				secp256k1test.CharlottePublicKey,
 				opts(Kind0x01),
 			},
 			&ZeroX01{},

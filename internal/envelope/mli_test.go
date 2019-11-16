@@ -27,7 +27,7 @@ func TestMLIToAddress(t *testing.T) {
 		want map[uint64]string
 	}{
 		{
-			"compatability",
+			"compatibility",
 			map[uint64]string{0x1: "https://mcx.mx"},
 		},
 	}

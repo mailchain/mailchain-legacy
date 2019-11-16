@@ -22,10 +22,10 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/address/addresstest"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
-	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/stretchr/testify/assert"
@@ -273,7 +273,7 @@ func Test_isValid(t *testing.T) {
 						},
 						Subject:   "subject-value",
 						Body:      "body-value",
-						PublicKey: "0x" + hex.EncodeToString(testutil.CharlottePublicKey.Bytes()),
+						PublicKey: "0x" + hex.EncodeToString(secp256k1test.CharlottePublicKey.Bytes()),
 					},
 					Envelope: "0x01",
 				},

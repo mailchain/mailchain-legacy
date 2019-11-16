@@ -30,7 +30,7 @@ func TestGetProtocols(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
-		base *settings.Base
+		base *settings.Root
 	}
 	tests := []struct {
 		name       string
@@ -41,7 +41,7 @@ func TestGetProtocols(t *testing.T) {
 		{
 			"disabled-ethereum",
 			args{
-				func() *settings.Base {
+				func() *settings.Root {
 					m := valuestest.NewMockStore(mockCtrl)
 					m.EXPECT().IsSet("protocols.ethereum.disabled").Return(true)
 					m.EXPECT().GetBool("protocols.ethereum.disabled").Return(true)
@@ -57,7 +57,7 @@ func TestGetProtocols(t *testing.T) {
 		{
 			"disabled-goreli",
 			args{
-				func() *settings.Base {
+				func() *settings.Root {
 					m := valuestest.NewMockStore(mockCtrl)
 					m.EXPECT().IsSet("protocols.ethereum.networks.goerli.disabled").Return(true)
 					m.EXPECT().GetBool("protocols.ethereum.networks.goerli.disabled").Return(true)
@@ -73,7 +73,7 @@ func TestGetProtocols(t *testing.T) {
 		{
 			"default-ethereum",
 			args{
-				func() *settings.Base {
+				func() *settings.Root {
 					m := valuestest.NewMockStore(mockCtrl)
 					m.EXPECT().IsSet("protocols.substrate.disabled").Return(true)
 					m.EXPECT().GetBool("protocols.substrate.disabled").Return(true)

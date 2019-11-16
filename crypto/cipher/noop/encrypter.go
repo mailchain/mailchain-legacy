@@ -11,11 +11,16 @@ func NewEncrypter() Encrypter {
 	return Encrypter{}
 }
 
-// Encrypter will encrypt data using AES256CBC method
+// Encrypter will not perform any operation when encrypting the message.
+//
+// No operation (noop) encrypter is used when the contents of the message
+// and envelope are intended to readable by the public.
 type Encrypter struct {
 }
 
-// Encrypt noop (no operation) encrypter returns the plain content
+// Encrypt does not apply any encrption algortim.
+// PlainContent will be return as EncryptedContent with the encryption method
+// prepend as the first byte.
 func (e Encrypter) Encrypt(recipientPublicKey crypto.PublicKey, message cipher.PlainContent) (cipher.EncryptedContent, error) {
 	return cipher.EncryptedContent(message), nil
 }

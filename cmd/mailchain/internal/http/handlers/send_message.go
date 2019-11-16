@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
@@ -37,8 +38,8 @@ import (
 )
 
 // SendMessage handler http
-func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store,
-	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { // nolint: funlen
+func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store, //nolint: funlen
+	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { //nolint: funlen
 	encrypter := aes256cbc.NewEncrypter()
 	// Post swagger:route POST /messages Send SendMessage
 	//
@@ -79,7 +80,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"))
 			return
 		}
-		if !ks.HasAddress(from) {
+		if !ks.HasAddress(from, req.Protocol, req.Network) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Body.Message.Headers.From))
 			return
 		}
@@ -221,15 +222,19 @@ func checkForEmpties(msg PostMessage) error {
 	if msg.Headers == nil {
 		return errors.Errorf("headers must not be nil")
 	}
+
 	if msg.Body == "" {
 		return errors.Errorf("`body` can not be empty")
 	}
+
 	if msg.Subject == "" {
 		return errors.Errorf("`subject` can not be empty")
 	}
+
 	if msg.PublicKey == "" {
 		return errors.Errorf("`public-key` can not be empty")
 	}
+
 	return nil
 }
 
@@ -237,16 +242,18 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 	if p == nil {
 		return errors.New("PostRequestBody must not be nil")
 	}
+
 	if err := checkForEmpties(p.Message); err != nil {
 		return err
 	}
+
 	var err error
 
 	p.to, err = mail.ParseAddress(p.Message.Headers.To, protocol, network)
 	if err != nil {
 		return errors.WithMessage(err, "`to` is invalid")
 	}
-	// TODO: figure this out
+	//nolint TODO: figure this out
 	// if !ethereup.IsAddressValid(p.to.ChainAddress) {
 	// 	return errors.Errorf("'address' is invalid")
 	// }
@@ -262,8 +269,13 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		}
 	}
 
-	// TODO: be more general when getting key from hex
-	p.publicKey, err = secp256k1.PublicKeyFromHex(p.Message.PublicKey)
+	//nolint TODO: be more general when getting key from hex
+	encodeMessage, err := hexutil.Decode(p.Message.PublicKey)
+	if err != nil {
+		return errors.WithMessage(err, "invalid `data`")
+	}
+
+	p.publicKey, err = secp256k1.PublicKeyFromBytes(encodeMessage)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
 	}

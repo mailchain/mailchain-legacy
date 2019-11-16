@@ -25,6 +25,7 @@ import (
 
 //go:generate mockgen -source=client.go -package=ethrpc2test -destination=./ethrpc2test/client_mock.go
 
+// Client functions needed to send ethereum transactions.
 type Client interface {
 	// EstimateGas tries to estimate the gas needed to execute a specific transaction based on
 	// the current pending state of the backend blockchain. There is no guarantee that this is

@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate mockgen -source=signer.go -package=signertest -destination=./signertest/signer_mock.go
 package signer
+
+//go:generate mockgen -source=signer.go -package=signertest -destination=./signertest/signer_mock.go
 
 // Signer return a signed transaction
 type Signer interface {

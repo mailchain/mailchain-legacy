@@ -16,6 +16,10 @@ package encoding
 
 import "github.com/mr-tron/base58"
 
-func DecodeBase58(in string) ([]byte, error) {
-	return base58.Decode(in)
+// DecodeBase58 returns the bytes represented by the base58 string src.
+//
+// DecodeBase58 expects that src contains only base58 characters.
+// If the input is malformed, DecodeBase58 returns an error.
+func DecodeBase58(src string) ([]byte, error) {
+	return base58.Decode(src)
 }

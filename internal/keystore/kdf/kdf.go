@@ -15,6 +15,7 @@
 package kdf
 
 const (
+	// Scrypt name.
 	Scrypt string = "scrypt"
 )
 

@@ -16,6 +16,7 @@ func sentStoreS3(s values.Store) *SentStoreS3 {
 	}
 }
 
+// SentStoreS3 configuration element.
 type SentStoreS3 struct {
 	Bucket          values.String
 	Region          values.String
@@ -23,10 +24,12 @@ type SentStoreS3 struct {
 	SecretAccessKey values.String
 }
 
+// Produce `s3store.Sent` based on configuration settings.
 func (s SentStoreS3) Produce() (*s3store.Sent, error) {
 	return s3store.NewSent(s.Region.Get(), s.Bucket.Get(), s.AccessKeyID.Get(), s.SecretAccessKey.Get())
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (s SentStoreS3) Output() output.Element {
 	return output.Element{
 		FullName: "sentstore.s3",

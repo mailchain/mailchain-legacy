@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/mailchain/mailchain.svg?branch=master&style=for-the-badge)](https://travis-ci.com/mailchain/mailchain.svg?branch=master)
 [![Coverage Status](https://coveralls.io/repos/github/mailchain/mailchain/badge.svg?branch=master)](https://coveralls.io/github/mailchain/mailchain?branch=master)
-[![Go Report Card](https://goreportcard.com/badge/github.com/mailchain/mailchain)](https://goreportcard.com/report/github.com/mailchain/community) [![Join the chat at https://gitter.im/Mailchain/mailchain](https://badges.gitter.im/Mailchain/mailchain.svg)](https://gitter.im/Mailchain/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mailchain/mailchain)](https://goreportcard.com/report/github.com/mailchain/mailchain)
 
 ## Introduction
 
@@ -16,12 +16,13 @@ Mailchain provides a solution to these problems and a generalized solution to em
 
 This is the primary repo for the Mailchain development.
 
-The complete list of Mailchain repositories is:
+The primary Mailchain repositories to be aware of are:
 
 * [mailchain](https://github.com/mailchain/mailchain): Main Mailchain repo, API and CLI
-* [mailchain-web](https://github.com/mailchain/mailchain-web): Inbox web client, the repository for https://inbox.mailchain.xyy/
+* [mailchain-web](https://github.com/mailchain/mailchain-web): Inbox web client, the repository for https://inbox.mailchain.xyz/
 * [docs.mailchain.xyz](https://github.com/mailchain/docs.mailchain.xyz): Documentation hosted at https://docs.mailchain.xyz
 * [mailchain-specification](https://github.com/mailchain/mailchain-specification): Original specification and design documents
+* [community](https://github.com/mailchain/community): We are building a community.
 
 ## Quickstart and documentation
 
@@ -39,7 +40,7 @@ contributing changes.
 
 ## Get involved
 
-* Join our community discussion on [Mailchain Gitter](https://gitter.im/Mailchain/community).
+* Join our community discussion on our [Slack channel](https://mailchain.slack.com).
 * Follow [@mailchain_xyz](https://twitter.com/mailchain_xyz) on Twitter.
 * Contact us via regular [email](mailto:team@mailchain.xyz).
 
@@ -48,17 +49,9 @@ contributing changes.
 This project is for everyone. We ask that our users and contributors take a few
 minutes to review our [code of conduct](CODE_OF_CONDUCT.md).
 
-## Checksums
+## Development Guide
 
-To check the application you downloaded matches the build SHA256 checksum.
-
-For example, on a Mac:
-
-``` bash
-shasum -a 256 path_to_file/mailchain_...
-```
-
-The output should match the checksum found in checksums.txt
+See [development guide](DEVELOPMENT_GUIDE.md) for information on getting started as a developer.
 
 ## License
 

@@ -14,19 +14,18 @@
 
 package encoding
 
-// DataPrefix used before
+// DataPrefix used to identify Mailchain messages.
 func DataPrefix() []byte {
 	return []byte{0x6d, 0x61, 0x69, 0x6c, 0x63, 0x68, 0x61, 0x69, 0x6e}
 }
 
 const (
-	ID       byte = 0x00
-	Protobuf byte = 0x50
-)
-
-const (
-	TypeHex                    = "hex/plain"
-	TypeHex0XPrefix            = "hex/0x-prefix"
-	TypeBase58                 = "base58/plain"
+	// TypeHex encoding value.
+	TypeHex = "hex/plain"
+	// TypeHex0XPrefix encoding value.
+	TypeHex0XPrefix = "hex/0x-prefix"
+	// TypeBase58 encoding value.
+	TypeBase58 = "base58/plain"
+	// TypeBase58SubstrateAddress encoding value.
 	TypeBase58SubstrateAddress = "base58/ss58-address"
 )

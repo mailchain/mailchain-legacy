@@ -39,14 +39,17 @@ func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	return PublicKey{ecdsa: pk.ecdsa.PublicKey}
 }
 
+// Kind is the type of private key.
 func (pk PrivateKey) Kind() string {
 	return crypto.SECP256K1
 }
 
+// ECIES returns an ECIES representation of the private key.
 func (pk PrivateKey) ECIES() *ecies.PrivateKey {
 	return ecies.ImportECDSA(&pk.ecdsa)
 }
 
+// ECDSA returns an ECDSA representation of the private key.
 func (pk PrivateKey) ECDSA() (*ecdsa.PrivateKey, error) {
 	rpk, err := ethcrypto.ToECDSA(pk.Bytes())
 	return rpk, errors.WithMessage(err, "could not convert private key")

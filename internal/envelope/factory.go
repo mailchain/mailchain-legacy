@@ -20,7 +20,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// NewEnvelope returns a new envelope
+// NewEnvelope create a new envelope with encrypter, public key, and settings. Envelope can then be used when sending messages.
 func NewEnvelope(encrypter cipher.Encrypter, pubkey crypto.PublicKey, o []CreateOptionsBuilder) (Data, error) {
 	opts := &CreateOpts{}
 	apply(opts, o)

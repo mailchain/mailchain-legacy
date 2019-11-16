@@ -15,36 +15,58 @@
 package ethereum
 
 import (
+	"crypto/ecdsa"
 	"math/big"
-	"reflect"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/core/types"
+	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
+	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewSigner(t *testing.T) {
+	assert := assert.New(t)
 	type args struct {
 		privateKey crypto.PrivateKey
 	}
 	tests := []struct {
-		name string
-		args args
-		want Signer
+		name    string
+		args    args
+		want    *Signer
+		wantErr bool
 	}{
 		{
 			"success",
 			args{
-				testutil.CharlottePrivateKey,
+				secp256k1test.CharlottePrivateKey,
 			},
-			Signer{testutil.CharlottePrivateKey},
+			&Signer{
+				secp256k1test.CharlottePrivateKey,
+			},
+			false,
+		},
+		{
+			"invalid-key",
+			args{
+				ed25519test.CharlottePrivateKey,
+			},
+			nil,
+			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewSigner(tt.args.privateKey); !reflect.DeepEqual(got, tt.want) {
+			got, err := NewSigner(tt.args.privateKey)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewSigner() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if !assert.Equal(tt.want, got) {
 				t.Errorf("NewSigner() = %v, want %v", got, tt.want)
 			}
 		})
@@ -79,7 +101,7 @@ func TestSigner_Sign(t *testing.T) {
 		{
 			"err-invalid-SignerOptions",
 			fields{
-				testutil.CharlottePrivateKey,
+				secp256k1test.CharlottePrivateKey,
 			},
 			args{
 				func() interface{} {
@@ -95,7 +117,7 @@ func TestSigner_Sign(t *testing.T) {
 		{
 			"success-SignerOptions",
 			fields{
-				testutil.CharlottePrivateKey,
+				secp256k1test.CharlottePrivateKey,
 			},
 			args{
 				SignerOptions{
@@ -109,7 +131,7 @@ func TestSigner_Sign(t *testing.T) {
 		{
 			"success-SignerOptions-chainid-nil",
 			fields{
-				testutil.CharlottePrivateKey,
+				secp256k1test.CharlottePrivateKey,
 			},
 			args{
 				SignerOptions{
@@ -133,6 +155,71 @@ func TestSigner_Sign(t *testing.T) {
 			if (gotSignedTransaction == nil) != tt.wantNil {
 				t.Errorf("Signer.Sign() = %v, wantErr %v", gotSignedTransaction, tt.wantNil)
 				return
+			}
+		})
+	}
+}
+
+func Test_validatePrivateKeyType(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		pk crypto.PrivateKey
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *ecdsa.PrivateKey
+		wantErr bool
+	}{
+		{
+			"success-secp256k1-charlotte",
+			args{
+				secp256k1test.CharlottePrivateKey,
+			},
+			func() *ecdsa.PrivateKey {
+				m, _ := ethcrypto.ToECDSA([]byte{0xdf, 0x4b, 0xa9, 0xf6, 0x10, 0x6a, 0xd2, 0x84, 0x64, 0x72, 0xf7, 0x59, 0x47, 0x65, 0x35, 0xe5, 0x5c, 0x58, 0x05, 0xd8, 0x33, 0x7d, 0xf5, 0xa1, 0x1c, 0x3b, 0x13, 0x9f, 0x43, 0x8b, 0x98, 0xb3})
+				return m
+			}(),
+			false,
+		},
+		{
+			"success-secp256k1-charlotte",
+			args{
+				*secp256k1test.CharlottePrivateKey.(*secp256k1.PrivateKey),
+			},
+			func() *ecdsa.PrivateKey {
+				m, _ := ethcrypto.ToECDSA([]byte{0xdf, 0x4b, 0xa9, 0xf6, 0x10, 0x6a, 0xd2, 0x84, 0x64, 0x72, 0xf7, 0x59, 0x47, 0x65, 0x35, 0xe5, 0x5c, 0x58, 0x05, 0xd8, 0x33, 0x7d, 0xf5, 0xa1, 0x1c, 0x3b, 0x13, 0x9f, 0x43, 0x8b, 0x98, 0xb3})
+				return m
+			}(),
+			false,
+		},
+		{
+			"err-ed25519-charlotte",
+			args{
+				ed25519test.CharlottePrivateKey,
+			},
+			nil,
+			true,
+		},
+		{
+			"err-nil",
+			args{
+				nil,
+			},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := validatePrivateKeyType(tt.args.pk)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("validatePrivateKeyType() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("validatePrivateKeyType() = %v, want %v", got, tt.want)
 			}
 		})
 	}

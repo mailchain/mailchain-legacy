@@ -26,7 +26,7 @@ import (
 func Test_settingsCmd(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
-		config *settings.Base
+		config *settings.Root
 	}
 	tests := []struct {
 		name             string
@@ -36,7 +36,7 @@ func Test_settingsCmd(t *testing.T) {
 		{
 			"success",
 			args{
-				func() *settings.Base {
+				func() *settings.Root {
 					v := viper.New()
 					config := settings.FromStore(v)
 					return config
@@ -63,7 +63,7 @@ func Test_settingsCmd(t *testing.T) {
 
 func Test_settingsViewAll(t *testing.T) {
 	type args struct {
-		config *settings.Base
+		config *settings.Root
 	}
 	tests := []struct {
 		name    string
@@ -73,7 +73,7 @@ func Test_settingsViewAll(t *testing.T) {
 		{
 			"success",
 			args{
-				func() *settings.Base {
+				func() *settings.Root {
 					v := viper.New()
 					v.Set("server.port", 99999)
 					config := settings.FromStore(v)

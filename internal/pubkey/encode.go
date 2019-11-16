@@ -20,6 +20,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// EncodeByProtocol selects the correct encoding method, then encodes the public key with it.
 func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
 	switch protocol {
 	case protocols.Ethereum:

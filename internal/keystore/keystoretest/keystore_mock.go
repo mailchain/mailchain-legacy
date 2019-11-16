@@ -96,17 +96,17 @@ func (mr *MockStoreMockRecorder) Store(private, deriveKeyOptions interface{}) *g
 }
 
 // HasAddress mocks base method
-func (m *MockStore) HasAddress(address []byte) bool {
+func (m *MockStore) HasAddress(searchAddress []byte, protocol, network string) bool {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "HasAddress", address)
+	ret := m.ctrl.Call(m, "HasAddress", searchAddress, protocol, network)
 	ret0, _ := ret[0].(bool)
 	return ret0
 }
 
 // HasAddress indicates an expected call of HasAddress
-func (mr *MockStoreMockRecorder) HasAddress(address interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) HasAddress(searchAddress, protocol, network interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasAddress", reflect.TypeOf((*MockStore)(nil).HasAddress), address)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasAddress", reflect.TypeOf((*MockStore)(nil).HasAddress), searchAddress, protocol, network)
 }
 
 // GetAddresses mocks base method

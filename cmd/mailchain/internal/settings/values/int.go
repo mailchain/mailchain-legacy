@@ -1,5 +1,4 @@
-// nolint:dupl
-package values
+package values //nolint:dupl
 
 import (
 	"strings"
@@ -8,18 +7,22 @@ import (
 )
 
 //go:generate mockgen -source=int.go -package=valuestest -destination=./valuestest/int_mock.go
+
+// Int interface to all Get, Set and exporting or `int` values.
 type Int interface {
 	Get() int
 	Set(v int)
 	Attribute() output.Attribute
 }
 
+// DefaultInt implementation of `Int` interface.
 type DefaultInt struct {
 	def     int
 	setting string
 	store   Store
 }
 
+// Get the value if set otherwise return default value.
 func (d DefaultInt) Get() int {
 	if d.store.IsSet(d.setting) {
 		return d.store.GetInt(d.setting)
@@ -27,10 +30,12 @@ func (d DefaultInt) Get() int {
 	return d.def
 }
 
+// Set the value and store it in configuration store.
 func (d DefaultInt) Set(v int) {
 	d.store.Set(d.setting, v)
 }
 
+// Attribute creates representation of the value to be used when exporting the configuration.
 func (d DefaultInt) Attribute() output.Attribute {
 	dots := strings.Split(d.setting, ".")
 
@@ -41,6 +46,7 @@ func (d DefaultInt) Attribute() output.Attribute {
 	}
 }
 
+// NewDefaultInt create the `Int` value.
 func NewDefaultInt(defVal int, store Store, setting string) Int {
 	return DefaultInt{
 		def:     defVal,

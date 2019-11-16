@@ -27,14 +27,15 @@ import (
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
-	log "github.com/sirupsen/logrus" // nolint:depguard
+	log "github.com/sirupsen/logrus" //nolint:depguard
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper" // nolint:depguard
+	"github.com/spf13/viper" //nolint:depguard
 	"github.com/ttacon/chalk"
 	"github.com/urfave/negroni"
 )
 
-func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
+// CreateRouter configure a router with all api resources.
+func CreateRouter(s *settings.Root, cmd *cobra.Command) (http.Handler, error) {
 	r := mux.NewRouter()
 	api := r.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/spec.json", handlers.GetSpec()).Methods("GET")
@@ -62,7 +63,7 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 
 	api.HandleFunc("/addresses", handlers.GetAddresses(config.keystore)).Methods("GET")
 
-	api.HandleFunc("/messages", handlers.GetMessages(config.mailboxStateStore, config.receivers, config.keystore, deriveKeyOptions)).Methods("GET") // nolint:lll
+	api.HandleFunc("/messages", handlers.GetMessages(config.mailboxStateStore, config.receivers, config.keystore, deriveKeyOptions)).Methods("GET") //nolint:lll
 	api.HandleFunc("/messages", handlers.SendMessage(config.sentStore, config.senders, config.keystore, deriveKeyOptions)).Methods("POST")
 
 	api.HandleFunc("/messages/{message_id}/read", handlers.GetRead(config.mailboxStateStore)).Methods("GET")
@@ -82,6 +83,7 @@ func CreateRouter(s *settings.Base, cmd *cobra.Command) (http.Handler, error) {
 	return r, nil
 }
 
+// SetupFlags created default flags and bind's the values to configuration settings.
 func SetupFlags(cmd *cobra.Command) error {
 	cmd.Flags().Int("port", defaults.Port, "Port to run server on")
 	cmd.Flags().Bool("cors-disabled", defaults.CORSDisabled, "Disable CORS on the server")
@@ -97,6 +99,7 @@ func SetupFlags(cmd *cobra.Command) error {
 	return nil
 }
 
+// CreateNegroni returns a server, with CORS and endpoints configured
 func CreateNegroni(config *settings.Server, router http.Handler) *negroni.Negroni {
 	n := negroni.New()
 

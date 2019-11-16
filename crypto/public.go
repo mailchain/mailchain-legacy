@@ -18,4 +18,5 @@ package crypto
 type PublicKey interface {
 	// Bytes returns the byte representation of the public key
 	Bytes() []byte
+	Kind() string
 }

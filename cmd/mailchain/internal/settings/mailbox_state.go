@@ -18,11 +18,13 @@ func mailboxState(s values.Store) *MailboxState {
 	return k
 }
 
+// MailboxState settings for mailbox state storage
 type MailboxState struct {
 	Kind                values.String
 	mailboxStateLevelDB MailboxStateLevelDB
 }
 
+// Produce `stores.State` based on configuration settings.
 func (s MailboxState) Produce() (stores.State, error) {
 	switch s.Kind.Get() {
 	case mailchain.StoreLevelDB:
@@ -32,6 +34,7 @@ func (s MailboxState) Produce() (stores.State, error) {
 	}
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (s MailboxState) Output() output.Element {
 	return output.Element{
 		FullName: "mailboxState",
@@ -49,16 +52,19 @@ func mailboxStateLevelDB(s values.Store) MailboxStateLevelDB {
 	}
 }
 
+// MailboxStateLevelDB settings
 type MailboxStateLevelDB struct {
 	Path    values.String
 	Handles values.Int
 	Cache   values.Int
 }
 
+// Produce a leveldb database with settings applied
 func (s MailboxStateLevelDB) Produce() (*ldbstore.Database, error) {
 	return ldbstore.New(s.Path.Get(), s.Cache.Get(), s.Handles.Get())
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (s MailboxStateLevelDB) Output() output.Element {
 	return output.Element{
 		FullName: "mailboxState.leveldb",

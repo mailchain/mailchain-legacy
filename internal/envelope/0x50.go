@@ -23,6 +23,9 @@ import (
 	"github.com/pkg/errors"
 )
 
+// URL returns the addressable location of the message, the URL may be encrypted requiring decrypter to be supplied.
+// URL is contained in the EncryptedURL which must first be decrypted.
+// The decrypted data is converted to a URL and returned.
 func (d *ZeroX50) URL(decrypter cipher.Decrypter) (*url.URL, error) {
 	loc, err := decrypter.Decrypt(d.EncryptedURL)
 	if err != nil {
@@ -31,10 +34,15 @@ func (d *ZeroX50) URL(decrypter cipher.Decrypter) (*url.URL, error) {
 	return url.Parse(string(loc))
 }
 
+// ContentsHash returns a hash of the decrypted content.
+// This can be used to verify the contents of the message have not been tampered with.
+// DecryptedHash is returned as the value for ContentsHash.
 func (d *ZeroX50) ContentsHash(decrypter cipher.Decrypter) ([]byte, error) {
 	return d.DecryptedHash, nil
 }
 
+// IntegrityHash returns a hash of the encrypted content. This can be used to validate the integrity of the contents before decrypting.
+// Decrypts the encrypted URL to extract the integrity hash.
 func (d *ZeroX50) IntegrityHash(decrypter cipher.Decrypter) ([]byte, error) {
 	loc, err := decrypter.Decrypt(d.EncryptedURL)
 	if err != nil {
@@ -48,6 +56,8 @@ func (d *ZeroX50) IntegrityHash(decrypter cipher.Decrypter) ([]byte, error) {
 	return hex.DecodeString(parts[len(parts)-1])
 }
 
+// Valid will verify the contents of the envelope.
+// Checks the presence of required fields encrypted URL and decrypted hash.
 func (d *ZeroX50) Valid() error {
 	if len(d.EncryptedURL) == 0 {
 		return errors.Errorf("EncryptedURL must not be empty")

@@ -75,3 +75,25 @@ func TestPublicKeyFromBytes(t *testing.T) {
 		})
 	}
 }
+
+func TestPublicKey_Kind(t *testing.T) {
+	assert := assert.New(t)
+	tests := []struct {
+		name string
+		pk   PublicKey
+		want string
+	}{
+		{
+			"charlotte",
+			charlottePublicKey,
+			crypto.ED25519,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.pk.Kind(); !assert.Equal(tt.want, got) {
+				t.Errorf("PublicKey.Kind() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

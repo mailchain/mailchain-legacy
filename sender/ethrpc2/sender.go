@@ -27,7 +27,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (e EthRPC2) Send(ctx context.Context, network string, to, from, data []byte, signer signer.Signer, opts sender.SendOpts) error {
+// Send transaction using the RPC2 client.
+func (e EthRPC2) Send(ctx context.Context, network string, to, from, data []byte, txSigner signer.Signer, opts sender.SendOpts) error {
 	chainID, err := e.client.NetworkID(ctx)
 	if err != nil {
 		return errors.WithMessage(err, "could not determine chain id")
@@ -55,7 +56,7 @@ func (e EthRPC2) Send(ctx context.Context, network string, to, from, data []byte
 		return errors.WithStack(err)
 	}
 
-	rawSignedTx, err := signer.Sign(ethereum.SignerOptions{
+	rawSignedTx, err := txSigner.Sign(ethereum.SignerOptions{
 		Tx:      types.NewTransaction(nonce, addrTo, value, gas, gasPrice, data),
 		ChainID: chainID,
 	})

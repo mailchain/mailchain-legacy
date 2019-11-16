@@ -24,34 +24,43 @@ import (
 )
 
 const (
-	Empty        = ""
+	// Empty default value.
+	Empty = ""
+	// KeystoreKind default value.
 	KeystoreKind = "nacl-filestore"
-
-	SentStoreKind             = mailchain.Mailchain
-	NameServiceAddressKind    = mailchain.Mailchain
+	// SentStoreKind default value.
+	SentStoreKind = mailchain.Mailchain
+	// NameServiceAddressKind default value.
+	NameServiceAddressKind = mailchain.Mailchain
+	// NameServiceDomainNameKind default value.
 	NameServiceDomainNameKind = mailchain.Mailchain
-
+	// MailboxStateKind default value.
 	MailboxStateKind = "leveldb"
-
-	ConfigFileName   = ".mailchain"
+	// ConfigFileName default value.
+	ConfigFileName = ".mailchain"
+	// ConfigSubDirName default value.
 	ConfigSubDirName = ".mailchain"
-	ConfigFileKind   = "yaml"
-
+	// ConfigFileKind default value.
+	ConfigFileKind = "yaml"
+	// CORSDisabled default value.
 	CORSDisabled = false
-
+	// Port default value.
 	Port = 8080
-
+	// SubstratePublicKeyFinder default value.
 	SubstratePublicKeyFinder = "substrate-public-key-finder"
 )
 
+// KeystorePath default value.
 func KeystorePath() string {
 	return filepath.Join(MailchainHome(), ".keystore")
 }
 
+// MailboxStatePath default value.
 func MailboxStatePath() string {
 	return filepath.Join(MailchainHome(), ".mailbox")
 }
 
+// MailchainHome directory default value.
 func MailchainHome() string {
 	d, err := homedir.Dir()
 	if err != nil {

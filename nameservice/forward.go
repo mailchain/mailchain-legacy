@@ -20,7 +20,7 @@ import (
 
 //go:generate mockgen -source=forward.go -package=nameservicetest -destination=./nameservicetest/forward_mock.go
 
-// Resolver look up address/name
+// ForwardLookup resolve a name and return address.
 type ForwardLookup interface {
 	ResolveName(ctx context.Context, protocol, network, domainName string) ([]byte, error)
 }

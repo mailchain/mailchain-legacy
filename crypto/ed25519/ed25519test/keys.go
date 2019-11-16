@@ -8,12 +8,16 @@ import (
 	"github.com/mailchain/mailchain/internal/testutil"
 )
 
-var SofiaPrivateKey crypto.PrivateKey     // nolint: gochecknoglobals
-var SofiaPublicKey crypto.PublicKey       // nolint: gochecknoglobals
-var CharlottePrivateKey crypto.PrivateKey // nolint: gochecknoglobals
-var CharlottePublicKey crypto.PublicKey   // nolint: gochecknoglobals
+// SofiaPrivateKey ed25519 key for testing purposes. Key is compromised do not use on mainnet's.
+var SofiaPrivateKey crypto.PrivateKey //nolint: gochecknoglobals
+// SofiaPublicKey ed25519 key for testing purposes. Key is compromised do not use on mainnet's.
+var SofiaPublicKey crypto.PublicKey //nolint: gochecknoglobals
+// CharlottePrivateKey ed25519 key for testing purposes. Key is compromised do not use on mainnet's.
+var CharlottePrivateKey crypto.PrivateKey //nolint: gochecknoglobals
+// CharlottePublicKey ed25519 key for testing purposes. Key is compromised do not use on mainnet's.
+var CharlottePublicKey crypto.PublicKey //nolint: gochecknoglobals
 
-// nolint: gochecknoinits
+//nolint: gochecknoinits
 func init() {
 	var err error
 	SofiaPrivateKey, err = ed25519.PrivateKeyFromBytes(testutil.MustHexDecodeString("0d9b4a3c10721991c6b806f0f343535dc2b46c74bece50a0a0d6b9f0070d3157"))

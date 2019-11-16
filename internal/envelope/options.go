@@ -19,11 +19,16 @@ import "github.com/pkg/errors"
 // CreateOptionsBuilder creates the options to derive a key from scrypt.
 type CreateOptionsBuilder func(*CreateOpts)
 
+// CreateOpts for building an envelope.
 type CreateOpts struct {
-	URL           string
+	// URL of message.
+	URL string
+	// DecryptedHash use to verify the decrypted contents have not been tampered with.
 	DecryptedHash []byte
+	// EncryptedHash use to verify the encrypted contents have not been tampered with.
 	EncryptedHash []byte
-	Resource      string
+	// Resource id of the message.
+	Resource string
 	// Kind type of envelope used
 	Kind byte
 	// Location maps to an addressable location.
@@ -32,20 +37,22 @@ type CreateOpts struct {
 
 // func (d CreateOpts) Kind() byte { return d.Kind }
 
-// WithKind adds passphrase to the dervive options
+// WithKind creates options builder with envelope type identifier.
 func WithKind(kind byte) CreateOptionsBuilder {
 	return func(o *CreateOpts) { o.Kind = kind }
 }
 
-// WithURL the encrypted location.
+// WithURL creates options builder with an encrypted URL.
 func WithURL(address string) CreateOptionsBuilder {
 	return func(o *CreateOpts) { o.URL = address }
 }
 
+// WithResource creates options builder with a resource location.
 func WithResource(resource string) CreateOptionsBuilder {
 	return func(o *CreateOpts) { o.Resource = resource }
 }
 
+// WithMessageLocationIdentifier creates options builder with a message location identifier.
 func WithMessageLocationIdentifier(mli uint64) (CreateOptionsBuilder, error) {
 	_, ok := MLIToAddress()[mli]
 	if !ok && mli != 0 {
@@ -55,12 +62,12 @@ func WithMessageLocationIdentifier(mli uint64) (CreateOptionsBuilder, error) {
 	return func(o *CreateOpts) { o.Location = mli }, nil
 }
 
-// WithDecryptedHash the encrypted resource name.
+// WithDecryptedHash creates options builder with the decrypted hash.
 func WithDecryptedHash(decryptedHash []byte) CreateOptionsBuilder {
 	return func(o *CreateOpts) { o.DecryptedHash = decryptedHash }
 }
 
-// WithencryptedHash the encrypted resource name.
+// WithEncryptedHash creates options builder with the encrypted hash.
 func WithEncryptedHash(encryptedHash []byte) CreateOptionsBuilder {
 	return func(o *CreateOpts) { o.EncryptedHash = encryptedHash }
 }

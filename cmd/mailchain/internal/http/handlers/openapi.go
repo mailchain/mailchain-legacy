@@ -14,11 +14,11 @@
 
 package handlers
 
-// nolint: gofmt
-// nolint: lll
-// nolint: funlen
+//nolint: gofmt
+//nolint: lll
+//nolint: funlen
 func spec() string {
-  return `
+	return `
 {
   "consumes": [
     "application/json"

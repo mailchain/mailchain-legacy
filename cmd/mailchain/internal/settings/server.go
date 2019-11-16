@@ -13,11 +13,13 @@ func server(s values.Store) *Server {
 	}
 }
 
+// Server configuration element.
 type Server struct {
 	Port values.Int
 	CORS CORS
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (o Server) Output() output.Element {
 	return output.Element{
 		FullName: "server",
@@ -37,11 +39,13 @@ func cors(s values.Store) CORS {
 	}
 }
 
+// CORS configuration element.
 type CORS struct {
 	AllowedOrigins values.StringSlice
 	Disabled       values.Bool
 }
 
+// Output configuration as an `output.Element` for use in exporting configuration.
 func (o CORS) Output() output.Element {
 	return output.Element{
 		FullName: "server.cors",

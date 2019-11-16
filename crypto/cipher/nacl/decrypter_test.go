@@ -10,6 +10,49 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func testNewDecrypterSr25519(t *testing.T){
+	assert := assert.New(t)
+	type args struct {
+		privateKey crypto.PrivateKey
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Decrypter
+		wantErr bool
+	}{
+		"success",
+		args{
+			sr25519test.CharlottePrivateKey,
+		},
+		&Decrypter{
+			privateKey: sr25519test.CharlottePrivateKey,
+		},
+		false,
+	},
+	{
+		"invalid-key",
+		args{
+			secp256k1test.CharlottePrivateKey,
+		},
+		nil,
+		true,
+	},
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewDecrypter(tt.args.privateKey)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewDecrypter() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("NewDecrypter() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestNewDecrypter(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {

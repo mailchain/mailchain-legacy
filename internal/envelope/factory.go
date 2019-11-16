@@ -20,6 +20,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// NewEnvelope returns a new envelope
 func NewEnvelope(encrypter cipher.Encrypter, pubkey crypto.PublicKey, o []CreateOptionsBuilder) (Data, error) {
 	opts := &CreateOpts{}
 	apply(opts, o)
@@ -35,5 +36,17 @@ func NewEnvelope(encrypter cipher.Encrypter, pubkey crypto.PublicKey, o []Create
 func apply(o *CreateOpts, opts []CreateOptionsBuilder) {
 	for _, f := range opts {
 		f(o)
+	}
+}
+
+// ParseEnvelope parses envelope from string to byte
+func ParseEnvelope(envelope string) (byte, error) {
+	switch envelope {
+	case KindString0x01:
+		return Kind0x01, nil
+	case KindString0x50:
+		return Kind0x50, nil
+	default:
+		return 0x0, errors.Errorf("`envelope` provided is invalid")
 	}
 }

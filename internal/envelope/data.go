@@ -21,8 +21,10 @@ import (
 )
 
 const (
-	Kind0x01 byte = 0x01 // Message locator
-	Kind0x50 byte = 0x50 // Alpha
+	Kind0x01       byte   = 0x01   // Message locator
+	Kind0x50       byte   = 0x50   // Alpha
+	KindString0x01 string = "0x01" // String version kind0x01
+	KindString0x50 string = "0x50" // String version kind0x01
 )
 
 type Data interface {

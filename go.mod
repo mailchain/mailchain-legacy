@@ -1,14 +1,13 @@
 module github.com/mailchain/mailchain
 
 require (
+	github.com/ChainSafe/go-schnorrkel v0.0.0-20191116185622-c928d650f6da
 	github.com/andreburgaud/crypt2go v0.0.0-20170529041511-18fdff33d8fa
 	github.com/apilayer/freegeoip v3.5.0+incompatible // indirect
 	github.com/aristanetworks/goarista v0.0.0-20190409234242-46f4bc7b73ef // indirect
 	github.com/aws/aws-sdk-go v1.19.11
 	github.com/btcsuite/btcd v0.0.0-20190410025418-9bfb2ca0346b // indirect
 	github.com/cespare/cp v1.1.1 // indirect
-	github.com/developerfred/merlin v0.1.2
-	github.com/developerfred/ristretto255 v0.1.3 //indirect
 	github.com/docker/docker v1.13.1 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/elastic/gosigar v0.10.5 // indirect

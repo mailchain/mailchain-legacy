@@ -1,120 +1,78 @@
 package sr25519
 
 import (
-	"crypto/ed25519"
-	"crypto/rand"
-
-	"github.com/developerfred/merlin"
-	r255 "github.com/developerfred/ristretto255"
+	"github.com/pkg/errors"
+	sr25519 "github.com/ChainSafe/go-schnorrkel"
 )
 
-type MiniSecretKey struct {
-	key *r255.Scalar
-}
+const (
+	chainCodeSize  = 32
+	keyPairSize    = 96
+	privateKeySize = 64
+)
 
+var SigningContext = []byte("substrate")
+
+// Private Key sr25519
 type PrivateKey struct {
-	key   [32]byte
-	nonce [32]byte
+	key *sr25519.SecretKey
 }
 
-// NewRandomElement returns a random ristretto element
-func NewRandomElement() (*r255.Element, error) {
-	e := r255.NewElement()
-	s := [64]byte{}
-	_, err := rand.Read(s[:])
+
+// Sign uses the private key to sign the message using the sr25519 signature algorithm
+func (k *PrivateKey) Sign(msg []byte) ([]byte, error) {
+	if k.key == nil {
+		return nil, errors.New("key is nil")
+	}
+
+	t := sr25519.NewSigningContext(SigningContext, msg)
+	sig, err := k.key.Sign(t)
 	if err != nil {
 		return nil, err
 	}
 
-	return e.FromUniformBytes(s[:]), nil
+	enc := sig.Encode()
+	return enc[:], nil
 }
 
-// NewRandomScalar returns a random ristretto scalar
-func NewRandomScalar() (*r255.Scalar, error) {
-	s := [64]byte{}
-	_, err := rand.Read(s[:])
-	if err != nil {
-		return nil, err
+// Encode returns the 32-byte encoding of the private key
+func (k *PrivateKey) Encode() []byte {
+	if k.key == nil {
+		return nil
 	}
 
-	ss := r255.NewScalar()
-	return ss.FromUniformBytes(s[:]), nil
+	enc := k.key.Encode()
+	return enc[:]
 }
 
-// Public gets the public key corresponding to this secret key
-func (s *PrivateKey) Public() (*PublicKey, error) {
-	e := r255.NewElement()
-	sc, err := ScalarFromBytes(s.key)
-	if err != nil {
-		return nil, err
+// Decode decodes the input bytes into a private key and sets the receiver the decoded key
+// Input must be 32 bytes, or else this function will error
+func (k *PrivateKey) Decode(in []byte) error {
+	if len(in) != privateKeySize {
+		return errors.New("input to sr25519 private key decode is not 32 bytes")
 	}
-	return &PublicKey{key: e.ScalarBaseMult(sc)}, nil
-}
-
-// NewMiniSecretKey derives a mini secret key from a byte array
-func NewMiniSecretKey(b [64]byte) *MiniSecretKey {
-	s := r255.NewScalar()
-	s.FromUniformBytes(b[:])
-	return &MiniSecretKey{key: s}
-}
-
-// NewMiniSecretKeyFromRaw derives a mini secret key from little-endian encoded raw bytes.
-func NewMiniSecretKeyFromRaw(b [32]byte) (*MiniSecretKey, error) {
-	s := r255.NewScalar()
-	err := s.Decode(b[:])
-	if err != nil {
-		return nil, err
-	}
-
-	s.Reduce()
-
-	return &MiniSecretKey{key: s}, nil
-}
-
-// NewRandomMiniSecretKey generates a mini secret key from random
-func NewRandomMiniSecretKey() (*MiniSecretKey, error) {
-	s := [64]byte{}
-	_, err := rand.Read(s[:])
-	if err != nil {
-		return nil, err
-	}
-
-	scpriv := r255.NewScalar()
-	scpriv.FromUniformBytes(s[:])
-	return &MiniSecretKey{key: scpriv}, nil
-}
-
-// ExpandUniform
-func (s *MiniSecretKey) ExpandUniform() *PrivateKey {
-	t := merlin.NewTranscript("ExpandSecretKeys")
-	t.AppendMessage([]byte("mini"), s.key.Encode([]byte{}))
-	scalarBytes := t.ExtractBytes([]byte("sk"), 64)
-	key := r255.NewScalar()
-	key.FromUniformBytes(scalarBytes[:])
-	nonce := t.ExtractBytes([]byte("no"), 32)
-	key32 := [32]byte{}
-	copy(key32[:], key.Encode([]byte{}))
-	nonce32 := [32]byte{}
-	copy(nonce32[:], nonce)
-	return &PrivateKey{
-		key:   key32,
-		nonce: nonce32,
-	}
+	b := [32]byte{}
+	copy(b[:], in)
+	k.key = &sr25519.SecretKey{}
+	return k.key.Decode(b)
 }
 
 // PrivateKeyFromBytes get a private key from seed []byte
 func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 	switch len(privKey) {
-	case ed25519.SeedSize:
-		ExpandKey := privKey.ExpandUniform()
-		return &PrivateKey{key: ExpandKey.key}, nil
-	case ed25519.PrivateKeySize:
-		secret := NewMiniSecretKey(privKey)
-		pk := secret.ExpandUhiform()
+	case privateKeySize:
+		priv := &PrivateKey{}
+		b := [32]byte{}
+		copy(b[:], privKey)
 
-		return &PrivateKey{key: pk, nonce: pk.nonce}
+		private := priv.Decode(privKey)
+		
+		return &PrivateKey{
+			&sr25519.SecretKey{private},
+		}, nil
+
 	default:
-		return nil, erros.Errorf("sr25519: bad key length")
+		return nil, errors.Errorf("sr25519: bad key length")			
 	}
-
 }
+

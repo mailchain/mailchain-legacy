@@ -23,7 +23,3 @@ debug
 tmp
 
 .idea
-
-# Debug
-strobe/debug.go
-.ionide

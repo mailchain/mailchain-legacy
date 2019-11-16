@@ -19,6 +19,7 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/pkg/errors"
 )
 
 func TestNewDecrypter(t *testing.T) {
@@ -49,16 +50,28 @@ func TestDecrypter_Decrypt(t *testing.T) {
 		d       Decrypter
 		args    args
 		want    cipher.PlainContent
+		err     error
 		wantErr bool
 	}{
 		{
 			"success",
 			NewDecrypter(),
 			args{
-				cipher.EncryptedContent([]byte("test content")),
+				bytesEncode(cipher.EncryptedContent([]byte("test content"))),
 			},
 			cipher.PlainContent([]byte("test content")),
+			nil,
 			false,
+		},
+		{
+			"fail,invalid prefix",
+			NewDecrypter(),
+			args{
+				cipher.EncryptedContent([]byte("test content")),
+			},
+			nil,
+			errors.Errorf("invalid prefix"),
+			true,
 		},
 	}
 	for _, tt := range tests {
@@ -68,6 +81,8 @@ func TestDecrypter_Decrypt(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Decrypter.Decrypt() error = %v, wantErr %v", err, tt.wantErr)
 				return
+			} else if err != nil && err.Error() != tt.err.Error() {
+				t.Errorf("Decrypter.Decrypt() error = %v, want %v", err, tt.err)
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Decrypter.Decrypt() = %v, want %v", got, tt.want)

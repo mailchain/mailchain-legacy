@@ -595,6 +595,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetProtocolsProtocol": {
+      "description": "GetProtocolsProtocol body",
       "type": "object",
       "properties": {
         "name": {
@@ -614,7 +615,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetPublicKeyResponseBody": {
-      "description": "GetBody body response",
+      "description": "GetPublicKeyResponseBody body response",
       "type": "object",
       "required": [
         "public_key",
@@ -653,7 +654,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetResolveAddressResponseBody": {
-      "description": "GetBody body response",
+      "description": "GetResolveAddressResponseBody body response",
       "type": "object",
       "required": [
         "name"
@@ -676,7 +677,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetResolveNameResponseBody": {
-      "description": "GetBody body response",
+      "description": "GetResolveNameResponseBody body response",
       "type": "object",
       "required": [
         "address"
@@ -728,6 +729,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "PostMessagesResponseHeaders": {
+      "description": "PostHeaders body",
       "type": "object",
       "required": [
         "from",
@@ -755,7 +757,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "PostMessagesResponseMessage": {
-      "description": "PostMessage",
+      "description": "PostMessage body",
       "type": "object",
       "required": [
         "headers",
@@ -789,6 +791,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "SendMessageRequestBody": {
+      "description": "PostRequestBody body",
       "type": "object",
       "required": [
         "message"
@@ -860,7 +863,7 @@ func spec() string {
       }
     },
     "NotFoundError": {
-      "description": "Description of an error.",
+      "description": "NotFoundError describes a 404 not found error.",
       "headers": {
         "code": {
           "type": "string",
@@ -878,7 +881,7 @@ func spec() string {
       "description": "StatusOK Description of an StatusOK."
     },
     "ValidationError": {
-      "description": "Description of an error.",
+      "description": "ValidationError describes a 422 validation error.",
       "headers": {
         "code": {
           "type": "string",

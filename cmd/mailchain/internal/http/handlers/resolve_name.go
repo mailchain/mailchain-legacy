@@ -136,7 +136,7 @@ type GetResolveNameResponse struct {
 	Body GetResolveNameResponseBody
 }
 
-// GetBody body response
+// GetResolveNameResponseBody body response
 //
 // swagger:model GetResolveNameResponseBody
 type GetResolveNameResponseBody struct {

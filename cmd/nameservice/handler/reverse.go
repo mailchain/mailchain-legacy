@@ -17,7 +17,7 @@ func Reverse(resolver nameservice.ReverseLookup) func(w http.ResponseWriter, r *
 	type response struct {
 		Name string `json:"name"`
 
-		// The rfc1035 error status, if present
+		// The rFC1035 error status, if present
 		// Since 0 status belongs to 'No Error', it's safe to use 'omitempty'
 		//
 		// Required: false
@@ -34,14 +34,14 @@ func Reverse(resolver nameservice.ReverseLookup) func(w http.ResponseWriter, r *
 		address, err := hex.DecodeString(strings.TrimPrefix(r.URL.Query()["address"][0], "0x"))
 		if err != nil {
 			_ = json.NewEncoder(w).Encode(response{
-				Status: nameservice.Rfc1035StatusMap[nameservice.ErrFormat],
+				Status: nameservice.RFC1035StatusMap[nameservice.ErrFormat],
 			})
 			return
 		}
 		name, err := resolver.ResolveAddress(r.Context(), protocol, network, address)
-		if nameservice.IsRfc1035Error(err) {
+		if nameservice.IsRFC1035Error(err) {
 			_ = json.NewEncoder(w).Encode(response{
-				Status: nameservice.Rfc1035StatusMap[err],
+				Status: nameservice.RFC1035StatusMap[err],
 			})
 			return
 		}

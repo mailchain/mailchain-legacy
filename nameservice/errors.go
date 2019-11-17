@@ -36,6 +36,7 @@ var (
 	ErrRefused  = errors.New("Query Refused")
 )
 
+// RFC1035StatusMap mapping of RFC1035 errors.
 var RFC1035StatusMap = map[error]int{
 	ErrFormat:   1,
 	ErrServFail: 2,

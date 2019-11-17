@@ -17,7 +17,7 @@ func Forward(resolver nameservice.ForwardLookup) func(w http.ResponseWriter, r *
 	type response struct {
 		Address string `json:"address"`
 
-		// The rfc1035 error status, if present
+		// The rFC1035 error status, if present
 		// Since 0 status belongs to 'No Error', it's safe to use 'omitempty'
 		//
 		// Required: false
@@ -33,9 +33,9 @@ func Forward(resolver nameservice.ForwardLookup) func(w http.ResponseWriter, r *
 		}
 
 		resolvedAddress, err := resolver.ResolveName(r.Context(), protocol, network, r.URL.Query()["domain-name"][0])
-		if nameservice.IsRfc1035Error(err) {
+		if nameservice.IsRFC1035Error(err) {
 			_ = json.NewEncoder(w).Encode(response{
-				Status: nameservice.Rfc1035StatusMap[err],
+				Status: nameservice.RFC1035StatusMap[err],
 			})
 			return
 		}

@@ -72,6 +72,7 @@ type GetProtocolsResponse struct {
 	Protocols []GetProtocolsProtocol `json:"protocols"`
 }
 
+// GetProtocolsProtocol body
 type GetProtocolsProtocol struct {
 	// in: body
 	Name string `json:"name"`

@@ -19,7 +19,6 @@ func (c Client) Send(ctx context.Context, network string, to, from, data []byte,
 	if !ok {
 		return errors.Errorf("no sender found for relay")
 	}
-	
 	return s.Send(ctx, network, to, from, data, txSigner, opts)
 }
 

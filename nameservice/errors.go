@@ -37,7 +37,7 @@ var (
 )
 
 // RFC1035StatusMap mapping of RFC1035 errors.
-var RFC1035StatusMap = map[error]int{
+var RFC1035StatusMap = map[error]int{ // nolint: gochecknoglobals
 	ErrFormat:   1,
 	ErrServFail: 2,
 	ErrNXDomain: 3,

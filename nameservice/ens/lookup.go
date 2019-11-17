@@ -23,6 +23,7 @@ import (
 	ens "github.com/wealdtech/go-ens"
 )
 
+// NewLookupService creates a new ethereum name service (ENS) lookup service.
 func NewLookupService(clientURL string) (nameservice.Lookup, error) {
 	client, err := ethclient.Dial(clientURL)
 	if err != nil {
@@ -33,10 +34,12 @@ func NewLookupService(clientURL string) (nameservice.Lookup, error) {
 	}, nil
 }
 
+// LookupService for ethereum name service (ENS).
 type LookupService struct {
 	client *ethclient.Client
 }
 
+// ResolveName against the ethereum name service (ENS).
 func (s LookupService) ResolveName(ctx context.Context, protocol, network, domainName string) ([]byte, error) {
 	address, err := ens.Resolve(s.client, domainName)
 	if err != nil {
@@ -45,6 +48,7 @@ func (s LookupService) ResolveName(ctx context.Context, protocol, network, domai
 	return address.Bytes(), nil
 }
 
+// ResolveAddress against the ethereum name service (ENS).
 func (s LookupService) ResolveAddress(ctx context.Context, protocol, network string, address []byte) (string, error) {
 	ethAddress := common.BytesToAddress(address)
 	reverse, err := ens.ReverseResolve(s.client, &ethAddress)

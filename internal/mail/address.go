@@ -74,10 +74,12 @@ func fromAddress(address *nm.Address) (*Address, error) {
 	if address == nil {
 		return nil, errors.Errorf("can not convert nil address")
 	}
+
 	parts := strings.Split(address.Address, "@")
 	if len(parts) != 2 {
 		return nil, errors.Errorf("missing @ in address")
 	}
+
 	return &Address{
 		ChainAddress: parts[0],
 		DisplayName:  address.Name,

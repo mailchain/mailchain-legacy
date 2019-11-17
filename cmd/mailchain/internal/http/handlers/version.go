@@ -35,7 +35,7 @@ type GetVersionResponse struct {
 	Body GetVersionResponseBody
 }
 
-// GetBody body response
+// GetVersionResponseBody response
 //
 // swagger:model GetVersionResponseBody
 type GetVersionResponseBody struct {

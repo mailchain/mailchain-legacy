@@ -177,6 +177,7 @@ type PostHeaders struct {
 	ReplyTo string `json:"reply-to"`
 }
 
+// PostMessage
 // swagger:model PostMessagesResponseMessage
 type PostMessage struct {
 	// Headers

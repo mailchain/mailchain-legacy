@@ -23,6 +23,7 @@ import (
 )
 
 const (
+	// Mailchain value.
 	Mailchain = "mailchain"
 
 	// Empty default value.
@@ -52,10 +53,14 @@ const (
 )
 
 const (
-	ClientEtherscan       = "etherscan"
+	// ClientEtherscan etherscan client name.
+	ClientEtherscan = "etherscan"
+	// ClientEtherscanNoAuth etherscan without authentication client name.
 	ClientEtherscanNoAuth = "etherscan-no-auth"
-	ClientEthereumRPC2    = "ethereum-rpc2"
-	ClientRelay           = "relay"
+	// ClientEthereumRPC2 etherscan JSON RPC 2.0 client name.
+	ClientEthereumRPC2 = "ethereum-rpc2"
+	// ClientRelay relay client name.
+	ClientRelay = "relay"
 )
 
 // KeystorePath default value.

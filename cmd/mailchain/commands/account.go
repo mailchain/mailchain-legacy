@@ -42,7 +42,7 @@ Make sure you backup your keys regularly.`,
 	return cmd, nil
 }
 
-func accountAddCmd(ks keystore.Store, passphrasePrompt, privateKeyPrompt prompts.SecretFunc) *cobra.Command {
+func accountAddCmd(ks keystore.Store, passphrasePrompt, privateKeyPrompt prompts.SecretFunc) *cobra.Command { //nolint: funlen
 	cmd := &cobra.Command{
 		Use:   "add",
 		Short: "Add private key",

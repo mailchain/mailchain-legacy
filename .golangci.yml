@@ -79,6 +79,9 @@ linters-settings:
       - experimental
     disabled-checks:
       - wrapperFunc
+  gofmt:
+    # simplify code: gofmt with `-s` option, true by default
+    simplify: true
 linters:
   presets:
     - bugs

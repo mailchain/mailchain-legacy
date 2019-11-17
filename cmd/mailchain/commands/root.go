@@ -37,6 +37,7 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 	if err != nil {
 		return nil, err
 	}
+
 	cmd.AddCommand(account)
 	cmd.AddCommand(settingsCmd(config))
 
@@ -44,6 +45,7 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 	if err != nil {
 		return nil, err
 	}
+
 	cmd.AddCommand(serve)
 
 	cmd.AddCommand(versionCmd())

@@ -18,7 +18,7 @@ package handlers
 //nolint: lll
 //nolint: funlen
 func spec() string {
-  return `
+	return `
 {
   "consumes": [
     "application/json"

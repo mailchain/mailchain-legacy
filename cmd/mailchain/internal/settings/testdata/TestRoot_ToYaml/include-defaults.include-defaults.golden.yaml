@@ -47,6 +47,20 @@ protocols:
         public-key-finder: "substrate-public-key-finder"
         receiver: ""
         sender: ""
+      kusama-testnet:
+        disabled: false
+        nameservice-address: ""
+        nameservice-domain-name: ""
+        public-key-finder: "substrate-public-key-finder"
+        receiver: ""
+        sender: ""
+      polkadot-testnet:
+        disabled: false
+        nameservice-address: ""
+        nameservice-domain-name: ""
+        public-key-finder: "substrate-public-key-finder"
+        receiver: ""
+        sender: ""
 nameservice-address:
   mailchain:
     base-url: "https://ns.mailchain.xyz/"

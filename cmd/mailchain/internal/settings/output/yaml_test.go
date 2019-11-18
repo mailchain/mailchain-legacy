@@ -356,14 +356,14 @@ func Test_yamlElement(t *testing.T) {
 				Element{
 					"element.parent-element",
 					[]Attribute{
-						Attribute{FullName: "key1", IsDefault: false, Value: []string{"value1", "value2"}},
-						Attribute{FullName: "key2", IsDefault: false, Value: "value"},
+						{FullName: "key1", IsDefault: false, Value: []string{"value1", "value2"}},
+						{FullName: "key2", IsDefault: false, Value: "value"},
 					},
 					[]Element{
-						Element{
+						{
 							FullName: "sub-element",
 							Attributes: []Attribute{
-								Attribute{FullName: "subkey2", IsDefault: false, Value: "value"},
+								{FullName: "subkey2", IsDefault: false, Value: "value"},
 							},
 						},
 					},
@@ -402,10 +402,10 @@ func TestToYaml(t *testing.T) {
 			args{
 				Root{
 					[]Element{
-						Element{
+						{
 							FullName: "sub-element",
 							Attributes: []Attribute{
-								Attribute{FullName: "subkey2", IsDefault: false, Value: "value"},
+								{FullName: "subkey2", IsDefault: false, Value: "value"},
 							},
 						},
 					},

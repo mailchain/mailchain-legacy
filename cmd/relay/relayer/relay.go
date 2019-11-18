@@ -7,9 +7,10 @@ import (
 	"github.com/mailchain/mailchain/errs"
 )
 
+// RelayFunc definition of a relay.
 type RelayFunc func(req *http.Request) (*http.Request, error)
 
-// ServeHTTP calls f(w, r).
+// HandleRequest accepts all the HTTP calls and relay's them.
 func (f RelayFunc) HandleRequest(w http.ResponseWriter, req *http.Request) {
 	r, err := f(req)
 	if err != nil {
@@ -29,6 +30,7 @@ func (f RelayFunc) HandleRequest(w http.ResponseWriter, req *http.Request) {
 	_, _ = io.Copy(w, resp.Body)
 }
 
+// ChangeURL changes the URL of the incoming request.
 func ChangeURL(url string) RelayFunc {
 	return func(inReq *http.Request) (*http.Request, error) {
 		outReq, err := http.NewRequest(inReq.Method, url, inReq.Body)

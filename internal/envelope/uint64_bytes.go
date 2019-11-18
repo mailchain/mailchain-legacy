@@ -60,11 +60,14 @@ func parseUInt64Bytes(buf []byte) (i uint64, b []byte, err error) {
 		return 0, []byte{}, errors.Errorf("\"buf\" must not be empty")
 	}
 	bufLen := int(buf[0])
+
 	if len(buf) < bufLen+1 {
 		return 0, []byte{}, errors.Errorf("\"buf\" is too short to be valid")
 	}
+
 	intPortion := buf[1 : 1+bufLen]
 	v, n := binary.Uvarint(intPortion)
+
 	if n != len(intPortion) {
 		return 0, []byte{}, errors.Errorf("uint64 did not consume all data")
 	}

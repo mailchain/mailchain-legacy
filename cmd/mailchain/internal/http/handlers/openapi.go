@@ -226,11 +226,11 @@ func spec() string {
         }
       },
       "put": {
-        "description": "Put encrypted input of all mailchain messages.",
+        "description": "Mark message as read.",
         "tags": [
           "Messages"
         ],
-        "summary": "Put inputs.",
+        "summary": "PutRead",
         "operationId": "PutRead",
         "parameters": [
           {

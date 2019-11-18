@@ -14,7 +14,7 @@
 
 package handlers
 
-// Description of an error.
+// ValidationError describes a 422 validation error.
 // swagger:response ValidationError
 type ValidationError struct {
 	// Code describing the error
@@ -26,7 +26,7 @@ type ValidationError struct {
 	Message string `json:"message"`
 }
 
-// Description of an error.
+// NotFoundError describes a 404 not found error.
 // swagger:response NotFoundError
 type NotFoundError struct {
 	// Code describing the error

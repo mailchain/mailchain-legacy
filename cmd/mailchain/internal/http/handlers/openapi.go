@@ -595,6 +595,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetProtocolsProtocol": {
+      "description": "GetProtocolsProtocol body",
       "type": "object",
       "properties": {
         "name": {
@@ -614,7 +615,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetPublicKeyResponseBody": {
-      "description": "GetBody body response",
+      "description": "GetPublicKeyResponseBody body response",
       "type": "object",
       "required": [
         "public_key",
@@ -653,7 +654,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetResolveAddressResponseBody": {
-      "description": "GetBody body response",
+      "description": "GetResolveAddressResponseBody body response",
       "type": "object",
       "required": [
         "name"
@@ -666,7 +667,7 @@ func spec() string {
           "example": "mailchain.eth"
         },
         "status": {
-          "description": "The rfc1035 status code describing the outcome of the lookup\n\n+ 0 - No Error\n+ 1 - Format Error\n+ 2 - Server Failure\n+ 3 - Non-Existent Domain\n+ 4 - Not Implemented\n+ 5 - Query Refused",
+          "description": "The RFC1035 status code describing the outcome of the lookup\n\n+ 0 - No Error\n+ 1 - Format Error\n+ 2 - Server Failure\n+ 3 - Non-Existent Domain\n+ 4 - Not Implemented\n+ 5 - Query Refused",
           "type": "integer",
           "format": "int64",
           "x-go-name": "Status",
@@ -676,7 +677,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetResolveNameResponseBody": {
-      "description": "GetBody body response",
+      "description": "GetResolveNameResponseBody body response",
       "type": "object",
       "required": [
         "address"
@@ -689,7 +690,7 @@ func spec() string {
           "example": "0x4ad2b251246aafc2f3bdf3b690de3bf906622c51"
         },
         "status": {
-          "description": "The rfc1035 status code describing the outcome of the lookup\n\n+ 0 - No Error\n+ 1 - Format Error\n+ 2 - Server Failure\n+ 3 - Non-Existent Domain\n+ 4 - Not Implemented\n+ 5 - Query Refused",
+          "description": "The rFC1035 status code describing the outcome of the lookup\n\n+ 0 - No Error\n+ 1 - Format Error\n+ 2 - Server Failure\n+ 3 - Non-Existent Domain\n+ 4 - Not Implemented\n+ 5 - Query Refused",
           "type": "integer",
           "format": "int64",
           "x-go-name": "Status",
@@ -699,7 +700,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetVersionResponseBody": {
-      "description": "GetBody body response",
+      "description": "GetVersionResponseBody response",
       "type": "object",
       "required": [
         "version",
@@ -728,6 +729,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "PostMessagesResponseHeaders": {
+      "description": "PostHeaders body",
       "type": "object",
       "required": [
         "from",
@@ -755,6 +757,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "PostMessagesResponseMessage": {
+      "description": "PostMessage body",
       "type": "object",
       "required": [
         "headers",
@@ -788,6 +791,7 @@ func spec() string {
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "SendMessageRequestBody": {
+      "description": "PostRequestBody body",
       "type": "object",
       "required": [
         "message"
@@ -859,7 +863,7 @@ func spec() string {
       }
     },
     "NotFoundError": {
-      "description": "Description of an error.",
+      "description": "NotFoundError describes a 404 not found error.",
       "headers": {
         "code": {
           "type": "string",
@@ -877,7 +881,7 @@ func spec() string {
       "description": "StatusOK Description of an StatusOK."
     },
     "ValidationError": {
-      "description": "Description of an error.",
+      "description": "ValidationError describes a 422 validation error.",
       "headers": {
         "code": {
           "type": "string",

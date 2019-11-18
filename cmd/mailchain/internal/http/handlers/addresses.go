@@ -71,6 +71,7 @@ type GetAddressesResponse struct {
 	Addresses []string `json:"addresses"`
 }
 
+// GetAddressesRequest body
 // swagger:parameters GetAddresses
 type GetAddressesRequest struct {
 	// Network to use when finding addresses.

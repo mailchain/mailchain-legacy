@@ -31,11 +31,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-//nolint: gocyclo
-//nolint: funlen
 // GetMessages returns a handler get spec
 func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.Store,
-	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) {
+	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { //nolint: funlen, gocyclo
 	// Get swagger:route GET /messages Messages GetMessages
 	//
 	// Get Mailchain messages.

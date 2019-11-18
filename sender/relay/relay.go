@@ -14,12 +14,13 @@ import (
 )
 
 // Send a transaction via the relay.
-func (c Client) Send(ctx context.Context, network string, to, from, data []byte, signer signer.Signer, opts sender.SendOpts) error {
+func (c Client) Send(ctx context.Context, network string, to, from, data []byte, txSigner signer.Signer, opts sender.SendOpts) error {
 	s, ok := c.senders[network]
 	if !ok {
 		return errors.Errorf("no sender found for relay")
 	}
-	return s.Send(ctx, network, to, from, data, signer, opts)
+
+	return s.Send(ctx, network, to, from, data, txSigner, opts)
 }
 
 // NewClient create new API client

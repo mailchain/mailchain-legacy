@@ -12,8 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package mailchain
+package settings
 
-const RequiresValue = "-"
-const Mailchain = "mailchain"
-const Relay = "relay"
+const (
+	// StoreNACLFilestore settings name for nacl encrypted filestore.
+	StoreNACLFilestore = "nacl-filestore"
+	// StoreS3 settings name for S3 storage.
+	StoreS3 = "s3"
+	// StoreLevelDB settings name for level db storage.
+	StoreLevelDB = "leveldb"
+)

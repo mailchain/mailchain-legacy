@@ -67,7 +67,7 @@ func TestGetProtocols(t *testing.T) {
 					return settings.FromStore(m)
 				}(),
 			},
-			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[\"kovan\",\"mainnet\",\"rinkeby\",\"ropsten\"]}]}\n",
+			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[{\"name\":\"kovan\",\"id\":\"\"},{\"name\":\"mainnet\",\"id\":\"\"},{\"name\":\"rinkeby\",\"id\":\"\"},{\"name\":\"ropsten\",\"id\":\"\"}]}]}\n",
 			http.StatusOK,
 		},
 		{
@@ -81,7 +81,7 @@ func TestGetProtocols(t *testing.T) {
 					return settings.FromStore(m)
 				}(),
 			},
-			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[\"goerli\",\"kovan\",\"mainnet\",\"rinkeby\",\"ropsten\"]}]}\n",
+			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[{\"name\":\"goerli\",\"id\":\"\"},{\"name\":\"kovan\",\"id\":\"\"},{\"name\":\"mainnet\",\"id\":\"\"},{\"name\":\"rinkeby\",\"id\":\"\"},{\"name\":\"ropsten\",\"id\":\"\"}]}]}\n",
 			http.StatusOK,
 		},
 	}

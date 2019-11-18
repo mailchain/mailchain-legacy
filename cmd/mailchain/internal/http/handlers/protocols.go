@@ -49,9 +49,7 @@ func GetProtocols(base *settings.Root) func(w http.ResponseWriter, r *http.Reque
 			}
 		}
 
-		sort.Slice(networks, func(i, j int) bool {
-			return networks[i].Name < networks[j].Name
-		})
+		sort.Slice(networks, func(i, j int) bool { return networks[i].Name < networks[j].Name })
 		resP := GetProtocolsProtocol{
 			Name:     protocol.Kind,
 			Networks: networks,

@@ -73,4 +73,5 @@ func PublicKeyFromBytes(keyBytes []byte) (*PublicKey, error) {
 	return &PublicKey{
 		key: &sr25519.PublicKey{public},
 	}, nil
+
 }

@@ -21,13 +21,13 @@ import (
 )
 
 // EncodeByProtocol takes an address as `[]byte` then selects the relevant encoding method to encode it as string.
-func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
+func EncodeByProtocol(in []byte, protocol string) (encoded string, err error) {
 	switch protocol {
 	case protocols.Ethereum:
-		encoded, encodingType = encoding.EncodeZeroX(in)
+		encoded = encoding.EncodeZeroX(in)
 	default:
 		err = errors.Errorf("%q unsupported protocol", protocol)
 	}
 
-	return encoded, encodingType, err
+	return encoded, err
 }

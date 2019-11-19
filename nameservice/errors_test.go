@@ -95,7 +95,7 @@ func Test_WrapError(t *testing.T) {
 	}
 }
 
-func TestIsRfc1035Error(t *testing.T) {
+func TestIsRFC1035Error(t *testing.T) {
 	type args struct {
 		err error
 	}
@@ -105,35 +105,35 @@ func TestIsRfc1035Error(t *testing.T) {
 		want bool
 	}{
 		{
-			"Rfc1035Error-ErrFormat",
+			"RFC1035Error-ErrFormat",
 			args{
 				ErrFormat,
 			},
 			true,
 		},
 		{
-			"Rfc1035Error-ErrServFail",
+			"RFC1035Error-ErrServFail",
 			args{
 				ErrServFail,
 			},
 			true,
 		},
 		{
-			"Rfc1035Error-ErrNXDomain",
+			"RFC1035Error-ErrNXDomain",
 			args{
 				ErrNXDomain,
 			},
 			true,
 		},
 		{
-			"Rfc1035Error-ErrNotImp",
+			"RFC1035Error-ErrNotImp",
 			args{
 				ErrNotImp,
 			},
 			true,
 		},
 		{
-			"Rfc1035Error-ErrRefused",
+			"RFC1035Error-ErrRefused",
 			args{
 				ErrRefused,
 			},
@@ -149,7 +149,7 @@ func TestIsRfc1035Error(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsRfc1035Error(tt.args.err); got != tt.want {
+			if got := IsRFC1035Error(tt.args.err); got != tt.want {
 				t.Errorf("IsInvalidAddressError() = %v, want %v", got, tt.want)
 			}
 		})

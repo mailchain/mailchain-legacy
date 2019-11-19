@@ -20,7 +20,7 @@ import (
 
 //go:generate mockgen -source=reverse.go -package=nameservicetest -destination=./nameservicetest/reverse_mock.go
 
-// Resolver look up address/name
+// ReverseLookup look up address/name
 type ReverseLookup interface {
 	ResolveAddress(ctx context.Context, protocol, network string, address []byte) (string, error)
 }

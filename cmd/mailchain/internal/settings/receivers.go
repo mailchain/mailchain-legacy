@@ -1,7 +1,7 @@
 package settings
 
 import (
-	"github.com/mailchain/mailchain"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/mailbox"
@@ -11,8 +11,8 @@ import (
 func receivers(s values.Store) *Receivers {
 	return &Receivers{
 		clients: map[string]ReceiverClient{
-			mailchain.ClientEtherscanNoAuth: etherscanReceiverNoAuth(s),
-			mailchain.ClientEtherscan:       etherscanReceiver(s),
+			defaults.ClientEtherscanNoAuth: etherscanReceiverNoAuth(s),
+			defaults.ClientEtherscan:       etherscanReceiver(s),
 		},
 	}
 }

@@ -18,22 +18,24 @@ import (
 	"log"
 	"path/filepath"
 
-	"github.com/mailchain/mailchain"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 )
 
 const (
+	// Mailchain value.
+	Mailchain = "mailchain"
+
 	// Empty default value.
 	Empty = ""
 	// KeystoreKind default value.
 	KeystoreKind = "nacl-filestore"
 	// SentStoreKind default value.
-	SentStoreKind = mailchain.Mailchain
+	SentStoreKind = Mailchain
 	// NameServiceAddressKind default value.
-	NameServiceAddressKind = mailchain.Mailchain
+	NameServiceAddressKind = Mailchain
 	// NameServiceDomainNameKind default value.
-	NameServiceDomainNameKind = mailchain.Mailchain
+	NameServiceDomainNameKind = Mailchain
 	// MailboxStateKind default value.
 	MailboxStateKind = "leveldb"
 	// ConfigFileName default value.
@@ -48,6 +50,17 @@ const (
 	Port = 8080
 	// SubstratePublicKeyFinder default value.
 	SubstratePublicKeyFinder = "substrate-public-key-finder"
+)
+
+const (
+	// ClientEtherscan etherscan client name.
+	ClientEtherscan = "etherscan"
+	// ClientEtherscanNoAuth etherscan without authentication client name.
+	ClientEtherscanNoAuth = "etherscan-no-auth"
+	// ClientEthereumRPC2 etherscan JSON RPC 2.0 client name.
+	ClientEthereumRPC2 = "ethereum-rpc2"
+	// ClientRelay relay client name.
+	ClientRelay = "relay"
 )
 
 // KeystorePath default value.

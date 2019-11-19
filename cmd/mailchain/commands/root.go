@@ -30,13 +30,14 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 	}
 	cmd.PersistentFlags().String("config", "", "config file (default is $HOME/.mailchain/.mailchain.yaml)")
 	cmd.PersistentFlags().String("log-level", "warn", "log level [Panic,Fatal,Error,Warn,Info,Debug]")
-	cmd.PersistentFlags().Bool("prevent-init-config", false, "stop automatically creating config if non is found")
+	cmd.PersistentFlags().Bool("prevent-init-config", false, "stop automatically creating config if no file is found")
 
 	config := settings.FromStore(v)
 	account, err := accountCmd(config)
 	if err != nil {
 		return nil, err
 	}
+
 	cmd.AddCommand(account)
 	cmd.AddCommand(settingsCmd(config))
 
@@ -44,6 +45,7 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 	if err != nil {
 		return nil, err
 	}
+
 	cmd.AddCommand(serve)
 
 	cmd.AddCommand(versionCmd())

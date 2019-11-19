@@ -1,7 +1,6 @@
 package settings
 
 import (
-	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
@@ -28,7 +27,7 @@ type Keystore struct {
 // Produce `keystore.Store` based on configuration settings.
 func (s Keystore) Produce() (ks.Store, error) {
 	switch s.Kind.Get() {
-	case mailchain.StoreNACLFilestore:
+	case StoreNACLFilestore:
 		return s.naclFileStore.Produce()
 	default:
 		return nil, errors.Errorf("%q is an unsupported keystore", s.Kind.Get())

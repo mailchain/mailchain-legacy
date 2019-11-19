@@ -91,6 +91,7 @@ func writeTemporaryKeyFile(fs afero.Fs, file string, content []byte) (string, er
 
 		return "", fs.Remove(f.Name())
 	}
+
 	f.Close()
 
 	return f.Name(), nil

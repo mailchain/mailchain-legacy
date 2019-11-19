@@ -93,9 +93,9 @@ func GetRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 
 // PutRead returns a handler put spec
 func PutRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
-	// PutRequest open api documentation
+	// putRequest open api documentation
 	// swagger:parameters PutRead
-	type putRequest struct {
+	type putRequest struct { //nolint: unused
 		// Unique id of the message
 		//
 		// in: path

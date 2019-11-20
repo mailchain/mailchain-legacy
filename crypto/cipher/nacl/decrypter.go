@@ -31,6 +31,7 @@ func (d Decrypter) Decrypt(data cipher.EncryptedContent) (cipher.PlainContent, e
 	}
 
 	return easyOpen(data, privKeyBytes)
+
 }
 
 func validatePrivateKeyType(pk crypto.PrivateKey) ([]byte, error) {

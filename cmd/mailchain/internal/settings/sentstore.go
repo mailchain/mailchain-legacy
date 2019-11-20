@@ -1,7 +1,6 @@
 package settings
 
 import (
-	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
@@ -28,9 +27,9 @@ type SentStore struct {
 // Produce `stores.Sent` based on configuration settings.
 func (ss SentStore) Produce() (stores.Sent, error) {
 	switch ss.Kind.Get() {
-	case mailchain.StoreS3:
+	case StoreS3:
 		return ss.s3.Produce()
-	case mailchain.Mailchain:
+	case defaults.Mailchain:
 		return ss.mailchain.Produce()
 	default:
 		return nil, errors.Errorf("%q is an unsupported sent store", ss.Kind.Get())

@@ -17,9 +17,9 @@ import (
 	"github.com/pkg/errors"
 )
 
+// PostHandler stores message in the configured file storage
 func PostHandler(base string, store storage.Store, maxContents int) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO: check message contents don't already exist
 		messageID := []byte{}
 		if len(r.URL.Query()["contents-hash"]) != 1 {
 			errs.JSONWriter(w, http.StatusPreconditionFailed, errors.Errorf("`contents-hash` must be specified once"))

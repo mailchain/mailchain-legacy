@@ -17,8 +17,8 @@ package commands
 import "github.com/spf13/viper" //nolint: depguard
 
 // Execute run the command
-func Execute(viper *viper.Viper) error {
-	root, err := rootCmd(viper)
+func Execute(settingsStore *viper.Viper) error {
+	root, err := rootCmd(settingsStore)
 	if err != nil {
 		return err
 	}

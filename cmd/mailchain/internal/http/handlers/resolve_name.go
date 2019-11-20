@@ -64,9 +64,9 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("%q not supported", protocol+"/"+network))
 			return
 		}
-		if nameservice.IsRfc1035Error(err) {
+		if nameservice.IsRFC1035Error(err) {
 			_ = json.NewEncoder(w).Encode(GetResolveNameResponseBody{
-				Status: nameservice.Rfc1035StatusMap[err],
+				Status: nameservice.RFC1035StatusMap[err],
 			})
 			return
 		}
@@ -136,7 +136,7 @@ type GetResolveNameResponse struct {
 	Body GetResolveNameResponseBody
 }
 
-// GetBody body response
+// GetResolveNameResponseBody body response
 //
 // swagger:model GetResolveNameResponseBody
 type GetResolveNameResponseBody struct {
@@ -146,7 +146,7 @@ type GetResolveNameResponseBody struct {
 	// example: 0x4ad2b251246aafc2f3bdf3b690de3bf906622c51
 	Address string `json:"address"`
 
-	// The rfc1035 status code describing the outcome of the lookup
+	// The rFC1035 status code describing the outcome of the lookup
 	//
 	// + 0 - No Error
 	// + 1 - Format Error

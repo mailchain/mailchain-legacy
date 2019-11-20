@@ -169,6 +169,7 @@ func parsePostRequest(r *http.Request) (*PostRequest, error) {
 	}, nil
 }
 
+// PostHeaders body
 // swagger:model PostMessagesResponseHeaders
 type PostHeaders struct {
 	// The sender of the message
@@ -183,6 +184,7 @@ type PostHeaders struct {
 	ReplyTo string `json:"reply-to"`
 }
 
+// PostMessage body
 // swagger:model PostMessagesResponseMessage
 type PostMessage struct {
 	// Headers
@@ -204,6 +206,7 @@ type PostMessage struct {
 	PublicKey string `json:"public-key"`
 }
 
+// PostRequestBody body
 // swagger:model SendMessageRequestBody
 type PostRequestBody struct {
 	// required: true

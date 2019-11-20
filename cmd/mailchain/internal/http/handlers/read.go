@@ -93,9 +93,9 @@ func GetRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 
 // PutRead returns a handler put spec
 func PutRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
-	// PutRequest open api documentation
+	// putRequest open api documentation
 	// swagger:parameters PutRead
-	type putRequest struct {
+	type putRequest struct { //nolint: unused
 		// Unique id of the message
 		//
 		// in: path
@@ -104,9 +104,9 @@ func PutRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 	}
 	// Put swagger:route PUT /messages/{message_id}/read Messages PutRead
 	//
-	// Put inputs.
+	// PutRead.
 	//
-	// Put encrypted input of all mailchain messages.
+	// Mark message as read.
 	// Responses:
 	//   200: StatusOK
 	//   404: NotFoundError

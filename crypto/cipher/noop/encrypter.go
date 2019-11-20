@@ -22,5 +22,5 @@ type Encrypter struct {
 // PlainContent will be return as EncryptedContent with the encryption method
 // prepend as the first byte.
 func (e Encrypter) Encrypt(recipientPublicKey crypto.PublicKey, message cipher.PlainContent) (cipher.EncryptedContent, error) {
-	return cipher.EncryptedContent(message), nil
+	return bytesEncode(cipher.EncryptedContent(message)), nil
 }

@@ -26,3 +26,14 @@ func MustHexDecodeString(input string) []byte {
 	}
 	return dec
 }
+
+// MustHexDecodeStringTurbo é uma melhora do decode String para strings que começam com 0x
+// substrate and polkadot address
+// Get string and change to byte array
+func MustHexDecodeStringTurbo(seedkey string) []byte {
+	b := []byte(seedkey)
+	encoded := hex.EncodeToString(b)
+	mustByte := MustHexDecodeString(encoded)
+
+	return mustByte
+}

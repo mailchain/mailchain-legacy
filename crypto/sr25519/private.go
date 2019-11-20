@@ -1,8 +1,9 @@
 package sr25519
 
 import (
-	"github.com/pkg/errors"
 	sr25519 "github.com/ChainSafe/go-schnorrkel"
+
+	"github.com/pkg/errors"
 )
 
 const (
@@ -13,13 +14,12 @@ const (
 
 var SigningContext = []byte("substrate")
 
-// Private Key sr25519
+// PrivateKey schnorrkel curve
 type PrivateKey struct {
 	key *sr25519.SecretKey
 }
 
-
-// Sign uses the private key to sign the message using the sr25519 signature algorithm
+// Sign uses the private key to sign the message using th signature algorithm
 func (k *PrivateKey) Sign(msg []byte) ([]byte, error) {
 	if k.key == nil {
 		return nil, errors.New("key is nil")
@@ -49,7 +49,7 @@ func (k *PrivateKey) Encode() []byte {
 // Input must be 32 bytes, or else this function will error
 func (k *PrivateKey) Decode(in []byte) error {
 	if len(in) != privateKeySize {
-		return errors.New("input to sr25519 private key decode is not 32 bytes")
+		return errors.New("input t private key decode is not 32 bytes")
 	}
 	b := [32]byte{}
 	copy(b[:], in)
@@ -57,22 +57,28 @@ func (k *PrivateKey) Decode(in []byte) error {
 	return k.key.Decode(b)
 }
 
+// Private key with byte seed
+func NewPrivateKey(b []byte) *PrivateKey {
+	kb := [32]byte{}
+	copy(kb[:], b)
+
+	priv, err := sr25519.NewMiniSecretKeyFromRaw(kb)
+	if err != nil {
+	}
+
+	s := (*sr25519.MiniSecretKey).ExpandUniform(priv)
+
+	return &PrivateKey{s}
+}
+
 // PrivateKeyFromBytes get a private key from seed []byte
 func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 	switch len(privKey) {
 	case privateKeySize:
-		priv := &PrivateKey{}
-		b := [32]byte{}
-		copy(b[:], privKey)
-
-		private := priv.Decode(privKey)
-		
-		return &PrivateKey{
-			&sr25519.SecretKey{private},
-		}, nil
-
+		secret := NewPrivateKey(privKey)
+		return secret, nil
 	default:
-		return nil, errors.Errorf("sr25519: bad key length")			
+		return nil, errors.Errorf("bad key length")
+
 	}
 }
-

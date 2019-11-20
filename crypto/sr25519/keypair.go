@@ -3,7 +3,8 @@ package sr25519
 import (
 	sr25519 "github.com/ChainSafe/go-schnorrkel"
 )
-// Key pair Sr25519
+
+// Keypair type have public and private key
 type Keypair struct {
 	public  *PublicKey
 	private *PrivateKey
@@ -47,5 +48,5 @@ func (kp *Keypair) Public() *PublicKey {
 
 // Private returns the private key corresponding to this keypair
 func (kp *Keypair) Private() *PrivateKey {
-	return kp.private 
+	return kp.private
 }

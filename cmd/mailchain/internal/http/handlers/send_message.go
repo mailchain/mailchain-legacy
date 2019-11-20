@@ -27,7 +27,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
-	env "github.com/mailchain/mailchain/internal/envelope"
+	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/mail"
@@ -96,7 +96,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			return
 		}
 
-		envelope, err := env.ParseEnvelope(req.Body.Envelope)
+		env, err := envelope.ParseEnvelope(req.Body.Envelope)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not parse `envelope`"))
 			return
@@ -104,7 +104,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 
 		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network,
 			msg, req.Body.publicKey,
-			encrypter, messageSender, sent, signer, envelope); err != nil {
+			encrypter, messageSender, sent, signer, env); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}

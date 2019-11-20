@@ -7,6 +7,7 @@ import (
 	"github.com/mailchain/mailchain"
 )
 
+// GetVersion handler that the running version.
 func GetVersion() func(w http.ResponseWriter, r *http.Request) {
 	// Get swagger:route GET /version Version GetVersion
 	//
@@ -35,7 +36,7 @@ type GetVersionResponse struct {
 	Body GetVersionResponseBody
 }
 
-// GetBody body response
+// GetVersionResponseBody response
 //
 // swagger:model GetVersionResponseBody
 type GetVersionResponseBody struct {

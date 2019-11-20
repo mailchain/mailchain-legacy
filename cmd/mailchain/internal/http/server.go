@@ -111,7 +111,9 @@ func CreateNegroni(config *settings.Server, router http.Handler) *negroni.Negron
 			MaxAge:         86400,
 		}))
 	}
+
 	n.UseHandler(router)
+
 	return n
 }
 

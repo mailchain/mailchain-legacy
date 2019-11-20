@@ -11,8 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//nolint: lll
-package handlers
+
+package handlers //nolint: lll
 
 import (
 	"encoding/json"
@@ -80,7 +80,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 	}
 }
 
-// GetPublicKey pubic key from address request
+// GetPublicKeyRequest pubic key from address request
 // swagger:parameters GetPublicKey
 type GetPublicKeyRequest struct {
 	// Address to to use when performing public key lookup.
@@ -145,7 +145,7 @@ type GetPublicKeyResponse struct {
 	Body GetPublicKeyResponseBody
 }
 
-// GetBody body response
+// GetPublicKeyResponseBody body response
 //
 // swagger:model GetPublicKeyResponseBody
 type GetPublicKeyResponseBody struct {

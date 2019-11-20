@@ -15,12 +15,14 @@ import (
 	"github.com/pkg/errors"
 )
 
+// S3Store implements the sent store using S3.
 type S3Store struct {
 	headObjectFunc func(input *s3.HeadObjectInput) (*s3.HeadObjectOutput, error)
 	sent           stores.Sent
 	bucket         string
 }
 
+// Exists checks if a file already exists returning an error if it does.
 func (s S3Store) Exists(messageID mail.ID, contentsHash, integrityHash, contents []byte) error {
 	_, err := s.headObjectFunc(&s3.HeadObjectInput{
 		Bucket: aws.String(s.bucket),
@@ -39,6 +41,7 @@ func (s S3Store) Exists(messageID mail.ID, contentsHash, integrityHash, contents
 	return nil
 }
 
+// Put stores the message in S3 as an object.
 func (s S3Store) Put(messageID mail.ID, contentsHash, integrityHash, contents []byte) (
 	address, resource string, mli uint64, err error) {
 	loc := s.sent.Key(messageID, contentsHash, contents)

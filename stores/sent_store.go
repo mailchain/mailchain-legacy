@@ -67,6 +67,7 @@ func (s SentStore) PutMessage(messageID mail.ID, contentsHash, msg []byte, heade
 	if err != nil {
 		return "", "", envelope.MLIMailchain, err
 	}
+
 	req.Header.Add("Content-Type", "application/octet-stream")
 
 	resp, err := s.doRequest(req)

@@ -16,19 +16,23 @@ package noop
 
 import (
 	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/pkg/errors"
 )
 
-// NewDecrypter create a new decrypter attaching the private key to it
-func NewDecrypter() Decrypter {
-	return Decrypter{}
+// bytesEncode encode the encrypted data to the hex format
+func bytesEncode(data cipher.EncryptedContent) cipher.EncryptedContent {
+	encodedData := make(cipher.EncryptedContent, 1+len(data))
+	encodedData[0] = cipher.NoOperation
+	copy(encodedData[1:], data)
+
+	return encodedData
 }
 
-// Decrypter will decrypt data using AES256CBC method
-type Decrypter struct {
-}
+// bytesDecode convert the hex format in to the encrypted data format
+func bytesDecode(raw cipher.EncryptedContent) (cipher.EncryptedContent, error) {
+	if raw[0] != cipher.NoOperation {
+		return nil, errors.Errorf("invalid prefix")
+	}
 
-// Decrypt data using recipient private key with AES in CBC mode.
-func (d Decrypter) Decrypt(data cipher.EncryptedContent) (cipher.PlainContent, error) {
-	content, err := bytesDecode(data)
-	return cipher.PlainContent(content), err
+	return raw[1:], nil
 }

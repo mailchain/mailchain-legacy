@@ -99,7 +99,7 @@ func TestNewEnvelope(t *testing.T) {
 	}
 }
 
-func Test_checkForEmpties(t *testing.T) {
+func Test_parseEvelope(t *testing.T) {
 	type args struct {
 		envelope string
 	}
@@ -131,7 +131,7 @@ func Test_checkForEmpties(t *testing.T) {
 				"",
 			},
 			0x0,
-			false,
+			true,
 		},
 	}
 	for _, tt := range tests {
@@ -141,7 +141,7 @@ func Test_checkForEmpties(t *testing.T) {
 				t.Errorf("ParseEnvelope() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if tt.want != got {
 				t.Errorf("ParseEnvelope() = %v, want %v", got, tt.want)
 			}
 		})

@@ -22,5 +22,6 @@ func MustDecodeZeroX(in string) []byte {
 	if err != nil {
 		panic(err)
 	}
+	
 	return dec
 }

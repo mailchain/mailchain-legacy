@@ -26,7 +26,9 @@ func (e Encrypter) Encrypt(recipientPublicKey crypto.PublicKey, message cipher.P
 		return nil, err
 	}
 
-	return easySeal(message, recipientPublicKey.Bytes(), e.rand)
+	encrypted, err := easySeal(message, recipientPublicKey.Bytes(), e.rand)
+
+	return bytesEncode(encrypted), err
 }
 
 func validatePublicKeyType(recipientPublicKey crypto.PublicKey) error {

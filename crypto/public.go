@@ -21,4 +21,5 @@ type PublicKey interface {
 	// The returned bytes are used for encrypting, verifying a signature, and locating an address.
 	Bytes() []byte
 	Kind() string
+	Verify() bool
 }

@@ -21,6 +21,7 @@ import (
 
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
+	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/pkg/errors"
 )
@@ -38,6 +39,11 @@ func (pk PublicKey) Kind() string {
 // Bytes returns the byte representation of the public key
 func (pk PublicKey) Bytes() []byte {
 	return ethcrypto.CompressPubkey(&pk.ecdsa)
+}
+
+// Verify verifies whether sig is a valid signature of message.
+func (pk PublicKey) Verify(message, sig []byte) bool {
+	return secp256k1.VerifySignature(&pk.ecdsa, message, sig)
 }
 
 // PublicKeyFromBytes create a public key from []byte

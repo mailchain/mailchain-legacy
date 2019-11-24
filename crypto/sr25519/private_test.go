@@ -4,11 +4,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchian/mailchain/crypto/sr25519"
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/stretchr/testify/assert"
 )
-
 
 func TestPrivateKey_Bytes(t *testing.T) {
 	assert := assert.New(t)
@@ -47,7 +45,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    sr25519.PrivateKey
+		want    PrivateKey
 		wantErr bool
 	}{
 		{
@@ -55,7 +53,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 			args{
 				sofiaSeed,
 			},
-			&sofiaPrivateKey,
+			sofiaPrivateKey,
 			false,
 		},
 		{
@@ -63,7 +61,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 			args{
 				sofiaPrivateKeyBytes,
 			},
-			&sofiaPrivateKey,
+			sofiaPrivateKey,
 			false,
 		},
 		{
@@ -71,7 +69,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 			args{
 				charlotteSeed,
 			},
-			&charlottePrivateKey,
+			charlottePrivateKey,
 			false,
 		},
 		{
@@ -79,7 +77,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 			args{
 				charlottePrivateKeyBytes,
 			},
-			&charlottePrivateKey,
+			charlottePrivateKey,
 			false,
 		},
 		{

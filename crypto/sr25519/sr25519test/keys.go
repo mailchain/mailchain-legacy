@@ -1,11 +1,9 @@
 package sr25519test
 
 import (
+	"crypto"
+	"github.com/mailchain/mailchain/internal/encoding"
 	"log"
-
-	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/sr25519"
-	"github.com/mailchain/mailchain/internal/testutil"
 )
 
 // SofiaPrivateKey sr25519 key for testing purposes. Key is compromised do not use on mainnet's.
@@ -19,7 +17,16 @@ var CharlottePublicKey crypto.PublicKey //nolint: gochecknoglobals
 
 func int() {
 	var err error
-	SofiaPrivateKey, err = sr25519.PrivateKeyFromBytes(testutil.MustHexDecodeStringTurbo("0x5c6d7adf75bda1180c225d25f3aa8dc174bbfb3cddee11ae9a85982f6faf791a"))
+
+	sofiaByte := [32]byte{}
+	encodedSofia, err := encoding.DecodeZeroX("0x5c6d7adf75bda1180c225d25f3aa8dc174bbfb3cddee11ae9a85982f6faf791a")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	copy(sofiaByte[:], encodedSofia)
+
+	SofiaPrivateKey, err = PrivateKeyFromBytes(encodedSofia)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,7 +35,14 @@ func int() {
 
 	SofiaPrivateKey = SofiaPrivateKey.PublicKey()
 
-	CharlottePrivateKey, err = sr25519.PrivateKeyFromBytes(testutil.MustHexDecodeStringTurbo("0x23b063a581fd8e5e847c4e2b9c494247298791530f5293be369e8bf23a45d2bd"))
+	charlotteByte := [32]byte{}
+	encodedCharlotte, err := encoding.DecodeZeroX("0x23b063a581fd8e5e847c4e2b9c494247298791530f5293be369e8bf23a45d2bd")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	copy(charlotteByte[:], encodedCharlotte)
+	CharlottePrivateKey, err = PrivateKeyFromBytes(encodedCharlotte)
 	if err != nil {
 		log.Fatal(err)
 	}

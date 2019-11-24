@@ -1,8 +1,6 @@
 package sr25519
 
-import (
-	sr25519 "github.com/ChainSafe/go-schnorrkel"
-)
+import "github.com/ChainSafe/go-schnorrkel"
 
 // Keypair type have public and private key
 type Keypair struct {
@@ -11,7 +9,7 @@ type Keypair struct {
 }
 
 // NewKeypair returns a Sr25519 Keypair given a schnorrkel secret key
-func NewKeypair(priv *sr25519.SecretKey) (*Keypair, error) {
+func NewKeypair(priv *schnorrkel.SecretKey) (*Keypair, error) {
 	pub, err := priv.Public()
 	if err != nil {
 		return nil, err
@@ -25,7 +23,7 @@ func NewKeypair(priv *sr25519.SecretKey) (*Keypair, error) {
 
 // GenerateKeypair returns a new sr25519 keypair
 func GenerateKeypair() (*Keypair, error) {
-	priv, pub, err := sr25519.GenerateKeypair()
+	priv, pub, err := schnorrkel.GenerateKeypair()
 	if err != nil {
 		return nil, err
 	}

@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/sr25519"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -3,7 +3,8 @@ package sr25519
 import (
 	"errors"
 
-	sr25519 "github.com/ChainSafe/go-schnorrkel"
+	"github.com/ChainSafe/go-schnorrkel"
+	"github.com/mailchain/mailchain/crypto"
 )
 
 const (
@@ -12,7 +13,19 @@ const (
 
 // PublicKey is a member
 type PublicKey struct {
-	key *sr25519.PublicKey
+	key *schnorrkel.PublicKey
+}
+
+func (pk PublicKey) Bytes() []byte {
+	b := pk.key.Encode()
+	kb := []byte{}
+	copy(kb, b[:])
+	return kb
+}
+
+// Kind returns the key type
+func (pk PublicKey) Kind() string {
+	return crypto.SR25519
 }
 
 // Verify uses the sr25519 signature algorithm to verify that the message was signed by
@@ -26,13 +39,13 @@ func (k *PublicKey) Verify(msg, sig []byte) bool {
 	b := [64]byte{}
 	copy(b[:], sig)
 
-	s := &sr25519.Signature{}
+	s := &schnorrkel.Signature{}
 	err := s.Decode(b)
 	if err != nil {
 		return false
 	}
 
-	t := sr25519.NewSigningContext(SigningContext, msg)
+	t := schnorrkel.NewSigningContext(SigningContext, msg)
 	return k.key.Verify(s, t)
 }
 
@@ -54,19 +67,21 @@ func (k *PublicKey) Decode(in []byte) error {
 	}
 	b := [32]byte{}
 	copy(b[:], in)
-	k.key = &sr25519.PublicKey{}
+	k.key = &schnorrkel.PublicKey{}
 	return k.key.Decode(b)
 }
 
 // Convert this public key to a byte array.
 func PublicKeyFromBytes(keyBytes []byte) (*PublicKey, error) {
-	if len(keyBytes) != publicKeySize {
+	switch len(keyBytes) {
+	case publicKeySize:
+		b := [32]byte{}
+		copy(b[:], keyBytes)
+		k := &schnorrkel.PublicKey{}
+		k.Decode(b)
+		return &PublicKey{k}, nil
+	default:
 		return nil, errors.New("public key must be 32 bytes")
-	}
-	b := [32]byte{}
-	copy(b[:], keyBytes)
-	k := sr25519.PublicKey{}
-	pub := k.Decode(b)
 
-	return sr25519.PublicKey{pub}, nil
+	}
 }

@@ -1,7 +1,8 @@
 package sr25519
 
 import (
-	sr25519 "github.com/ChainSafe/go-schnorrkel"
+	"github.com/ChainSafe/go-schnorrkel"
+	"github.com/mailchain/mailchain/crypto"
 
 	"github.com/pkg/errors"
 )
@@ -16,7 +17,28 @@ var SigningContext = []byte("substrate")
 
 // Private Key sr25519
 type PrivateKey struct {
-	key *sr25519.SecretKey
+	key *schnorrkel.SecretKey
+}
+
+// Bytes returns the byte representation of the private key
+func (pk PrivateKey) Bytes() []byte {
+	b := pk.key.Encode()
+	kb := []byte{}
+	copy(kb, b[:])
+	return kb
+}
+
+// Kind is the type of private key.
+func (pk PrivateKey) Kind() string {
+	return crypto.SR25519
+}
+
+func (pk PrivateKey) PublicKey() crypto.PublicKey {
+	kp, err := NewKeypair(pk.key)
+	if err != nil {
+		panic(err)
+	}
+	return kp.Public()
 }
 
 // Sign uses the private key to sign the message using the sr25519 signature algorithm
@@ -25,7 +47,7 @@ func (k *PrivateKey) Sign(msg []byte) ([]byte, error) {
 		return nil, errors.New("key is nil")
 	}
 
-	t := sr25519.NewSigningContext(SigningContext, msg)
+	t := schnorrkel.NewSigningContext(SigningContext, msg)
 	sig, err := k.key.Sign(t)
 	if err != nil {
 		return nil, err
@@ -53,7 +75,7 @@ func (k *PrivateKey) Decode(in []byte) error {
 	}
 	b := [32]byte{}
 	copy(b[:], in)
-	k.key = &sr25519.SecretKey{}
+	k.key = &schnorrkel.SecretKey{}
 	return k.key.Decode(b)
 }
 
@@ -62,13 +84,11 @@ func NewPrivateKey(b []byte) *PrivateKey {
 	kb := [32]byte{}
 	copy(kb[:], b)
 
-	priv, err := sr25519.NewMiniSecretKeyFromRaw(kb)
+	priv, err := schnorrkel.NewMiniSecretKeyFromRaw(kb)
 	if err != nil {
 	}
 
-	s := (*sr25519.MiniSecretKey).ExpandUniform(priv)
-
-	return &PrivateKey{s}
+	return &PrivateKey{priv.ExpandUniform()}
 }
 
 // PrivateKeyFromBytes get a private key from seed []byte

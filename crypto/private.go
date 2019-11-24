@@ -20,6 +20,8 @@ type PrivateKey interface {
 	Bytes() []byte
 	// PublicKey from the PrivateKey
 	PublicKey() PublicKey
-
+	// Kind returns the type of the key
 	Kind() string
+	// Sign signs the message with the key and returns the signature.
+	Sign(message []byte) ([]byte, error)
 }

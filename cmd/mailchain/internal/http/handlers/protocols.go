@@ -41,10 +41,10 @@ func GetProtocols(base *settings.Root) func(w http.ResponseWriter, r *http.Reque
 				switch network.Kind() {
 				case "edgeware-testnet":
 					networks = append(networks, Network{Name: network.Kind(), ID: "42"})
-				case "polkadot-testnet":
-					networks = append(networks, Network{Name: network.Kind(), ID: "0"})
-				case "kusama-testnet":
-					networks = append(networks, Network{Name: network.Kind(), ID: "2"})
+				// case "polkadot-testnet":
+				// 	networks = append(networks, Network{Name: network.Kind(), ID: "0"})
+				// case "kusama-testnet":
+				// 	networks = append(networks, Network{Name: network.Kind(), ID: "2"})
 				}
 			}
 		}

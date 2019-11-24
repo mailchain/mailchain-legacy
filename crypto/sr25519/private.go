@@ -79,26 +79,28 @@ func (k *PrivateKey) Decode(in []byte) error {
 	return k.key.Decode(b)
 }
 
-// Private key with byte seed
-func NewPrivateKey(b []byte) *PrivateKey {
+func keyFromSeed(b []byte) (*schnorrkel.SecretKey, error) {
 	kb := [32]byte{}
 	copy(kb[:], b)
 
 	priv, err := schnorrkel.NewMiniSecretKeyFromRaw(kb)
 	if err != nil {
+		return nil, err
 	}
 
-	return &PrivateKey{priv.ExpandUniform()}
+	return priv.ExpandUniform(), nil
 }
 
 // PrivateKeyFromBytes get a private key from seed []byte
 func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 	switch len(privKey) {
 	case privateKeySize:
-		secret := NewPrivateKey(privKey)
-		return secret, nil
+		privKey, err := keyFromSeed(privKey)
+		if err != nil {
+			return nil, err
+		}
+		return &PrivateKey{key: privKey}, nil
 	default:
 		return nil, errors.Errorf("bad key length")
-
 	}
 }

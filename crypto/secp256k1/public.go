@@ -16,6 +16,7 @@ package secp256k1
 
 import (
 	"crypto/ecdsa"
+	"crypto/sha256"
 	"encoding/hex"
 	"strings"
 
@@ -33,6 +34,19 @@ type PublicKey struct {
 // Kind returns the key type
 func (pk PublicKey) Kind() string {
 	return crypto.SECP256K1
+}
+
+// Verify verifies whether sig is a valid signature of message.
+func (pk PublicKey) Verify(message, sig []byte) bool {
+	// VerifySignature requires the signature to be in
+	// [ R || S ] format, so we remove the recid if present.
+	if len(sig) == 65 {
+		sig = sig[:64]
+	}
+
+	hash := sha256.Sum256(message)
+
+	return ethcrypto.VerifySignature(pk.Bytes(), hash[:], sig)
 }
 
 // Bytes returns the byte representation of the public key

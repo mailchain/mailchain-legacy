@@ -12,24 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package mailbox
+package nacl
 
 import (
-	"context"
-
 	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/pkg/errors"
 )
 
-type Transaction struct {
-	Data    cipher.EncryptedContent
-	BlockID []byte
-	Hash    []byte
+// bytesEncode encode the encrypted data to the hex format
+func bytesEncode(data cipher.EncryptedContent) cipher.EncryptedContent {
+	encodedData := make(cipher.EncryptedContent, 1+len(data))
+	encodedData[0] = cipher.NACL
+	copy(encodedData[1:], data)
+
+	return encodedData
 }
 
-//go:generate mockgen -source=receiver.go -package=mailboxtest -destination=./mailboxtest/receiver_mock.go
-// Receiver gets encrypted data from blockchain.
-type Receiver interface {
-	Receive(ctx context.Context, network string, address []byte) ([]Transaction, error)
-}
+// bytesDecode convert the hex format in to the encrypted data format
+func bytesDecode(raw cipher.EncryptedContent) (cipher.EncryptedContent, error) {
+	if raw[0] != cipher.NACL {
+		return nil, errors.Errorf("invalid prefix")
+	}
 
-// type ReceiverOpts interface{}
+	return raw[1:], nil
+}

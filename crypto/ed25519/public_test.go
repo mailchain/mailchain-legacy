@@ -106,7 +106,7 @@ func TestPublicKey_Verify(t *testing.T) {
 		message []byte
 		sig     []byte
 		want    bool
-	} {
+	}{
 		{
 			"success-charlotte",
 			charlottePublicKey,

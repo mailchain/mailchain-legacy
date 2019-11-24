@@ -24,6 +24,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/mailbox"
@@ -63,7 +64,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for address"))
 			return
 		}
-		encryptedSlice, err := receiver.Receive(ctx, req.Network, req.addressBytes)
+		transactions, err := receiver.Receive(ctx, req.Network, req.addressBytes)
 		if mailbox.IsNetworkNotSupportedError(err) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("network `%s` does not have etherscan client configured", req.Network))
 			return
@@ -77,9 +78,9 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not get `decrypter`"))
 			return
 		}
-		messages := []getMessage{}
-		for _, transactionData := range encryptedSlice { // TODO: thats an arbitrary limit
-			message, err := mailbox.ReadMessage(transactionData, decrypter)
+		var messages []getMessage
+		for _, transactionData := range transactions { //nolint TODO: thats an arbitrary limit
+			message, err := mailbox.ReadMessage(transactionData.Data, decrypter)
 			if err != nil {
 				messages = append(messages, getMessage{
 					Status: err.Error(),
@@ -96,9 +97,13 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 					MessageID:   message.ID.HexString(),
 					ContentType: message.Headers.ContentType,
 				},
-				Read:    readStatus,
-				Subject: message.Headers.Subject,
-				Status:  "ok",
+				Read:                    readStatus,
+				Subject:                 message.Headers.Subject,
+				Status:                  "ok",
+				BlockID:                 string(transactionData.BlockID),
+				BlockIDEncoding:         encoding.TypeHex0XPrefix,
+				TransactionHash:         string(transactionData.Hash),
+				TransactionHashEncoding: encoding.TypeHex0XPrefix,
 			})
 		}
 
@@ -204,6 +209,18 @@ type getMessage struct {
 	// readOnly: true
 	// example: true
 	Read bool `json:"read"`
+	// Transaction's block number
+	// readOnly: true
+	BlockID string `json:"block-id,omitempty"`
+	// Transaction's block number encoding type used by the specific protocol
+	// readOnly: true
+	BlockIDEncoding string `json:"block-id-encoding,omitempty"`
+	// Transaction's hash
+	// readOnly: true
+	TransactionHash string `json:"transaction-hash,omitempty"`
+	// Transaction's hash encoding type used by the specific protocol
+	// readOnly: true
+	TransactionHashEncoding string `json:"transaction-hash-encoding,omitempty"`
 }
 
 // swagger:model GetMessagesResponseHeaders

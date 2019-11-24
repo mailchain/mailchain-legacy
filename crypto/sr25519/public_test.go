@@ -4,7 +4,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,7 +41,7 @@ func TestPublicKeyFromBytes(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    crypto.PublicKey
+		want    PublicKey
 		wantErr bool
 	}{
 		{
@@ -50,7 +49,7 @@ func TestPublicKeyFromBytes(t *testing.T) {
 			args{
 				sofiaPublicKeyBytes,
 			},
-			&sofiaPublicKey,
+			sofiaPublicKey,
 			false,
 		},
 		{

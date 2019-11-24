@@ -13,7 +13,7 @@ func TestPrivateKey_Bytes(t *testing.T) {
 	tests := []struct {
 		name    string
 		pk      PrivateKey
-		want    [32]byte
+		want    []byte
 		wantErr bool
 	}{
 		{

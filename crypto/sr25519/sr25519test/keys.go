@@ -2,8 +2,12 @@ package sr25519test
 
 import (
 	"crypto"
-	"github.com/mailchain/mailchain/internal/encoding"
 	"log"
+
+	"github.com/mailchain/mailchain/internal/encoding"
+
+	//TODO
+	"github.com/mailchain/mailchain/crypto"
 )
 
 // SofiaPrivateKey sr25519 key for testing purposes. Key is compromised do not use on mainnet's.

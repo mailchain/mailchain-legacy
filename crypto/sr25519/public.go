@@ -71,15 +71,27 @@ func (k *PublicKey) Decode(in []byte) error {
 	return k.key.Decode(b)
 }
 
+func schnorrkelPublicKeyFromBytes(in []byte) (*schnorrkel.PublicKey, error) {
+	if len(in) != publicKeySize {
+		return nil, errors.New("input to sr25519 public key decode is not 32 bytes")
+	}
+	b := [32]byte{}
+	copy(b[:], in)
+	key := &schnorrkel.PublicKey{}
+	err := key.Decode(b)
+
+	return key, err
+}
+
 // Convert this public key to a byte array.
 func PublicKeyFromBytes(keyBytes []byte) (*PublicKey, error) {
 	switch len(keyBytes) {
 	case publicKeySize:
-		b := [32]byte{}
-		copy(b[:], keyBytes)
-		k := &schnorrkel.PublicKey{}
-		k.Decode(b)
-		return &PublicKey{k}, nil
+		pubKey, err := schnorrkelPublicKeyFromBytes(keyBytes)
+		if err != nil {
+			return nil, err
+		}
+		return &PublicKey{pubKey}, nil
 	default:
 		return nil, errors.New("public key must be 32 bytes")
 

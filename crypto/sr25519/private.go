@@ -11,6 +11,7 @@ const (
 	chainCodeSize  = 32
 	keyPairSize    = 96
 	privateKeySize = 64
+	seedSize       = 32
 )
 
 var SigningContext = []byte("substrate")
@@ -22,8 +23,8 @@ type PrivateKey struct {
 
 // Bytes returns the byte representation of the private key
 func (pk PrivateKey) Bytes() []byte {
-	b := pk.key.Encode()
-	kb := []byte{}
+	b := pk.Encode()
+	kb := make([]byte, len(b))
 	copy(kb, b[:])
 	return kb
 }
@@ -33,7 +34,8 @@ func (pk PrivateKey) Kind() string {
 	return crypto.SR25519
 }
 
-func (pk PrivateKey) PublicKey() crypto.PublicKey {
+// input privatekey export PublickKey
+func (pk PrivateKey) PublicKey() PublicKey {
 	kp, err := NewKeypair(pk.key)
 	if err != nil {
 		panic(err)
@@ -81,7 +83,7 @@ func (k *PrivateKey) Decode(in []byte) error {
 
 func keyFromSeed(b []byte) (*schnorrkel.SecretKey, error) {
 	kb := [32]byte{}
-	copy(kb[:], b)
+	copy(b, kb[:])
 
 	priv, err := schnorrkel.NewMiniSecretKeyFromRaw(kb)
 	if err != nil {
@@ -100,6 +102,22 @@ func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 			return nil, err
 		}
 		return &PrivateKey{key: privKey}, nil
+	case seedSize:
+		privKey, err := keyFromSeed(privKey)
+		if err != nil {
+			return nil, err
+		}
+		return &PrivateKey{key: privKey}, nil
+	case keyPairSize:
+		privKey, err := keyFromSeed(privKey)
+		if err != nil {
+			return nil, err
+		}
+		pk, err := NewKeypair(privKey)
+		if err != nil {
+			return nil, err
+		}
+		return pk.private, nil
 	default:
 		return nil, errors.Errorf("bad key length")
 	}

@@ -18,7 +18,7 @@ type PublicKey struct {
 
 func (pk PublicKey) Bytes() []byte {
 	b := pk.key.Encode()
-	kb := []byte{}
+	kb := make([]byte, len(b))
 	copy(kb, b[:])
 	return kb
 }
@@ -31,7 +31,7 @@ func (pk PublicKey) Kind() string {
 // Verify uses the sr25519 signature algorithm to verify that the message was signed by
 // this public key; it returns true if this key created the signature for the message,
 // false otherwise
-func (k *PublicKey) Verify(msg, sig []byte) bool {
+func (k *PublicKey) Verify(message, sig []byte) bool {
 	if k.key == nil {
 		return false
 	}
@@ -45,7 +45,7 @@ func (k *PublicKey) Verify(msg, sig []byte) bool {
 		return false
 	}
 
-	t := schnorrkel.NewSigningContext(SigningContext, msg)
+	t := schnorrkel.NewSigningContext(SigningContext, message)
 	return k.key.Verify(s, t)
 }
 

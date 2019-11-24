@@ -57,7 +57,7 @@ func TestPublicKeyFromBytes(t *testing.T) {
 			args{
 				[]byte{0x72, 0x3c, 0xaa, 0x23},
 			},
-			nil,
+			sofiaPublicKey,
 			true,
 		},
 	}

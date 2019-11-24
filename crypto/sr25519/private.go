@@ -14,12 +14,12 @@ const (
 
 var SigningContext = []byte("substrate")
 
-// PrivateKey schnorrkel curve
+// Private Key sr25519
 type PrivateKey struct {
 	key *sr25519.SecretKey
 }
 
-// Sign uses the private key to sign the message using th signature algorithm
+// Sign uses the private key to sign the message using the sr25519 signature algorithm
 func (k *PrivateKey) Sign(msg []byte) ([]byte, error) {
 	if k.key == nil {
 		return nil, errors.New("key is nil")
@@ -49,7 +49,7 @@ func (k *PrivateKey) Encode() []byte {
 // Input must be 32 bytes, or else this function will error
 func (k *PrivateKey) Decode(in []byte) error {
 	if len(in) != privateKeySize {
-		return errors.New("input t private key decode is not 32 bytes")
+		return errors.New("input to sr25519 private key decode is not 32 bytes")
 	}
 	b := [32]byte{}
 	copy(b[:], in)

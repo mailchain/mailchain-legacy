@@ -1,84 +1,78 @@
 package sr25519
 
 import (
-	"bytes"
+	"reflect"
 	"testing"
+
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/sr25519"
+	"github.com/stretchr/testify/assert"
 )
 
-// func TestPublicKey_Bytes(t *testing.T) {
-// 	tests := []struct {
-// 		name string
-// 		pk   PublicKey
-// 		want []byte
-// 	}{
-// 		{
-// 			"sofia",
-// 			sofiaPublicKey,
-// 			sofiaPublicKeyBytes,
-// 		},
-// 		{
-// 			"charlotte",
-// 			charlottePublicKey,
-// 			charlottePublicKeyBytes,
-// 		},
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			if got := tt.pk.Bytes(); !reflect.DeepEqual(got, tt.want) {
-// 				t.Errorf("PublicKey.Bytes() = %v, want %v", got, tt.want)
-// 			}
-// 		})
-// 	}
-// }
+func TestPublicKey_Bytes(t *testing.T) {
+	tests := []struct {
+		name string
+		pk   PublicKey
+		want []byte
+	}{
+		{
+			"sofia",
+			sofiaPublicKey,
+			sofiaPublicKeyBytes,
+		},
+		{
+			"charlotte",
+			charlottePublicKey,
+			charlottePublicKeyBytes,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.pk.Bytes(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("PublicKey.Bytes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
-// func TestPublicKeyFromBytes(t *testing.T) {
-// 	assert := assert.New(t)
-// 	type args struct {
-// 		keyBytes []byte
-// 	}
-// 	tests := []struct {
-// 		name    string
-// 		args    args
-// 		want    crypto.PublicKey
-// 		wantErr bool
-// 	}{
-// 		{
-// 			"sofia",
-// 			args{
-// 				sofiaPublicKeyBytes,
-// 			},
-// 			&sofiaPublicKey,
-// 			false,
-// 		},
-// 		{
-// 			"err-too-short",
-// 			args{
-// 				[]byte{0x72, 0x3c, 0xaa, 0x23},
-// 			},
-// 			nil,
-// 			true,
-// 		},
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			got, err := PublicKeyFromBytes(tt.args.keyBytes)
-// 			if (err != nil) != tt.wantErr {
-// 				t.Errorf("PublicKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
-// 				return
-// 			}
-// 			if !assert.Equal(tt.want, got) {
-// 				t.Errorf("PublicKeyFromBytes() = %v, want %v", got, tt.want)
-// 			}
-// 		})
-// 	}
-// }
-
-func TestNewPublicKey(t *testing.T) {
-	// pub := sofiaPublicKeyBytes
-	pub := [32]byte{140, 122, 228, 195, 50, 29, 229, 250, 94, 159, 183, 123, 208, 116, 7, 78, 229, 29, 247, 64, 172, 187, 92, 144, 121, 56, 242, 3, 116, 99, 100, 32}
-	pk := NewPublicKey(pub)
-	enc := pk.Encode()
-	if !bytes.Equal(enc[:], pub[:]) {
-		t.Fatal("Fail: got %x expected %x", pub, enc)
+func TestPublicKeyFromBytes(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		keyBytes []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    crypto.PublicKey
+		wantErr bool
+	}{
+		{
+			"sofia",
+			args{
+				sofiaPublicKeyBytes,
+			},
+			&sofiaPublicKey,
+			false,
+		},
+		{
+			"err-too-short",
+			args{
+				[]byte{0x72, 0x3c, 0xaa, 0x23},
+			},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := PublicKeyFromBytes(tt.args.keyBytes)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("PublicKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("PublicKeyFromBytes() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

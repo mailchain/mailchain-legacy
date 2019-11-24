@@ -4,7 +4,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchian/mailchain/crypto/sr25519"
+	"github.com/mailchain/mailchain/internal/encoding"
 )
 
 
@@ -45,7 +47,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *PrivateKey
+		want    sr25519.PrivateKey
 		wantErr bool
 	}{
 		{
@@ -88,7 +90,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 			nil,
 			true,
 		},
-	},
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := PrivateKeyFromBytes(tt.args.pk)

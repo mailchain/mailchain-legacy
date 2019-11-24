@@ -4,12 +4,10 @@ import (
 	"errors"
 
 	sr25519 "github.com/ChainSafe/go-schnorrkel"
-	r255 "github.com/gtank/ristretto255"
 )
 
 const (
 	publicKeySize = 32
-	seedSize      = 32
 )
 
 // PublicKey is a member
@@ -60,27 +58,15 @@ func (k *PublicKey) Decode(in []byte) error {
 	return k.key.Decode(b)
 }
 
-// New Public key sr25519
-// PublicKey -> Key -> PublicKey -> key
-func NewPublicKey(b [32]byte) *PublicKey {
-	e := r255.NewElement()
-	e.Decode(b[:])
-
-	srPubKey := &sr25519.PublicKey{e}
-	// pubKey := PublicKey{srPubKey}
-	// pbk := &pubKey
-
-	return &PublicKey{key: srPubKey}
-}
-
 // Convert this public key to a byte array.
 func PublicKeyFromBytes(keyBytes []byte) (*PublicKey, error) {
 	if len(keyBytes) != publicKeySize {
 		return nil, errors.New("public key must be 32 bytes")
 	}
+	b := [32]byte{}
+	copy(b[:], keyBytes)
+	k := sr25519.PublicKey{}
+	pub := k.Decode(b)
 
-	kb := [32]byte{}
-	copy(kb[:], keyBytes)
-	pub := NewPublicKey(kb)
-	return pub, nil
+	return sr25519.PublicKey{pub}, nil
 }

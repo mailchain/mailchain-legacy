@@ -104,9 +104,9 @@ func PutRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 	}
 	// Put swagger:route PUT /messages/{message_id}/read Messages PutRead
 	//
-	// Put inputs.
+	// PutRead.
 	//
-	// Put encrypted input of all mailchain messages.
+	// Mark message as read.
 	// Responses:
 	//   200: StatusOK
 	//   404: NotFoundError

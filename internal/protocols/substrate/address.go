@@ -59,11 +59,11 @@ func prefixWithNetwork(network string, publicKey crypto.PublicKey) ([]byte, erro
 		// 42 = 0x2a
 		return append([]byte{0x2a}, publicKey.Bytes()...), nil
 	case PolkadotTestnet:
-		// 0 = 0000
-		return append([]byte{0000}, publicKey.Bytes()...), nil
+		// 0 = 0x00
+		return append([]byte{0x00}, publicKey.Bytes()...), nil
 	case KusamaTestnet:
-		// 2 = 0002
-		return append([]byte{0002}, publicKey.Bytes()...), nil
+		// 2 = 0x02
+		return append([]byte{0x02}, publicKey.Bytes()...), nil
 	default:
 		return nil, errors.Errorf("unknown address prefix for %q", network)
 	}

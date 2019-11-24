@@ -84,6 +84,20 @@ func TestGetProtocols(t *testing.T) {
 			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[{\"name\":\"goerli\",\"id\":\"\"},{\"name\":\"kovan\",\"id\":\"\"},{\"name\":\"mainnet\",\"id\":\"\"},{\"name\":\"rinkeby\",\"id\":\"\"},{\"name\":\"ropsten\",\"id\":\"\"}]}]}\n",
 			http.StatusOK,
 		},
+		{
+			"default-substrate",
+			args{
+				func() *settings.Root {
+					m := valuestest.NewMockStore(mockCtrl)
+					m.EXPECT().IsSet("protocols.ethereum.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.ethereum.disabled").Return(true)
+					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
+					return settings.FromStore(m)
+				}(),
+			},
+			"{\"protocols\":[{\"name\":\"substrate\",\"networks\":[{\"name\":\"edgeware-testnet\",\"id\":\"42\"}]}]}\n",
+			http.StatusOK,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

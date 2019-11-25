@@ -22,11 +22,12 @@ import (
 
 // EncodeByProtocol selects the correct encoding method, then encodes the public key with it.
 func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
-	encodingType = encoding.TypeHex0XPrefix
 	switch protocol {
 	case protocols.Ethereum:
+		encodingType = encoding.TypeHex0XPrefix
 		encoded = encoding.EncodeZeroX(in)
 	case protocols.Substrate:
+		encodingType = encoding.TypeHex0XPrefix
 		encoded = encoding.EncodeZeroX(in)
 	default:
 		err = errors.Errorf("%q unsupported protocol", protocol)

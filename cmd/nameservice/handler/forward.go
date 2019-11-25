@@ -42,7 +42,7 @@ func Forward(resolver nameservice.ForwardLookup) func(w http.ResponseWriter, r *
 			errs.JSONWriter(w, http.StatusInternalServerError, err)
 			return
 		}
-		encAddress, err := address.EncodeByProtocol(resolvedAddress, protocol)
+		encAddress, _, err := address.EncodeByProtocol(resolvedAddress, protocol)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"))
 			return

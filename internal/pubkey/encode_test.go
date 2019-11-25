@@ -17,6 +17,7 @@ package pubkey
 import (
 	"testing"
 
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/testutil"
 )
 
@@ -26,10 +27,11 @@ func TestEncodeByProtocol(t *testing.T) {
 		protocol string
 	}
 	tests := []struct {
-		name        string
-		args        args
-		wantEncoded string
-		wantErr     bool
+		name             string
+		args             args
+		wantEncoded      string
+		wantEncodingType string
+		wantErr          bool
 	}{
 		{
 			"ethereum",
@@ -38,6 +40,7 @@ func TestEncodeByProtocol(t *testing.T) {
 				"ethereum",
 			},
 			"0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+			encoding.TypeHex0XPrefix,
 			false,
 		},
 		{
@@ -47,6 +50,7 @@ func TestEncodeByProtocol(t *testing.T) {
 				"substrate",
 			},
 			"0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+			encoding.TypeHex0XPrefix,
 			false,
 		},
 		{
@@ -56,18 +60,22 @@ func TestEncodeByProtocol(t *testing.T) {
 				"invalid",
 			},
 			"",
+			"",
 			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotEncoded, err := EncodeByProtocol(tt.args.in, tt.args.protocol)
+			gotEncoded, gotEncodingType, err := EncodeByProtocol(tt.args.in, tt.args.protocol)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("EncodeByProtocol() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if gotEncoded != tt.wantEncoded {
 				t.Errorf("EncodeByProtocol() gotEncoded = %v, want %v", gotEncoded, tt.wantEncoded)
+			}
+			if gotEncodingType != tt.wantEncodingType {
+				t.Errorf("EncodeByProtocol() gotEncodingType = %v, want %v", gotEncodingType, tt.wantEncodingType)
 			}
 		})
 	}

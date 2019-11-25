@@ -66,7 +66,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
-		encodedKey, err := pubkey.EncodeByProtocol(publicKey, req.Protocol)
+		encodedKey, encodingType, err := pubkey.EncodeByProtocol(publicKey, req.Protocol)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
@@ -75,6 +75,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(GetPublicKeyResponseBody{
 			PublicKey:         encodedKey,
+			PublicKeyEncoding: encodingType,
 		})
 	}
 }

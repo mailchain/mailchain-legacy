@@ -1,7 +1,7 @@
 package settings //nolint: dupl
 
 import (
-	"github.com/mailchain/mailchain"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/clients/etherscan"
@@ -17,11 +17,11 @@ type EtherscanReceiver struct {
 }
 
 func etherscanReceiverNoAuth(s values.Store) *EtherscanReceiver {
-	return etherscanReceiverAny(s, mailchain.ClientEtherscanNoAuth)
+	return etherscanReceiverAny(s, defaults.ClientEtherscanNoAuth)
 }
 
 func etherscanReceiver(s values.Store) *EtherscanReceiver {
-	return etherscanReceiverAny(s, mailchain.ClientEtherscan)
+	return etherscanReceiverAny(s, defaults.ClientEtherscan)
 }
 
 func etherscanReceiverAny(s values.Store, kind string) *EtherscanReceiver {

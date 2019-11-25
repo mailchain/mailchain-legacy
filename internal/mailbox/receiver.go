@@ -20,9 +20,16 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher"
 )
 
+type Transaction struct {
+	Data    cipher.EncryptedContent
+	BlockID []byte
+	Hash    []byte
+}
+
+//go:generate mockgen -source=receiver.go -package=mailboxtest -destination=./mailboxtest/receiver_mock.go
 // Receiver gets encrypted data from blockchain.
 type Receiver interface {
-	Receive(ctx context.Context, network string, address []byte) ([]cipher.EncryptedContent, error)
+	Receive(ctx context.Context, network string, address []byte) ([]Transaction, error)
 }
 
 // type ReceiverOpts interface{}

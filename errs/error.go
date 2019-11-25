@@ -21,19 +21,18 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus" //nolint:depguard
-	// TODO: pass stdout and stderr as params
 )
 
+// HTTPError definition
 type HTTPError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
-// A function called whenever an error is encountered
-// type errorHandler func(w http.ResponseWriter, r *http.Request, err string)
+// ErrorWriter is the function definition called when writing a HTTP error.
 type ErrorWriter func(w http.ResponseWriter, code int, err error)
 
-// errorf writes a swagger-compliant error response.
+// JSONWriter writes a swagger-compliant error response.
 func JSONWriter(w http.ResponseWriter, code int, err error) {
 	if err == nil {
 		err = errors.Errorf("no error specified")
@@ -62,8 +61,7 @@ func JSONWriter(w http.ResponseWriter, code int, err error) {
 		http.StatusVariantAlsoNegotiates,
 		http.StatusInsufficientStorage,
 		http.StatusLoopDetected,
-		http.StatusNotExtended,
-		http.StatusNetworkAuthenticationRequired:
+		http.StatusNotExtended, http.StatusNetworkAuthenticationRequired:
 		logrus.Errorf("status %v: %+v", out.Code, err)
 	default:
 		logrus.Errorf("unknown status %v: %+v", out.Code, err)

@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// ExecuteCommandC will run a command to capture the output.
 func ExecuteCommandC(root *cobra.Command, args []string, flags map[string]string) (c *cobra.Command, output string, err error) {
 	if err := root.ValidateArgs(args); err != nil {
 		return nil, "", err
@@ -27,6 +28,7 @@ func ExecuteCommandC(root *cobra.Command, args []string, flags map[string]string
 	return c, buf.String(), err
 }
 
+// AssertCommandOutput ensure that the command outputs a specific string.
 func AssertCommandOutput(t *testing.T, cmd *cobra.Command, err error, out, wantOutput string) bool {
 	if err == nil {
 		if !assert.Equal(t, wantOutput, out) {

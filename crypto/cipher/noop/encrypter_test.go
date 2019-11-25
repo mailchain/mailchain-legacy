@@ -46,7 +46,7 @@ func TestEncrypter_Encrypt(t *testing.T) {
 				nil,
 				cipher.PlainContent([]byte("test content")),
 			},
-			cipher.EncryptedContent([]byte("test content")),
+			bytesEncode(cipher.EncryptedContent([]byte("test content"))),
 			false,
 		},
 	}

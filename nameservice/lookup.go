@@ -27,11 +27,13 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Lookup methods for address and domain resolution.
 type Lookup interface {
 	ForwardLookup
 	ReverseLookup
 }
 
+// NewLookupService creates a new lookup services.
 func NewLookupService(baseURL string) Lookup {
 	client := http.Client{
 		Timeout: 5 * time.Second,
@@ -43,21 +45,25 @@ func NewLookupService(baseURL string) Lookup {
 	}
 }
 
+// LookupService is the default lookup service.
 type LookupService struct {
 	baseURL    string
 	newRequest func(method string, url string, body io.Reader) (*http.Request, error)
 	doRequest  func(req *http.Request) (*http.Response, error)
 }
 
+// ResolveName look up a domain name and return address on the related protocol and network pair.
 func (s LookupService) ResolveName(ctx context.Context, protocol, network, domainName string) ([]byte, error) {
 	req, err := s.newRequest("GET", fmt.Sprintf("%s/%s/%s/name?domain-name=%s", s.baseURL, protocol, network, domainName), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	res, err := s.doRequest(req)
 	if err != nil {
 		return nil, err
 	}
+
 	if res.StatusCode == http.StatusOK {
 		var okRes struct {
 			Address string `json:"address"`
@@ -89,14 +95,17 @@ func (s LookupService) ResolveAddress(ctx context.Context, protocol, network str
 	if err != nil {
 		return "", err
 	}
+
 	res, err := s.doRequest(req)
 	if err != nil {
 		return "", err
 	}
+
 	if res.StatusCode == http.StatusOK {
 		type response struct {
 			Name string `json:"name"`
 		}
+
 		var okRes response
 		if err := json.NewDecoder(res.Body).Decode(&okRes); err != nil {
 			return "", err
@@ -109,6 +118,7 @@ func (s LookupService) ResolveAddress(ctx context.Context, protocol, network str
 		Message string `json:"message"`
 		Code    int    `json:"code"`
 	}
+
 	var errRes response
 	if err := json.NewDecoder(res.Body).Decode(&errRes); err != nil {
 		return "", err

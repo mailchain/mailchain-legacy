@@ -2,8 +2,8 @@ package etherscan
 
 import (
 	"encoding/json"
-
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/pkg/errors"
@@ -72,7 +72,6 @@ func (c APIClient) getTransactionByHash(network string, hash common.Hash) (*type
 	if err := json.Unmarshal(res.Result, &ts); err != nil {
 		return nil, errors.WithStack(err)
 	}
-
 	return ts, nil
 }
 
@@ -100,4 +99,8 @@ func (c APIClient) getTransactionsByAddress(network string, address []byte) (*tx
 		return nil, errors.WithStack(err)
 	}
 	return txResult, nil
+}
+
+func (c APIClient) Decode(input string) ([]byte, error) {
+	return hexutil.Decode(input)
 }

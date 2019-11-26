@@ -15,9 +15,9 @@
 package address
 
 import (
+	"github.com/mailchain/mailchain/internal/encoding"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/testutil"
 )
 

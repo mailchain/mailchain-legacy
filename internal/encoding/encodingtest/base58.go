@@ -12,26 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package pubkey
+package encodingtest
 
 import (
 	"github.com/mailchain/mailchain/internal/encoding"
-	"github.com/mailchain/mailchain/internal/protocols"
-	"github.com/pkg/errors"
 )
 
-// EncodeByProtocol selects the correct encoding method, then encodes the public key with it.
-func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
-	switch protocol {
-	case protocols.Ethereum:
-		encodingType = encoding.TypeHex0XPrefix
-		encoded = encoding.EncodeZeroX(in)
-	case protocols.Substrate:
-		encodingType = encoding.TypeHex0XPrefix
-		encoded = encoding.EncodeZeroX(in)
-	default:
-		err = errors.Errorf("%q unsupported protocol", protocol)
+// MustDecodeBase58 decodes a Base58 string
+// It panics for invalid input.
+func MustDecodeBase58(input string) []byte {
+	dec, err := encoding.DecodeBase58(input)
+	if err != nil {
+		panic(err)
 	}
 
-	return encoded, encodingType, err
+	return dec
 }

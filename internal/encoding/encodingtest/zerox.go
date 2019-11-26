@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package substrate
+package encodingtest
 
-const (
-	// EdgewareTestnet network name.
-	EdgewareTestnet = "edgeware-testnet"
+import "github.com/mailchain/mailchain/internal/encoding"
 
-	// PolkadotTestnet network name
-	PolkadotTestnet = "polkadot-testnet"
+// MustDecodeZeroX decodes a hex string. It panics for invalid input.
+func MustDecodeZeroX(in string) []byte {
+	dec, err := encoding.DecodeZeroX(in)
+	if err != nil {
+		panic(err)
+	}
 
-	// KusamaTestnet network name
-	KusamaTestnet = "kusama-testnet"
-)
-
-// Networks supported by substrate package.
-func Networks() []string {
-	return []string{"edgeware-testnet"}
+	return dec
 }

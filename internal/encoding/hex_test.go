@@ -31,7 +31,6 @@ func Test_EncodeZeroX(t *testing.T) {
 		name         string
 		args         args
 		wantEncoded  string
-		wantEncoding string
 	}{
 		{
 			"success",
@@ -39,17 +38,13 @@ func Test_EncodeZeroX(t *testing.T) {
 				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
 			},
 			"0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
-			TypeHex0XPrefix,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotEncoded, gotEncoding := EncodeZeroX(tt.args.in)
+			gotEncoded := EncodeZeroX(tt.args.in)
 			if !assert.Equal(tt.wantEncoded, gotEncoded) {
 				t.Errorf("EncodeZeroX() gotEncoded = %v, want %v", gotEncoded, tt.wantEncoded)
-			}
-			if !assert.Equal(tt.wantEncoding, gotEncoding) {
-				t.Errorf("EncodeZeroX() gotEncoding = %v, want %v", gotEncoding, tt.wantEncoding)
 			}
 		})
 	}

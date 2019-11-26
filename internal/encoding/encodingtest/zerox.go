@@ -12,8 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package mailchain
+package encodingtest
 
-const RequiresValue = "-"
-const Mailchain = "mailchain"
-const Relay = "relay"
+import "github.com/mailchain/mailchain/internal/encoding"
+
+// MustDecodeZeroX decodes a hex string. It panics for invalid input.
+func MustDecodeZeroX(in string) []byte {
+	dec, err := encoding.DecodeZeroX(in)
+	if err != nil {
+		panic(err)
+	}
+
+	return dec
+}

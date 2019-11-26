@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// HandleRequest accepts all relay requests and routes then to the new URL as required.
 func HandleRequest(relayers map[string]relayer.RelayFunc) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
 		path := strings.Trim(req.URL.Path, "/")

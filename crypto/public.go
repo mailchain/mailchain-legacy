@@ -16,7 +16,12 @@ package crypto
 
 // PublicKey definition usable in all mailchain crypto operations
 type PublicKey interface {
-	// Bytes returns the byte representation of the public key
+	// Bytes returns the raw bytes representation of the public key.
+	//
+	// The returned bytes are used for encrypting, verifying a signature, and locating an address.
 	Bytes() []byte
+	// Kind returns the type of the key.
 	Kind() string
+	// Verify verifies whether sig is a valid signature of message.
+	Verify(message, sig []byte) bool
 }

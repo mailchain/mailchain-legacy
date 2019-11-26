@@ -36,6 +36,7 @@ func InitStore(v *viper.Viper, cfgFile, logLevel string, createFile bool) error 
 		log.Warningf("Invalid 'log-level' %q, default to [Warning]", logLevel)
 		lvl = log.WarnLevel
 	}
+
 	log.SetLevel(lvl)
 	log.SetOutput(os.Stdout)
 	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
@@ -64,6 +65,8 @@ func createEmptyFile(v *viper.Viper, fileName string) error {
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
 	}
+
 	v.Set("version", mailchain.Version)
+
 	return v.WriteConfigAs(fileName)
 }

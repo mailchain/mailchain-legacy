@@ -1,7 +1,6 @@
 package settings
 
 import (
-	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
@@ -27,7 +26,7 @@ type MailboxState struct {
 // Produce `stores.State` based on configuration settings.
 func (s MailboxState) Produce() (stores.State, error) {
 	switch s.Kind.Get() {
-	case mailchain.StoreLevelDB:
+	case StoreLevelDB:
 		return s.mailboxStateLevelDB.Produce()
 	default:
 		return nil, errors.Errorf("%q is an unsupported mailbox state", s.Kind.Get())

@@ -12,11 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package mailchain
+package encodingtest
 
-const (
-	ClientEtherscan       = "etherscan"
-	ClientEtherscanNoAuth = "etherscan-no-auth"
-	ClientEthereumRPC2    = "ethereum-rpc2"
-	ClientRelay           = "relay"
+import (
+	"github.com/mailchain/mailchain/internal/encoding"
 )
+
+// MustDecodeBase58 decodes a Base58 string
+// It panics for invalid input.
+func MustDecodeBase58(input string) []byte {
+	dec, err := encoding.DecodeBase58(input)
+	if err != nil {
+		panic(err)
+	}
+
+	return dec
+}

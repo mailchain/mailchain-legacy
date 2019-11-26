@@ -36,7 +36,8 @@ var (
 	ErrRefused  = errors.New("Query Refused")
 )
 
-var Rfc1035StatusMap = map[error]int{
+// RFC1035StatusMap mapping of RFC1035 errors.
+var RFC1035StatusMap = map[error]int{ // nolint: gochecknoglobals
 	ErrFormat:   1,
 	ErrServFail: 2,
 	ErrNXDomain: 3,
@@ -44,11 +45,13 @@ var Rfc1035StatusMap = map[error]int{
 	ErrRefused:  5,
 }
 
-func IsRfc1035Error(err error) bool {
-	_, ok := Rfc1035StatusMap[err]
+// IsRFC1035Error checks if the error is one of RFC1035 errors.
+func IsRFC1035Error(err error) bool {
+	_, ok := RFC1035StatusMap[err]
 	return ok
 }
 
+// WrapError with a RFC1035 error.
 func WrapError(err error) error {
 	if err == nil {
 		return nil

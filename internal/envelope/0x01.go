@@ -100,7 +100,6 @@ func (d *ZeroX01) ContentsHash(decrypter cipher.Decrypter) ([]byte, error) {
 	locationHash := UInt64Bytes(decrypted)
 
 	return locationHash.Bytes()
-	// TODO: validate hash
 }
 
 // IntegrityHash returns a hash of the encrypted content. This can be used to validate the integrity of the contents before decrypting.

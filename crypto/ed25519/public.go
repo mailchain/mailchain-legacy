@@ -11,6 +11,11 @@ type PublicKey struct {
 	key ed25519.PublicKey
 }
 
+// Verify verifies whether sig is a valid signature of message.
+func (pk PublicKey) Verify(message, sig []byte) bool {
+	return ed25519.Verify(pk.key, message, sig)
+}
+
 // Bytes returns the byte representation of the public key
 func (pk PublicKey) Bytes() []byte {
 	return pk.key

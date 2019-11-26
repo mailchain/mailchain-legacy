@@ -21,7 +21,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-// PrivateKeyFromBytes returns a private key from `[]byte`. The function used to create the private key is based on the key type. Supported key types are secp256k1, ed25519.
+// PrivateKeyFromBytes returns a private key from `[]byte`.
+//
+// The function used to create the private key is based on the key type.
+// Supported key types are secp256k1, ed25519.
 func PrivateKeyFromBytes(keyType string, data []byte) (crypto.PrivateKey, error) {
 	switch keyType {
 	case crypto.SECP256K1:

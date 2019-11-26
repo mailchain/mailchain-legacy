@@ -23,7 +23,7 @@ type PrivateKey struct {
 
 // Bytes returns the byte representation of the private key
 func (pk PrivateKey) Bytes() []byte {
-	b := pk.Encode()
+	b := pk.key.Encode()
 	kb := make([]byte, len(b))
 	copy(kb, b[:])
 	return kb
@@ -35,12 +35,13 @@ func (pk PrivateKey) Kind() string {
 }
 
 // input privatekey export PublickKey
-func (pk PrivateKey) PublicKey() PublicKey {
+func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	kp, err := NewKeypair(pk.key)
 	if err != nil {
 		panic(err)
 	}
-	return kp.Public()
+
+	return kp.public
 }
 
 // Sign uses the private key to sign the message using the sr25519 signature algorithm

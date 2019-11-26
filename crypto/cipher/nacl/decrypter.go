@@ -4,7 +4,6 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/ed25519"
-	"github.com/mailchain/mailchain/crypto/sr25519"
 	"github.com/pkg/errors"
 )
 
@@ -42,8 +41,6 @@ func (d Decrypter) Decrypt(data cipher.EncryptedContent) (cipher.PlainContent, e
 func validatePrivateKeyType(pk crypto.PrivateKey) ([]byte, error) {
 	switch pk := pk.(type) {
 	case ed25519.PrivateKey, *ed25519.PrivateKey:
-		return pk.Bytes()[32:], nil
-	case sr25519.PrivateKey, *sr25519.PrivateKey:
 		return pk.Bytes()[32:], nil
 	default:
 		return nil, errors.Errorf("invalid public key type for nacl encryption")

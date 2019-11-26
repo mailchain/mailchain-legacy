@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/internal/testutil"
-	"github.com/stretchr/testify/assert"
 	//"github.com/stretchr/testify/assert"
 )
 
@@ -69,59 +68,6 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("PrivateKeyFromBytes() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestPrivateKey_Bytes(t *testing.T) {
-	assert := assert.New(t)
-	tests := []struct {
-		name string
-		pk   PrivateKey
-		want []byte
-	}{
-		{
-			"sofia",
-			sofiaPrivateKey,
-			sofiaPrivateKeyBytes,
-		},
-		{
-			"charlotte",
-			charlottePrivateKey,
-			charlottePrivateKeyBytes,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pk.Bytes(); !assert.Equal(tt.want, got) {
-				t.Errorf("PrivateKey.Bytes() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestPrivateKey_PublicKey(t *testing.T) {
-	tests := []struct {
-		name string
-		pk   PrivateKey
-		want PublicKey
-	}{
-		{
-			"sofia",
-			sofiaPrivateKey,
-			sofiaPublicKey,
-		},
-		{
-			"charlotte",
-			charlottePrivateKey,
-			charlottePublicKey,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pk.PublicKey(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("PrivateKey.PublicKey() = %v, want %v", got, tt.want)
 			}
 		})
 	}

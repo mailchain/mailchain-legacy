@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/sr25519"
 	"github.com/mailchain/mailchain/internal/testutil"
 )
 

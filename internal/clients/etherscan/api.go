@@ -101,6 +101,6 @@ func (c APIClient) getTransactionsByAddress(network string, address []byte) (*tx
 	return txResult, nil
 }
 
-func (c APIClient) Decode(input string) ([]byte, error) {
+func (c APIClient) decode(input string) ([]byte, error) {
 	return hexutil.Decode(input)
 }

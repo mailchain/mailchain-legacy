@@ -8,13 +8,12 @@ import (
 )
 
 const (
-	chainCodeSize  = 32
 	keyPairSize    = 96
 	privateKeySize = 64
 	seedSize       = 32
 )
 
-var SigningContext = []byte("substrate")
+var SigningContext = []byte("substrate") //nolint gochecknoglobals
 
 // Private Key sr25519
 type PrivateKey struct {
@@ -26,6 +25,7 @@ func (pk PrivateKey) Bytes() []byte {
 	b := pk.key.Encode()
 	kb := make([]byte, len(b))
 	copy(kb, b[:])
+
 	return kb
 }
 
@@ -34,52 +34,58 @@ func (pk PrivateKey) Kind() string {
 	return crypto.SR25519
 }
 
-// input privatekey export PublickKey
-func (pk PrivateKey) PublicKey() crypto.PublicKey {
-	kp, err := NewKeypair(pk.key)
+// PublicKey return the public key that is derived from the private key
+func (pk *PrivateKey) PublicKey() crypto.PublicKey {
+	pub, err := pk.key.Public()
 	if err != nil {
-		panic(err)
+		return nil
 	}
 
-	return kp.public
+	return &PublicKey{key: pub}
 }
 
 // Sign uses the private key to sign the message using the sr25519 signature algorithm
-func (k *PrivateKey) Sign(msg []byte) ([]byte, error) {
-	if k.key == nil {
+func (pk *PrivateKey) Sign(msg []byte) ([]byte, error) {
+	if pk.key == nil {
 		return nil, errors.New("key is nil")
 	}
 
 	t := schnorrkel.NewSigningContext(SigningContext, msg)
-	sig, err := k.key.Sign(t)
+
+	sig, err := pk.key.Sign(t)
 	if err != nil {
 		return nil, err
 	}
 
 	enc := sig.Encode()
+
 	return enc[:], nil
 }
 
 // Encode returns the 32-byte encoding of the private key
-func (k *PrivateKey) Encode() []byte {
-	if k.key == nil {
+func (pk *PrivateKey) Encode() []byte {
+	if pk.key == nil {
 		return nil
 	}
 
-	enc := k.key.Encode()
+	enc := pk.key.Encode()
+
 	return enc[:]
 }
 
 // Decode decodes the input bytes into a private key and sets the receiver the decoded key
 // Input must be 32 bytes, or else this function will error
-func (k *PrivateKey) Decode(in []byte) error {
+func (pk *PrivateKey) Decode(in []byte) error {
 	if len(in) != privateKeySize {
 		return errors.New("input to sr25519 private key decode is not 32 bytes")
 	}
+
 	b := [32]byte{}
 	copy(b[:], in)
-	k.key = &schnorrkel.SecretKey{}
-	return k.key.Decode(b)
+
+	pk.key = &schnorrkel.SecretKey{}
+
+	return pk.key.Decode(b)
 }
 
 func keyFromSeed(b []byte) (*schnorrkel.SecretKey, error) {
@@ -102,22 +108,26 @@ func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		return &PrivateKey{key: privKey}, nil
 	case seedSize:
 		privKey, err := keyFromSeed(privKey)
 		if err != nil {
 			return nil, err
 		}
+
 		return &PrivateKey{key: privKey}, nil
 	case keyPairSize:
 		privKey, err := keyFromSeed(privKey)
 		if err != nil {
 			return nil, err
 		}
+
 		pk, err := NewKeypair(privKey)
 		if err != nil {
 			return nil, err
 		}
+
 		return pk.private, nil
 	default:
 		return nil, errors.Errorf("bad key length")

@@ -18,9 +18,10 @@ var CharlottePrivateKey crypto.PrivateKey //nolint: gochecknoglobals
 var CharlottePublicKey crypto.PublicKey //nolint: gochecknoglobals
 
 //nolint: gochecknoinits
-func int() {
+func init() {
 	var err error
 	SofiaPrivateKey, err = sr25519.PrivateKeyFromBytes(testutil.MustHexDecodeString("5c6d7adf75bda1180c225d25f3aa8dc174bbfb3cddee11ae9a85982f6faf791a"))
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,5 +34,4 @@ func int() {
 	}
 
 	CharlottePublicKey = CharlottePrivateKey.PublicKey()
-
 }

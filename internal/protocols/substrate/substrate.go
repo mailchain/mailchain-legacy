@@ -17,6 +17,12 @@ package substrate
 const (
 	// EdgewareTestnet network name.
 	EdgewareTestnet = "edgeware-testnet"
+
+	// PolkadotTestnet network name
+	PolkadotTestnet = "polkadot-testnet"
+
+	// KusamaTestnet network name
+	KusamaTestnet = "kusama-testnet"
 )
 
 // Networks supported by substrate package.

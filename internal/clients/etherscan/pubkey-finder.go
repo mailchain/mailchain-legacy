@@ -16,15 +16,17 @@ package etherscan
 
 import (
 	"context"
+	"github.com/mailchain/mailchain/crypto"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/pkg/errors"
 )
 
 // PublicKeyFromAddress get public key from the recipient address, this will only work if the recipient has previously sent a message.
-func (c APIClient) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) ([]byte, error) {
+func (c APIClient) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) (crypto.PublicKey, error) {
 	if !c.isNetworkSupported(network) {
 		return nil, errors.Errorf("network not supported")
 	}
@@ -44,7 +46,7 @@ func (c APIClient) PublicKeyFromAddress(ctx context.Context, protocol, network s
 		return nil, errors.WithStack(err)
 	}
 	v, r, s := tx.RawSignatureValues()
-	publicKey, err := ethereum.GetPublicKeyFromTransaction(
+	keyBytes, err := ethereum.GetPublicKeyFromTransaction(
 		r, s, v,
 		tx.To().Bytes(),
 		tx.Data(),
@@ -54,6 +56,11 @@ func (c APIClient) PublicKeyFromAddress(ctx context.Context, protocol, network s
 		tx.Value())
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not get public key from raw hash")
+	}
+
+	publicKey, err := secp256k1.PublicKeyFromBytes(keyBytes)
+	if err != nil {
+		return nil, errors.WithStack(err)
 	}
 	return publicKey, nil
 }

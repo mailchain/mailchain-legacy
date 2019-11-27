@@ -35,7 +35,7 @@ func (pk PrivateKey) Kind() string {
 }
 
 // PublicKey return the public key that is derived from the private key
-func (pk *PrivateKey) PublicKey() crypto.PublicKey {
+func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	pub, err := pk.key.Public()
 	if err != nil {
 		return nil
@@ -45,12 +45,12 @@ func (pk *PrivateKey) PublicKey() crypto.PublicKey {
 }
 
 // Sign uses the private key to sign the message using the sr25519 signature algorithm
-func (pk *PrivateKey) Sign(msg []byte) ([]byte, error) {
+func (pk PrivateKey) Sign(message []byte) (signature []byte, err error) {
 	if pk.key == nil {
 		return nil, errors.New("key is nil")
 	}
 
-	t := schnorrkel.NewSigningContext(SigningContext, msg)
+	t := schnorrkel.NewSigningContext(SigningContext, message)
 
 	sig, err := pk.key.Sign(t)
 	if err != nil {

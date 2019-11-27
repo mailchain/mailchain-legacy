@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,43 +34,23 @@ func TestPublicKey_Bytes(t *testing.T) {
 	}
 }
 
-func TestPublicKeyFromBytes(t *testing.T) {
+func TestPublicKey_Kind(t *testing.T) {
 	assert := assert.New(t)
-	type args struct {
-		keyBytes []byte
-	}
 	tests := []struct {
-		name    string
-		args    args
-		want    PublicKey
-		wantErr bool
+		name string
+		pk   PublicKey
+		want string
 	}{
 		{
-			"sofia",
-			args{
-				sofiaPublicKeyBytes,
-			},
-			sofiaPublicKey,
-			false,
-		},
-		{
-			"err-too-short",
-			args{
-				[]byte{0x72, 0x3c, 0xaa, 0x23},
-			},
-			sofiaPublicKey,
-			true,
+			"charlotte",
+			charlottePublicKey,
+			crypto.SR25519,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := PublicKeyFromBytes(tt.args.keyBytes)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("PublicKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !assert.Equal(tt.want, got) {
-				t.Errorf("PublicKeyFromBytes() = %v, want %v", got, tt.want)
+			if got := tt.pk.Kind(); !assert.Equal(tt.want, got) {
+				t.Errorf("PublicKey.Kind() = %v, want %v", got, tt.want)
 			}
 		})
 	}

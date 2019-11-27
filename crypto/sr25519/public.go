@@ -11,11 +11,12 @@ const (
 	publicKeySize = 32
 )
 
-// PublicKey is a member
+// PublicKey is a interface
 type PublicKey struct {
 	key *schnorrkel.PublicKey
 }
 
+// PublicKey to Bytes
 func (pk PublicKey) Bytes() []byte {
 	b := pk.key.Encode()
 	kb := make([]byte, len(b))
@@ -32,7 +33,7 @@ func (pk PublicKey) Kind() string {
 // Verify uses the sr25519 signature algorithm to verify that the message was signed by
 // this public key; it returns true if this key created the signature for the message,
 // false otherwise
-func (pk *PublicKey) Verify(message, sig []byte) bool {
+func (pk PublicKey) Verify(message, sig []byte) bool {
 	if pk.key == nil {
 		return false
 	}

@@ -20,7 +20,7 @@ var CharlottePublicKey crypto.PublicKey //nolint: gochecknoglobals
 //nolint: gochecknoinits
 func init() {
 	var err error
-	SofiaPrivateKey, err = sr25519.PrivateKeyFromBytes(testutil.MustHexDecodeString("5c6d7adf75bda1180c225d25f3aa8dc174bbfb3cddee11ae9a85982f6faf791a"))
+	SofiaPrivateKey, err = sr25519.PrivateKeyFromBytes(testutil.MustHexDecodeString("5c6d7adf75bda1180c225d25f3aa8dc174bbfb3cddee11ae9a85982f6faf791a")) //nolint: lll
 
 	if err != nil {
 		log.Fatal(err)
@@ -28,7 +28,7 @@ func init() {
 
 	SofiaPublicKey = SofiaPrivateKey.PublicKey()
 
-	CharlottePrivateKey, err = sr25519.PrivateKeyFromBytes(testutil.MustHexDecodeString("23b063a581fd8e5e847c4e2b9c494247298791530f5293be369e8bf23a45d2bd"))
+	CharlottePrivateKey, err = sr25519.PrivateKeyFromBytes(testutil.MustHexDecodeString("23b063a581fd8e5e847c4e2b9c494247298791530f5293be369e8bf23a45d2bd")) //nolint: lll
 	if err != nil {
 		log.Fatal(err)
 	}

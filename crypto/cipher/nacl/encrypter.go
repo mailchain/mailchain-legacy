@@ -7,6 +7,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/ed25519"
+	"github.com/mailchain/mailchain/crypto/sr25519"
 	"github.com/pkg/errors"
 )
 
@@ -34,6 +35,8 @@ func (e Encrypter) Encrypt(recipientPublicKey crypto.PublicKey, message cipher.P
 func validatePublicKeyType(recipientPublicKey crypto.PublicKey) error {
 	switch recipientPublicKey.(type) {
 	case ed25519.PublicKey:
+		return nil
+	case sr25519.PublicKey:
 		return nil
 	default:
 		return errors.Errorf("invalid public key type for nacl encryption")

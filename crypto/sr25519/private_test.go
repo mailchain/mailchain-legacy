@@ -106,7 +106,11 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 	tests := []struct {
 		name string
 		pk   PrivateKey
+<<<<<<< HEAD
 		want crypto.PublicKey
+=======
+		want PublicKey
+>>>>>>> 4a3c0550dbb4d0f5935a93b3aa39c1fc2f4838be
 	}{
 		{
 			"sofia",
@@ -127,6 +131,7 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 		})
 	}
 }
+<<<<<<< HEAD
 
 func TestPrivateKey_Kind(t *testing.T) {
 	tests := []struct {
@@ -199,3 +204,5 @@ func TestPrivateKey_Sign(t *testing.T) {
 		})
 	}
 }
+=======
+>>>>>>> 4a3c0550dbb4d0f5935a93b3aa39c1fc2f4838be

@@ -24,12 +24,12 @@ import (
 // EncodeZeroX encodes src into "0x"+hex.Encode. As a convenience, it returns the encoding type used,
 // but this value is always TypeHex0XPrefix.
 // EncodeZeroX uses hexadecimal encoding prefixed with "0x".
-func EncodeZeroX(src []byte) (encoded, encoding string) {
+func EncodeZeroX(src []byte) (encoded string) {
 	out := make([]byte, len(src)*2+2)
 	copy(out, "0x")
 	hex.Encode(out[2:], src)
 
-	return string(out), TypeHex0XPrefix
+	return string(out)
 }
 
 // DecodeZeroX returns the bytes represented by the hexadecimal string src.

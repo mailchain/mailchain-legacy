@@ -49,5 +49,6 @@ func (pkf *PublicKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, 
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	return publicKey, nil
 }

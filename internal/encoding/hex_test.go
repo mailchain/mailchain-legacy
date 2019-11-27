@@ -15,28 +15,11 @@
 package encoding
 
 import (
-	"bytes"
 	"reflect"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
-
-type encDecTest struct {
-	enc string
-	dec []byte
-}
-
-var encDecTests = []encDecTest{
-	{"", []byte{}},
-	{"0001020304050607", []byte{0, 1, 2, 3, 4, 5, 6, 7}},
-	{"08090a0b0c0d0e0f", []byte{8, 9, 10, 11, 12, 13, 14, 15}},
-	{"f0f1f2f3f4f5f6f7", []byte{0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7}},
-	{"f8f9fafbfcfdfeff", []byte{0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff}},
-	{"67", []byte{'g'}},
-	{"e3a1", []byte{0xe3, 0xa1}},
-}
 
 func Test_EncodeZeroX(t *testing.T) {
 	assert := assert.New(t)
@@ -52,7 +35,7 @@ func Test_EncodeZeroX(t *testing.T) {
 		{
 			"success",
 			args{
-				encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				[]byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61},
 			},
 			[]byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61},
 			TypeHex0XPrefix,
@@ -121,24 +104,64 @@ func Test_DecodeZeroX(t *testing.T) {
 }
 
 func Test_EncodeHex(t *testing.T) {
-	for i, test := range encDecTests {
-		s := EncodeHex(test.dec)
-		if s != test.enc {
-			t.Errorf("#%d got:%s want:%s", i, s, test.enc)
-		}
+	assert := assert.New(t)
+	type args struct {
+		in []byte
 	}
-
+	tests := []struct {
+		name    string
+		args    args
+		wantEncoded  []byte
+		wantEncoding string
+	}{
+		{
+			"success",
+			args{
+				[]byte{86, 2, 234, 149, 84, 11, 238, 70, 208, 59, 163, 53, 238, 214, 244, 157, 17, 126, 171, 149, 200, 171, 139, 113, 186, 226, 205, 209, 229, 100, 167, 97},
+			},
+			[]byte{86, 2, 234, 149, 84, 11, 238, 70, 208, 59, 163, 53, 238, 214, 244, 157, 17, 126, 171, 149, 200, 171, 139, 113, 186, 226, 205, 209, 229, 100, 167, 97},
+			"5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotEncoding := EncodeHex(tt.args.in)
+			if !assert.Equal(tt.wantEncoding, gotEncoding) {
+				t.Errorf("EncodeHex() gotEncoding = %v, want %v", gotEncoding, tt.wantEncoding)
+			}
+		})
+	}
 }
 
 func Test_DecodeHex(t *testing.T) {
-	for i, test := range encDecTests {
-		dst, err := DecodeHex(test.enc)
-		if err != nil {
-			t.Errorf("#%d: unexpected err value: %s", i, err)
-			continue
-		}
-		if !bytes.Equal(dst, test.dec) {
-			t.Errorf("#%d: got: %#v want: #%v", i, dst, test.dec)
-		}
+	type args struct {
+		in string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			"success",
+			args{
+				"5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+			},
+			[]byte{86, 2, 234, 149, 84, 11, 238, 70, 208, 59, 163, 53, 238, 214, 244, 157, 17, 126, 171, 149, 200, 171, 139, 113, 186, 226, 205, 209, 229, 100, 167, 97},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := DecodeHex(tt.args.in)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DecodeHex() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("DecodeHex() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

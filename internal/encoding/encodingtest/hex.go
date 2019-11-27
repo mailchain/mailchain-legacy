@@ -15,12 +15,12 @@
 package encodingtest
 
 import (
-	"encoding/hex"
+	"github.com/mailchain/mailchain/internal/encoding"
 )
 
 // MustDecodeHex decodes a hex string. It panics for invalid input.
 func MustDecodeHex(input string) []byte {
-	dec, err := hex.DecodeString(input)
+	dec, err := encoding.DecodeHex(input)
 	if err != nil {
 		panic(err)
 	}

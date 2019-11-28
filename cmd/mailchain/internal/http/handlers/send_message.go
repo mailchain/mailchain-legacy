@@ -292,8 +292,9 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 
 	if p.Envelope == "" {
 		return errors.Errorf("`envelope` can not be empty")
+	}
 
-  if p.EncryptionName == "" {
+	if p.EncryptionName == "" {
 		return errors.Errorf("`encryption-method-name` can not be empty")
 	}
 

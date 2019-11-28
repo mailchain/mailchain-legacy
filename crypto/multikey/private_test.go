@@ -56,12 +56,12 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 			false,
 		},
 		{
-			"sr25519",
+			"sr25519-Charlotte",
 			args{
 				"sr25519",
-				testutil.MustHexDecodeString("0d9b4a3c10721991c6b806f0f343535dc2b46c74bece50a0a0d6b9f0070d3157"),
+				testutil.MustHexDecodeString("23b063a581fd8e5e847c4e2b9c494247298791530f5293be369e8bf23a45d2bd"),
 			},
-			sr25519test.SofiaPrivateKey,
+			sr25519test.CharlottePrivateKey,
 			false,
 		},
 		{

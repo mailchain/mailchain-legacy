@@ -23,10 +23,8 @@ type PrivateKey struct {
 // Bytes returns the byte representation of the private key
 func (pk PrivateKey) Bytes() []byte {
 	b := pk.key.Encode()
-	kb := make([]byte, len(b))
-	copy(kb, b[:])
 
-	return kb
+	return b[:]
 }
 
 // Kind is the type of private key.
@@ -88,16 +86,18 @@ func (pk *PrivateKey) Decode(in []byte) error {
 	return pk.key.Decode(b)
 }
 
-func keyFromSeed(b []byte) (*schnorrkel.SecretKey, error) {
-	kb := [32]byte{}
-	copy(b, kb[:])
-
-	priv, err := schnorrkel.NewMiniSecretKeyFromRaw(kb)
-	if err != nil {
-		return nil, err
+func keyFromSeed(in []byte) (*schnorrkel.SecretKey, error) {
+	if len(in) != seedSize {
+		return nil, errors.New("input to sr25519 private key decode is not 32 bytes")
 	}
 
-	return priv.ExpandUniform(), nil
+	b := [32]byte{}
+	copy(b[:], in)
+
+	key := &schnorrkel.SecretKey{}
+	err := key.Decode(b)
+
+	return key, err
 }
 
 // PrivateKeyFromBytes get a private key from seed []byte
@@ -130,6 +130,6 @@ func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 
 		return pk.private, nil
 	default:
-		return nil, errors.Errorf("bad key length")
+		return nil, errors.Errorf("sr25519: bad key length")
 	}
 }

@@ -3,6 +3,8 @@ package sr25519
 import (
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPrivateKeyFromBytes(t *testing.T) {
@@ -85,6 +87,33 @@ func TestPrivateKey_Kind(t *testing.T) {
 			pk := PrivateKey{}
 			if got := pk.Kind(); got != tt.want {
 				t.Errorf("PrivateKey.Kind() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPrivateKey_Bytes(t *testing.T) {
+	assert := assert.New(t)
+	tests := []struct {
+		name string
+		pk   PrivateKey
+		want []byte
+	}{
+		{
+			"sucess-sofia",
+			sofiaPrivateKey,
+			sofiaPrivateKeyBytes,
+		},
+		{
+			"sucess-charllotte",
+			charlottePrivateKey,
+			charlottePrivateKeyBytes,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.pk.Bytes(); !assert.Equal(tt.want, got) {
+				t.Errorf("PrivateKey.Bytes() = %v, want %v", got, tt.want)
 			}
 		})
 	}

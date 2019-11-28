@@ -19,10 +19,8 @@ type PublicKey struct {
 // PublicKey to Bytes
 func (pk PublicKey) Bytes() []byte {
 	b := pk.key.Encode()
-	kb := make([]byte, len(b))
-	copy(kb, b[:])
 
-	return kb
+	return b[:]
 }
 
 // Kind returns the key type

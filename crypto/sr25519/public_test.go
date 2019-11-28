@@ -1,7 +1,6 @@
 package sr25519
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
@@ -9,6 +8,7 @@ import (
 )
 
 func TestPublicKey_Bytes(t *testing.T) {
+	assert := assert.New(t)
 	tests := []struct {
 		name string
 		pk   PublicKey
@@ -27,7 +27,7 @@ func TestPublicKey_Bytes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pk.Bytes(); !reflect.DeepEqual(got, tt.want) {
+			if got := tt.pk.Bytes(); !assert.Equal(tt.want, got) {
 				t.Errorf("PublicKey.Bytes() = %v, want %v", got, tt.want)
 			}
 		})

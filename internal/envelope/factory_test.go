@@ -98,3 +98,52 @@ func TestNewEnvelope(t *testing.T) {
 		})
 	}
 }
+
+func Test_parseEvelope(t *testing.T) {
+	type args struct {
+		envelope string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    byte
+		wantErr bool
+	}{
+		{
+			"0x01",
+			args{
+				KindString0x01,
+			},
+			Kind0x01,
+			false,
+		},
+		{
+			"0x50",
+			args{
+				KindString0x50,
+			},
+			Kind0x50,
+			false,
+		},
+		{
+			"empty-envelope",
+			args{
+				"",
+			},
+			0x0,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ParseEnvelope(tt.args.envelope)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParseEnvelope() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if tt.want != got {
+				t.Errorf("ParseEnvelope() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

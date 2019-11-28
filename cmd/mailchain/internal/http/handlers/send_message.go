@@ -99,9 +99,15 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not get `encrypter`"))
 		}
 
+		env, err := envelope.ParseEnvelope(req.Body.Envelope)
+		if err != nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not parse `envelope`"))
+			return
+		}
+
 		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network,
 			msg, req.Body.publicKey,
-			encrypter, messageSender, sent, signer, envelope.Kind0x01); err != nil {
+			encrypter, messageSender, sent, signer, env); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}
@@ -212,6 +218,10 @@ type PostRequestBody struct {
 	from      *mail.Address
 	replyTo   *mail.Address
 	publicKey crypto.PublicKey
+	// Envelope that should be used
+	// required: true
+	// enum: 0x01, 0x50
+	Envelope string `json:"envelope"`
 	// Encryption method name
 	// required: true
 	// enum: aes256cbc, nacl, noop
@@ -278,6 +288,10 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 	p.publicKey, err = secp256k1.PublicKeyFromBytes(encodeMessage)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
+	}
+
+	if p.Envelope == "" {
+		return errors.Errorf("`envelope` can not be empty")
 	}
 
 	if p.EncryptionName == "" {

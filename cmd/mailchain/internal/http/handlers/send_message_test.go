@@ -205,7 +205,7 @@ func Test_isValid(t *testing.T) {
 			true,
 		},
 		{
-			"err-envelope",
+			"err-encryption-method-name",
 			args{
 				&PostRequestBody{
 					Message: PostMessage{
@@ -215,7 +215,7 @@ func Test_isValid(t *testing.T) {
 						},
 						Subject:   "subject-value",
 						Body:      "body-value",
-						PublicKey: "0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d",
+						PublicKey: hex.EncodeToString(addresstest.EthereumSofia),
 					},
 				},
 				"ethereum",
@@ -276,6 +276,7 @@ func Test_isValid(t *testing.T) {
 						PublicKey: "0x" + hex.EncodeToString(secp256k1test.CharlottePublicKey.Bytes()),
 					},
 					Envelope: "0x01",
+					EncryptionName: "aes256cbc",
 				},
 				"ethereum",
 				"mainnet",
@@ -318,6 +319,7 @@ func Test_parsePostRequest(t *testing.T) {
 							"subject": "test"
 						},
 						"envelope": "0x01"
+						"encryption-method-name": "aes256cbc"
 					}
 					`))
 					return req

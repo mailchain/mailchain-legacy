@@ -67,7 +67,7 @@ func TestGetProtocols(t *testing.T) {
 					return settings.FromStore(m)
 				}(),
 			},
-			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[\"kovan\",\"mainnet\",\"rinkeby\",\"ropsten\"]}]}\n",
+			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[{\"name\":\"kovan\",\"id\":\"\"},{\"name\":\"mainnet\",\"id\":\"\"},{\"name\":\"rinkeby\",\"id\":\"\"},{\"name\":\"ropsten\",\"id\":\"\"}]}]}\n",
 			http.StatusOK,
 		},
 		{
@@ -81,7 +81,21 @@ func TestGetProtocols(t *testing.T) {
 					return settings.FromStore(m)
 				}(),
 			},
-			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[\"goerli\",\"kovan\",\"mainnet\",\"rinkeby\",\"ropsten\"]}]}\n",
+			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[{\"name\":\"goerli\",\"id\":\"\"},{\"name\":\"kovan\",\"id\":\"\"},{\"name\":\"mainnet\",\"id\":\"\"},{\"name\":\"rinkeby\",\"id\":\"\"},{\"name\":\"ropsten\",\"id\":\"\"}]}]}\n",
+			http.StatusOK,
+		},
+		{
+			"default-substrate",
+			args{
+				func() *settings.Root {
+					m := valuestest.NewMockStore(mockCtrl)
+					m.EXPECT().IsSet("protocols.ethereum.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.ethereum.disabled").Return(true)
+					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
+					return settings.FromStore(m)
+				}(),
+			},
+			"{\"protocols\":[{\"name\":\"substrate\",\"networks\":[{\"name\":\"edgeware-testnet\",\"id\":\"42\"}]}]}\n",
 			http.StatusOK,
 		},
 	}

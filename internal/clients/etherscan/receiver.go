@@ -18,14 +18,13 @@ import (
 	"bytes"
 	"context"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/pkg/errors"
 )
 
 // Receive check ethereum transactions for mailchain messages
-func (c APIClient) Receive(ctx context.Context, network string, address []byte) ([]cipher.EncryptedContent, error) {
+func (c APIClient) Receive(ctx context.Context, network string, address []byte) ([]mailbox.Transaction, error) {
 	if !c.isNetworkSupported(network) {
 		return nil, errors.Errorf("network not supported")
 	}
@@ -33,7 +32,8 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	res := []cipher.EncryptedContent{}
+
+	res := []mailbox.Transaction{}
 	txHashes := map[string]bool{}
 
 	for i := range txResult.Result { //nolint TODO: paging
@@ -44,8 +44,7 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 			continue
 		}
 		txHashes[x.Hash] = true
-
-		encryptedTransactionData, err := hexutil.Decode(x.Input)
+		encryptedTransactionData, err := c.decode(x.Input)
 		if err != nil {
 			continue // invalid data should move to next record
 		}
@@ -54,7 +53,11 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 			continue
 		}
 
-		res = append(res, encryptedTransactionData[len(encoding.DataPrefix()):])
+		res = append(res, mailbox.Transaction{
+			Data:    encryptedTransactionData[len(encoding.DataPrefix()):],
+			BlockID: []byte(x.BlockNumber),
+			Hash:    []byte(x.Hash),
+		})
 	}
 	return res, nil
 }

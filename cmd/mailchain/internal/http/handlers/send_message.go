@@ -23,7 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
+	ec "github.com/mailchain/mailchain/crypto/cipher/encrypter"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
@@ -38,9 +38,8 @@ import (
 )
 
 // SendMessage handler http
-func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store, //nolint: funlen
-	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { //nolint: funlen
-	encrypter := aes256cbc.NewEncrypter()
+func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store, // nolint: funlen
+	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { // nolint: funlen
 	// Post swagger:route POST /messages Send SendMessage
 	//
 	// Send message.
@@ -94,6 +93,10 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
 			return
+		}
+		encrypter, err := ec.GetEncrypter(req.Body.EncryptionName)
+		if err != nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not get `encrypter`"))
 		}
 
 		env, err := envelope.ParseEnvelope(req.Body.Envelope)
@@ -219,6 +222,10 @@ type PostRequestBody struct {
 	// required: true
 	// enum: 0x01, 0x50
 	Envelope string `json:"envelope"`
+	// Encryption method name
+	// required: true
+	// enum: aes256cbc, nacl, noop
+	EncryptionName string `json:"encryption-method-name"`
 }
 
 func checkForEmpties(msg PostMessage) error {
@@ -285,6 +292,9 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 
 	if p.Envelope == "" {
 		return errors.Errorf("`envelope` can not be empty")
+
+  if p.EncryptionName == "" {
+		return errors.Errorf("`encryption-method-name` can not be empty")
 	}
 
 	return nil

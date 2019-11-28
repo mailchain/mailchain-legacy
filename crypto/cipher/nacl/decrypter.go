@@ -29,6 +29,11 @@ func (d Decrypter) Decrypt(data cipher.EncryptedContent) (cipher.PlainContent, e
 		return nil, errors.WithStack(err)
 	}
 
+	data, err = bytesDecode(data)
+	if err != nil {
+		return nil, err
+	}
+
 	return easyOpen(data, privKeyBytes)
 }
 

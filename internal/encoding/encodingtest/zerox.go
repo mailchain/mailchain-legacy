@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package crypto
+package encodingtest
 
-// PrivateKey definition usable in all mailchain crypto operations
-type PrivateKey interface {
-	// Bytes returns the byte representation of the private key
-	Bytes() []byte
-	// PublicKey from the PrivateKey
-	PublicKey() PublicKey
-	// Kind returns the type of the key
-	Kind() string
-	// Sign signs the message with the key and returns the signature.
-	Sign(message []byte) ([]byte, error)
+import "github.com/mailchain/mailchain/internal/encoding"
+
+// MustDecodeZeroX decodes a hex string. It panics for invalid input.
+func MustDecodeZeroX(in string) []byte {
+	dec, err := encoding.DecodeZeroX(in)
+	if err != nil {
+		panic(err)
+	}
+
+	return dec
 }

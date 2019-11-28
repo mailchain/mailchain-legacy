@@ -24,9 +24,11 @@ import (
 func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
 	switch protocol {
 	case protocols.Ethereum:
-		encoded, encodingType = encoding.EncodeZeroX(in)
+		encodingType = encoding.TypeHex0XPrefix
+		encoded = encoding.EncodeZeroX(in)
 	case protocols.Substrate:
-		encoded, encodingType = encoding.EncodeZeroX(in)
+		encodingType = encoding.TypeHex0XPrefix
+		encoded = encoding.EncodeZeroX(in)
 	default:
 		err = errors.Errorf("%q unsupported protocol", protocol)
 	}

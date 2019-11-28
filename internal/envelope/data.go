@@ -27,6 +27,10 @@ const (
 	// Kind0x50 envelope identifier for Alpha Envelope.
 	// The first byte of the envelope is used to identify which programmable envelope is used.
 	Kind0x50 byte = 0x50
+	// KindString0x01 envelope string identifier for Message Location Identifier Envelope.
+	KindString0x01 string = "0x01"
+	// KindString0x50 envelope string identifier for Alpha Envelope.
+	KindString0x50 string = "0x50"
 )
 
 // Data definition for programmable envelopes.

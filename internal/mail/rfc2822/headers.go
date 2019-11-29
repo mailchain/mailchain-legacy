@@ -41,7 +41,9 @@ func parseHeaders(h nm.Header) (*mail.Headers, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to parse `from`")
 	}
+
 	publicKey, err := parsePublicKey(h)
+
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to parse `public-key`")
 	}
@@ -119,6 +121,7 @@ func parsePublicKey(h nm.Header) (crypto.PublicKey, error) {
 	if !ok {
 		return nil, errors.Errorf("header missing")
 	}
+
 	if len(sources) == 0 {
 		return nil, errors.Errorf("empty header")
 	}

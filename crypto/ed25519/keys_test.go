@@ -1,7 +1,7 @@
 package ed25519
 
 import (
-	"github.com/mailchain/mailchain/internal/enconding/encodingtest"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"golang.org/x/crypto/ed25519"
 )
 

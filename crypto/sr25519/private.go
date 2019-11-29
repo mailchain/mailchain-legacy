@@ -32,14 +32,14 @@ func (pk PrivateKey) Kind() string {
 	return crypto.SR25519
 }
 
-// PublicKey return the public key that is derived from the private key
+// Public return the public key that is derived from the private key
 func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	pub, err := pk.key.Public()
 	if err != nil {
 		return nil
 	}
 
-	return &PublicKey{key: pub}
+	return PublicKey{key: pub}
 }
 
 // Sign uses the private key to sign the message using the sr25519 signature algorithm

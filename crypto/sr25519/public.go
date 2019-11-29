@@ -16,7 +16,7 @@ type PublicKey struct {
 	key *schnorrkel.PublicKey
 }
 
-// PublicKey to Bytes
+// PublicKey.Bytes() to Bytes
 func (pk PublicKey) Bytes() []byte {
 	b := pk.key.Encode()
 

@@ -20,7 +20,6 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
 	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
@@ -209,13 +208,6 @@ func Test_validPublicKeyType(t *testing.T) {
 			"success-ed25519",
 			args{
 				ed25519test.SofiaPublicKey,
-			},
-			false,
-		},
-		{
-			"success-sr25519",
-			args{
-				sr25519test.SofiaPublicKey,
 			},
 			false,
 		},

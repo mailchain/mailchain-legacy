@@ -2,7 +2,6 @@ package sr25519
 
 import (
 	"testing"
-	"reflect"
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/stretchr/testify/assert"
@@ -58,8 +57,9 @@ func TestPublicKey_Kind(t *testing.T) {
 }
 
 func TestPublicKeyFromBytes(t *testing.T) {
+	assert := assert.New(t)
 	type args struct {
-		pk []byte
+		keyBytes []byte
 	}
 	tests := []struct {
 		name    string
@@ -67,14 +67,6 @@ func TestPublicKeyFromBytes(t *testing.T) {
 		want    *PublicKey
 		wantErr bool
 	}{
-		{
-			"success-sofia-seed",
-			args{
-				sofiaSeed,
-			},
-			&sofiaPublicKey,
-			false,
-		},
 		{
 			"success-sofia-bytes",
 			args{
@@ -84,25 +76,9 @@ func TestPublicKeyFromBytes(t *testing.T) {
 			false,
 		},
 		{
-			"success-charlotte-seed",
+			"err-too-short",
 			args{
-				charlotteSeed,
-			},
-			&charlottePublicKey,
-			false,
-		},
-		{
-			"success-charlotte-bytes",
-			args{
-				charlottePublicKeyBytes,
-			},
-			&charlottePublicKey,
-			false,
-		},
-		{
-			"err-len",
-			args{
-				[]byte{57, 212, 201},
+				[]byte{0x72, 0x3c, 0xaa, 0x23},
 			},
 			nil,
 			true,
@@ -110,12 +86,12 @@ func TestPublicKeyFromBytes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := PublicKeyFromBytes(tt.args.pk)
+			got, err := PublicKeyFromBytes(tt.args.keyBytes)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("PublicKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if !assert.Equal(tt.want, got) {
 				t.Errorf("PublicKeyFromBytes() = %v, want %v", got, tt.want)
 			}
 		})

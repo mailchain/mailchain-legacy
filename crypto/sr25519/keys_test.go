@@ -1,7 +1,6 @@
 package sr25519
 
 import (
-	"fmt"
 	"github.com/ChainSafe/go-schnorrkel"
 	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 )
@@ -14,7 +13,6 @@ var ( //nolint
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(priv)
 		return priv
 	}(),
 	}

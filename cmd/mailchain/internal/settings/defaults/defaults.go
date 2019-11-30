@@ -79,7 +79,6 @@ func MailchainHome() string {
 	if err != nil {
 		log.Fatalf("%+v", errors.WithStack(err))
 	}
-	
 	return filepath.Join(d, ConfigSubDirName)
 }
 

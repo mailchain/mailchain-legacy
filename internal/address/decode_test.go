@@ -18,7 +18,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/mr-tron/base58"
 )
 
@@ -39,7 +39,7 @@ func TestDecodeByProtocol(t *testing.T) {
 				"0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
 				"ethereum",
 			},
-			testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+			encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
 			false,
 		},
 		{

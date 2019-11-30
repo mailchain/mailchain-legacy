@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -81,7 +81,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 		{
 			"err-len",
 			args{
-				testutil.MustHexDecodeString("39d4c9"),
+				encodingtest.MustDecodeHex("39d4c9"),
 			},
 			nil,
 			true,

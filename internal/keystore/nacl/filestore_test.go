@@ -22,8 +22,8 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/keystore"
-	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
@@ -118,7 +118,7 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 				nil,
 			},
 			args{
-				testutil.MustHexDecodeString("0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006"),
+				encodingtest.MustDecodeHex("0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006"),
 			},
 			&encryptedKeySofiaSECP256k1,
 			false,
@@ -136,7 +136,7 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 				nil,
 			},
 			args{
-				testutil.MustHexDecodeString("723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671"),
+				encodingtest.MustDecodeHex("723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671"),
 			},
 			&encryptedKeySofiaED25519,
 			false,
@@ -154,7 +154,7 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 				nil,
 			},
 			args{
-				testutil.MustHexDecodeString("0269d908"),
+				encodingtest.MustDecodeHex("0269d908"),
 			},
 			nil,
 			true,
@@ -172,7 +172,7 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 				nil,
 			},
 			args{
-				testutil.MustHexDecodeString("0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006"),
+				encodingtest.MustDecodeHex("0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006"),
 			},
 			nil,
 			true,
@@ -190,7 +190,7 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 				nil,
 			},
 			args{
-				testutil.MustHexDecodeString("0269d9df"),
+				encodingtest.MustDecodeHex("0269d9df"),
 			},
 			nil,
 			true,

@@ -24,8 +24,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mail"
-	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/pkg/errors"
 )
 
@@ -139,7 +139,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 			},
 			args{
 				[]byte("messageID"),
-				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("body"),
 				nil,
 			},
@@ -169,7 +169,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 			},
 			args{
 				[]byte("messageID"),
-				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("body"),
 				nil,
 			},
@@ -199,7 +199,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 			},
 			args{
 				[]byte("messageID"),
-				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("body"),
 				nil,
 			},
@@ -228,7 +228,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 			},
 			args{
 				[]byte("messageID"),
-				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("body"),
 				nil,
 			},
@@ -261,7 +261,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 				}(),
 			},
 			args{
-				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("contentshash"),
 				[]byte("body"),
 				nil,
@@ -288,7 +288,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 				}(),
 			},
 			args{
-				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("contentshash"),
 				[]byte("body"),
 				nil,
@@ -316,7 +316,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 				}(),
 			},
 			args{
-				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("contentshash"),
 				[]byte("body"),
 				nil,
@@ -343,7 +343,7 @@ func TestSentStore_PutMessage(t *testing.T) {
 				}(),
 			},
 			args{
-				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("contentshash"),
 				[]byte("body"),
 				nil,
@@ -405,7 +405,7 @@ func TestSentStore_Key(t *testing.T) {
 			},
 			args{
 				[]byte("messageID"),
-				testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
+				encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"),
 				[]byte("message"),
 			},
 			"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",

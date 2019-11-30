@@ -34,7 +34,6 @@ func (pk PrivateKey) Sign(message []byte) (signature []byte, err error) {
 func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	publicKey := make([]byte, ed25519.PublicKeySize)
 	copy(publicKey, pk.key[32:])
-	
 	return PublicKey{key: publicKey}
 }
 

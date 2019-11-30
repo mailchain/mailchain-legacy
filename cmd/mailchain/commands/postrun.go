@@ -26,6 +26,7 @@ func prerunWriteConfig(v *viper.Viper) func(cmd *cobra.Command, args []string) e
 		if err := v.WriteConfig(); err != nil {
 			return errors.WithStack(err)
 		}
+		
 		cmd.Printf(chalk.Green.Color("Config saved\n"))
 		return nil
 	}

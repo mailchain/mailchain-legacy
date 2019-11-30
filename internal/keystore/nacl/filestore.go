@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"github.com/mailchain/mailchain/internal/keystore"
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/pkg/errors"
 	"github.com/spf13/afero"
 )
@@ -101,5 +102,5 @@ func (f FileStore) getEncryptedKey(pubKeyBytes []byte) (*keystore.EncryptedKey, 
 }
 
 func (f FileStore) filename(pubKeyBytes []byte) string {
-	return fmt.Sprintf("%s.json", hex.EncodeToString(pubKeyBytes))
+	return fmt.Sprintf("%s.json", encoding.EncodeHex(pubKeyBytes))
 }

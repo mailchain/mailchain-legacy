@@ -64,11 +64,13 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
+		
 		messageSender, ok := senders[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("sender not supported on \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
+		
 		if messageSender == nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender configured for \"%s/%s\"", req.Protocol, req.Network))
 			return
@@ -89,11 +91,13 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
+		
 		signer, err := ks.GetSigner(from, req.Protocol, req.Network, deriveKeyOptions)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
 			return
 		}
+		
 		encrypter, err := ec.GetEncrypter(req.Body.EncryptionName)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not get `encrypter`"))
@@ -263,6 +267,7 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 	if err != nil {
 		return errors.WithMessage(err, "`to` is invalid")
 	}
+
 	//nolint TODO: figure this out
 	// if !ethereup.IsAddressValid(p.to.ChainAddress) {
 	// 	return errors.Errorf("'address' is invalid")

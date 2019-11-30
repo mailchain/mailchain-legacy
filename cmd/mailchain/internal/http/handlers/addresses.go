@@ -15,11 +15,11 @@
 package handlers
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"net/http"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
@@ -55,7 +55,7 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 			return
 		}
 		for _, x := range rawAddresses {
-			addresses = append(addresses, hex.EncodeToString(x))
+			addresses = append(addresses, encoding.EncodeHex(x))
 		}
 
 		_ = json.NewEncoder(w).Encode(GetAddressesResponse{Addresses: addresses})

@@ -16,11 +16,11 @@ package secp256k1
 
 import (
 	"crypto/ecdsa"
-	"encoding/hex"
 	"log"
 	"reflect"
 	"testing"
 
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
 )
@@ -38,7 +38,7 @@ func TestPublicKeyFromHex(t *testing.T) {
 		{
 			"success-prefix",
 			args{
-				"0x" + hex.EncodeToString(charlottePublicKey().Bytes()),
+				"0x" + encoding.EncodeHex(charlottePublicKey().Bytes()),
 			},
 			charlottePublicKey().Bytes(),
 			false,
@@ -46,7 +46,7 @@ func TestPublicKeyFromHex(t *testing.T) {
 		{
 			"success-no-prefix",
 			args{
-				hex.EncodeToString(charlottePublicKey().Bytes()),
+				encoding.EncodeHex(charlottePublicKey().Bytes()),
 			},
 			charlottePublicKey().Bytes(),
 			false,
@@ -213,7 +213,7 @@ func TestPublicKey_Bytes(t *testing.T) {
 			"charlotte",
 			fields{
 				func() ecdsa.PublicKey {
-					b, _ := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					b, _ := encoding.DecodeHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					key, err := crypto.ToECDSA(b)
 					if err != nil {
 						log.Fatal(err)
@@ -250,7 +250,7 @@ func TestPublicKey_Kind(t *testing.T) {
 			"charlotte",
 			fields{
 				func() ecdsa.PublicKey {
-					b, _ := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					b, _ := encoding.DecodeHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					key, err := crypto.ToECDSA(b)
 					if err != nil {
 						log.Fatal(err)

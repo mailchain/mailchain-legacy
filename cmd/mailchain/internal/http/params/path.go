@@ -25,11 +25,14 @@ import (
 // PathMessageID extract `message_id` from the url
 func PathMessageID(r *http.Request) (mail.ID, error) {
 	id, err := mail.FromHexString(mux.Vars(r)["message_id"])
+	
 	if err != nil {
 		return nil, err
 	}
+	
 	if len(id) == 0 {
 		return nil, errors.Errorf("must not be empty")
 	}
+	
 	return id, nil
 }

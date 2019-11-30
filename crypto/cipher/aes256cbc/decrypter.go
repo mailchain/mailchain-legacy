@@ -66,14 +66,18 @@ func decryptEncryptedData(privKey crypto.PrivateKey, data *encryptedData) ([]byt
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not derive shared secret")
 	}
+	
 	macKey, encryptionKey := generateMacKeyAndEncryptionKey(sharedSecret)
 	mac, err := generateMac(macKey, data.InitializationVector, *ephemeralPublicKey, data.Ciphertext)
+	
 	if err != nil {
 		return nil, errors.WithMessage(err, "generateMac failed")
 	}
+	
 	if subtle.ConstantTimeCompare(data.MessageAuthenticationCode, mac) != 1 {
 		return nil, errors.Errorf("invalid mac")
 	}
+	
 	return decryptCBC(encryptionKey, data.InitializationVector, data.Ciphertext)
 }
 

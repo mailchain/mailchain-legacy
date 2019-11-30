@@ -27,6 +27,7 @@ func (d DefaultInt) Get() int {
 	if d.store.IsSet(d.setting) {
 		return d.store.GetInt(d.setting)
 	}
+	
 	return d.def
 }
 

@@ -319,7 +319,8 @@ func Test_parsePostRequest(t *testing.T) {
 							"subject": "test"
 						},
 						"envelope": "0x01",
-						"encryption-method-name": "aes256cbc"
+						"encryption-method-name": "aes256cbc",
+						"content-type": "text/plain; charset=\"UTF-8\""
 					}
 					`))
 					return req

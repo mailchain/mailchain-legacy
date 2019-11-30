@@ -21,7 +21,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_EncodeZeroX(t *testing.T) {
+func Test_EncodeHexZeroX(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
 		in []byte
@@ -41,7 +41,7 @@ func Test_EncodeZeroX(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotEncoded := EncodeZeroX(tt.args.in)
+			gotEncoded := EncodeHexZeroX(tt.args.in)
 			if !assert.Equal(tt.wantEncoded, gotEncoded) {
 				t.Errorf("EncodeZeroX() gotEncoded = %v, want %v", gotEncoded, tt.wantEncoded)
 			}
@@ -49,7 +49,7 @@ func Test_EncodeZeroX(t *testing.T) {
 	}
 }
 
-func Test_DecodeZeroX(t *testing.T) {
+func Test_DecodeHexZeroX(t *testing.T) {
 	type args struct {
 		in string
 	}
@@ -86,7 +86,7 @@ func Test_DecodeZeroX(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := DecodeZeroX(tt.args.in)
+			got, err := DecodeHexZeroX(tt.args.in)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("decodeZeroX() error = %v, wantErr %v", err, tt.wantErr)
 				return

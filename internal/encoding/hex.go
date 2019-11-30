@@ -21,10 +21,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-// EncodeZeroX encodes src into "0x"+hex.Encode. As a convenience, it returns the encoding type used,
+// EncodeHexZeroX encodes src into "0x"+hex.Encode. As a convenience, it returns the encoding type used,
 // but this value is always TypeHex0XPrefix.
-// EncodeZeroX uses hexadecimal encoding prefixed with "0x".
-func EncodeZeroX(src []byte) (encoded string) {
+// EncodeHexZeroX uses hexadecimal encoding prefixed with "0x".
+func EncodeHexZeroX(src []byte) (encoded string) {
 	out := make([]byte, len(src)*2+2)
 	copy(out, "0x")
 	hex.Encode(out[2:], src)
@@ -32,11 +32,11 @@ func EncodeZeroX(src []byte) (encoded string) {
 	return string(out)
 }
 
-// DecodeZeroX returns the bytes represented by the hexadecimal string src.
+// DecodeHexZeroX returns the bytes represented by the hexadecimal string src.
 //
-// DecodeZeroX expects that src contains only hex characters and must contain a `0x` prefix.
-// If the input is malformed, DecodeZeroX returns an error.
-func DecodeZeroX(in string) ([]byte, error) {
+// DecodeHexZeroX expects that src contains only hex characters and must contain a `0x` prefix.
+// If the input is malformed, DecodeHexZeroX returns an error.
+func DecodeHexZeroX(in string) ([]byte, error) {
 	if in == "" {
 		return nil, errors.Errorf("empty hex string")
 	}

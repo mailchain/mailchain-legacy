@@ -20,7 +20,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -118,7 +118,7 @@ func Test_addSS58Prefix(t *testing.T) {
 		{
 			"success",
 			args{
-				testutil.MustHexDecodeString("b14d"),
+				encodingtest.MustDecodeHex("b14d"),
 			},
 			[]byte{0x53, 0x53, 0x35, 0x38, 0x50, 0x52, 0x45, 0xb1, 0x4d},
 		},

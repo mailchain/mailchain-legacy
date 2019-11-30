@@ -22,10 +22,10 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
 	"github.com/mailchain/mailchain/internal/mailbox"
-	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -48,14 +48,14 @@ func TestReadMessage(t *testing.T) {
 		{
 			"success",
 			args{
-				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
+				encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
 				func() cipher.Decrypter {
 					decrypted, _ := ioutil.ReadFile("./testdata/simple.golden.eml")
 					m := ciphertest.NewMockDecrypter(mockCtrl)
 
 					gomock.InOrder(
-						m.EXPECT().Decrypt(cipher.EncryptedContent(testutil.MustHexDecodeString("7365637265742d6c6f636174696f6e"))).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil),
-						m.EXPECT().Decrypt(cipher.EncryptedContent(testutil.MustHexDecodeString("7365637265742d6c6f636174696f6e"))).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil),
+						m.EXPECT().Decrypt(cipher.EncryptedContent(encodingtest.MustDecodeHex("7365637265742d6c6f636174696f6e"))).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil),
+						m.EXPECT().Decrypt(cipher.EncryptedContent(encodingtest.MustDecodeHex("7365637265742d6c6f636174696f6e"))).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil),
 						m.EXPECT().Decrypt(cipher.EncryptedContent([]byte{0x54, 0x65, 0x73, 0x74, 0x52, 0x65, 0x61, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65})).Return(decrypted, nil),
 					)
 					return m
@@ -71,7 +71,7 @@ func TestReadMessage(t *testing.T) {
 		{
 			"err-invalid-hash",
 			args{
-				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
 				func() cipher.Decrypter {
 					m := ciphertest.NewMockDecrypter(mockCtrl)
 					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil)
@@ -87,7 +87,7 @@ func TestReadMessage(t *testing.T) {
 		{
 			"err-msg-decrypt",
 			args{
-				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
 				func() cipher.Decrypter {
 					m := ciphertest.NewMockDecrypter(mockCtrl)
 					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil)
@@ -102,7 +102,7 @@ func TestReadMessage(t *testing.T) {
 		{
 			"err-get-message",
 			args{
-				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
 				func() cipher.Decrypter {
 					m := ciphertest.NewMockDecrypter(mockCtrl)
 					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("file://TestReadMessage/no_message_at_location-2204f3d89e5a"), nil)
@@ -116,7 +116,7 @@ func TestReadMessage(t *testing.T) {
 		{
 			"err-get-integrity-hash",
 			args{
-				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
 				func() cipher.Decrypter {
 					m := ciphertest.NewMockDecrypter(mockCtrl)
 					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("file://TestReadMessage/no_message_at_location-2204f3d89e5a"), nil)
@@ -130,7 +130,7 @@ func TestReadMessage(t *testing.T) {
 		{
 			"err-get-url",
 			args{
-				testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
 				func() cipher.Decrypter {
 					m := ciphertest.NewMockDecrypter(mockCtrl)
 					m.EXPECT().Decrypt(gomock.Any()).Return(nil, errors.Errorf("failed"))
@@ -143,7 +143,7 @@ func TestReadMessage(t *testing.T) {
 		{
 			"err-invalid-envelope",
 			args{
-				testutil.MustHexDecodeString("000801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
+				encodingtest.MustDecodeHex("000801120f7365637265742d6c6f636174696f6e1a22162032343414ff8b90c8c20d4971b4360d88338bc13e3beb9d4a232adbb5acd67795"),
 				func() cipher.Decrypter {
 					m := ciphertest.NewMockDecrypter(mockCtrl)
 					return m

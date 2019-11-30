@@ -17,7 +17,7 @@ package aes256cbc
 import (
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 )
 
 func Test_encryptedData_verify(t *testing.T) {
@@ -35,50 +35,50 @@ func Test_encryptedData_verify(t *testing.T) {
 		{
 			"success",
 			fields{
-				testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d16"),
-				testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cbadc"),
-				testutil.MustHexDecodeString("2c8432ca"),
-				testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
+				encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d16"),
+				encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cbadc"),
+				encodingtest.MustDecodeHex("2c8432ca"),
+				encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
 			},
 			false,
 		},
 		{
 			"err-iv",
 			fields{
-				testutil.MustHexDecodeString(""),
-				testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cbadc"),
-				testutil.MustHexDecodeString("2c8432ca"),
-				testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
+				encodingtest.MustDecodeHex(""),
+				encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cbadc"),
+				encodingtest.MustDecodeHex("2c8432ca"),
+				encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
 			},
 			true,
 		},
 		{
 			"err-ethemeral-pk",
 			fields{
-				testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d16"),
-				testutil.MustHexDecodeString(""),
-				testutil.MustHexDecodeString("2c8432ca"),
-				testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
+				encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d16"),
+				encodingtest.MustDecodeHex(""),
+				encodingtest.MustDecodeHex("2c8432ca"),
+				encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
 			},
 			true,
 		},
 		{
 			"err-cipher-text",
 			fields{
-				testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d16"),
-				testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cbadc"),
-				testutil.MustHexDecodeString(""),
-				testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
+				encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d16"),
+				encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cbadc"),
+				encodingtest.MustDecodeHex(""),
+				encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
 			},
 			true,
 		},
 		{
 			"err-mac",
 			fields{
-				testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d16"),
-				testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cbadc"),
-				testutil.MustHexDecodeString("2c8432ca"),
-				testutil.MustHexDecodeString(""),
+				encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d16"),
+				encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cbadc"),
+				encodingtest.MustDecodeHex("2c8432ca"),
+				encodingtest.MustDecodeHex(""),
 			},
 			true,
 		},

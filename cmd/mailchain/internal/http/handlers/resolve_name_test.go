@@ -21,7 +21,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/nameservice/nameservicetest"
 	"github.com/pkg/errors"
@@ -212,7 +212,7 @@ func TestGetResolveName(t *testing.T) {
 			args{
 				func() map[string]nameservice.ForwardLookup {
 					m := nameservicetest.NewMockForwardLookup(mockCtrl)
-					m.EXPECT().ResolveName(gomock.Any(), "invalid", "mainnet", "name.ens").Return(testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"), nil).Times(1)
+					m.EXPECT().ResolveName(gomock.Any(), "invalid", "mainnet", "name.ens").Return(encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"), nil).Times(1)
 					return map[string]nameservice.ForwardLookup{"invalid/mainnet": m}
 				}(),
 			},
@@ -250,7 +250,7 @@ func TestGetResolveName(t *testing.T) {
 			args{
 				func() map[string]nameservice.ForwardLookup {
 					m := nameservicetest.NewMockForwardLookup(mockCtrl)
-					m.EXPECT().ResolveName(gomock.Any(), "ethereum", "mainnet", "name.ens").Return(testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"), nil).Times(1)
+					m.EXPECT().ResolveName(gomock.Any(), "ethereum", "mainnet", "name.ens").Return(encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"), nil).Times(1)
 					return map[string]nameservice.ForwardLookup{"ethereum/mainnet": m}
 				}(),
 			},

@@ -18,7 +18,7 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/internal/encoding"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 )
 
 func TestEncodeByProtocol(t *testing.T) {
@@ -36,7 +36,7 @@ func TestEncodeByProtocol(t *testing.T) {
 		{
 			"ethereum",
 			args{
-				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
 				"ethereum",
 			},
 			"0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
@@ -46,7 +46,7 @@ func TestEncodeByProtocol(t *testing.T) {
 		{
 			"substrate",
 			args{
-				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
 				"substrate",
 			},
 			"0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
@@ -56,7 +56,7 @@ func TestEncodeByProtocol(t *testing.T) {
 		{
 			"err",
 			args{
-				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
 				"invalid",
 			},
 			"",

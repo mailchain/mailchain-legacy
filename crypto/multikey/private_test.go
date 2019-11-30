@@ -20,7 +20,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -40,7 +40,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 			"secp256k1",
 			args{
 				"secp256k1",
-				testutil.MustHexDecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F"),
+				encodingtest.MustDecodeHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F"),
 			},
 			secp256k1test.SofiaPrivateKey,
 			false,
@@ -49,7 +49,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 			"ed25519",
 			args{
 				"ed25519",
-				testutil.MustHexDecodeString("0d9b4a3c10721991c6b806f0f343535dc2b46c74bece50a0a0d6b9f0070d3157"),
+				encodingtest.MustDecodeHex("0d9b4a3c10721991c6b806f0f343535dc2b46c74bece50a0a0d6b9f0070d3157"),
 			},
 			ed25519test.SofiaPrivateKey,
 			false,
@@ -58,7 +58,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 			"err",
 			args{
 				"unknown",
-				testutil.MustHexDecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F"),
+				encodingtest.MustDecodeHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F"),
 			},
 			nil,
 			true,

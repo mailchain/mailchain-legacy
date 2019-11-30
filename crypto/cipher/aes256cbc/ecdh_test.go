@@ -24,7 +24,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto/ecies"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -51,9 +51,9 @@ func TestGenerateIV(t *testing.T) {
 
 func TestGenerateMac(t *testing.T) {
 	assert := assert.New(t)
-	macKey := testutil.MustHexDecodeString("2cea25760305bdb3194057646bc46dc2eeee4890b711741c0b525454ac7c5ea8")
-	iv := testutil.MustHexDecodeString("05050505050505050505050505050505")
-	cipherText := testutil.MustHexDecodeString("2ec66aac453ff543f47830d4b8cbc68d9965bf7c6bb69724fd4de26d41001256dfa6f7f0b3956ce21d4717caf75b0c2ad753852f216df6cfbcda4911619c5fc34798a19f81adff902c1ad906ab0edaec")
+	macKey := encodingtest.MustDecodeHex("2cea25760305bdb3194057646bc46dc2eeee4890b711741c0b525454ac7c5ea8")
+	iv := encodingtest.MustDecodeHex("05050505050505050505050505050505")
+	cipherText := encodingtest.MustDecodeHex("2ec66aac453ff543f47830d4b8cbc68d9965bf7c6bb69724fd4de26d41001256dfa6f7f0b3956ce21d4717caf75b0c2ad753852f216df6cfbcda4911619c5fc34798a19f81adff902c1ad906ab0edaec")
 	tmpEphemeralPrivateKey, err := ethcrypto.HexToECDSA("0404040404040404040404040404040404040404040404040404040404040404")
 	if err != nil {
 		log.Fatal(err)
@@ -100,7 +100,7 @@ func Test_deriveSharedSecret(t *testing.T) {
 					return pk.ECIES()
 				}(),
 			},
-			testutil.MustHexDecodeString("b6bdfade23178272425d25774a7d0d388fbef9480893fcc3646accc123eacc47"),
+			encodingtest.MustDecodeHex("b6bdfade23178272425d25774a7d0d388fbef9480893fcc3646accc123eacc47"),
 			false,
 		},
 		{

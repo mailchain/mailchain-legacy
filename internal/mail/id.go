@@ -16,9 +16,9 @@ package mail
 
 import (
 	"crypto/rand"
-
-	"github.com/pkg/errors"
+	
 	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/pkg/errors"
 )
 
 // NewID create a new secure random ID

@@ -1,8 +1,11 @@
 package sr25519
 
 import (
+	"fmt"
+
 	"github.com/ChainSafe/go-schnorrkel"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/internal/encoding"
 
 	"github.com/pkg/errors"
 )
@@ -32,14 +35,28 @@ func (pk PrivateKey) Kind() string {
 	return crypto.SR25519
 }
 
+// Hex returns the public key as a '0x' prefixed hex string
+func (pk PublicKey) Hex() string {
+	enc := pk.Encode()
+	h := encoding.EncodeHex(enc)
+	return "0x" + h
+}
+
 // Public return the public key that is derived from the private key
 func (pk PrivateKey) PublicKey() crypto.PublicKey {
-	pub, err := pk.key.Public()
+	privaKey := pk.Bytes()
+
+	kp, err := NewKeypairFromSeed(privaKey)
 	if err != nil {
 		return nil
 	}
 
-	return PublicKey{key: pub}
+	pub := kp.public
+	// fmt.Println(pub.key.Encode())
+	// fmt.Println(pub.key.Comprees())
+	fmt.Println(pub.Hex())
+	fmt.Println(pub.Hex())
+	return pub
 }
 
 // Sign uses the private key to sign the message using the sr25519 signature algorithm

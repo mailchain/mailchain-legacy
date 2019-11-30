@@ -121,7 +121,6 @@ func TestPrivateKey_Bytes(t *testing.T) {
 }
 
 func TestPrivateKey_PublicKey(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		name string
 		pk   PrivateKey

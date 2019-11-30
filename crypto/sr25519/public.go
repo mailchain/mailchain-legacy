@@ -91,7 +91,7 @@ func schnorrkelPublicKeyFromBytes(in []byte) (*schnorrkel.PublicKey, error) {
 	return key, err
 }
 
-// Convert this public key to a byte array.
+// PublicKeyFromBytes - Convert byte array to PublicKey
 func PublicKeyFromBytes(keyBytes []byte) (*PublicKey, error) {
 	switch len(keyBytes) {
 	case publicKeySize:

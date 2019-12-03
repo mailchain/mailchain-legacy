@@ -18,7 +18,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,17 +31,17 @@ func TestCompress(t *testing.T) {
 		wantErr  bool
 	}{
 		{"no prefix:022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292",
-			testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
-			testutil.MustHexDecodeString("022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
+			encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+			encodingtest.MustDecodeHex("022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
 			false,
 		},
 		{"with prefix:022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292",
-			testutil.MustHexDecodeString("042c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
-			testutil.MustHexDecodeString("022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
+			encodingtest.MustDecodeHex("042c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+			encodingtest.MustDecodeHex("022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
 			false,
 		},
 		{"err-invalid-key-length",
-			testutil.MustHexDecodeString("042c8432ca28ce929b86a47f2d40413d161f1f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+			encodingtest.MustDecodeHex("042c8432ca28ce929b86a47f2d40413d161f1f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
 			nil,
 			true,
 		},
@@ -68,12 +68,12 @@ func TestDecompress(t *testing.T) {
 		expected []byte
 	}{
 		{"022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292",
-			testutil.MustHexDecodeString("022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
-			testutil.MustHexDecodeString("042c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+			encodingtest.MustDecodeHex("022c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292"),
+			encodingtest.MustDecodeHex("042c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
 		},
 		{"03a34d6aef3eb42335fb3cacb59478c0b44c0bbeb8bb4ca427dbc7044157a5d24b",
-			testutil.MustHexDecodeString("03a34d6aef3eb42335fb3cacb59478c0b44c0bbeb8bb4ca427dbc7044157a5d24b"),
-			testutil.MustHexDecodeString("04a34d6aef3eb42335fb3cacb59478c0b44c0bbeb8bb4ca427dbc7044157a5d24b4adf14868d8449c9b3e50d3d6338f3e5a2d3445abe679cddbe75cb893475806f"),
+			encodingtest.MustDecodeHex("03a34d6aef3eb42335fb3cacb59478c0b44c0bbeb8bb4ca427dbc7044157a5d24b"),
+			encodingtest.MustDecodeHex("04a34d6aef3eb42335fb3cacb59478c0b44c0bbeb8bb4ca427dbc7044157a5d24b4adf14868d8449c9b3e50d3d6338f3e5a2d3445abe679cddbe75cb893475806f"),
 		},
 	}
 	for _, tt := range cases {

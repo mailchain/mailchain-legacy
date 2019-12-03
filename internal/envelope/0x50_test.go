@@ -22,7 +22,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -211,7 +211,7 @@ func TestZeroX50_IntegrityHash(t *testing.T) {
 					return m
 				}(),
 			},
-			testutil.MustHexDecodeString("220455078214"),
+			encodingtest.MustDecodeHex("220455078214"),
 			false,
 		},
 		{

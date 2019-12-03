@@ -12,17 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package testutil
+package encodingtest
 
 import (
-	"encoding/hex"
+	"github.com/mailchain/mailchain/internal/encoding"
 )
 
-// MustHexDecodeString decodes a hex string. It panics for invalid input.
-func MustHexDecodeString(input string) []byte {
-	dec, err := hex.DecodeString(input)
+// MustDecodeHex decodes a hex string. It panics for invalid input.
+func MustDecodeHex(input string) []byte {
+	dec, err := encoding.DecodeHex(input)
 	if err != nil {
 		panic(err)
 	}
+
 	return dec
 }

@@ -26,13 +26,13 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
 	"github.com/mailchain/mailchain/internal/clients/etherscan"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/keystoretest"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/internal/mailbox/mailboxtest"
-	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/storestest"
 	"github.com/stretchr/testify/assert"
@@ -181,7 +181,7 @@ func Test_GetMessages(t *testing.T) {
 							receiver.EXPECT().Receive(context.Background(), "mainnet", []byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}).
 								Return([]mailbox.Transaction{
 									{
-										Data:    testutil.MustHexDecodeString("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
+										Data:    encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
 										BlockID: []byte("YS1ibG9jay1udW1iZXI="),
 										Hash:    []byte("YS1oYXNo"),
 									},
@@ -198,8 +198,8 @@ func Test_GetMessages(t *testing.T) {
 					decrypted, _ := ioutil.ReadFile("./testdata/simple.golden.eml")
 					decrypter := ciphertest.NewMockDecrypter(mockCtrl)
 					gomock.InOrder(
-						decrypter.EXPECT().Decrypt(cipher.EncryptedContent(testutil.MustHexDecodeString("7365637265742d6c6f636174696f6e"))).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil),
-						decrypter.EXPECT().Decrypt(cipher.EncryptedContent(testutil.MustHexDecodeString("7365637265742d6c6f636174696f6e"))).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil),
+						decrypter.EXPECT().Decrypt(cipher.EncryptedContent(encodingtest.MustDecodeHex("7365637265742d6c6f636174696f6e"))).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil),
+						decrypter.EXPECT().Decrypt(cipher.EncryptedContent(encodingtest.MustDecodeHex("7365637265742d6c6f636174696f6e"))).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil),
 						decrypter.EXPECT().Decrypt(cipher.EncryptedContent([]byte{0x54, 0x65, 0x73, 0x74, 0x52, 0x65, 0x61, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65})).Return(decrypted, nil),
 					)
 

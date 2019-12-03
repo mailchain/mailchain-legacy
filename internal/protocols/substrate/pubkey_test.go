@@ -18,7 +18,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/crypto/ed25519"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/mr-tron/base58"
 	"github.com/stretchr/testify/assert"
 )
@@ -34,7 +36,7 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    []byte
+		want    crypto.PublicKey
 		wantErr bool
 	}{
 		{
@@ -52,7 +54,10 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 					return num
 				}(),
 			},
-			testutil.MustHexDecodeString("0c3fbef5c06307444e8078036c217b2907f2459e906ff0f1a670986743f2494f"),
+			func() crypto.PublicKey {
+				k, _ := ed25519.PublicKeyFromBytes(encodingtest.MustDecodeHex("0c3fbef5c06307444e8078036c217b2907f2459e906ff0f1a670986743f2494f"))
+				return k
+			}(),
 			false,
 		},
 		{

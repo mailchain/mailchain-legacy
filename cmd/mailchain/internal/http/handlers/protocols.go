@@ -33,15 +33,18 @@ func GetProtocols(base *settings.Root) func(w http.ResponseWriter, r *http.Reque
 			continue
 		}
 
-		networks := []string{}
-
+		networks := []Network{}
 		for _, network := range protocol.Networks {
-			if !network.Disabled() {
-				networks = append(networks, network.Kind())
+			if !network.Disabled() && protocol.Kind == "ethereum" {
+				networks = append(networks, Network{Name: network.Kind(), ID: ""})
+			} else if !network.Disabled() && protocol.Kind == "substrate" {
+				if network.Kind() == "edgeware-testnet" {
+					networks = append(networks, Network{Name: network.Kind(), ID: "42"})
+				}
 			}
 		}
 
-		sort.Strings(networks)
+		sort.Slice(networks, func(i, j int) bool { return networks[i].Name < networks[j].Name })
 		resP := GetProtocolsProtocol{
 			Name:     protocol.Kind,
 			Networks: networks,
@@ -72,10 +75,14 @@ type GetProtocolsResponse struct {
 	Protocols []GetProtocolsProtocol `json:"protocols"`
 }
 
-// GetProtocolsProtocol body
+type Network struct {
+	Name string `json:"name"`
+	ID   string `json:"id"`
+}
+
 type GetProtocolsProtocol struct {
 	// in: body
 	Name string `json:"name"`
 	// in: body
-	Networks []string `json:"networks"`
+	Networks []Network `json:"networks"`
 }

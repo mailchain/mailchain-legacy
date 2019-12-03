@@ -16,7 +16,6 @@ package mail
 
 import (
 	"crypto/rand"
-	
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/pkg/errors"
 )

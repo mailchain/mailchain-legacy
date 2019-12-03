@@ -27,9 +27,9 @@ func Test_EncodeHexZeroX(t *testing.T) {
 		in []byte
 	}
 	tests := []struct {
-		name         string
-		args         args
-		wantEncoded  string
+		name        string
+		args        args
+		wantEncoded string
 	}{
 		{
 			"success",
@@ -104,8 +104,8 @@ func Test_EncodeHex(t *testing.T) {
 		in []byte
 	}
 	tests := []struct {
-		name    string
-		args    args
+		name         string
+		args         args
 		wantEncoding string
 	}{
 		{

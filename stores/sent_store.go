@@ -27,8 +27,8 @@ import (
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )

@@ -28,10 +28,10 @@ func PathMessageID(r *http.Request) (mail.ID, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if len(id) == 0 {
 		return nil, errors.Errorf("must not be empty")
 	}
-	
+
 	return id, nil
 }

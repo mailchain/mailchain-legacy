@@ -20,8 +20,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/stretchr/testify/assert"
 )
 

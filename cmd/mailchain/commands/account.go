@@ -1,13 +1,12 @@
 package commands
 
 import (
-	
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/crypto/multikey"
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"

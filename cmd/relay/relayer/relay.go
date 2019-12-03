@@ -17,9 +17,8 @@ func (f RelayFunc) HandleRequest(w http.ResponseWriter, req *http.Request) {
 		errs.JSONWriter(w, http.StatusBadRequest, err)
 		return
 	}
-	
 	client := http.Client{}
-	
+
 	resp, err := client.Do(r)
 	if err != nil {
 		errs.JSONWriter(w, http.StatusBadGateway, err)

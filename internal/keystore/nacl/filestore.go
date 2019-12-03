@@ -17,13 +17,11 @@ package nacl
 import (
 	"bytes"
 	"crypto/rand"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
 
-	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
@@ -65,7 +63,7 @@ func (f FileStore) getEncryptedKeys() ([]keystore.EncryptedKey, error) {
 		splits := strings.Split(fileName, "/")
 		pubKeyPortion := splits[len(splits)-1]
 
-		pubKeyBytes, err := hex.DecodeString(pubKeyPortion)
+		pubKeyBytes, err := encoding.DecodeHex(pubKeyPortion)
 		if err != nil {
 			fmt.Fprintf(f.logger, "skipping invalid filename %s: %v\n", fileName, err)
 		}

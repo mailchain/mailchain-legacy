@@ -87,5 +87,6 @@ func (pk PublicKey) ECIES() (*ecies.PublicKey, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert pk")
 	}
+
 	return ecies.ImportECDSAPublic(rpk), nil
 }

@@ -19,6 +19,7 @@ func relaySender(s values.Store, network string) *RelaySender {
 	for _, n := range ethereum.Networks() {
 		enabledNetworks = append(enabledNetworks, "ethereum/"+n)
 	}
+
 	return &RelaySender{
 		EnabledProtocolNetworks: values.NewDefaultStringSlice(
 			enabledNetworks,

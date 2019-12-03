@@ -15,7 +15,6 @@
 package handlers
 
 import (
-	"encoding/hex"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -24,6 +23,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/address/addresstest"
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/sender"
@@ -153,7 +153,7 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To: hex.EncodeToString(addresstest.EthereumCharlotte),
+							To: encoding.EncodeHex(addresstest.EthereumCharlotte),
 						},
 						Subject:   "subject-value",
 						Body:      "body-value",
@@ -171,8 +171,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:      hex.EncodeToString(addresstest.EthereumCharlotte),
-							From:    hex.EncodeToString(addresstest.EthereumSofia),
+							To:      encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From:    encoding.EncodeHex(addresstest.EthereumSofia),
 							ReplyTo: "<invalid",
 						},
 						Subject:   "subject-value",
@@ -191,8 +191,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   hex.EncodeToString(addresstest.EthereumCharlotte),
-							From: hex.EncodeToString(addresstest.EthereumSofia),
+							To:   encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:   "subject-value",
 						Body:      "body-value",
@@ -210,12 +210,12 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   hex.EncodeToString(addresstest.EthereumCharlotte),
-							From: hex.EncodeToString(addresstest.EthereumSofia),
+							To:   encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:   "subject-value",
 						Body:      "body-value",
-						PublicKey: hex.EncodeToString(addresstest.EthereumSofia),
+						PublicKey: encoding.EncodeHex(addresstest.EthereumSofia),
 					},
 				},
 				"ethereum",
@@ -230,12 +230,12 @@ func Test_isValid(t *testing.T) {
 		// 		&PostRequestBody{
 		// 			Message: PostMessage{
 		// 				Headers: &PostHeaders{
-		// 					To:   hex.EncodeToString(addresstest.EthereumCharlotte),
-		// 					From: hex.EncodeToString(addresstest.EthereumSofia),
+		// 					To:   encoding.EncodeHex(addresstest.EthereumCharlotte),
+		// 					From: encoding.EncodeHex(addresstest.EthereumSofia),
 		// 				},
 		// 				Subject:   "subject-value",
 		// 				Body:      "body-value",
-		// 				PublicKey: "0x" + hex.EncodeToString(testutil.CharlottePublicKey.Bytes()),
+		// 				PublicKey: "0x" + encoding.EncodeHex(testutil.CharlottePublicKey.Bytes()),
 		// 			},
 		// 		},
 		// 		"ethereum",
@@ -249,12 +249,12 @@ func Test_isValid(t *testing.T) {
 		// 		&PostRequestBody{
 		// 			Message: PostMessage{
 		// 				Headers: &PostHeaders{
-		// 					To:   "0x" + hex.EncodeToString(addresstest.EthereumCharlotte),
-		// 					From: hex.EncodeToString(addresstest.EthereumSofia),
+		// 					To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+		// 					From: encoding.EncodeHex(addresstest.EthereumSofia),
 		// 				},
 		// 				Subject:   "subject-value",
 		// 				Body:      "body-value",
-		// 				PublicKey: "0x" + hex.EncodeToString(testutil.SofiaPublicKey.Bytes()),
+		// 				PublicKey: "0x" + encoding.EncodeHex(testutil.SofiaPublicKey.Bytes()),
 		// 			},
 		// 		},
 		// 		"ethereum",
@@ -268,12 +268,12 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + hex.EncodeToString(addresstest.EthereumCharlotte),
-							From: hex.EncodeToString(addresstest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:   "subject-value",
 						Body:      "body-value",
-						PublicKey: "0x" + hex.EncodeToString(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKey: "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
 					},
 					Envelope:       "0x01",
 					EncryptionName: "aes256cbc",

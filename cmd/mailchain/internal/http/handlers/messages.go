@@ -78,7 +78,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not get `decrypter`"))
 			return
 		}
-		var messages []getMessage
+		messages := make([]getMessage, 0)
 		for _, transactionData := range transactions { //nolint TODO: thats an arbitrary limit
 			message, err := mailbox.ReadMessage(transactionData.Data, decrypter)
 			if err != nil {

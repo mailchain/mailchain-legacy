@@ -31,10 +31,13 @@ func GetMessage(location string, integrityHash []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	hash := crypto.CreateIntegrityHash(msg)
+
 	if len(integrityHash) != 0 && !bytes.Equal(hash, integrityHash) {
 		return nil, errors.Errorf("hash does not match contents")
 	}
+
 	return msg, nil
 }
 

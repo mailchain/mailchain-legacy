@@ -17,8 +17,6 @@ package secp256k1
 import (
 	"crypto/ecdsa"
 	"crypto/sha256"
-	"encoding/hex"
-	"strings"
 
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
@@ -83,36 +81,12 @@ func PublicKeyFromBytes(keyBytes []byte) (crypto.PublicKey, error) {
 	}
 }
 
-// PublicKeyFromHex create a public key from hex
-func PublicKeyFromHex(input string) (crypto.PublicKey, error) {
-	input = strings.TrimPrefix(input, "0x")
-	keyBytes, err := hex.DecodeString(input)
-	if err != nil {
-		return nil, err
-	}
-
-	switch len(keyBytes) {
-	case 64:
-		pub := make([]byte, 65)
-		pub[0] = byte(4)
-		copy(pub[1:], keyBytes)
-		return PublicKeyFromBytes(pub)
-	case 33:
-		pk, err := ethcrypto.DecompressPubkey(keyBytes)
-		if err != nil {
-			return nil, errors.WithMessage(err, "could not decompress pk")
-		}
-		return &PublicKey{ecdsa: *pk}, nil
-	default:
-		return nil, errors.Errorf("invalid key length %v", len(keyBytes))
-	}
-}
-
 // ECIES returns an ECIES representation of the public key.
 func (pk PublicKey) ECIES() (*ecies.PublicKey, error) {
 	rpk, err := ethcrypto.DecompressPubkey(pk.Bytes())
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert pk")
 	}
+
 	return ecies.ImportECDSAPublic(rpk), nil
 }

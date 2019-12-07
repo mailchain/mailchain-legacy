@@ -25,13 +25,13 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/mailbox/signer/signertest"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
-	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/sender/sendertest"
 	"github.com/mailchain/mailchain/stores"
@@ -88,12 +88,12 @@ func TestSendMessage(t *testing.T) {
 				}(),
 				func() sender.Message {
 					m := sendertest.NewMockMessage(mockCtrl)
-					m.EXPECT().Send(gomock.Any(), ethereum.Mainnet, testutil.MustHexDecodeString(strings.TrimLeft(msg.Headers.To.ChainAddress, "0x")), testutil.MustHexDecodeString(strings.TrimLeft(msg.Headers.From.ChainAddress, "0x")), gomock.AssignableToTypeOf([]byte{}), signertest.NewMockSigner(mockCtrl), nil).Return(nil)
+					m.EXPECT().Send(gomock.Any(), ethereum.Mainnet, encodingtest.MustDecodeHex(strings.TrimLeft(msg.Headers.To.ChainAddress, "0x")), encodingtest.MustDecodeHex(strings.TrimLeft(msg.Headers.From.ChainAddress, "0x")), gomock.AssignableToTypeOf([]byte{}), signertest.NewMockSigner(mockCtrl), nil).Return(nil)
 					return m
 				}(),
 				func() stores.Sent {
 					m := storestest.NewMockSent(mockCtrl)
-					m.EXPECT().PutMessage(msg.ID, testutil.MustHexDecodeString("162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d"), []byte("encrypted-message"), nil).Return("https://location-of-file", "162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d", uint64(1), nil)
+					m.EXPECT().PutMessage(msg.ID, encodingtest.MustDecodeHex("162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d"), []byte("encrypted-message"), nil).Return("https://location-of-file", "162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d", uint64(1), nil)
 					return m
 				}(),
 				func() signer.Signer {
@@ -205,12 +205,12 @@ func TestSendMessage(t *testing.T) {
 				}(),
 				func() sender.Message {
 					m := sendertest.NewMockMessage(mockCtrl)
-					m.EXPECT().Send(gomock.Any(), ethereum.Mainnet, testutil.MustHexDecodeString(strings.TrimLeft(msg.Headers.To.ChainAddress, "0x")), testutil.MustHexDecodeString(strings.TrimLeft(msg.Headers.From.ChainAddress, "0x")), gomock.AssignableToTypeOf([]byte{}), signertest.NewMockSigner(mockCtrl), nil).Return(errors.Errorf("failed"))
+					m.EXPECT().Send(gomock.Any(), ethereum.Mainnet, encodingtest.MustDecodeHex(strings.TrimLeft(msg.Headers.To.ChainAddress, "0x")), encodingtest.MustDecodeHex(strings.TrimLeft(msg.Headers.From.ChainAddress, "0x")), gomock.AssignableToTypeOf([]byte{}), signertest.NewMockSigner(mockCtrl), nil).Return(errors.Errorf("failed"))
 					return m
 				}(),
 				func() stores.Sent {
 					m := storestest.NewMockSent(mockCtrl)
-					m.EXPECT().PutMessage(msg.ID, testutil.MustHexDecodeString("162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d"), []byte("encrypted-message"), nil).Return("https://location-of-file", "162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d", uint64(1), nil)
+					m.EXPECT().PutMessage(msg.ID, encodingtest.MustDecodeHex("162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d"), []byte("encrypted-message"), nil).Return("https://location-of-file", "162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d", uint64(1), nil)
 					return m
 				}(),
 				func() signer.Signer {
@@ -241,7 +241,7 @@ func TestSendMessage(t *testing.T) {
 				}(),
 				func() stores.Sent {
 					m := storestest.NewMockSent(mockCtrl)
-					m.EXPECT().PutMessage(msg.ID, testutil.MustHexDecodeString("162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d"), []byte("encrypted-message"), nil).Return("https://location-of-file", "162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d", uint64(1), nil)
+					m.EXPECT().PutMessage(msg.ID, encodingtest.MustDecodeHex("162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d"), []byte("encrypted-message"), nil).Return("https://location-of-file", "162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d", uint64(1), nil)
 					return m
 				}(),
 				func() signer.Signer {
@@ -272,7 +272,7 @@ func TestSendMessage(t *testing.T) {
 				}(),
 				func() stores.Sent {
 					m := storestest.NewMockSent(mockCtrl)
-					m.EXPECT().PutMessage(msg.ID, testutil.MustHexDecodeString("162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d"), []byte("encrypted-message"), nil).Return("https://location-of-file", "162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d", uint64(255), nil)
+					m.EXPECT().PutMessage(msg.ID, encodingtest.MustDecodeHex("162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d"), []byte("encrypted-message"), nil).Return("https://location-of-file", "162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d", uint64(255), nil)
 					return m
 				}(),
 				func() signer.Signer {
@@ -303,7 +303,7 @@ func TestSendMessage(t *testing.T) {
 				}(),
 				func() stores.Sent {
 					m := storestest.NewMockSent(mockCtrl)
-					m.EXPECT().PutMessage(msg.ID, testutil.MustHexDecodeString("162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d"), []byte("encrypted-message"), nil).Return("", "", uint64(1), errors.Errorf("failed"))
+					m.EXPECT().PutMessage(msg.ID, encodingtest.MustDecodeHex("162054f817c0ee9b844de0f294aa23c6cb12cec36a54c1187aaefb06b4a51f39a02d"), []byte("encrypted-message"), nil).Return("", "", uint64(1), errors.Errorf("failed"))
 					return m
 				}(),
 				func() signer.Signer {

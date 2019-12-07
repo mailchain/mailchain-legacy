@@ -73,6 +73,7 @@ func PrivateKeyFromBytes(pk []byte) (*PrivateKey, error) {
 	if err != nil {
 		return nil, errors.Errorf("could not convert private key")
 	}
+
 	return &PrivateKey{ecdsa: *rpk}, nil
 }
 
@@ -82,5 +83,6 @@ func PrivateKeyFromHex(hexkey string) (*PrivateKey, error) {
 	if err != nil {
 		return nil, errors.New("invalid hex string")
 	}
+
 	return PrivateKeyFromBytes(b)
 }

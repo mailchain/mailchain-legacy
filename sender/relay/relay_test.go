@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
-	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/sender/sendertest"
 	"github.com/stretchr/testify/assert"
@@ -119,8 +119,8 @@ func TestClient_Send(t *testing.T) {
 						m.EXPECT().Send(
 							context.Background(),
 							"mainnet",
-							testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
-							testutil.MustHexDecodeString("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+							encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+							encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
 							[]byte("transactionDataValue"),
 							nil,
 							nil,
@@ -132,8 +132,8 @@ func TestClient_Send(t *testing.T) {
 			args{
 				context.Background(),
 				"mainnet",
-				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
-				testutil.MustHexDecodeString("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+				encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
 				[]byte("transactionDataValue"),
 				nil,
 				nil,
@@ -148,8 +148,8 @@ func TestClient_Send(t *testing.T) {
 			args{
 				context.Background(),
 				"mainnet",
-				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
-				testutil.MustHexDecodeString("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+				encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
 				[]byte("transactionDataValue"),
 				nil,
 				nil,

@@ -12,8 +12,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/cmd/sentstore/storage"
 	"github.com/mailchain/mailchain/cmd/sentstore/storage/storagetest"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mail"
-	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
@@ -92,8 +92,8 @@ func TestPostHandler(t *testing.T) {
 				"https://test.com",
 				func() storage.Store {
 					s := storagetest.NewMockStore(mockCtrl)
-					s.EXPECT().Exists(mail.ID([]byte{}), testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return(nil)
-					s.EXPECT().Put(mail.ID([]byte{}), testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return("https://domain.com/47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471", "47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471", uint64(1), nil)
+					s.EXPECT().Exists(mail.ID([]byte{}), encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return(nil)
+					s.EXPECT().Put(mail.ID([]byte{}), encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return("https://domain.com/47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471", "47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471", uint64(1), nil)
 					return s
 				}(),
 				stores.SizeMegabyte * 2,
@@ -113,8 +113,8 @@ func TestPostHandler(t *testing.T) {
 				"https://test.com/",
 				func() storage.Store {
 					s := storagetest.NewMockStore(mockCtrl)
-					s.EXPECT().Exists(mail.ID([]byte{}), testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return(nil)
-					s.EXPECT().Put(mail.ID([]byte{}), testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return("https://domain.com/47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471", "47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471", uint64(1), nil)
+					s.EXPECT().Exists(mail.ID([]byte{}), encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return(nil)
+					s.EXPECT().Put(mail.ID([]byte{}), encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return("https://domain.com/47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471", "47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471", uint64(1), nil)
 					return s
 				}(),
 				stores.SizeMegabyte * 2,
@@ -134,8 +134,8 @@ func TestPostHandler(t *testing.T) {
 				"https://test.com/",
 				func() storage.Store {
 					s := storagetest.NewMockStore(mockCtrl)
-					s.EXPECT().Exists(mail.ID([]byte{}), testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return(nil)
-					s.EXPECT().Put(mail.ID([]byte{}), testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return("https://domain.com/d12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471", "47eca011e32b52c71005ad8a8f75e1b44c92c99f", uint64(1), nil)
+					s.EXPECT().Exists(mail.ID([]byte{}), encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return(nil)
+					s.EXPECT().Put(mail.ID([]byte{}), encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return("https://domain.com/d12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471", "47eca011e32b52c71005ad8a8f75e1b44c92c99f", uint64(1), nil)
 					return s
 				}(),
 				stores.SizeMegabyte * 2,
@@ -289,7 +289,7 @@ func TestPostHandler(t *testing.T) {
 				"https://test.com",
 				func() storage.Store {
 					s := storagetest.NewMockStore(mockCtrl)
-					s.EXPECT().Exists(mail.ID([]byte{}), testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return(errors.Errorf("already exists"))
+					s.EXPECT().Exists(mail.ID([]byte{}), encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return(errors.Errorf("already exists"))
 					return s
 				}(),
 				stores.SizeMegabyte * 2,
@@ -309,8 +309,8 @@ func TestPostHandler(t *testing.T) {
 				"https://test.com",
 				func() storage.Store {
 					s := storagetest.NewMockStore(mockCtrl)
-					s.EXPECT().Exists(mail.ID([]byte{}), testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return(nil)
-					s.EXPECT().Put(mail.ID([]byte{}), testutil.MustHexDecodeString("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return("", "", uint64(1), errors.Errorf("put failed"))
+					s.EXPECT().Exists(mail.ID([]byte{}), encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return(nil)
+					s.EXPECT().Put(mail.ID([]byte{}), encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471"), nil, []byte("body")).Return("", "", uint64(1), errors.Errorf("put failed"))
 					return s
 				}(),
 				stores.SizeMegabyte * 2,

@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/nameservice/nameservicetest"
 	"github.com/pkg/errors"
@@ -40,7 +40,7 @@ func TestReverse(t *testing.T) {
 			args{
 				func() nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("test.eth", nil)
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("test.eth", nil)
 					return m
 				}(),
 			},
@@ -60,7 +60,7 @@ func TestReverse(t *testing.T) {
 			args{
 				func() nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", errors.Errorf("failed"))
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", errors.Errorf("failed"))
 					return m
 				}(),
 			},
@@ -80,7 +80,7 @@ func TestReverse(t *testing.T) {
 			args{
 				func() nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrNXDomain)
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrNXDomain)
 					return m
 				}(),
 			},
@@ -100,7 +100,7 @@ func TestReverse(t *testing.T) {
 			args{
 				func() nameservice.ReverseLookup {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
-					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrFormat)
+					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrFormat)
 					return m
 				}(),
 			},

@@ -21,7 +21,7 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -152,7 +152,7 @@ func TestLookupService_ResolveAddress(t *testing.T) {
 				context.Background(),
 				"ethereum",
 				"mainnet",
-				testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+				encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
 			},
 			"",
 			true,

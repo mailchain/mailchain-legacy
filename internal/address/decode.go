@@ -25,7 +25,7 @@ import (
 func DecodeByProtocol(in, protocol string) ([]byte, error) {
 	switch protocol {
 	case protocols.Ethereum:
-		return encoding.DecodeZeroX(in)
+		return encoding.DecodeHexZeroX(in)
 	case protocols.Substrate:
 		return base58.Decode(in)
 	default:

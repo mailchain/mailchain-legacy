@@ -23,10 +23,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/mailbox/signer/signertest"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
-	"github.com/mailchain/mailchain/internal/testutil"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/sender/ethrpc2/ethrpc2test"
 	"github.com/pkg/errors"
@@ -38,8 +38,8 @@ func TestEthRPC2_Send(t *testing.T) {
 	gasPrice := big.NewInt(int64(45))
 	gas := uint64(42345)
 	networkID := big.NewInt(12)
-	to := testutil.MustHexDecodeString("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")
-	from := testutil.MustHexDecodeString("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2")
+	to := encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")
+	from := encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2")
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type signerOpts struct {

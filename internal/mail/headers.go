@@ -19,7 +19,11 @@ import (
 )
 
 // DefaultContentType value.
-const DefaultContentType = "text/plain; charset=\"UTF-8\""
+const (
+	HTMLContentType    = "text/html; charset=\"UTF-8\""
+	TextContentType    = "text/plain; charset=\"UTF-8\""
+	DefaultContentType = TextContentType
+)
 
 // NewHeaders create the headers for sending a new message
 func NewHeaders(date time.Time, from, to Address, replyTo *Address, subject, contentType string) *Headers {

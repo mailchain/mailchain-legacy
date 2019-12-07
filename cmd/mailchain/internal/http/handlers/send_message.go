@@ -86,7 +86,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			return
 		}
 
-		msg, err := mail.NewMessage(time.Now(), *req.Body.from, *req.Body.to, req.Body.replyTo, req.Body.Message.Subject, []byte(req.Body.Message.Body))
+		msg, err := mail.NewMessage(time.Now(), *req.Body.from, *req.Body.to, req.Body.replyTo, req.Body.Message.Subject, []byte(req.Body.Message.Body), req.Body.ContentType)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
@@ -230,6 +230,10 @@ type PostRequestBody struct {
 	// required: true
 	// enum: aes256cbc, nacl, noop
 	EncryptionName string `json:"encryption-method-name"`
+	// Message content-type provided by the client
+	// required: false (default text/plain; charset=\"UTF-8\")
+	// enum: 'text/plain; charset=\"UTF-8\"', 'text/html; charset=\"UTF-8\"'
+	ContentType string `json:"content-type"`
 }
 
 func checkForEmpties(msg PostMessage) error {

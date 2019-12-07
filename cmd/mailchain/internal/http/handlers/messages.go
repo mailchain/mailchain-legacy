@@ -157,10 +157,12 @@ func parseGetMessagesRequest(r *http.Request) (*GetMessagesRequest, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	addr, err := params.QueryRequireAddress(r)
 	if err != nil {
 		return nil, err
 	}
+
 	// TODO: validate address
 	// if !ethereum.IsAddressValid(addr) {
 	// 	return nil, errors.Errorf("'address' is invalid")

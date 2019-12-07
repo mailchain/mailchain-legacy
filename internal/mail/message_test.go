@@ -21,12 +21,13 @@ import (
 
 func TestNewMessage(t *testing.T) {
 	type args struct {
-		date    time.Time
-		from    Address
-		to      Address
-		replyTo *Address
-		subject string
-		body    []byte
+		date        time.Time
+		from        Address
+		to          Address
+		replyTo     *Address
+		subject     string
+		body        []byte
+		contentType string
 	}
 	tests := []struct {
 		name    string
@@ -35,7 +36,7 @@ func TestNewMessage(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success",
+			"success-text",
 			args{
 				time.Date(2018, 1, 1, 1, 1, 1, 1, time.UTC),
 				Address{
@@ -49,6 +50,67 @@ func TestNewMessage(t *testing.T) {
 				nil,
 				"test subject",
 				[]byte("test body"),
+				TextContentType,
+			},
+			false,
+			false,
+		},
+		{
+			"success-html",
+			args{
+				time.Date(2018, 1, 1, 1, 1, 1, 1, time.UTC),
+				Address{
+					FullAddress:  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum",
+					ChainAddress: "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+				},
+				Address{
+					FullAddress:  "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum",
+					ChainAddress: "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2",
+				},
+				nil,
+				"test subject",
+				[]byte("<html><body><p>test body</p></body></html>"),
+				HTMLContentType,
+			},
+			false,
+			false,
+		},
+		{
+			"success-invalid-content-type",
+			args{
+				time.Date(2018, 1, 1, 1, 1, 1, 1, time.UTC),
+				Address{
+					FullAddress:  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum",
+					ChainAddress: "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+				},
+				Address{
+					FullAddress:  "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum",
+					ChainAddress: "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2",
+				},
+				nil,
+				"test subject",
+				[]byte("<html><body><p>test body</p></body></html>"),
+				"invalid-content-type",
+			},
+			false,
+			false,
+		},
+		{
+			"success-empty-content-type",
+			args{
+				time.Date(2018, 1, 1, 1, 1, 1, 1, time.UTC),
+				Address{
+					FullAddress:  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum",
+					ChainAddress: "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+				},
+				Address{
+					FullAddress:  "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum",
+					ChainAddress: "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2",
+				},
+				nil,
+				"test subject",
+				[]byte("test body"),
+				"invalid-content-type",
 			},
 			false,
 			false,
@@ -56,7 +118,7 @@ func TestNewMessage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewMessage(tt.args.date, tt.args.from, tt.args.to, tt.args.replyTo, tt.args.subject, tt.args.body)
+			got, err := NewMessage(tt.args.date, tt.args.from, tt.args.to, tt.args.replyTo, tt.args.subject, tt.args.body, tt.args.contentType)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -69,9 +131,9 @@ func TestNewMessage(t *testing.T) {
 	}
 }
 
-func Test_detectContentType(t *testing.T) {
+func Test_contentTypeOrDefault(t *testing.T) {
 	type args struct {
-		body []byte
+		contentType string
 	}
 	tests := []struct {
 		name string
@@ -79,30 +141,30 @@ func Test_detectContentType(t *testing.T) {
 		want string
 	}{
 		{
-			"content-type-and-encoding",
+			"content-type-text",
 			args{
-				[]byte("this is plain text message"),
+				TextContentType,
 			},
 			"text/plain; charset=\"UTF-8\"",
 		},
 		{
-			"content-type-and-encoding-html",
+			"content-type-html",
 			args{
-				[]byte("<h1>this is HTML text message</h1>"),
+				HTMLContentType,
 			},
 			"text/html; charset=\"UTF-8\"",
 		},
 		{
-			"plain-with-some-html",
+			"content-type-empty",
 			args{
-				[]byte("Hi, this is plain text with example html included <h1>An example html tag</h1>"),
+				"",
 			},
 			"text/plain; charset=\"UTF-8\"",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := detectContentType(tt.args.body)
+			got := contentTypeOrDefault(tt.args.contentType)
 			if got != tt.want {
 				t.Errorf("detectContentType() got = %v, want %v", got, tt.want)
 				return

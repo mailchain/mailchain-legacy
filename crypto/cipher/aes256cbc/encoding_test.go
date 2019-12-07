@@ -16,9 +16,9 @@ package aes256cbc
 
 import (
 	"bytes"
-	"encoding/hex"
 	"testing"
 
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
@@ -55,7 +55,7 @@ func TestBytesEncode(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			actual, err := bytesEncode(tc.original)
-			assert.EqualValues(hex.EncodeToString(tc.expected), hex.EncodeToString(actual))
+			assert.EqualValues(encoding.EncodeHex(tc.expected), encoding.EncodeHex(actual))
 			assert.Equal(tc.err, err)
 		})
 	}

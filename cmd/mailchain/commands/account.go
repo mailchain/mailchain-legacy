@@ -1,12 +1,12 @@
 package commands
 
 import (
-	"encoding/hex"
 	"fmt"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/mailchain/mailchain/crypto/multikey"
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
@@ -58,7 +58,7 @@ func accountAddCmd(ks keystore.Store, passphrasePrompt, privateKeyPrompt prompts
 				return errors.WithMessage(err, "could not get private key")
 			}
 
-			privKeyBytes, err := hex.DecodeString(privateKey)
+			privKeyBytes, err := encoding.DecodeHex(privateKey)
 			if err != nil {
 				return errors.WithMessage(err, "`private-key` could not be decoded")
 			}
@@ -93,7 +93,7 @@ func accountAddCmd(ks keystore.Store, passphrasePrompt, privateKeyPrompt prompts
 			}
 
 			cmd.Printf(chalk.Green.Color("Private key added\n"))
-			cmd.Printf("Public key=%s\n", hex.EncodeToString(pubKey.Bytes()))
+			cmd.Printf("Public key=%s\n", encoding.EncodeHex(pubKey.Bytes()))
 			return nil
 		},
 	}
@@ -124,7 +124,7 @@ func accountListCmd(ks keystore.Store) *cobra.Command {
 				return errors.WithMessage(err, "could not get addresses")
 			}
 			for _, x := range addresses {
-				cmd.Println(hex.EncodeToString(x))
+				cmd.Println(encoding.EncodeHex(x))
 			}
 			return nil
 		},

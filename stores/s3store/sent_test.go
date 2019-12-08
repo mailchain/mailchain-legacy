@@ -16,11 +16,11 @@ package s3store
 
 import (
 	"bytes"
-	"encoding/hex"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
@@ -286,7 +286,7 @@ func TestSent_Key(t *testing.T) {
 				[]byte("contents-hash"),
 				[]byte("body"),
 			},
-			hex.EncodeToString([]byte("contents-hash")),
+			encoding.EncodeHex([]byte("contents-hash")),
 		},
 	}
 	for _, tt := range tests {

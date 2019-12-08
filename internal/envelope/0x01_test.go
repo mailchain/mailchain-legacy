@@ -24,7 +24,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/internal/testutil"
+	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -325,7 +325,7 @@ func TestNewZeroX01(t *testing.T) {
 				secp256k1test.CharlottePublicKey,
 				&CreateOpts{
 					Location:      MLIMailchain,
-					DecryptedHash: testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
 					Resource:      "2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba",
 				},
 			},
@@ -345,9 +345,9 @@ func TestNewZeroX01(t *testing.T) {
 				}(),
 				secp256k1test.CharlottePublicKey,
 				&CreateOpts{
-					EncryptedHash: testutil.MustHexDecodeString("220455078214"),
+					EncryptedHash: encodingtest.MustDecodeHex("220455078214"),
 					Location:      MLIMailchain,
-					DecryptedHash: testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
 					Resource:      "2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba",
 				},
 			},
@@ -369,7 +369,7 @@ func TestNewZeroX01(t *testing.T) {
 				&CreateOpts{
 					Location:      MLIMailchain,
 					Resource:      "2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba",
-					DecryptedHash: testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
 				},
 			},
 			nil,
@@ -413,7 +413,7 @@ func TestNewZeroX01(t *testing.T) {
 				secp256k1test.CharlottePublicKey,
 				&CreateOpts{
 					Location:      MLIMailchain,
-					DecryptedHash: testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
 				},
 			},
 			nil,
@@ -430,7 +430,7 @@ func TestNewZeroX01(t *testing.T) {
 				&CreateOpts{
 					Location:      MLIMailchain,
 					Resource:      "invalid",
-					DecryptedHash: testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
 				},
 			},
 			nil,
@@ -447,7 +447,7 @@ func TestNewZeroX01(t *testing.T) {
 				&CreateOpts{
 					Location:      MLIMailchain,
 					Resource:      "2c8432ca",
-					DecryptedHash: testutil.MustHexDecodeString("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
 				},
 			},
 			nil,

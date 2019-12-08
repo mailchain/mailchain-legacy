@@ -16,8 +16,7 @@ package mail
 
 import (
 	"crypto/rand"
-	"encoding/hex"
-
+	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/pkg/errors"
 )
 
@@ -29,12 +28,12 @@ func NewID() (ID, error) {
 
 // FromHexString create ID from multihash hex string
 func FromHexString(h string) (ID, error) {
-	return hex.DecodeString(h)
+	return encoding.DecodeHex(h)
 }
 
 // HexString create a multihash representation of ID as hex string
 func (id ID) HexString() string {
-	return hex.EncodeToString(id)
+	return encoding.EncodeHex(id)
 }
 
 // ID create the mail message ID header

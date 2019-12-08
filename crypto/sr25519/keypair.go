@@ -2,6 +2,7 @@ package sr25519
 
 import (
 	"github.com/ChainSafe/go-schnorrkel"
+	"github.com/pkg/errors"
 )
 
 // Keypair type have public and private key
@@ -21,6 +22,30 @@ func NewKeypair(priv *schnorrkel.SecretKey) (*Keypair, error) {
 		public:  &PublicKey{key: pub},
 		private: &PrivateKey{key: priv},
 	}, nil
+}
+
+// NewPublicKey creates a new public key using the input bytes
+func NewPublicKey(in []byte) (*PublicKey, error) {
+	if len(in) != publicKeyLength {
+		return nil, errors.New("cannot create public key: input is not 32 bytes")
+	}
+
+	buf := [publicKeyLength]byte{}
+	copy(buf[:], in)
+
+	return &PublicKey{key: schnorrkel.NewPublicKey(buf)}, nil
+}
+
+// NewPrivateKey creates a new private key using the input bytes
+func NewPrivateKey(in []byte) (*PrivateKey, error) {
+	if len(in) != privateKeyLength {
+		return nil, errors.New("input to create sr25519 private key is not 32 bytes")
+	}
+
+	priv := new(PrivateKey)
+	err := priv.Decode(in)
+
+	return priv, err
 }
 
 // GenerateKeypair returns a new sr25519 keypair

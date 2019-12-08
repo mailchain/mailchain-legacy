@@ -4,7 +4,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -124,7 +123,7 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 	tests := []struct {
 		name string
 		pk   PrivateKey
-		want crypto.PublicKey
+		want PublicKey
 	}{
 		{
 			"sofia",

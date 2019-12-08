@@ -5,10 +5,12 @@ import (
 
 	"github.com/ChainSafe/go-schnorrkel"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/internal/encoding"
 )
 
 const (
-	publicKeySize = 32
+	publicKeySize       = 32
+	publicKeyLength int = 32
 )
 
 // PublicKey is a interface
@@ -26,6 +28,14 @@ func (pk PublicKey) Bytes() []byte {
 // Kind returns the key type
 func (pk PublicKey) Kind() string {
 	return crypto.SR25519
+}
+
+// Hex returns the public key as a '0x' prefixed hex string
+func (pk PublicKey) Hex() string {
+	enc := pk.Encode()
+	h := encoding.EncodeHex(enc)
+
+	return "0x" + h
 }
 
 // Verify uses the sr25519 signature algorithm to verify that the message was signed by

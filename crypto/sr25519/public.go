@@ -5,12 +5,12 @@ import (
 
 	"github.com/ChainSafe/go-schnorrkel"
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/internal/encoding"
 )
 
 const (
-	publicKeySize       = 32
-	publicKeyLength int = 32
+	publicKeySize   = 32
+	signatureLength = 64
+	signatureSize   = 64
 )
 
 // PublicKey is a interface
@@ -18,7 +18,7 @@ type PublicKey struct {
 	key *schnorrkel.PublicKey
 }
 
-// PublicKey.Bytes() to Bytes
+// Bytes return Publickey Bytes
 func (pk PublicKey) Bytes() []byte {
 	b := pk.key.Encode()
 
@@ -30,16 +30,8 @@ func (pk PublicKey) Kind() string {
 	return crypto.SR25519
 }
 
-// Hex returns the public key as a '0x' prefixed hex string
-func (pk PublicKey) Hex() string {
-	enc := pk.Encode()
-	h := encoding.EncodeHex(enc)
-
-	return "0x" + h
-}
-
 func newPublicKey(b []byte) PublicKey { //nolint
-	enc := [32]byte{}
+	enc := [publicKeySize]byte{}
 	copy(enc[:], b)
 
 	public := schnorrkel.NewPublicKey(enc)
@@ -51,16 +43,12 @@ func newPublicKey(b []byte) PublicKey { //nolint
 // this public key; it returns true if this key created the signature for the message,
 // false otherwise
 func (pk PublicKey) Verify(message, sig []byte) bool {
-	if pk.key == nil {
-		return false
-	}
-
-	b := [64]byte{}
+	b := [signatureLength]byte{}
 	copy(b[:], sig)
 
 	s := &schnorrkel.Signature{}
-	err := s.Decode(b)
 
+	err := s.Decode(b)
 	if err != nil {
 		return false
 	}
@@ -71,11 +59,7 @@ func (pk PublicKey) Verify(message, sig []byte) bool {
 }
 
 // Encode returns the 32-byte encoding of the public key
-func (pk *PublicKey) Encode() []byte {
-	if pk.key == nil {
-		return nil
-	}
-
+func (pk PublicKey) Encode() []byte {
 	enc := pk.key.Encode()
 
 	return enc[:]
@@ -83,15 +67,9 @@ func (pk *PublicKey) Encode() []byte {
 
 // Decode decodes the input bytes into a public key and sets the receiver the decoded key
 // Input must be 32 bytes, or else this function will error
-func (pk *PublicKey) Decode(in []byte) error {
-	if len(in) != publicKeySize {
-		return errors.New("input to sr25519 public key decode is not 32 bytes")
-	}
-
-	b := [32]byte{}
+func (pk PublicKey) Decode(in []byte) error {
+	b := [publicKeySize]byte{}
 	copy(b[:], in)
-
-	pk.key = &schnorrkel.PublicKey{}
 
 	return pk.key.Decode(b)
 }
@@ -114,10 +92,7 @@ func schnorrkelPublicKeyFromBytes(in []byte) (*schnorrkel.PublicKey, error) {
 func PublicKeyFromBytes(keyBytes []byte) (*PublicKey, error) {
 	switch len(keyBytes) {
 	case publicKeySize:
-		pubKey, err := schnorrkelPublicKeyFromBytes(keyBytes)
-		if err != nil {
-			return nil, err
-		}
+		pubKey, _ := schnorrkelPublicKeyFromBytes(keyBytes)
 
 		return &PublicKey{pubKey}, nil
 	default:

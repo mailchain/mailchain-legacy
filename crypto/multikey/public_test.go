@@ -16,7 +16,6 @@ package multikey
 
 import (
 	"testing"
-	"reflect"
 
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"

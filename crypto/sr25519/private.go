@@ -43,7 +43,7 @@ func (pk PrivateKey) PublicKey() crypto.PublicKey {
 		panic(err)
 	}
 
-	return PublicKey{public}
+	return PublicKey{key: public}
 }
 
 // Sign uses the PrivateKey to sign the message using the sr25519 signature algorithm

@@ -38,6 +38,15 @@ func (pk PublicKey) Hex() string {
 	return "0x" + h
 }
 
+func newPublicKey(b []byte) PublicKey { //nolint
+	enc := [32]byte{}
+	copy(enc[:], b)
+
+	public := schnorrkel.NewPublicKey(enc)
+
+	return PublicKey{key: public}
+}
+
 // Verify uses the sr25519 signature algorithm to verify that the message was signed by
 // this public key; it returns true if this key created the signature for the message,
 // false otherwise

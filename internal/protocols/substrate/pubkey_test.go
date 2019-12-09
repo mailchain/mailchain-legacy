@@ -100,8 +100,10 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 				t.Errorf("PublicKeyFinder.PublicKeyFromAddress() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
-				t.Errorf("PublicKeyFinder.PublicKeyFromAddress() = %v, want %v", got, tt.want)
+			if got != nil {
+				if !assert.Equal(tt.want, got.Bytes()) {
+					t.Errorf("PublicKeyFinder.PublicKeyFromAddress() = %v, want %v", got, tt.want)
+				}
 			}
 		})
 	}

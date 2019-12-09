@@ -17,9 +17,10 @@ package mailbox
 //go:generate mockgen -source=pubkey.go -package=mailboxtest -destination=./mailboxtest/pubkey_mock.go
 import (
 	"context"
+	"github.com/mailchain/mailchain/crypto"
 )
 
 // PubKeyFinder find public key to encrypt message with
 type PubKeyFinder interface {
-	PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) ([]byte, error)
+	PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) (crypto.PublicKey, error)
 }

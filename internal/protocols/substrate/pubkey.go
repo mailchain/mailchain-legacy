@@ -16,6 +16,8 @@ package substrate
 
 import (
 	"context"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/ed25519"
 
 	"github.com/pkg/errors"
 )
@@ -30,7 +32,7 @@ type PublicKeyFinder struct {
 }
 
 // PublicKeyFromAddress returns the public key from the address.
-func (pkf *PublicKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) ([]byte, error) {
+func (pkf *PublicKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) (crypto.PublicKey, error) {
 	if protocol != "substrate" {
 		return nil, errors.New("protocol must be 'substrate'")
 	}
@@ -43,5 +45,10 @@ func (pkf *PublicKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, 
 	// Remove last 2 bytes (blake2b hash)
 	newAddress := address[1:33]
 
-	return newAddress, nil
+	pubKey, err := ed25519.PublicKeyFromBytes(newAddress)
+	if err != nil {
+		return nil, errors.New("error getting public key from bytes")
+	}
+
+	return pubKey, nil
 }

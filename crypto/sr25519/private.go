@@ -1,8 +1,6 @@
 package sr25519
 
 import (
-	"fmt"
-
 	"github.com/ChainSafe/go-schnorrkel"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/pkg/errors"
@@ -12,9 +10,7 @@ const (
 	keyPairSize          = 96
 	privateKeySize       = 64
 	seedSize             = 32
-	speedLength      int = 32
 	privateKeyLength int = 32
-	signatureLength  int = 64
 )
 
 // SigningContext sr25519
@@ -39,17 +35,15 @@ func (pk PrivateKey) Kind() string {
 
 // PublicKey return the crypto.PublicKey that is derived from the Privatekey
 func (pk PrivateKey) PublicKey() crypto.PublicKey {
-	secretKey := &(schnorrkel.SecretKey{})
-	err := secretKey.Decode(pk.key.Encode())
+	msk, _ := schnorrkel.NewMiniSecretKeyFromRaw(pk.key.Encode())
+	pub := msk.ExpandEd25519()
+
+	public, err := pub.Public()
 	if err != nil {
-		panic(fmt.Sprintf("Invalid private key: %v", err))
+		panic(err)
 	}
 
-	// sofia := encodingtest.MustDecodeHex("bfdef74a308d58ce9662781501e4ff7476f4bb86b3070306fa255726be8c867df7307cce368038060e53afc68ad19acef7600ec5eaaaeee4d33dee302661da3fad86c385610d5238fb91bdf021030e1b545efc2663d1dfb99296d6d20661204571b4c2a9f4994ba8a3e679433030989fa018a0c7044d674a2ec7b692c04bb7f7ac31401e5901d989d7e9c6fcbc70ec0a2162e06a30e7bbb423ea9c145f")
-	// fmt.Println(sofia)
-	pub, _ := secretKey.Public()
-
-	return PublicKey{key: pub}
+	return PublicKey{public}
 }
 
 // Sign uses the PrivateKey to sign the message using the sr25519 signature algorithm

@@ -24,7 +24,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/keystoretest"
 	"github.com/pkg/errors"

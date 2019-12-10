@@ -26,8 +26,8 @@ import (
 	"time"
 
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
@@ -38,6 +38,7 @@ func NewSentStore() *SentStore {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
+
 	return &SentStore{
 		domain:     "https://mcx.mx",
 		newRequest: http.NewRequest,
@@ -89,6 +90,7 @@ func (s SentStore) PutMessage(messageID mail.ID, contentsHash, msg []byte, heade
 		return "", "", envelope.MLIMailchain, errors.Errorf("%q is not valid for `Message-Location-Identifier` header must be %v",
 			resp.Header.Get("Message-Location-Identifier"), envelope.MLIMailchain)
 	}
+
 	if mli != envelope.MLIMailchain {
 		return "", "", envelope.MLIMailchain, errors.Errorf("mismatch `Message-Location-Identifier` header")
 	}
@@ -103,7 +105,9 @@ func responseAsError(r *http.Response) error {
 		if err := json.NewDecoder(r.Body).Decode(&httpError); err != nil {
 			return errors.WithMessage(err, "failed to read response")
 		}
+
 		return errors.Errorf("%v: %s", httpError.Code, httpError.Message)
 	}
+
 	return nil
 }

@@ -18,7 +18,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mr-tron/base58"
 	"github.com/stretchr/testify/assert"
 )

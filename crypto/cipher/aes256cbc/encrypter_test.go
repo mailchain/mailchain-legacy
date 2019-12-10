@@ -22,9 +22,9 @@ import (
 	"github.com/ethereum/go-ethereum/crypto/ecies"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/stretchr/testify/assert"
 )
 

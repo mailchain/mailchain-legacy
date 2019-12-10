@@ -12,19 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package encodingtest
+package encoding
 
-import (
-	"github.com/mailchain/mailchain/internal/encoding"
-)
-
-// MustDecodeBase58 decodes a Base58 string
-// It panics for invalid input.
-func MustDecodeBase58(input string) []byte {
-	dec, err := encoding.DecodeBase58(input)
-	if err != nil {
-		panic(err)
-	}
-
-	return dec
+// DataPrefix used to identify Mailchain messages.
+func DataPrefix() []byte {
+	return []byte{0x6d, 0x61, 0x69, 0x6c, 0x63, 0x68, 0x61, 0x69, 0x6e}
 }
+
+const (
+	// KindHex encoding value.
+	KindHex = "hex/plain"
+	// KindHex0XPrefix encoding value.
+	KindHex0XPrefix = "hex/0x-prefix"
+	// KindBase58 encoding value.
+	KindBase58 = "base58/plain"
+	// KindBase58SubstrateAddress encoding value.
+	KindBase58SubstrateAddress = "base58/ss58-address"
+)

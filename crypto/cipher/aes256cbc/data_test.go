@@ -17,7 +17,7 @@ package aes256cbc
 import (
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 )
 
 func Test_encryptedData_verify(t *testing.T) {

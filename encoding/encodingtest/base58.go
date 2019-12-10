@@ -14,11 +14,14 @@
 
 package encodingtest
 
-import "github.com/mailchain/mailchain/internal/encoding"
+import (
+	"github.com/mailchain/mailchain/encoding"
+)
 
-// MustDecodeHexZeroX decodes a hex string. It panics for invalid input.
-func MustDecodeHexZeroX(in string) []byte {
-	dec, err := encoding.DecodeHexZeroX(in)
+// MustDecodeBase58 decodes a Base58 string
+// It panics for invalid input.
+func MustDecodeBase58(input string) []byte {
+	dec, err := encoding.DecodeBase58(input)
 	if err != nil {
 		panic(err)
 	}

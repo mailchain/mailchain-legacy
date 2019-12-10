@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/keystoretest"
 	"github.com/pkg/errors"

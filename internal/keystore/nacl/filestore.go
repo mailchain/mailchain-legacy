@@ -22,7 +22,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
 	"github.com/spf13/afero"

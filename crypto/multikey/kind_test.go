@@ -15,7 +15,6 @@
 package multikey
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
@@ -192,7 +191,7 @@ func TestKeyKindFromSignature(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			key, err := KeyKindFromSignature(tt.args.pubKey, tt.args.message, tt.args.sig, tt.args.kinds)
 
-			if !errors.Is(err, tt.wantErr) {
+			if !(err == tt.wantErr) {
 				t.Errorf("KeyKindFromSignature() err = %v, want %v", err, tt.wantErr)
 			}
 

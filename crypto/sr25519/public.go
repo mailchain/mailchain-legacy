@@ -11,7 +11,6 @@ const (
 	publicKeySize   = 32
 	signatureLength = 64
 	signatureSize   = 64
-	publicKeyLength = 32
 )
 
 // PublicKey is a interface

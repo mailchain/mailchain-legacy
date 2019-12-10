@@ -5,7 +5,7 @@ import (
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 )
 
 // SofiaPrivateKey ed25519 key for testing purposes. Key is compromised do not use on mainnet's.

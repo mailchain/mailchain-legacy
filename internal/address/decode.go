@@ -15,7 +15,7 @@
 package address
 
 import (
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mr-tron/base58"
 	"github.com/pkg/errors"

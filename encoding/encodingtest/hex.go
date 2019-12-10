@@ -15,7 +15,7 @@
 package encodingtest
 
 import (
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/encoding"
 )
 
 // MustDecodeHex decodes a hex string. It panics for invalid input.

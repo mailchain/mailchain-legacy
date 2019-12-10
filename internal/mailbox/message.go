@@ -19,8 +19,8 @@ import (
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/address"
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
@@ -53,10 +53,12 @@ func SendMessage(ctx context.Context, protocol, network string, msg *mail.Messag
 	if err != nil {
 		return errors.WithMessage(err, "failed to store message")
 	}
+
 	locOpt, err := envelope.WithMessageLocationIdentifier(mli)
 	if err != nil {
 		return errors.WithStack(err)
 	}
+
 	opts := []envelope.CreateOptionsBuilder{
 		envelope.WithKind(envelopeKind),
 		envelope.WithURL(msgAddress),
@@ -77,13 +79,16 @@ func SendMessage(ctx context.Context, protocol, network string, msg *mail.Messag
 
 	transactonData := append(encoding.DataPrefix(), encodedData...)
 	to, err := address.DecodeByProtocol(msg.Headers.To.ChainAddress, protocol)
+
 	if err != nil {
 		return errors.WithMessage(err, "could not decode to address")
 	}
+
 	from, err := address.DecodeByProtocol(msg.Headers.From.ChainAddress, protocol)
 	if err != nil {
 		return errors.WithMessage(err, "could not decode from address")
 	}
+
 	if err := msgSender.Send(ctx, network, to, from, transactonData, msgSigner, nil); err != nil {
 		return errors.WithMessage(err, "could not send transaction")
 	}

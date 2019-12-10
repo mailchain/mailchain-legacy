@@ -2,7 +2,7 @@ package sr25519
 
 import (
 	"github.com/ChainSafe/go-schnorrkel"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 )
 
 var ( //nolint

@@ -1,10 +1,10 @@
 package nacl
 
 import (
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/stretchr/testify/assert"
 )
 

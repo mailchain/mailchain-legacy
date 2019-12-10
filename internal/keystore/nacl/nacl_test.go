@@ -21,6 +21,7 @@ import (
 	"testing/iotest"
 
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
+	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -48,10 +49,30 @@ func Test_easySeal(t *testing.T) {
 			false,
 		},
 		{
+			"success-sofia",
+			args{
+				[]byte("message"),
+				sr25519test.SofiaPublicKey.Bytes(),
+				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
+			},
+			[]byte{0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0xa3, 0x81, 0x27, 0x6f, 0xdb, 0x97, 0x17, 0x51, 0x10, 0x1e, 0x17, 0x2c, 0xec, 0x5b, 0xae, 0xdc, 0x7, 0x26, 0xea, 0x16, 0xe4, 0xc7, 0xde},
+			false,
+		},
+		{
 			"err-rand",
 			args{
 				[]byte("message"),
 				ed25519test.CharlottePublicKey.Bytes(),
+				iotest.DataErrReader(bytes.NewReader(nil)),
+			},
+			nil,
+			true,
+		},
+		{
+			"err-rand-schnorrkel",
+			args{
+				[]byte("message"),
+				sr25519test.SofiaPublicKey.Bytes(),
 				iotest.DataErrReader(bytes.NewReader(nil)),
 			},
 			nil,

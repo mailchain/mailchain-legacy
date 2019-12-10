@@ -15,12 +15,13 @@
 package aes256cbc
 
 import (
-	"encoding/hex"
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
+	"github.com/mailchain/mailchain/encoding"
 )
 
 func Test_asPrivateECIES(t *testing.T) {
@@ -37,7 +38,7 @@ func Test_asPrivateECIES(t *testing.T) {
 			"success-secp256k1-val",
 			args{
 				func() secp256k1.PrivateKey {
-					encryptedKey, err := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					encryptedKey, err := encoding.DecodeHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					if err != nil {
 						t.Error(err)
 					}
@@ -55,7 +56,7 @@ func Test_asPrivateECIES(t *testing.T) {
 			"success-secp256k1-pointer",
 			args{
 				func() *secp256k1.PrivateKey {
-					encryptedKey, err := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					encryptedKey, err := encoding.DecodeHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					if err != nil {
 						t.Error(err)
 					}
@@ -73,7 +74,7 @@ func Test_asPrivateECIES(t *testing.T) {
 			"success-secp256k1-pointer",
 			args{
 				func() *secp256k1.PrivateKey {
-					encryptedKey, err := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					encryptedKey, err := encoding.DecodeHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					if err != nil {
 						t.Error(err)
 					}
@@ -91,6 +92,14 @@ func Test_asPrivateECIES(t *testing.T) {
 			"err-unsupported",
 			args{
 				ed25519test.SofiaPrivateKey,
+			},
+			true,
+			true,
+		},
+		{
+			"err-unsupported-sr25519",
+			args{
+				sr25519test.SofiaPrivateKey,
 			},
 			true,
 			true,
@@ -126,7 +135,7 @@ func Test_asPublicECIES(t *testing.T) {
 			args{
 				func() crypto.PublicKey {
 
-					encryptedPublicKey, err := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					encryptedPublicKey, err := encoding.DecodeHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
 					if err != nil {
 						t.Error(err)
 					}
@@ -145,6 +154,14 @@ func Test_asPublicECIES(t *testing.T) {
 			"err-invalid",
 			args{
 				ed25519test.SofiaPublicKey,
+			},
+			true,
+			true,
+		},
+		{
+			"err-invalid-sr25519",
+			args{
+				sr25519test.CharlottePublicKey,
 			},
 			true,
 			true,

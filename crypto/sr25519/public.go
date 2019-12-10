@@ -10,7 +10,6 @@ import (
 const (
 	publicKeySize   = 32
 	signatureLength = 64
-	signatureSize   = 64
 )
 
 // PublicKey is a interface
@@ -53,13 +52,13 @@ func (pk PublicKey) Verify(message, sig []byte) bool {
 		return false
 	}
 
-	t := schnorrkel.NewSigningContext(SigningContext, message)
+	signingContext := schnorrkel.NewSigningContext(SigningContext, message)
 
-	return pk.key.Verify(s, t)
+	return pk.key.Verify(s, signingContext)
 }
 
 // PublicKeyFromBytes - Convert byte array to PublicKey
-func PublicKeyFromBytes(keyBytes []byte) (*PublicKey, error) {
+func PublicKeyFromBytes(keyBytes []byte) (crypto.PublicKey, error) {
 	switch len(keyBytes) {
 	case publicKeySize:
 		pubKey := newPublicKey(keyBytes)

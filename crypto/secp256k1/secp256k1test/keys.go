@@ -5,7 +5,7 @@ import (
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 )
 
 // SofiaPrivateKey secp256k1 key for testing purposes. Key is compromised do not use on mainnet's.

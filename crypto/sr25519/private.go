@@ -37,19 +37,22 @@ func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	msk, _ := schnorrkel.NewMiniSecretKeyFromRaw(pk.key.Encode())
 	pub := msk.ExpandEd25519()
 
-	public, _ := pub.Public()
+	public, err := pub.Public()
+	if err != nil {
+		return nil
+	}
 
 	return PublicKey{key: public}
 }
 
 // Sign uses the PrivateKey to sign the message using the sr25519 signature algorithm
-func (pk PrivateKey) Sign(message []byte) ([]byte, error) {
+func (pk PrivateKey) Sign(message []byte) (signature []byte, err error) {
 	if pk.key == nil {
 		return nil, errors.New("key is nil")
 	}
 
 	msk, _ := schnorrkel.NewMiniSecretKeyFromRaw(pk.key.Encode())
-	priv := msk.ExpandUniform()
+	priv := msk.ExpandEd25519()
 
 	signingContext := schnorrkel.NewSigningContext(SigningContext, message)
 
@@ -61,28 +64,6 @@ func (pk PrivateKey) Sign(message []byte) ([]byte, error) {
 	enc := sig.Encode()
 
 	return enc[:], nil
-}
-
-// Encode returns the 32-byte encoding of the private key
-func (pk PrivateKey) Encode() []byte {
-	enc := pk.key.Encode()
-
-	return enc[:]
-}
-
-// Decode decodes the input bytes into a private key and sets the receiver the decoded key
-// Input must be 32 bytes, or else this function will error
-func (pk PrivateKey) Decode(in []byte) error {
-	if len(in) != privateKeySize {
-		return errors.New("input to sr25519 private key decode is not 32 bytes")
-	}
-
-	b := [privateKeyLength]byte{}
-
-	copy(b[:], in)
-	pk.key = &schnorrkel.SecretKey{}
-
-	return pk.key.Decode(b)
 }
 
 func keyFromSeed(in []byte) (*schnorrkel.SecretKey, error) {
@@ -104,8 +85,11 @@ func keyFromBytes(in []byte) (*PrivateKey, error) {
 		return nil, errors.New("input to create sr25519 private key is no 64 bytes")
 	}
 
+	b := [privateKeyLength]byte{}
+	copy(b[:], in)
+
 	priv := new(PrivateKey)
-	err := priv.Decode(in)
+	err := priv.key.Decode(b)
 
 	return priv, err
 }
@@ -114,8 +98,7 @@ func keyFromBytes(in []byte) (*PrivateKey, error) {
 func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 	switch len(privKey) {
 	case privateKeySize:
-		privKey, _ := keyFromBytes(privKey)
-		return privKey, nil
+		return keyFromBytes(privKey)
 	case seedSize:
 		privKey, _ := keyFromSeed(privKey)
 

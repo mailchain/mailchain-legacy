@@ -53,7 +53,7 @@ func EncodeNewMessage(message *mail.Message) ([]byte, error) {
 	headers += fmt.Sprintf("Content-Type: %s\r\n", message.Headers.ContentType)
 	headers += "Content-Transfer-Encoding: quoted-printable\r\n"
 	headers += fmt.Sprintf("Public-Key: %s\r\n", message.Headers.PublicKey)
-	headers += "Public-Key-Type: secp256k1\r\n"
+	headers += fmt.Sprintf("Public-Key-Type: %s\r\n", message.Headers.PublicKeyType)
 	headers += fmt.Sprintf("Public-Key-Encoding: %s\r\n", encoding.TypeHex0XPrefix)
 	// 	// Thread-Topic TODO:
 	var ac bytes.Buffer

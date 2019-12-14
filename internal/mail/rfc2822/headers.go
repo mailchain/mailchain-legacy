@@ -19,7 +19,7 @@ import (
 	"time"
 
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
@@ -47,13 +47,20 @@ func parseHeaders(h nm.Header) (*mail.Headers, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to parse `public-key`")
 	}
+
+	keyType, err := parsePublicKeyType(h)
+
+	if err != nil {
+		return nil, errors.WithMessage(err, "failed to parse `public-key-type`")
+	}
 	return &mail.Headers{
-		Date:        *date,
-		Subject:     subject,
-		To:          *to,
-		From:        *from,
-		ContentType: parseContentType(h),
-		PublicKey:   publicKey,
+		Date:          *date,
+		Subject:       subject,
+		To:            *to,
+		From:          *from,
+		ContentType:   parseContentType(h),
+		PublicKey:     publicKey,
+		PublicKeyType: keyType,
 	}, nil
 }
 
@@ -126,5 +133,23 @@ func parsePublicKey(h nm.Header) (crypto.PublicKey, error) {
 		return nil, errors.Errorf("empty header")
 	}
 
-	return secp256k1.PublicKeyFromHex(sources[0])
+	keyType, err := parsePublicKeyType(h)
+	if err != nil {
+		return nil, err
+	}
+
+	return multikey.PublicKeyFromBytes(keyType, []byte(sources[0]))
+}
+
+func parsePublicKeyType(h nm.Header) (string, error) {
+	sources, ok := h["Public-Key-Type"]
+	if !ok {
+		return "", errors.Errorf("header missing")
+	}
+
+	if len(sources) == 0 {
+		return "", errors.Errorf("empty header")
+	}
+
+	return sources[0], nil
 }

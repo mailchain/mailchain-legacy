@@ -1,15 +1,15 @@
 package sr25519
 
 import (
-	"github.com/ChainSafe/go-schnorrkel"
+	"github.com/developerfred/go-schnorrkel"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/pkg/errors"
 )
 
 const (
-	privateKeySize       = 64
-	seedSize             = 32
-	privateKeyLength int = 32
+	privateKeySize   = 64
+	seedSize         = 32
+	privateKeyLength = 32
 )
 
 // SigningContext sr25519
@@ -17,14 +17,28 @@ var SigningContext = []byte("substrate") //nolint gochecknoglobals
 
 // PrivateKey sr25519
 type PrivateKey struct {
-	key *schnorrkel.SecretKey
+	key []byte
+}
+
+func (pk PrivateKey) generate() (*schnorrkel.SecretKey, error) {
+	if pk.key == nil {
+		return &schnorrkel.SecretKey{}, errors.New("invalid key")
+	}
+
+	b := [32]byte{}
+	copy(b[:], pk.key)
+
+	msc, err := schnorrkel.NewMiniSecretKeyFromRaw(b)
+	if err != nil {
+		return nil, err
+	}
+
+	return msc.ExpandEd25519(), nil
 }
 
 // Bytes returns the byte representation of the private key
 func (pk PrivateKey) Bytes() []byte {
-	b := pk.key.Encode()
-
-	return b[:]
+	return pk.key
 }
 
 // Kind is the type of private key.
@@ -34,25 +48,25 @@ func (pk PrivateKey) Kind() string {
 
 // PublicKey return the crypto.PublicKey that is derived from the Privatekey
 func (pk PrivateKey) PublicKey() crypto.PublicKey {
-	msk, _ := schnorrkel.NewMiniSecretKeyFromRaw(pk.key.Encode())
-	pub := msk.ExpandEd25519()
-
-	public, err := pub.Public()
-	if err != nil {
-		return nil
+	if pk.key == nil {
+		return PublicKey{}
 	}
 
-	return PublicKey{key: public}
+	msc, _ := pk.generate()
+
+	public, _ := msc.Public()
+	pb := public.Encode()
+
+	return PublicKey{key: pb[:]}
 }
 
 // Sign uses the PrivateKey to sign the message using the sr25519 signature algorithm
 func (pk PrivateKey) Sign(message []byte) (signature []byte, err error) {
 	if pk.key == nil {
-		return nil, errors.New("key is nil")
+		return nil, errors.New("cannot create private key: input is not 32 bytes")
 	}
 
-	msk, _ := schnorrkel.NewMiniSecretKeyFromRaw(pk.key.Encode())
-	priv := msk.ExpandEd25519()
+	priv, _ := pk.generate()
 
 	signingContext := schnorrkel.NewSigningContext(SigningContext, message)
 
@@ -74,35 +88,22 @@ func keyFromSeed(in []byte) (*schnorrkel.SecretKey, error) {
 	b := [privateKeyLength]byte{}
 	copy(b[:], in)
 
-	key := &schnorrkel.SecretKey{}
+	key := schnorrkel.SecretKey{}
 	err := key.Decode(b)
 
-	return key, err
-}
-
-func keyFromBytes(in []byte) (*PrivateKey, error) {
-	if len(in) != privateKeySize {
-		return nil, errors.New("input to create sr25519 private key is no 64 bytes")
-	}
-
-	b := [privateKeyLength]byte{}
-	copy(b[:], in)
-
-	priv := new(PrivateKey)
-	err := priv.key.Decode(b)
-
-	return priv, err
+	return &key, err
 }
 
 // PrivateKeyFromBytes get a private key from seed []byte
 func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 	switch len(privKey) {
 	case privateKeySize:
-		return keyFromBytes(privKey)
-	case seedSize:
-		privKey, _ := keyFromSeed(privKey)
-
 		return &PrivateKey{key: privKey}, nil
+	case seedSize:
+		k, _ := keyFromSeed(privKey)
+		b := k.Encode()
+
+		return &PrivateKey{key: b[:]}, nil
 	default:
 		return nil, errors.Errorf("sr25519: bad key length")
 	}

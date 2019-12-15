@@ -43,7 +43,7 @@ func validatePrivateKeyType(pk crypto.PrivateKey) ([]byte, error) {
 	case ed25519.PrivateKey, *ed25519.PrivateKey:
 		return pk.Bytes()[32:], nil
 	case sr25519.PrivateKey, *sr25519.PrivateKey:
-		return pk.Bytes(), nil
+		return pk.Bytes()[:32], nil
 	default:
 		return nil, errors.Errorf("invalid public key type for nacl encryption")
 	}

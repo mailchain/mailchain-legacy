@@ -1,6 +1,7 @@
 module github.com/mailchain/mailchain
 
 require (
+	github.com/Masterminds/squirrel v1.1.0
 	github.com/andreburgaud/crypt2go v0.0.0-20170529041511-18fdff33d8fa
 	github.com/apilayer/freegeoip v3.5.0+incompatible // indirect
 	github.com/aristanetworks/goarista v0.0.0-20190409234242-46f4bc7b73ef // indirect
@@ -26,7 +27,9 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/influxdata/influxdb v1.7.8 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.1 // indirect
+	github.com/jmoiron/sqlx v1.2.0
 	github.com/karalabe/usb v0.0.0-20190819132248-550797b1cad8 // indirect
+	github.com/lib/pq v1.2.0
 	github.com/manifoldco/promptui v0.3.2
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect

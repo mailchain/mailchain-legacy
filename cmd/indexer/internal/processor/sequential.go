@@ -8,10 +8,10 @@ import (
 )
 
 type Sequential struct {
-	syncStore datastore.SyncStore
-	protocol  string
-	network   string
+	protocol string
+	network  string
 
+	syncStore      datastore.SyncStore
 	blockProcessor Block
 	blockClient    clients.BlockByNumber
 }
@@ -23,7 +23,6 @@ func (s *Sequential) NextBlock(ctx context.Context) error {
 	}
 	nextBlockNo := blkNo + 1
 
-	// big.NewInt(int64(nextBlockNo))
 	blk, err := s.blockClient.Get(ctx, nextBlockNo)
 	if err != nil {
 		return err

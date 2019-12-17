@@ -17,9 +17,9 @@ package nacl
 import (
 	"time"
 
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
 )
 
 var (

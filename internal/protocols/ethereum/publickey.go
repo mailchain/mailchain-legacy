@@ -28,6 +28,7 @@ func rlpHash(x interface{}) (h common.Hash) {
 	hw := sha3.NewLegacyKeccak256()
 	_ = rlp.Encode(hw, x)
 	hw.Sum(h[:0])
+
 	return h
 }
 
@@ -38,9 +39,12 @@ func deriveChainID(v *big.Int) *big.Int {
 		if v == 27 || v == 28 {
 			return new(big.Int)
 		}
+
 		return new(big.Int).SetUint64((v - 35) / 2)
 	}
+
 	v = new(big.Int).Sub(v, big.NewInt(35))
+
 	return v.Div(v, big.NewInt(2))
 }
 
@@ -48,9 +52,11 @@ func createSignatureToUseInRecovery(r, s, v *big.Int) []byte {
 	sig := append(r.Bytes(), s.Bytes()...)
 	newV := v.Int64()
 	chainID := deriveChainID(v)
+
 	if chainID.Int64() > 0 {
 		newV -= chainID.Int64()*2 + 8
 	}
+
 	recovery := big.NewInt(newV - 27)
 	if recovery.Int64() == 0 {
 		b := make([]byte, 1)
@@ -58,6 +64,7 @@ func createSignatureToUseInRecovery(r, s, v *big.Int) []byte {
 	} else {
 		sig = append(sig, big.NewInt(recovery.Int64()).Bytes()...)
 	}
+
 	return sig
 }
 
@@ -75,6 +82,7 @@ func createItems(chainID *big.Int, to, input []byte, nonce uint64, gasPrice *big
 			"",
 		}
 	}
+
 	return []interface{}{
 		nonce,
 		gasPrice,
@@ -94,6 +102,7 @@ func GetPublicKeyFromTransaction(r, s, v *big.Int, to, input []byte, nonce uint6
 	sig := createSignatureToUseInRecovery(r, s, v)
 	hash := rlpHash(items).Bytes()
 	recoveredKey, err := crypto.SigToPub(hash, sig)
+
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert signature to public key")
 	}

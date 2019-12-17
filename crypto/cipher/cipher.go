@@ -15,10 +15,6 @@
 // Package cipher collects common cryptographic constants and interfaces.
 package cipher //go:generate mockgen -source=cipher.go -package=ciphertest -destination=./ciphertest/cipher_mock.go
 
-import (
-	"github.com/mailchain/mailchain/crypto"
-)
-
 const (
 	// NoOperation identified for Encrypt and Decrypter in noop package.
 	NoOperation byte = 0x20
@@ -56,5 +52,5 @@ type Decrypter interface {
 // Returned encrypted data must include what encryption method was used as the first byte.
 // The data can be decrypted using the corresponding PrivateKey and Decrypter method.
 type Encrypter interface {
-	Encrypt(pubKey crypto.PublicKey, plain PlainContent) (EncryptedContent, error)
+	Encrypt(PlainContent) (EncryptedContent, error)
 }

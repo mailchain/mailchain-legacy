@@ -15,10 +15,10 @@
 package aes256cbc
 
 import (
-	"encoding/hex"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -79,7 +79,7 @@ func TestDecompress(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := decompress(tt.original)
-			assert.EqualValues(hex.EncodeToString(tt.expected), hex.EncodeToString(actual))
+			assert.EqualValues(encoding.EncodeHex(tt.expected), encoding.EncodeHex(actual))
 		})
 	}
 }

@@ -18,7 +18,7 @@ import (
 	"bytes"
 	"context"
 
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/pkg/errors"
 )

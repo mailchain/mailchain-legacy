@@ -15,7 +15,7 @@
 package pubkey
 
 import (
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/pkg/errors"
 )
@@ -24,10 +24,10 @@ import (
 func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
 	switch protocol {
 	case protocols.Ethereum:
-		encodingType = encoding.TypeHex0XPrefix
+		encodingType = encoding.KindHex0XPrefix
 		encoded = encoding.EncodeHexZeroX(in)
 	case protocols.Substrate:
-		encodingType = encoding.TypeHex0XPrefix
+		encodingType = encoding.KindHex0XPrefix
 		encoded = encoding.EncodeHexZeroX(in)
 	default:
 		err = errors.Errorf("%q unsupported protocol", protocol)

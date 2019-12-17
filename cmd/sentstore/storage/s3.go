@@ -28,16 +28,20 @@ func (s S3Store) Exists(messageID mail.ID, contentsHash, integrityHash, contents
 		Bucket: aws.String(s.bucket),
 		Key:    aws.String(s.sent.Key(messageID, contentsHash, contents)),
 	})
+
 	if err == nil {
 		return errors.Errorf("message already exists")
 	}
+
 	aerr, ok := err.(awserr.Error)
 	if !ok {
 		return err
 	}
+
 	if aerr.Code() != "NotFound" {
 		return aerr
 	}
+
 	return nil
 }
 
@@ -77,9 +81,11 @@ func NewSentStore(region, bucket, id, secret string) (*S3Store, error) {
 	if region == "" {
 		return nil, errors.Errorf("`region` must be specified")
 	}
+
 	if bucket == "" {
 		return nil, errors.Errorf("`bucket` must be specified")
 	}
+
 	s3Client, err := createS3Client(region, id, secret)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not create session")

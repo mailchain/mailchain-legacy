@@ -24,7 +24,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -319,7 +319,7 @@ func TestNewZeroX01(t *testing.T) {
 			args{
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.Any()).Return([]byte("encrypted"), nil)
+					m.EXPECT().Encrypt(gomock.Any()).Return([]byte("encrypted"), nil)
 					return m
 				}(),
 				secp256k1test.CharlottePublicKey,
@@ -340,7 +340,7 @@ func TestNewZeroX01(t *testing.T) {
 			args{
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.Any()).Return([]byte("encrypted"), nil)
+					m.EXPECT().Encrypt(gomock.Any()).Return([]byte("encrypted"), nil)
 					return m
 				}(),
 				secp256k1test.CharlottePublicKey,
@@ -362,7 +362,7 @@ func TestNewZeroX01(t *testing.T) {
 			args{
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.Any()).Return(nil, errors.Errorf("failed"))
+					m.EXPECT().Encrypt(gomock.Any()).Return(nil, errors.Errorf("failed"))
 					return m
 				}(),
 				secp256k1test.CharlottePublicKey,
@@ -456,7 +456,7 @@ func TestNewZeroX01(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewZeroX01(tt.args.encrypter, tt.args.pubkey, tt.args.opts)
+			got, err := NewZeroX01(tt.args.encrypter, tt.args.opts)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewZeroX01() error = %v, wantErr %v", err, tt.wantErr)
 				return

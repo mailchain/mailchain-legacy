@@ -18,7 +18,6 @@ package stores
 
 import (
 	"bytes"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -27,6 +26,7 @@ import (
 	"time"
 
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
@@ -38,6 +38,7 @@ func NewSentStore() *SentStore {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
+
 	return &SentStore{
 		domain:     "https://mcx.mx",
 		newRequest: http.NewRequest,
@@ -54,14 +55,14 @@ type SentStore struct {
 
 // Key gets the key of a Mailchain message.
 func (s SentStore) Key(messageID mail.ID, contentsHash, msg []byte) string {
-	return hex.EncodeToString(contentsHash)
+	return encoding.EncodeHex(contentsHash)
 }
 
 // PutMessage stores message contents.
 func (s SentStore) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers map[string]string) (
 	address, resource string, mli uint64, err error) {
 	hash := crypto.CreateIntegrityHash(msg)
-	url := fmt.Sprintf("%s?hash=%s&contents-hash=%s", s.domain, hash.HexString(), hex.EncodeToString(contentsHash))
+	url := fmt.Sprintf("%s?hash=%s&contents-hash=%s", s.domain, hash.HexString(), encoding.EncodeHex(contentsHash))
 
 	req, err := s.newRequest("POST", url, bytes.NewReader(msg))
 	if err != nil {
@@ -89,11 +90,12 @@ func (s SentStore) PutMessage(messageID mail.ID, contentsHash, msg []byte, heade
 		return "", "", envelope.MLIMailchain, errors.Errorf("%q is not valid for `Message-Location-Identifier` header must be %v",
 			resp.Header.Get("Message-Location-Identifier"), envelope.MLIMailchain)
 	}
+
 	if mli != envelope.MLIMailchain {
 		return "", "", envelope.MLIMailchain, errors.Errorf("mismatch `Message-Location-Identifier` header")
 	}
 
-	return loc, hex.EncodeToString(contentsHash), envelope.MLIMailchain, nil
+	return loc, encoding.EncodeHex(contentsHash), envelope.MLIMailchain, nil
 }
 
 func responseAsError(r *http.Response) error {
@@ -103,7 +105,9 @@ func responseAsError(r *http.Response) error {
 		if err := json.NewDecoder(r.Body).Decode(&httpError); err != nil {
 			return errors.WithMessage(err, "failed to read response")
 		}
+
 		return errors.Errorf("%v: %s", httpError.Code, httpError.Message)
 	}
+
 	return nil
 }

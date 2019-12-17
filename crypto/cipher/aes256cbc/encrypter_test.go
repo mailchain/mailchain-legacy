@@ -15,7 +15,6 @@
 package aes256cbc
 
 import (
-	"encoding/hex"
 	"log"
 	"testing"
 
@@ -23,7 +22,9 @@ import (
 	"github.com/ethereum/go-ethereum/crypto/ecies"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
+
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -85,8 +86,8 @@ func TestInternalEncrypt(t *testing.T) {
 	}
 	assert.NoError(err)
 	assert.NotNil(actual)
-	assert.Equal("2ec66aac453ff543f47830d4b8cbc68d9965bf7c6bb69724fd4de26d41001256dfa6f7f0b3956ce21d4717caf75b0c2ad753852f216df6cfbcda4911619c5fc34798a19f81adff902c1ad906ab0edaec", hex.EncodeToString(actual.Ciphertext))
-	assert.Equal("04462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b199c07969f5442000bea455d72ae826a86bfac9089cb18152ed756ebb2a596f5", hex.EncodeToString(actual.EphemeralPublicKey))
-	assert.Equal("05050505050505050505050505050505", hex.EncodeToString(actual.InitializationVector))
-	assert.Equal("4367ae8a54b65f99e4f2fd315ba65bf85e1138967a7bea451faf80f75cdf3404", hex.EncodeToString(actual.MessageAuthenticationCode))
+	assert.Equal("2ec66aac453ff543f47830d4b8cbc68d9965bf7c6bb69724fd4de26d41001256dfa6f7f0b3956ce21d4717caf75b0c2ad753852f216df6cfbcda4911619c5fc34798a19f81adff902c1ad906ab0edaec", encoding.EncodeHex(actual.Ciphertext))
+	assert.Equal("04462779ad4aad39514614751a71085f2f10e1c7a593e4e030efb5b8721ce55b0b199c07969f5442000bea455d72ae826a86bfac9089cb18152ed756ebb2a596f5", encoding.EncodeHex(actual.EphemeralPublicKey))
+	assert.Equal("05050505050505050505050505050505", encoding.EncodeHex(actual.InitializationVector))
+	assert.Equal("4367ae8a54b65f99e4f2fd315ba65bf85e1138967a7bea451faf80f75cdf3404", encoding.EncodeHex(actual.MessageAuthenticationCode))
 }

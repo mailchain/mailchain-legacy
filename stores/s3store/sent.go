@@ -16,7 +16,6 @@ package s3store
 
 import (
 	"bytes"
-	"encoding/hex"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -24,6 +23,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/mailchain/mailchain"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
@@ -62,7 +62,7 @@ type Sent struct {
 
 // Key of resource stored.
 func (h Sent) Key(messageID mail.ID, contentsHash, msg []byte) string {
-	return hex.EncodeToString(contentsHash)
+	return encoding.EncodeHex(contentsHash)
 }
 
 // PutMessage stores the message in S3.

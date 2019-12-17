@@ -15,7 +15,6 @@
 package aes256cbc
 
 import (
-	"encoding/hex"
 	"log"
 	"math/big"
 	"testing"
@@ -24,20 +23,22 @@ import (
 	"github.com/ethereum/go-ethereum/crypto/ecies"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+
+	"github.com/mailchain/mailchain/encoding"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGenerateMacKeyAndEncryptionKey(t *testing.T) {
 	assert := assert.New(t)
-	secret, err := hex.DecodeString("04695325aac70f9f9ebe676248ebbfefa87b3eff16117559d2a0953d0e695be6")
+	secret, err := encoding.DecodeHex("04695325aac70f9f9ebe676248ebbfefa87b3eff16117559d2a0953d0e695be6")
 	if err != nil {
 		log.Fatal(err)
 	}
 	macKey, encryptionKey := generateMacKeyAndEncryptionKey(secret)
 
-	assert.Equal("2cea25760305bdb3194057646bc46dc2eeee4890b711741c0b525454ac7c5ea8", hex.EncodeToString(macKey))
-	assert.Equal("af0ad81e7d9194721d6c26f6c1f2a2b7fd06e2c99c4f5deefe59fb93936c981e", hex.EncodeToString(encryptionKey))
+	assert.Equal("2cea25760305bdb3194057646bc46dc2eeee4890b711741c0b525454ac7c5ea8", encoding.EncodeHex(macKey))
+	assert.Equal("af0ad81e7d9194721d6c26f6c1f2a2b7fd06e2c99c4f5deefe59fb93936c981e", encoding.EncodeHex(encryptionKey))
 }
 
 func TestGenerateIV(t *testing.T) {
@@ -63,7 +64,7 @@ func TestGenerateMac(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	assert.Equal("4367ae8a54b65f99e4f2fd315ba65bf85e1138967a7bea451faf80f75cdf3404", hex.EncodeToString(actual))
+	assert.Equal("4367ae8a54b65f99e4f2fd315ba65bf85e1138967a7bea451faf80f75cdf3404", encoding.EncodeHex(actual))
 }
 
 func Test_deriveSharedSecret(t *testing.T) {

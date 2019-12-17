@@ -16,10 +16,10 @@ package mailbox
 
 import (
 	"bytes"
-	"encoding/hex"
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
@@ -38,6 +38,7 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to unmarshal")
 	}
+
 	url, err := data.URL(decrypter)
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to get URL")
@@ -52,19 +53,23 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 	if err != nil {
 		return nil, errors.WithMessagef(err, "could not get message from %q", url.String())
 	}
+
 	rawMsg, err := decrypter.Decrypt(toDecrypt)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not decrypt message")
 	}
+
 	hash, err := data.ContentsHash(decrypter)
+
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not get hash")
 	}
+
 	if len(hash) != 0 {
 		messageHash := crypto.CreateMessageHash(rawMsg)
 		if !bytes.Equal(messageHash, hash) {
 			return nil, errors.Errorf("contents-hash invalid: message-hash = %v contents-hash = %v",
-				hex.EncodeToString(messageHash), hex.EncodeToString(hash))
+				encoding.EncodeHex(messageHash), encoding.EncodeHex(hash))
 		}
 	}
 

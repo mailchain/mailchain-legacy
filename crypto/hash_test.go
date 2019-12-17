@@ -15,11 +15,11 @@
 package crypto_test
 
 import (
-	"encoding/hex"
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,7 +42,7 @@ func TestCreateIntegrityHash(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			actual := crypto.CreateIntegrityHash(tc.original)
-			assert.EqualValues(hex.EncodeToString(tc.expected), hex.EncodeToString(actual))
+			assert.EqualValues(encoding.EncodeHex(tc.expected), encoding.EncodeHex(actual))
 		})
 	}
 }
@@ -66,7 +66,7 @@ func TestCreateMessageHash(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			actual := crypto.CreateMessageHash(tc.original)
-			assert.EqualValues(hex.EncodeToString(tc.expected), hex.EncodeToString(actual))
+			assert.EqualValues(encoding.EncodeHex(tc.expected), encoding.EncodeHex(actual))
 		})
 	}
 }

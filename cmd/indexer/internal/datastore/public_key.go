@@ -5,6 +5,6 @@ import (
 )
 
 type PublicKeyStore interface {
-	SetPublicKey(protocol, network string, address []byte, pubKey crypto.PublicKey) error
+	PutPublicKey(protocol, network string, address []byte, pubKey crypto.PublicKey) error
 	GetPublicKey(protocol, network string, address []byte) (pubKey crypto.PublicKey, err error)
 }

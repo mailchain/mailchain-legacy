@@ -75,7 +75,7 @@ func TestNewEnvelope(t *testing.T) {
 			args{
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(secp256k1test.CharlottePublicKey, gomock.Any()).Return([]byte("encrypted"), nil)
+					m.EXPECT().Encrypt(gomock.Any()).Return([]byte("encrypted"), nil)
 					return m
 				}(),
 				secp256k1test.CharlottePublicKey,
@@ -87,7 +87,7 @@ func TestNewEnvelope(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewEnvelope(tt.args.encrypter, tt.args.pubkey, tt.args.o)
+			got, err := NewEnvelope(tt.args.encrypter, tt.args.o)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewEnvelope() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS sync(
     network                 SMALLINT NOT NULL,
     -- Values
     block_no                BIGINT NOT NULL,
-    connection_string       TEXT NOT NULL,
     -- Metadata
     created_at              TIMESTAMP NOT NULL,
     updated_at              TIMESTAMP NOT NULL,

@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func NewDatabase(user, password, databaseName, host, sslmode string, port int) (*sqlx.DB, error) {
+func NewConnection(user, password, databaseName, host, sslmode string, port int) (*sqlx.DB, error) {
 	// The first argument corresponds to the driver name that the driver
 	// (in this case, `lib/pq`) used to register itself in `database/sql`.
 	// The next argument specifies the parameters to be used in the connection.

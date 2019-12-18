@@ -50,9 +50,11 @@ func (t *Transaction) Run(ctx context.Context, protocol, network string, tx inte
 		ethTx.GasPrice(),
 		ethTx.Gas(),
 		ethTx.Value())
+
 	if err != nil {
 		return err
 	}
+
 	pubKey, err := secp256k1.PublicKeyFromBytes(pubKeyBytes)
 	if err != nil {
 		return err
@@ -70,6 +72,7 @@ func (t *Transaction) toTransaction(blk *types.Block, tx *types.Transaction) (*d
 	if err != nil {
 		return nil, err
 	}
+
 	gasPrice := tx.GasPrice()
 	value := tx.Value()
 	gasUsed := big.NewInt(int64(tx.Gas()))

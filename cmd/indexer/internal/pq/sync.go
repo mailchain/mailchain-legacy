@@ -18,7 +18,7 @@ type SyncStore struct {
 
 // NewSyncStore create new postgres database
 func NewSyncStore(db *sqlx.DB, now func() time.Time) (datastore.SyncStore, error) {
-	return &SyncStore{db: db}, nil
+	return &SyncStore{db: db, now: now}, nil
 }
 
 type sync struct {
@@ -36,14 +36,20 @@ func (s SyncStore) GetBlockNumber(ctx context.Context, protocol, network string)
 	if !ok {
 		return 0, errors.Errorf("unknown protocol: %q", protocol)
 	}
+
 	uNetwork, ok := protocolNetworkUint8[protocol][network]
 	if !ok {
 		return 0, errors.Errorf("unknown protocol.network: \"%s.%s\"", protocol, network)
 	}
+
 	sql, args, err := s.selectBlockNumberQuery(uProtocol, uNetwork)
+	if err != nil {
+		return 0, err
+	}
 
 	//  // You can also get a single result, a la QueryRow
 	state := sync{}
+
 	err = s.db.Get(&state, sql, args)
 	if err != nil {
 		return 0, err
@@ -57,6 +63,7 @@ func (s SyncStore) PutBlockNumber(ctx context.Context, protocol, network string,
 	if !ok {
 		return errors.Errorf("unknown protocol: %q", protocol)
 	}
+
 	uNetwork, ok := protocolNetworkUint8[protocol][network]
 	if !ok {
 		return errors.Errorf("unknown protocol.network: \"%s.%s\"", protocol, network)
@@ -66,10 +73,12 @@ func (s SyncStore) PutBlockNumber(ctx context.Context, protocol, network string,
 	if err != nil {
 		return errors.WithStack(err)
 	}
+
 	_, err = s.db.Exec(sql, args...)
 	if err != nil {
 		return errors.WithStack(err)
 	}
+
 	return nil
 }
 

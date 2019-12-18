@@ -21,6 +21,7 @@ func (s *Sequential) NextBlock(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
 	nextBlockNo := blkNo + 1
 
 	blk, err := s.blockClient.Get(ctx, nextBlockNo)

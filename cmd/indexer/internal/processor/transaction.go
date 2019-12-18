@@ -8,7 +8,6 @@ import (
 	"github.com/mailchain/mailchain/encoding"
 )
 
-
 //go:generate mockgen -source=transaction.go -package=processortest -destination=./processortest/transaction_mock.go
 
 // Transaction processes transactions
@@ -26,9 +25,11 @@ func StoreTransaction(ctx context.Context, txStore datastore.TransactionStore, r
 		if err := rawTxStore.PutRawTransaction(ctx, protocol, network, tx.Hash, rawTx); err != nil {
 			return err
 		}
+
 		if err := txStore.PutTransaction(ctx, protocol, network, tx.Hash, tx); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }

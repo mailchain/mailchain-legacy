@@ -8,6 +8,8 @@ import (
 	"github.com/mailchain/mailchain/encoding"
 )
 
+//go:generate mockgen -source=transaction.go -package=processortest -destination=./processortest/transaction_mock.go
+
 // Transaction processes transactions
 type Transaction interface {
 	// Run the transaction processor

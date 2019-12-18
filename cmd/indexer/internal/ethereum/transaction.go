@@ -43,6 +43,7 @@ func (t *Transaction) Run(ctx context.Context, protocol, network string, tx inte
 	}
 
 	v, r, s := ethTx.RawSignatureValues()
+
 	pubKeyBytes, err := ethereum.GetPublicKeyFromTransaction(r, s, v,
 		ethTx.To().Bytes(),
 		ethTx.Data(),

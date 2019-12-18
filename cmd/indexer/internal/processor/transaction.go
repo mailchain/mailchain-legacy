@@ -5,8 +5,11 @@ import (
 	"context"
 
 	"github.com/mailchain/mailchain/cmd/indexer/internal/datastore"
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/encoding"
 )
+
+
+//go:generate mockgen -source=transaction.go -package=processortest -destination=./processortest/transaction_mock.go
 
 // Transaction processes transactions
 type Transaction interface {

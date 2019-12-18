@@ -5,6 +5,8 @@ import (
 	"math/big"
 )
 
+//go:generate mockgen -source=transaction.go -package=datastoretest -destination=./datastoretest/transaction_mock.go
+
 type Transaction struct {
 	From      []byte
 	To        []byte

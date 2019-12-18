@@ -18,7 +18,7 @@ type SyncStore struct {
 
 // NewSyncStore create new postgres database
 func NewSyncStore(db *sqlx.DB, now func() time.Time) (datastore.SyncStore, error) {
-	return &SyncStore{db: db}, nil
+	return &SyncStore{db: db, now: now}, nil
 }
 
 type sync struct {

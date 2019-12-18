@@ -12,6 +12,7 @@ func NewRPC(address string) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &Client{client: client}, nil
 }
 

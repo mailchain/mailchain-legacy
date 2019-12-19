@@ -22,7 +22,6 @@ import (
 	nm "net/mail"
 	"time"
 
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
@@ -54,7 +53,7 @@ func EncodeNewMessage(message *mail.Message) ([]byte, error) {
 	headers += "Content-Transfer-Encoding: quoted-printable\r\n"
 	headers += fmt.Sprintf("Public-Key: %s\r\n", message.Headers.PublicKey)
 	headers += fmt.Sprintf("Public-Key-Type: %s\r\n", message.Headers.PublicKeyType)
-	headers += fmt.Sprintf("Public-Key-Encoding: %s\r\n", encoding.TypeHex0XPrefix)
+
 	// 	// Thread-Topic TODO:
 	var ac bytes.Buffer
 	w := quotedprintable.NewWriter(&ac)

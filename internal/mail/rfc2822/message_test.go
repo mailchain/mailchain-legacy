@@ -22,6 +22,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/stretchr/testify/assert"
@@ -42,11 +44,13 @@ func TestEncodeNewMessage(t *testing.T) {
 		{"simple",
 			args{&mail.Message{
 				Headers: &mail.Headers{
-					Date:        time.Date(2019, 3, 12, 20, 23, 13, 45, time.UTC),
-					From:        mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: ""},
-					To:          mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: ""},
-					Subject:     "Hello world",
-					ContentType: "text/plain; charset=\"UTF-8\"",
+					Date:          time.Date(2019, 3, 12, 20, 23, 13, 45, time.UTC),
+					From:          mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: ""},
+					To:            mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: ""},
+					Subject:       "Hello world",
+					ContentType:   "text/plain; charset=\"UTF-8\"",
+					PublicKey:     ed25519test.SofiaPublicKey.Bytes(),
+					PublicKeyType: "ed25519",
 				},
 				ID:   mail.ID(encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")),
 				Body: []byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus eget euismod nibh. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer bibendum venenatis sem sed auctor. Ut aliquam eu diam nec fermentum. Sed turpis nulla, viverra ac efficitur ac, fermentum vel sapien. Curabitur vehicula risus id odio congue tempor. Mauris tincidunt feugiat risus, eget auctor magna blandit sit amet. Curabitur consectetur, dolor eu imperdiet varius, dui neque mattis neque, vel fringilla magna tortor ut risus. Cras cursus sem et nisl interdum molestie. Aliquam auctor sodales blandit."),
@@ -56,11 +60,13 @@ func TestEncodeNewMessage(t *testing.T) {
 		{"html",
 			args{&mail.Message{
 				Headers: &mail.Headers{
-					Date:        time.Date(2019, 3, 12, 20, 23, 13, 45, time.UTC),
-					From:        mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: ""},
-					To:          mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: ""},
-					Subject:     "Hello world",
-					ContentType: "text/html; charset=\"UTF-8\"",
+					Date:          time.Date(2019, 3, 12, 20, 23, 13, 45, time.UTC),
+					From:          mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: ""},
+					To:            mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: ""},
+					Subject:       "Hello world",
+					ContentType:   "text/html; charset=\"UTF-8\"",
+					PublicKey:     secp256k1test.SofiaPublicKey.Bytes(),
+					PublicKeyType: "secp256k1",
 				},
 				ID:   mail.ID(encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")),
 				Body: []byte("<html><h1>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1><p>Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus eget euismod nibh. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer bibendum venenatis sem sed auctor. Ut aliquam eu diam nec fermentum. Sed turpis nulla, viverra ac efficitur ac, fermentum vel sapien. Curabitur vehicula risus id odio congue tempor. Mauris tincidunt feugiat risus, eget auctor magna blandit sit amet. Curabitur consectetur, dolor eu imperdiet varius, dui neque mattis neque, vel fringilla magna tortor ut risus. Cras cursus sem et nisl interdum molestie. Aliquam auctor sodales blandit.</p></html>"),
@@ -70,12 +76,14 @@ func TestEncodeNewMessage(t *testing.T) {
 		{"reply-to",
 			args{&mail.Message{
 				Headers: &mail.Headers{
-					Date:        time.Date(2019, 3, 12, 20, 23, 13, 45, time.UTC),
-					From:        mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: ""},
-					To:          mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: ""},
-					ReplyTo:     &mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@mainnet.ethereum", ChainAddress: ""},
-					Subject:     "Hello world",
-					ContentType: "text/plain; charset=\"UTF-8\"",
+					Date:          time.Date(2019, 3, 12, 20, 23, 13, 45, time.UTC),
+					From:          mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: ""},
+					To:            mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: ""},
+					ReplyTo:       &mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@mainnet.ethereum", ChainAddress: ""},
+					Subject:       "Hello world",
+					ContentType:   "text/plain; charset=\"UTF-8\"",
+					PublicKey:     secp256k1test.SofiaPublicKey.Bytes(),
+					PublicKeyType: "secp256k1",
 				},
 				ID:   mail.ID(encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")),
 				Body: []byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus eget euismod nibh. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer bibendum venenatis sem sed auctor. Ut aliquam eu diam nec fermentum. Sed turpis nulla, viverra ac efficitur ac, fermentum vel sapien. Curabitur vehicula risus id odio congue tempor. Mauris tincidunt feugiat risus, eget auctor magna blandit sit amet. Curabitur consectetur, dolor eu imperdiet varius, dui neque mattis neque, vel fringilla magna tortor ut risus. Cras cursus sem et nisl interdum molestie. Aliquam auctor sodales blandit."),
@@ -124,12 +132,14 @@ func TestDecodeNewMessage(t *testing.T) {
 				Body: []byte("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus eget euismod nibh. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer bibendum venenatis sem sed auctor. Ut aliquam eu diam nec fermentum. Sed turpis nulla, viverra ac efficitur ac, fermentum vel sapien. Curabitur vehicula risus id odio congue tempor. Mauris tincidunt feugiat risus, eget auctor magna blandit sit amet. Curabitur consectetur, dolor eu imperdiet varius, dui neque mattis neque, vel fringilla magna tortor ut risus. Cras cursus sem et nisl interdum molestie. Aliquam auctor sodales blandit.\r\n"),
 				ID:   mail.ID(encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")),
 				Headers: &mail.Headers{
-					Date:        time.Date(2019, 3, 12, 20, 23, 13, 0, time.UTC),
-					From:        mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
-					To:          mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
-					ReplyTo:     nil,
-					Subject:     "Hello world",
-					ContentType: "text/plain; charset=\"UTF-8\"",
+					Date:          time.Date(2019, 3, 12, 20, 23, 13, 0, time.UTC),
+					From:          mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
+					To:            mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
+					ReplyTo:       nil,
+					Subject:       "Hello world",
+					ContentType:   "text/plain; charset=\"UTF-8\"",
+					PublicKey:     secp256k1test.SofiaPublicKey.Bytes(),
+					PublicKeyType: "secp256k1",
 				},
 				// TODO: publicKey?
 			},
@@ -141,12 +151,14 @@ func TestDecodeNewMessage(t *testing.T) {
 				Body: []byte("<html><h1>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1><p>Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus eget euismod nibh. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer bibendum venenatis sem sed auctor. Ut aliquam eu diam nec fermentum. Sed turpis nulla, viverra ac efficitur ac, fermentum vel sapien. Curabitur vehicula risus id odio congue tempor. Mauris tincidunt feugiat risus, eget auctor magna blandit sit amet. Curabitur consectetur, dolor eu imperdiet varius, dui neque mattis neque, vel fringilla magna tortor ut risus. Cras cursus sem et nisl interdum molestie. Aliquam auctor sodales blandit.</p></html>\r\n"),
 				ID:   mail.ID(encodingtest.MustDecodeHex("47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471")),
 				Headers: &mail.Headers{
-					Date:        time.Date(2019, 3, 12, 20, 23, 13, 0, time.UTC),
-					From:        mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
-					To:          mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
-					ReplyTo:     nil,
-					Subject:     "Hello world",
-					ContentType: "text/html; charset=\"UTF-8\"",
+					Date:          time.Date(2019, 3, 12, 20, 23, 13, 0, time.UTC),
+					From:          mail.Address{DisplayName: "", FullAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum", ChainAddress: "5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"},
+					To:            mail.Address{DisplayName: "", FullAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum", ChainAddress: "4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"},
+					ReplyTo:       nil,
+					Subject:       "Hello world",
+					ContentType:   "text/html; charset=\"UTF-8\"",
+					PublicKey:     ed25519test.SofiaPublicKey.Bytes(),
+					PublicKeyType: "ed25519",
 				},
 			},
 			false,

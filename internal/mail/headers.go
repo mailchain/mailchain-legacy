@@ -16,8 +16,6 @@ package mail
 
 import (
 	"time"
-
-	"github.com/mailchain/mailchain/crypto"
 )
 
 // DefaultContentType value.
@@ -47,6 +45,6 @@ type Headers struct {
 	Subject       string
 	ReplyTo       *Address
 	ContentType   string
-	PublicKey     crypto.PublicKey
+	PublicKey     []byte
 	PublicKeyType string
 }

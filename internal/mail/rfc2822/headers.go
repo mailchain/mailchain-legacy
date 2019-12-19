@@ -20,6 +20,7 @@ import (
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/multikey"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
@@ -59,7 +60,7 @@ func parseHeaders(h nm.Header) (*mail.Headers, error) {
 		To:            *to,
 		From:          *from,
 		ContentType:   parseContentType(h),
-		PublicKey:     publicKey,
+		PublicKey:     publicKey.Bytes(),
 		PublicKeyType: keyType,
 	}, nil
 }
@@ -138,7 +139,12 @@ func parsePublicKey(h nm.Header) (crypto.PublicKey, error) {
 		return nil, err
 	}
 
-	return multikey.PublicKeyFromBytes(keyType, []byte(sources[0]))
+	keyBytes, err := encoding.DecodeHex(sources[0])
+	if err != nil {
+		return nil, err
+	}
+
+	return multikey.PublicKeyFromBytes(keyType, keyBytes)
 }
 
 func parsePublicKeyType(h nm.Header) (string, error) {

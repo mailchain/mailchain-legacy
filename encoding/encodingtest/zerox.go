@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package encoding
+package encodingtest
 
-// DataPrefix used to identify Mailchain messages.
-func DataPrefix() []byte {
-	return []byte{0x6d, 0x61, 0x69, 0x6c, 0x63, 0x68, 0x61, 0x69, 0x6e}
+import "github.com/mailchain/mailchain/encoding"
+
+// MustDecodeHexZeroX decodes a hex string. It panics for invalid input.
+func MustDecodeHexZeroX(in string) []byte {
+	dec, err := encoding.DecodeHexZeroX(in)
+	if err != nil {
+		panic(err)
+	}
+
+	return dec
 }
-
-const (
-	// TypeHex encoding value.
-	TypeHex = "hex/plain"
-	// TypeHex0XPrefix encoding value.
-	TypeHex0XPrefix = "hex/0x-prefix"
-	// TypeBase58 encoding value.
-	TypeBase58 = "base58/plain"
-	// TypeBase58SubstrateAddress encoding value.
-	TypeBase58SubstrateAddress = "base58/ss58-address"
-)

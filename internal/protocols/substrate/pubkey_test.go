@@ -20,7 +20,7 @@ import (
 
 	"github.com/mailchain/mailchain/crypto/ed25519"
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mr-tron/base58"
 	"github.com/stretchr/testify/assert"
 )

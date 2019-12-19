@@ -12,7 +12,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/cmd/sentstore/storage"
 	"github.com/mailchain/mailchain/cmd/sentstore/storage/storagetest"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"

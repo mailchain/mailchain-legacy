@@ -15,20 +15,20 @@
 package address
 
 import (
-	"github.com/mailchain/mailchain/internal/encoding"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/pkg/errors"
 )
 
 // EncodeByProtocol takes an address as `[]byte` then selects the relevant encoding method to encode it as string.
-func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
+func EncodeByProtocol(in []byte, protocol string) (encoded, encodingKind string, err error) {
 	switch protocol {
 	case protocols.Ethereum:
-		encodingType = encoding.TypeHex0XPrefix
+		encodingKind = encoding.KindHex0XPrefix
 		encoded = encoding.EncodeHexZeroX(in)
 	default:
 		err = errors.Errorf("%q unsupported protocol", protocol)
 	}
 
-	return encoded, encodingType, err
+	return encoded, encodingKind, err
 }

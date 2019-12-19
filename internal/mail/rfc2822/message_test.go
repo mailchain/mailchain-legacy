@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/stretchr/testify/assert"
 )

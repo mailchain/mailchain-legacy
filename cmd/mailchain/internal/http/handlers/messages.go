@@ -22,9 +22,9 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/mailbox"
@@ -78,7 +78,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not get `decrypter`"))
 			return
 		}
-		var messages []getMessage
+		messages := make([]getMessage, 0)
 		for _, transactionData := range transactions { //nolint TODO: thats an arbitrary limit
 			message, err := mailbox.ReadMessage(transactionData.Data, decrypter)
 			if err != nil {
@@ -101,9 +101,9 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 				Subject:                 message.Headers.Subject,
 				Status:                  "ok",
 				BlockID:                 string(transactionData.BlockID),
-				BlockIDEncoding:         encoding.TypeHex0XPrefix,
+				BlockIDEncoding:         encoding.KindHex0XPrefix,
 				TransactionHash:         string(transactionData.Hash),
-				TransactionHashEncoding: encoding.TypeHex0XPrefix,
+				TransactionHashEncoding: encoding.KindHex0XPrefix,
 			})
 		}
 

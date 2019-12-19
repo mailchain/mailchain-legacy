@@ -21,8 +21,9 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/internal/encoding/encodingtest"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
@@ -68,12 +69,20 @@ func TestFileStore_filename(t *testing.T) {
 		want   string
 	}{
 		{
-			"success",
+			"secp256k1-sofia",
 			fields{},
 			args{
 				secp256k1test.SofiaPublicKey.Bytes(),
 			},
-			"0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json",
+			"69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0.json",
+		},
+		{
+			"ed25519-sofia",
+			fields{},
+			args{
+				ed25519test.SofiaPublicKey.Bytes(),
+			},
+			"723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json",
 		},
 	}
 	for _, tt := range tests {

@@ -19,8 +19,8 @@ import (
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/address"
-	"github.com/mailchain/mailchain/internal/encoding"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
@@ -37,14 +37,14 @@ import (
 // - Encrypt message location
 // - Create transaction data with encrypted location and message hash
 // - Send transaction
-func SendMessage(ctx context.Context, protocol, network string, msg *mail.Message, pubkey crypto.PublicKey, encrypter cipher.Encrypter,
+func SendMessage(ctx context.Context, protocol, network string, msg *mail.Message, encrypter cipher.Encrypter,
 	msgSender sender.Message, sent stores.Sent, msgSigner signer.Signer, envelopeKind byte) error {
 	encodedMsg, err := rfc2822.EncodeNewMessage(msg)
 	if err != nil {
 		return errors.WithMessage(err, "could not encode message")
 	}
 
-	encrypted, err := encrypter.Encrypt(pubkey, encodedMsg)
+	encrypted, err := encrypter.Encrypt(encodedMsg)
 	if err != nil {
 		return errors.WithMessage(err, "could not encrypt mail message")
 	}
@@ -53,10 +53,12 @@ func SendMessage(ctx context.Context, protocol, network string, msg *mail.Messag
 	if err != nil {
 		return errors.WithMessage(err, "failed to store message")
 	}
+
 	locOpt, err := envelope.WithMessageLocationIdentifier(mli)
 	if err != nil {
 		return errors.WithStack(err)
 	}
+
 	opts := []envelope.CreateOptionsBuilder{
 		envelope.WithKind(envelopeKind),
 		envelope.WithURL(msgAddress),
@@ -65,7 +67,7 @@ func SendMessage(ctx context.Context, protocol, network string, msg *mail.Messag
 		locOpt,
 	}
 
-	env, err := envelope.NewEnvelope(encrypter, pubkey, opts)
+	env, err := envelope.NewEnvelope(encrypter, opts)
 	if err != nil {
 		return errors.WithMessage(err, "could not create envelope")
 	}
@@ -77,13 +79,16 @@ func SendMessage(ctx context.Context, protocol, network string, msg *mail.Messag
 
 	transactonData := append(encoding.DataPrefix(), encodedData...)
 	to, err := address.DecodeByProtocol(msg.Headers.To.ChainAddress, protocol)
+
 	if err != nil {
 		return errors.WithMessage(err, "could not decode to address")
 	}
+
 	from, err := address.DecodeByProtocol(msg.Headers.From.ChainAddress, protocol)
 	if err != nil {
 		return errors.WithMessage(err, "could not decode from address")
 	}
+
 	if err := msgSender.Send(ctx, network, to, from, transactonData, msgSigner, nil); err != nil {
 		return errors.WithMessage(err, "could not send transaction")
 	}

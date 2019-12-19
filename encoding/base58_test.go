@@ -53,7 +53,6 @@ func TestDecodeBase58(t *testing.T) {
 }
 
 func TestEncodeBase58(t *testing.T) {
-	// assert := assert.New(t)
 	type args struct {
 		in []byte
 	}

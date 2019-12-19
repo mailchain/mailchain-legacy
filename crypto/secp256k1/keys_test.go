@@ -20,6 +20,7 @@ import (
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 )
 
+<<<<<<< HEAD
 var (
 	sofiaPrivateKey = func() PrivateKey {
 		k, err := PrivateKeyFromBytes(sofiaPrivateKeyBytes)
@@ -60,3 +61,28 @@ var (
 	}()
 	charlottePublicKeyBytes = encodingtest.MustDecodeHexZeroX("0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d") //nolint: lll
 )
+=======
+func sofiaPrivateKey() crypto.PrivateKey {
+	k, err := PrivateKeyFromBytes([]byte("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return k
+}
+
+func sofiaPublicKey() crypto.PublicKey {
+	return sofiaPrivateKey().PublicKey()
+}
+
+func charlottePrivateKey() crypto.PrivateKey {
+	k, err := PrivateKeyFromBytes([]byte("DF4BA9F610(6AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return k
+}
+
+func charlottePublicKey() crypto.PublicKey {
+	return charlottePrivateKey().PublicKey()
+}
+>>>>>>> fix test

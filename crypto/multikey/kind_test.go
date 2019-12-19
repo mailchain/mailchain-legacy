@@ -55,7 +55,7 @@ func TestKeyKindFromSignature(t *testing.T) {
 			"success-secp256k1-duplicate-key-kinds",
 			args{
 				func() []byte {
-					k, _ := secp256k1.PrivateKeyFromHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					k, _ := secp256k1.PrivateKeyFromBytes([]byte("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F"))
 					return k.PublicKey().Bytes()
 				}(),
 				[]byte("egassem"),
@@ -86,7 +86,7 @@ func TestKeyKindFromSignature(t *testing.T) {
 			"success-secp256k1-sofia-key",
 			args{
 				func() []byte {
-					k, _ := secp256k1.PrivateKeyFromHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
+					k, _ := secp256k1.PrivateKeyFromBytes([]byte("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F"))
 					return k.PublicKey().Bytes()
 				}(),
 				[]byte("egassem"),
@@ -117,7 +117,7 @@ func TestKeyKindFromSignature(t *testing.T) {
 			"success-secp256k1-charlotte-key",
 			args{
 				func() []byte {
-					k, _ := secp256k1.PrivateKeyFromHex("DF4BA9F6106AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3")
+					k, _ := secp256k1.PrivateKeyFromBytes([]byte("DF4BA9F6106AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3"))
 					return k.PublicKey().Bytes()
 				}(),
 				[]byte("message"),
@@ -148,7 +148,7 @@ func TestKeyKindFromSignature(t *testing.T) {
 			"success-secp256k1-mix-key-kinds",
 			args{
 				func() []byte {
-					k, _ := secp256k1.PrivateKeyFromHex("DF4BA9F6106AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3")
+					k, _ := secp256k1.PrivateKeyFromBytes([]byte("DF4BA9F6106AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3"))
 					return k.PublicKey().Bytes()
 				}(),
 				[]byte("message"),
@@ -176,7 +176,7 @@ func TestKeyKindFromSignature(t *testing.T) {
 			"err-no-key-kinds",
 			args{
 				func() []byte {
-					k, _ := secp256k1.PrivateKeyFromHex("DF4BA9F6106AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3")
+					k, _ := secp256k1.PrivateKeyFromBytes([]byte("DF4BA9F6106AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3"))
 					return k.PublicKey().Bytes()
 				}(),
 				[]byte("message"),

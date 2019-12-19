@@ -16,8 +16,6 @@ package etherscan
 
 import (
 	"context"
-	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"

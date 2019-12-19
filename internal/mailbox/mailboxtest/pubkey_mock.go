@@ -7,6 +7,7 @@ package mailboxtest
 import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
+	crypto "github.com/mailchain/mailchain/crypto"
 	reflect "reflect"
 )
 
@@ -34,10 +35,10 @@ func (m *MockPubKeyFinder) EXPECT() *MockPubKeyFinderMockRecorder {
 }
 
 // PublicKeyFromAddress mocks base method
-func (m *MockPubKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) ([]byte, error) {
+func (m *MockPubKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) (crypto.PublicKey, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "PublicKeyFromAddress", ctx, protocol, network, address)
-	ret0, _ := ret[0].([]byte)
+	ret0, _ := ret[0].(crypto.PublicKey)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

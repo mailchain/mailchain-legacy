@@ -19,6 +19,8 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519"
 
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/ed25519"
 	"github.com/pkg/errors"
 )
 
@@ -45,10 +47,10 @@ func (pkf *PublicKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, 
 	// Remove last 2 bytes (blake2b hash)
 	newAddress := address[1:33]
 
-	pubKey, err := ed25519.PublicKeyFromBytes(newAddress)
+	publicKey, err := ed25519.PublicKeyFromBytes(newAddress)
 	if err != nil {
-		return nil, errors.New("error getting public key from bytes")
+		return nil, errors.WithStack(err)
 	}
 
-	return pubKey, nil
+	return publicKey, nil
 }

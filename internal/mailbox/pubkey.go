@@ -17,6 +17,7 @@ package mailbox
 //go:generate mockgen -source=pubkey.go -package=mailboxtest -destination=./mailboxtest/pubkey_mock.go
 import (
 	"context"
+
 	"github.com/mailchain/mailchain/crypto"
 )
 

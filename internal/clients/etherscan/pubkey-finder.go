@@ -21,6 +21,8 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/pkg/errors"
 )
@@ -46,7 +48,7 @@ func (c APIClient) PublicKeyFromAddress(ctx context.Context, protocol, network s
 		return nil, errors.WithStack(err)
 	}
 	v, r, s := tx.RawSignatureValues()
-	publicKey, err := ethereum.GetPublicKeyFromTransaction(
+	keyBytes, err := ethereum.GetPublicKeyFromTransaction(
 		r, s, v,
 		tx.To().Bytes(),
 		tx.Data(),
@@ -58,12 +60,11 @@ func (c APIClient) PublicKeyFromAddress(ctx context.Context, protocol, network s
 		return nil, errors.WithMessage(err, "could not get public key from raw hash")
 	}
 
-	pubKey, err := secp256k1.PublicKeyFromBytes(publicKey)
+	publicKey, err := secp256k1.PublicKeyFromBytes(keyBytes)
 	if err != nil {
-		return nil, errors.New("error getting public key from bytes")
+		return nil, errors.WithStack(err)
 	}
-
-	return pubKey, nil
+	return publicKey, nil
 }
 
 func getFromResultHash(address string, txResult *txList) (common.Hash, error) {

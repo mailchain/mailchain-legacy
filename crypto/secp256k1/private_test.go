@@ -128,7 +128,7 @@ func TestPrivateKeyFromHex(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := PrivateKeyFromHex(tt.args.hexkey)
+			got, err := PrivateKeyFromBytes([]byte(tt.args.hexkey))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("PrivateKeyFromHex() error = %v, wantErr %v", err, tt.wantErr)
 				return

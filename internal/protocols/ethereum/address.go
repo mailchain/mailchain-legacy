@@ -27,7 +27,7 @@ import (
 func Address(pubKey crypto.PublicKey) ([]byte, error) {
 	switch pubKey.(type) {
 	case secp256k1.PublicKey, *secp256k1.PublicKey:
-		ecdsa, err := ethcrypto.DecompressPubkey(pubKey.Bytes())
+		ecdsa, err := ethcrypto.UnmarshalPubkey(append([]byte{byte(4)}, pubKey.Bytes()...))
 		if err != nil {
 			return nil, errors.WithMessage(err, "could not decompress key")
 		}

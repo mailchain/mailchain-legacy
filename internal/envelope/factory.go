@@ -15,19 +15,18 @@
 package envelope
 
 import (
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/pkg/errors"
 )
 
 // NewEnvelope create a new envelope with encrypter, public key, and settings. Envelope can then be used when sending messages.
-func NewEnvelope(encrypter cipher.Encrypter, pubkey crypto.PublicKey, o []CreateOptionsBuilder) (Data, error) {
+func NewEnvelope(encrypter cipher.Encrypter, o []CreateOptionsBuilder) (Data, error) {
 	opts := &CreateOpts{}
 	apply(opts, o)
 
 	switch opts.Kind {
 	case Kind0x01:
-		return NewZeroX01(encrypter, pubkey, opts)
+		return NewZeroX01(encrypter, opts)
 	default:
 		return nil, errors.Errorf("unknown kind")
 	}

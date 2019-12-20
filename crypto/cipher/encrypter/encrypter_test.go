@@ -17,9 +17,12 @@ package encrypter
 import (
 	"testing"
 
+	keys "github.com/mailchain/mailchain/crypto"
 	crypto "github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
 	"github.com/mailchain/mailchain/crypto/cipher/nacl"
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,7 +30,17 @@ func TestGetEnrypter(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
 		encrypter string
+		pubKey    keys.PublicKey
 	}
+
+	testKeys := struct {
+		secp256k1Key keys.PublicKey
+		ed25519Key   keys.PublicKey
+	}{
+		secp256k1Key: secp256k1test.CharlottePublicKey,
+		ed25519Key:   ed25519test.CharlottePublicKey,
+	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -38,6 +51,7 @@ func TestGetEnrypter(t *testing.T) {
 			"invalid",
 			args{
 				"test-invalid",
+				testKeys.ed25519Key,
 			},
 			nil,
 			true,
@@ -46,6 +60,7 @@ func TestGetEnrypter(t *testing.T) {
 			"empty",
 			args{
 				"",
+				testKeys.ed25519Key,
 			},
 			nil,
 			true,
@@ -54,22 +69,39 @@ func TestGetEnrypter(t *testing.T) {
 			"aes",
 			args{
 				"aes256cbc",
+				testKeys.secp256k1Key,
 			},
-			aes256cbc.NewEncrypter(),
+			func() crypto.Encrypter {
+				encrypter, _ := aes256cbc.NewEncrypter(testKeys.secp256k1Key)
+				return encrypter
+			}(),
 			false,
 		},
 		{
 			"nacl",
 			args{
 				"nacl",
+				testKeys.ed25519Key,
 			},
-			nacl.NewEncrypter(),
+			func() crypto.Encrypter {
+				encrypter, _ := nacl.NewEncrypter(testKeys.ed25519Key)
+				return encrypter
+			}(),
 			false,
+		},
+		{
+			"nacl-err",
+			args{
+				"nacl",
+				testKeys.secp256k1Key,
+			},
+			(*nacl.Encrypter)(nil),
+			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetEncrypter(tt.args.encrypter)
+			got, err := GetEncrypter(tt.args.encrypter, tt.args.pubKey)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetEncrypter() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/internal/mailbox/mailboxtest"
@@ -211,23 +212,41 @@ func TestGetPublicKey(t *testing.T) {
 			http.StatusInternalServerError,
 		},
 		{
-			"success",
+			"success-sofia-secp256k1",
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
-					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "ethereum", "mainnet", []byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}).Return(encodingtest.MustDecodeHex("3ada323710def1e02f3586710ae3624ceefba1638e9d9894f724a5401997cd792933ddfd0687874e515a8ab479a38646e6db9f3d8b74d27c4e4eae5a116f9f1400"), nil).Times(1)
+					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHexZeroX("0xD5ab4CE3605Cd590Db609b6b5C8901fdB2ef7FE6")).Return(secp256k1test.SofiaPublicKey, nil).Times(1)
 					return map[string]mailbox.PubKeyFinder{"ethereum/mainnet": finder}
 				}(),
 			},
 			map[string]string{
-				"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+				"address":  "0xD5ab4CE3605Cd590Db609b6b5C8901fdB2ef7FE6",
 				"network":  "mainnet",
 				"protocol": "ethereum",
 			},
-			"{\"public_key\":\"0x3ada323710def1e02f3586710ae3624ceefba1638e9d9894f724a5401997cd792933ddfd0687874e515a8ab479a38646e6db9f3d8b74d27c4e4eae5a116f9f1400\",\"public_key_encoding\":\"hex/0x-prefix\"}\n",
+			"{\"public_key\":\"0x69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0\",\"public_key_encoding\":\"hex/0x-prefix\"}\n",
+			http.StatusOK,
+		},
+		{
+			"success-charlotte-secp256k1",
+			args{
+				func() map[string]mailbox.PubKeyFinder {
+					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
+					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHexZeroX("0xD5ab4CE3605Cd590Db609b6b5C8901fdB2ef7FE6")).Return(secp256k1test.CharlottePublicKey, nil).Times(1)
+					return map[string]mailbox.PubKeyFinder{"ethereum/mainnet": finder}
+				}(),
+			},
+			map[string]string{
+				"address":  "0xD5ab4CE3605Cd590Db609b6b5C8901fdB2ef7FE6",
+				"network":  "mainnet",
+				"protocol": "ethereum",
+			},
+			"{\"public_key\":\"0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d\",\"public_key_encoding\":\"hex/0x-prefix\"}\n",
 			http.StatusOK,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.

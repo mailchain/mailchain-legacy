@@ -29,18 +29,20 @@ import (
 )
 
 // NewEncrypter create a new encrypter with crypto rand for reader
-func NewEncrypter() Encrypter {
-	return Encrypter{rand: rand.Reader}
+// and attaching the public key to the encrypter.
+func NewEncrypter(pubKey crypto.PublicKey) (*Encrypter, error) {
+	return &Encrypter{rand: rand.Reader, publicKey: pubKey}, nil
 }
 
 // Encrypter will encrypt data using AES256CBC method
 type Encrypter struct {
-	rand io.Reader
+	rand      io.Reader
+	publicKey crypto.PublicKey
 }
 
 // Encrypt data using recipient public key with AES in CBC mode.  Generate an ephemeral private key and IV.
-func (e Encrypter) Encrypt(recipientPublicKey crypto.PublicKey, message mc.PlainContent) (mc.EncryptedContent, error) {
-	epk, err := asPublicECIES(recipientPublicKey)
+func (e Encrypter) Encrypt(message mc.PlainContent) (mc.EncryptedContent, error) {
+	epk, err := asPublicECIES(e.publicKey)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert")
 	}

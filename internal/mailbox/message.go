@@ -37,14 +37,14 @@ import (
 // - Encrypt message location
 // - Create transaction data with encrypted location and message hash
 // - Send transaction
-func SendMessage(ctx context.Context, protocol, network string, msg *mail.Message, pubkey crypto.PublicKey, encrypter cipher.Encrypter,
+func SendMessage(ctx context.Context, protocol, network string, msg *mail.Message, encrypter cipher.Encrypter,
 	msgSender sender.Message, sent stores.Sent, msgSigner signer.Signer, envelopeKind byte) error {
 	encodedMsg, err := rfc2822.EncodeNewMessage(msg)
 	if err != nil {
 		return errors.WithMessage(err, "could not encode message")
 	}
 
-	encrypted, err := encrypter.Encrypt(pubkey, encodedMsg)
+	encrypted, err := encrypter.Encrypt(encodedMsg)
 	if err != nil {
 		return errors.WithMessage(err, "could not encrypt mail message")
 	}
@@ -67,7 +67,7 @@ func SendMessage(ctx context.Context, protocol, network string, msg *mail.Messag
 		locOpt,
 	}
 
-	env, err := envelope.NewEnvelope(encrypter, pubkey, opts)
+	env, err := envelope.NewEnvelope(encrypter, opts)
 	if err != nil {
 		return errors.WithMessage(err, "could not create envelope")
 	}

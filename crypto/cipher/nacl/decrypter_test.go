@@ -143,7 +143,7 @@ func Test_validatePrivateKeyType(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-ed25519-sofia",
+			"success-ed25519-charlotte",
 			args{
 				ed25519test.CharlottePrivateKey,
 			},
@@ -151,7 +151,7 @@ func Test_validatePrivateKeyType(t *testing.T) {
 			false,
 		},
 		{
-			"err-secp256k1-sofia",
+			"err-secp256k1-charlotte",
 			args{
 				secp256k1test.CharlottePrivateKey,
 			},

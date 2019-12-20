@@ -25,8 +25,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
-	"github.com/mailchain/mailchain/internal/clients/etherscan"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
+	"github.com/mailchain/mailchain/internal/clients/etherscan"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/keystoretest"
@@ -211,6 +211,34 @@ func Test_GetMessages(t *testing.T) {
 			},
 			httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761&network=mainnet&protocol=ethereum", nil),
 			"{\"messages\":[{\"headers\":{\"date\":\"2019-03-12T20:23:13Z\",\"from\":\"\\u003c5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum\\u003e\",\"to\":\"\\u003c4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum\\u003e\",\"message-id\":\"47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471\",\"content-type\":\"text/plain; charset=\\\"UTF-8\\\"\"},\"body\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus eget euismod nibh. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer bibendum venenatis sem sed auctor. Ut aliquam eu diam nec fermentum. Sed turpis nulla, viverra ac efficitur ac, fermentum vel sapien. Curabitur vehicula risus id odio congue tempor. Mauris tincidunt feugiat risus, eget auctor magna blandit sit amet. Curabitur consectetur, dolor eu imperdiet varius, dui neque mattis neque, vel fringilla magna tortor ut risus. Cras cursus sem et nisl interdum molestie. Aliquam auctor sodales blandit.\\r\\n\",\"subject\":\"Hello world\",\"status\":\"ok\",\"status-code\":\"\",\"read\":false,\"block-id\":\"YS1ibG9jay1udW1iZXI=\",\"block-id-encoding\":\"hex/0x-prefix\",\"transaction-hash\":\"YS1oYXNo\",\"transaction-hash-encoding\":\"hex/0x-prefix\"},{\"status\":\"failed to unmarshal: buffer is empty\",\"status-code\":\"\",\"read\":false}]}\n",
+			http.StatusOK,
+		},
+		{
+			"success with empty messages",
+			args{
+				inbox: func() stores.State {
+					return storestest.NewMockState(mockCtrl)
+				}(),
+				receivers: func() map[string]mailbox.Receiver {
+					return map[string]mailbox.Receiver{
+						"ethereum/mainnet": func() mailbox.Receiver {
+							receiver := mailboxtest.NewMockReceiver(mockCtrl)
+							receiver.EXPECT().Receive(context.Background(), "mainnet", []byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}).
+								Return([]mailbox.Transaction{}, nil).Times(1)
+							return receiver
+						}(),
+					}
+				}(),
+				ks: func() keystore.Store {
+					decrypter := ciphertest.NewMockDecrypter(mockCtrl)
+					store := keystoretest.NewMockStore(mockCtrl)
+					store.EXPECT().HasAddress([]byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}, "ethereum", "mainnet").Return(true).Times(1)
+					store.EXPECT().GetDecrypter([]byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}, "ethereum", "mainnet", cipher.AES256CBC, multi.OptionsBuilders{}).Return(decrypter, nil)
+					return store
+				}(),
+			},
+			httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761&network=mainnet&protocol=ethereum", nil),
+			"{\"messages\":[]}\n",
 			http.StatusOK,
 		},
 	}

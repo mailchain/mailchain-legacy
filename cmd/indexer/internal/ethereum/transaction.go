@@ -7,8 +7,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/mailchain/mailchain/cmd/indexer/internal/datastore"
-	"github.com/mailchain/mailchain/cmd/indexer/internal/processor"
+	"github.com/mailchain/mailchain/cmd/indexer/internal/a"
+	"github.com/mailchain/mailchain/cmd/indexer/internal/datastorections"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 )
@@ -25,7 +25,7 @@ type txOptions struct {
 	block *types.Block
 }
 
-func (t *Transaction) Run(ctx context.Context, protocol, network string, tx interface{}, txOpts processor.TransactionOptions) error {
+func (t *Transaction) Run(ctx context.Context, protocol, network string, tx interface{}, txOpts actions.TransactionOptions) error {
 	// blk *types.Block, ethTx *types.Transaction
 	ethTx, ok := tx.(*types.Transaction)
 	if !ok {
@@ -64,7 +64,7 @@ func (t *Transaction) Run(ctx context.Context, protocol, network string, tx inte
 		return err
 	}
 
-	return processor.StoreTransaction(ctx, t.txStore, t.rawTxStore, protocol, network, storeTx, ethTx)
+	return actions.StoreTransaction(ctx, t.txStore, t.rawTxStore, protocol, network, storeTx, ethTx)
 }
 
 func (t *Transaction) toTransaction(blk *types.Block, tx *types.Transaction) (*datastore.Transaction, error) {

@@ -10,9 +10,9 @@ import (
 type Sequential struct {
 	protocol string
 	network  string
-
+ 
 	syncStore      datastore.SyncStore
-	blockProcessor Block
+	blockProcessor actions.Block
 	blockClient    clients.BlockByNumber
 }
 

@@ -20,6 +20,9 @@ builds:
     - darwin
   goarch:
     - amd64
+  hooks:
+    pre: sed -i s/~mailchain-version~/{{.Version}}/ ./cmd/mailchain/internal/http/handlers/swagger.go
+
 - id: mailchain-linux-amd64
   ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
   binary: mailchain
@@ -29,7 +32,10 @@ builds:
   goos:
     - linux
   goarch:
-    - amd64    
+    - amd64 
+  hooks:
+    pre: sed -i s/~mailchain-version~/{{.Version}}/ ./cmd/mailchain/internal/http/handlers/swagger.go
+    
 - id: mailchain-windows-amd64
   ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
   binary: mailchain
@@ -42,6 +48,8 @@ builds:
     - windows
   goarch:
     - amd64
+  hooks:
+    pre: sed -i s/~mailchain-version~/{{.Version}}/ ./cmd/mailchain/internal/http/handlers/swagger.go
 
 archives:
 - format: tar.gz

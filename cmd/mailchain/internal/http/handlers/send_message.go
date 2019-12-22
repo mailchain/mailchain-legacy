@@ -45,7 +45,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 	// Send message.
 	//
 	// Securely send message on the protocol and network specified in the query string to the address.
-	// Only the private key holder for the recipient address can decrypted any encrypted contents.
+	// Only the private key holder for the recipient address can decrypt any encrypted contents.
 	//
 	// - Create mailchain message
 	// - Encrypt content with public key

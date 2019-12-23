@@ -47,7 +47,7 @@ func (s SyncStore) GetBlockNumber(ctx context.Context, protocol, network string)
 	}
 
 	state := sync{}
-	if err := s.db.Get(&state, sql, args); err != nil {
+	if err := s.db.Get(&state, sql, args...); err != nil {
 		return 0, errors.WithStack(err)
 	}
 

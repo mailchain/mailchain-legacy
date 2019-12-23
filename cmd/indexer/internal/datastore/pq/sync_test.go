@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"regexp"
 	"testing"
-	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
@@ -49,9 +48,7 @@ func TestSyncStore_GetblockNumber(t *testing.T) {
 				}
 				m.ExpectQuery(regexp.QuoteMeta(`SELECT block_no FROM sync WHERE protocol = $1 AND network = $2`)).
 					WithArgs(uint8(1), uint8(1)).
-					WillReturnRows(
-						sqlmock.NewRows([]string{"protocol", "network", "block_no", "created_at", "updated_at"}).
-							AddRow(uint8(1), uint8(1), uint64(144), time.Now(), time.Now()))
+					WillReturnRows(sqlmock.NewRows([]string{"block_no"}).AddRow(uint8(144)))
 
 				return mock{db, m}
 			}(),

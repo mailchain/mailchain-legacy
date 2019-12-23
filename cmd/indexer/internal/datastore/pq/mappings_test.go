@@ -37,7 +37,7 @@ func TestGetProtocolNetworkUint8(t *testing.T) {
 			},
 		},
 		{
-			"protocol unknown",
+			"err-protocol-unknown",
 			args{
 				"unknown",
 				ethereum.Mainnet,
@@ -49,7 +49,7 @@ func TestGetProtocolNetworkUint8(t *testing.T) {
 			},
 		},
 		{
-			"network unknown",
+			"err-network-unknown",
 			args{
 				protocols.Ethereum,
 				"unknown",

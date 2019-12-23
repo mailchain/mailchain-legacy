@@ -10,9 +10,12 @@ import (
 
 // Cipher Name lookup
 const (
+	// NoOperation encryption type name.
 	NoOperation string = "noop"
-	NACL        string = "nacl"
-	AES256CBC   string = "aes256cbc"
+	// NACL encryption type name.
+	NACL string = "nacl"
+	// AES256CBC encryption type name.
+	AES256CBC string = "aes256cbc"
 )
 
 // GetEncrypter is an `Encrypter` factory that returns an encrypter

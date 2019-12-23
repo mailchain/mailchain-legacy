@@ -126,7 +126,7 @@
         }
       },
       "post": {
-        "description": "Securely send message on the protocol and network specified in the query string to the address.\nOnly the private key holder for the recipient address can decrypted any encrypted contents.\n\nCreate mailchain message\nEncrypt content with public key\nStore message\nEncrypt location\nStore encrypted location on the blockchain.",
+        "description": "Securely send message on the protocol and network specified in the query string to the address.\nOnly the private key holder for the recipient address can decrypt any encrypted contents.\n\nCreate mailchain message\nEncrypt content with public key\nStore message\nEncrypt location\nStore encrypted location on the blockchain.",
         "tags": [
           "Send"
         ],

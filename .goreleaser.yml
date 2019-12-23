@@ -29,7 +29,7 @@ builds:
   goos:
     - linux
   goarch:
-    - amd64    
+    - amd64 
 - id: mailchain-windows-amd64
   ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
   binary: mailchain
@@ -42,7 +42,7 @@ builds:
     - windows
   goarch:
     - amd64
-
+    
 archives:
 - format: tar.gz
   format_overrides:

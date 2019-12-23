@@ -20,7 +20,7 @@
 //
 //     Schemes: https
 //     BasePath: /api
-//     Version: 0.0.1
+//     Version: ~mailchain-version~
 //
 //     Consumes:
 //     - application/json

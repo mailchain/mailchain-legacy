@@ -23,15 +23,13 @@ func NewPublicKeyStore(db *sqlx.DB) (datastore.PublicKeyStore, error) {
 }
 
 type public_key struct {
-	Protocol uint8  `db:"protocol"`
-	Network  uint8  `db:"network"`
-	Address  []byte `db:"address"`
-
-	PublicKeyType uint8  `db:"public_key_type"`
-	PublicKey     []byte `db:"public_key"`
-
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
+	Address       []byte    `db:"address"`
+	PublicKey     []byte    `db:"public_key"`
+	CreatedAt     time.Time `db:"created_at"`
+	UpdatedAt     time.Time `db:"updated_at"`
+	Protocol      uint8     `db:"protocol"`
+	Network       uint8     `db:"network"`
+	PublicKeyType uint8     `db:"public_key_type"`
 }
 
 func (s PublicKeyStore) PutPublicKey(ctx context.Context, protocol, network string, address []byte, pubKey crypto.PublicKey) error {
@@ -97,5 +95,6 @@ func (s PublicKeyStore) GetPublicKey(ctx context.Context, protocol, network stri
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	return publicKey, nil
 }

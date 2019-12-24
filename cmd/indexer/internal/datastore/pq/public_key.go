@@ -22,7 +22,7 @@ func NewPublicKeyStore(db *sqlx.DB) (datastore.PublicKeyStore, error) {
 	return &PublicKeyStore{db: db}, nil
 }
 
-type public_key struct {
+type publicKey struct {
 	Address       []byte    `db:"address"`
 	PublicKey     []byte    `db:"public_key"`
 	CreatedAt     time.Time `db:"created_at"`
@@ -81,7 +81,7 @@ func (s PublicKeyStore) GetPublicKey(ctx context.Context, protocol, network stri
 		return nil, errors.WithStack((err))
 	}
 
-	state := public_key{}
+	state := publicKey{}
 	if err := s.db.Get(&state, sql, args...); err != nil {
 		return nil, errors.WithStack(err)
 	}

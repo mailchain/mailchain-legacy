@@ -17,17 +17,17 @@ import (
 
 var addressBytes = []byte{0xd5, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6}
 
-type UnknownPublicKey struct{}
+type unknownPublicKey struct{}
 
-func (pk UnknownPublicKey) Bytes() []byte {
+func (pk unknownPublicKey) Bytes() []byte {
 	return []byte("unknown public key")
 }
 
-func (pk UnknownPublicKey) Kind() string {
+func (pk unknownPublicKey) Kind() string {
 	return "unknown"
 }
 
-func (pk UnknownPublicKey) Verify(message, sig []byte) bool {
+func (pk unknownPublicKey) Verify(message, sig []byte) bool {
 	return true
 }
 
@@ -120,7 +120,7 @@ func TestPublicKeyStore_PutPublicKey(t *testing.T) {
 				ethereum.Mainnet,
 				addressBytes,
 				func() crypto.PublicKey {
-					return &UnknownPublicKey{}
+					return &unknownPublicKey{}
 				}(),
 			},
 			func() mock {
@@ -284,7 +284,7 @@ func TestPublicKeyStore_GetPublicKey(t *testing.T) {
 					WithArgs(uint8(1), uint8(1), addressBytes).
 					WillReturnRows(
 						sqlmock.NewRows([]string{"public_key_type", "public_key"}).
-							AddRow(uint8(1), (&UnknownPublicKey{}).Bytes()))
+							AddRow(uint8(1), (&unknownPublicKey{}).Bytes()))
 
 				return mock{db, m}
 			}(),

@@ -75,7 +75,6 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 		})
 	}
 }
-
 func TestPrivateKeyFromECDSA(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
@@ -93,52 +92,6 @@ func TestPrivateKeyFromECDSA(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := PrivateKeyFromECDSA(tt.args.pk); !assert.Equal(tt.want, got.Bytes()) {
 				t.Errorf("PrivateKeyFromECDSA() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestPrivateKeyFromHex(t *testing.T) {
-	assert := assert.New(t)
-	type args struct {
-		hexkey string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    []byte
-		wantErr bool
-	}{
-		{
-			"success",
-			args{
-				"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-			},
-			[]byte{0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa},
-			false,
-		},
-		{
-			"err-decode",
-			args{
-				"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-			},
-			[]byte{},
-			true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := PrivateKeyFromHex(tt.args.hexkey)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("PrivateKeyFromHex() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			gotBytes := []byte{}
-			if got != nil {
-				gotBytes = got.Bytes()
-			}
-			if !assert.Equal(tt.want, gotBytes) {
-				t.Errorf("PrivateKeyFromHex() = %v, want %v", gotBytes, tt.want)
 			}
 		})
 	}

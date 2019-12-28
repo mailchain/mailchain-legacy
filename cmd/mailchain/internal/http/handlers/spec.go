@@ -17,13 +17,15 @@ package handlers
 import (
 	"net/http"
 	"strings"
+
+	"github.com/mailchain/mailchain"
 )
 
 // GetSpec returns a handler get spec
 func GetSpec() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		var mdreplacer = strings.NewReplacer("¬", "`")
+		var mdreplacer = strings.NewReplacer("¬", "`", "~mailchain-version~", mailchain.Version)
 
 		doc := mdreplacer.Replace(spec())
 		_, _ = w.Write([]byte(doc))

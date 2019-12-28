@@ -225,7 +225,7 @@ func TestGetPublicKey(t *testing.T) {
 				"network":  "mainnet",
 				"protocol": "ethereum",
 			},
-			"{\"public_key\":\"0x69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0\",\"public_key_encoding\":\"hex/0x-prefix\"}\n",
+			"{\"public_key\":\"0x69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0\",\"public_key_encoding\":\"hex/0x-prefix\",\"supported_encryption_types\":[\"aes256cbc\",\"noop\"]}\n",
 			http.StatusOK,
 		},
 		{
@@ -242,7 +242,7 @@ func TestGetPublicKey(t *testing.T) {
 				"network":  "mainnet",
 				"protocol": "ethereum",
 			},
-			"{\"public_key\":\"0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d\",\"public_key_encoding\":\"hex/0x-prefix\"}\n",
+			"{\"public_key\":\"0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d\",\"public_key_encoding\":\"hex/0x-prefix\",\"supported_encryption_types\":[\"aes256cbc\",\"noop\"]}\n",
 			http.StatusOK,
 		},
 	}

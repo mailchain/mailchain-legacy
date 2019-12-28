@@ -33,7 +33,7 @@ func GetEnvelope() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode([]GetEnvelopeResponseBody{
-			GetEnvelopeResponseBody{
+			{
 				Type:        "0x01",
 				Description: "Private Message Stored with MLI",
 			},

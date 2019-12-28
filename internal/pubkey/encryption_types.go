@@ -12,22 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package handlers Mailchain API
-//
-// All the information needed to talk to the API.
-//
-// To raise see anything wrong? Raise an [issue](https://github.com/mailchain/mailchain/issues)
-//
-//     Schemes: https
-//     BasePath: /api
-//     Version: ~mailchain-version~
-//
-//     Consumes:
-//     - application/json
-//
-//     Produces:
-//     - application/json
-//
-//
-// swagger:meta
-package handlers
+package pubkey
+
+import (
+	"fmt"
+
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/cipher/encrypter"
+)
+
+// EncryptionMethods returns supported encryption methods.
+func EncryptionMethods(kind string) ([]string, error) {
+	switch kind {
+	case crypto.ED25519:
+		return []string{encrypter.NACL, encrypter.NoOperation}, nil
+	case crypto.SECP256K1:
+		return []string{encrypter.AES256CBC, encrypter.NoOperation}, nil
+	default:
+		return nil, fmt.Errorf("%q unsuported public key type", kind)
+	}
+}

@@ -8,7 +8,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
-	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/cmd/indexer/internal/datastore"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
@@ -16,6 +16,8 @@ import (
 )
 
 var addressBytes = []byte{0xd5, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6}
+var txHash = []byte("0x98beb27135aa0a25650557005ad962919d6a278c4b3dde7f4f6a3a1e65aa746c")
+var blockHash = []byte("0x373d339e45a701447367d7b9c7cef84aab79c2b2714271b908cda0ab3ad0849b")
 
 type unknownPublicKey struct{}
 
@@ -37,7 +39,7 @@ func TestPublicKeyStore_PutPublicKey(t *testing.T) {
 		protocol  string
 		network   string
 		address   []byte
-		publicKey crypto.PublicKey
+		publicKey *datastore.PublicKey
 	}
 	type mock struct {
 		db      *sql.DB
@@ -50,21 +52,53 @@ func TestPublicKeyStore_PutPublicKey(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success",
+			"success-insert",
 			args{
 				context.Background(),
 				protocols.Ethereum,
 				ethereum.Mainnet,
 				addressBytes,
-				secp256k1test.SofiaPublicKey,
+				&datastore.PublicKey{
+					PublicKey: secp256k1test.SofiaPublicKey,
+					BlockHash: blockHash,
+					TxHash:    txHash,
+				},
 			},
 			func() mock {
 				db, m, err := sqlmock.New()
 				if err != nil {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
-				m.ExpectExec(regexp.QuoteMeta(`UPDATE public_keys SET public_key_type = $1, public_key = $2, updated_at = $3 WHERE protocol = $4 AND network = $5 AND address = $6`)).
-					WithArgs(uint64(1), secp256k1test.SofiaPublicKey.Bytes(), anyTime{}, uint8(1), uint8(1), addressBytes).
+				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO public_keys (protocol,network,address,public_key_type,public_key,created_block_hash,updated_block_hash,created_tx_hash,updated_tx_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT DO UPDATE SET public_key_type = $, public_key = $, updated_block_hash = $, updated_tx_hash = $`)).
+					WithArgs(uint8(1), uint8(1), addressBytes, uint64(1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, blockHash, txHash, txHash, uint64(1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, txHash).
+					WillReturnResult(sqlmock.NewResult(1, 1))
+
+				return mock{db, m}
+			}(),
+			false,
+		},
+		{
+			"success-upsert",
+			args{
+				context.Background(),
+				protocols.Ethereum,
+				ethereum.Mainnet,
+				addressBytes,
+				&datastore.PublicKey{
+					PublicKey: secp256k1test.SofiaPublicKey,
+					BlockHash: blockHash,
+					TxHash:    txHash,
+				},
+			},
+			func() mock {
+				db, m, err := sqlmock.New()
+				if err != nil {
+					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+				}
+				m.NewRows([]string{"protocol", "network", "address", "public_key_type", "public_key", "created_block_hash", "updated_block_hash", "created_tx_hash", "updated_tx_hash"}).
+					AddRow(uint8(1), uint8(1), addressBytes, uint64(1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, blockHash, txHash, txHash)
+				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO public_keys (protocol,network,address,public_key_type,public_key,created_block_hash,updated_block_hash,created_tx_hash,updated_tx_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT DO UPDATE SET public_key_type = $, public_key = $, updated_block_hash = $, updated_tx_hash = $`)).
+					WithArgs(uint8(1), uint8(1), addressBytes, uint64(1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, blockHash, txHash, txHash, uint64(1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, txHash).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 
 				return mock{db, m}
@@ -78,15 +112,19 @@ func TestPublicKeyStore_PutPublicKey(t *testing.T) {
 				protocols.Ethereum,
 				ethereum.Mainnet,
 				addressBytes,
-				secp256k1test.SofiaPublicKey,
+				&datastore.PublicKey{
+					PublicKey: secp256k1test.SofiaPublicKey,
+					BlockHash: blockHash,
+					TxHash:    txHash,
+				},
 			},
 			func() mock {
 				db, m, err := sqlmock.New()
 				if err != nil {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
-				m.ExpectExec(regexp.QuoteMeta(`UPDATE public_keys SET public_key_type = $1, public_key = $2, updated_at = $3 WHERE protocol = $4 AND network = $5 AND address = $6`)).
-					WithArgs(uint64(1), secp256k1test.SofiaPublicKey.Bytes(), anyTime{}, uint8(1), uint8(1), addressBytes).
+				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO public_keys (protocol,network,address,public_key_type,public_key,created_block_hash,updated_block_hash,created_tx_hash,updated_tx_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT DO UPDATE SET public_key_type = $, public_key = $, updated_block_hash = $, updated_tx_hash = $`)).
+					WithArgs(uint8(1), uint8(1), addressBytes, uint64(1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, blockHash, txHash, txHash, uint64(1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, txHash).
 					WillReturnError(sql.ErrNoRows)
 
 				return mock{db, m}
@@ -100,7 +138,11 @@ func TestPublicKeyStore_PutPublicKey(t *testing.T) {
 				protocols.Ethereum,
 				"unknown",
 				addressBytes,
-				secp256k1test.SofiaPublicKey,
+				&datastore.PublicKey{
+					PublicKey: secp256k1test.SofiaPublicKey,
+					BlockHash: blockHash,
+					TxHash:    txHash,
+				},
 			},
 			func() mock {
 				db, m, err := sqlmock.New()
@@ -119,9 +161,11 @@ func TestPublicKeyStore_PutPublicKey(t *testing.T) {
 				protocols.Ethereum,
 				ethereum.Mainnet,
 				addressBytes,
-				func() crypto.PublicKey {
-					return &unknownPublicKey{}
-				}(),
+				&datastore.PublicKey{
+					PublicKey: &unknownPublicKey{},
+					BlockHash: blockHash,
+					TxHash:    txHash,
+				},
 			},
 			func() mock {
 				db, m, err := sqlmock.New()
@@ -161,7 +205,7 @@ func TestPublicKeyStore_GetPublicKey(t *testing.T) {
 		sqlmock sqlmock.Sqlmock
 	}
 	type result struct {
-		pubKey  crypto.PublicKey
+		pubKey  *datastore.PublicKey
 		wantErr bool
 	}
 	tests := []struct {
@@ -183,16 +227,20 @@ func TestPublicKeyStore_GetPublicKey(t *testing.T) {
 				if err != nil {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
-				m.ExpectQuery(regexp.QuoteMeta(`SELECT public_key_type, public_key FROM public_keys WHERE protocol = $1 AND network = $2 AND address = $3`)).
+				m.ExpectQuery(regexp.QuoteMeta(`SELECT public_key_type, public_key, updated_block_hash, updated_tx_hash FROM public_keys WHERE protocol = $1 AND network = $2 AND address = $3`)).
 					WithArgs(uint8(1), uint8(1), addressBytes).
 					WillReturnRows(
-						sqlmock.NewRows([]string{"public_key_type", "public_key"}).
-							AddRow(uint8(1), secp256k1test.SofiaPublicKey.Bytes()))
+						sqlmock.NewRows([]string{"public_key_type", "public_key", "updated_block_hash", "updated_tx_hash"}).
+							AddRow(uint8(1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, txHash))
 
 				return mock{db, m}
 			}(),
 			result{
-				secp256k1test.SofiaPublicKey,
+				&datastore.PublicKey{
+					PublicKey: secp256k1test.SofiaPublicKey,
+					BlockHash: blockHash,
+					TxHash:    txHash,
+				},
 				false,
 			},
 		},
@@ -209,7 +257,7 @@ func TestPublicKeyStore_GetPublicKey(t *testing.T) {
 				if err != nil {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
-				m.ExpectQuery(regexp.QuoteMeta(`SELECT public_key_type, public_key FROM public_keys WHERE protocol = $1 AND network = $2 AND address = $3`)).
+				m.ExpectQuery(regexp.QuoteMeta(`SELECT public_key_type, public_key, updated_block_hash, updated_tx_hash FROM public_keys WHERE protocol = $1 AND network = $2 AND address = $3`)).
 					WithArgs(uint8(1), uint8(1), addressBytes).
 					WillReturnError(sql.ErrNoRows)
 
@@ -254,11 +302,11 @@ func TestPublicKeyStore_GetPublicKey(t *testing.T) {
 				if err != nil {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
-				m.ExpectQuery(regexp.QuoteMeta(`SELECT public_key_type, public_key FROM public_keys WHERE protocol = $1 AND network = $2 AND address = $3`)).
+				m.ExpectQuery(regexp.QuoteMeta(`SELECT public_key_type, public_key, updated_block_hash, updated_tx_hash FROM public_keys WHERE protocol = $1 AND network = $2 AND address = $3`)).
 					WithArgs(uint8(1), uint8(1), addressBytes).
 					WillReturnRows(
-						sqlmock.NewRows([]string{"public_key_type", "public_key"}).
-							AddRow(uint8(0), secp256k1test.SofiaPublicKey.Bytes()))
+						sqlmock.NewRows([]string{"public_key_type", "public_key", "updated_block_hash", "updated_tx_hash"}).
+							AddRow(uint8(0), secp256k1test.SofiaPublicKey.Bytes(), blockHash, txHash))
 
 				return mock{db, m}
 			}(),
@@ -280,11 +328,11 @@ func TestPublicKeyStore_GetPublicKey(t *testing.T) {
 				if err != nil {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
-				m.ExpectQuery(regexp.QuoteMeta(`SELECT public_key_type, public_key FROM public_keys WHERE protocol = $1 AND network = $2 AND address = $3`)).
+				m.ExpectQuery(regexp.QuoteMeta(`SELECT public_key_type, public_key, updated_block_hash, updated_tx_hash FROM public_keys WHERE protocol = $1 AND network = $2 AND address = $3`)).
 					WithArgs(uint8(1), uint8(1), addressBytes).
 					WillReturnRows(
-						sqlmock.NewRows([]string{"public_key_type", "public_key"}).
-							AddRow(uint8(1), (&unknownPublicKey{}).Bytes()))
+						sqlmock.NewRows([]string{"public_key_type", "public_key", "updated_block_hash", "updated_tx_hash"}).
+							AddRow(uint8(1), (&unknownPublicKey{}).Bytes(), blockHash, txHash))
 
 				return mock{db, m}
 			}(),
@@ -303,8 +351,8 @@ func TestPublicKeyStore_GetPublicKey(t *testing.T) {
 				t.Errorf("PublicKeyStore.GetPublicKey() error = %v, wantErr %v", err, tt.result.wantErr)
 			}
 
-			if !tt.result.wantErr && !assert.Equal(tt.result.pubKey.Bytes(), publicKey.Bytes()) {
-				t.Errorf("PublicKeyStore.GetPublicKey() = %v, want %v", publicKey.Bytes(), tt.result.pubKey.Bytes())
+			if !tt.result.wantErr && !assert.Equal(tt.result.pubKey.PublicKey.Bytes(), publicKey.PublicKey.Bytes()) {
+				t.Errorf("PublicKeyStore.GetPublicKey() = %v, want %v", publicKey.PublicKey.Bytes(), tt.result.pubKey.PublicKey.Bytes())
 			}
 
 			if err := tt.mock.sqlmock.ExpectationsWereMet(); err != nil {

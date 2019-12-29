@@ -94,6 +94,7 @@ func (s PublicKeyStore) GetPublicKey(ctx context.Context, protocol, network stri
 		return nil, errors.WithStack(err)
 	}
 
-	publicKey := &datastore.PublicKey{cryptoPublicKey, state.UpdatedBlockHash, state.UpdatedTxHash}
+	publicKey := &datastore.PublicKey{PublicKey: cryptoPublicKey, BlockHash: state.UpdatedBlockHash, TxHash: state.UpdatedTxHash}
+
 	return publicKey, nil
 }

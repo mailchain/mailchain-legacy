@@ -6,7 +6,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 )
 
-//go:generate mockgen -source=public_key.go -package=datastoretest -destination=./datastoretest/publick_key_mock.go
+//go:generate mockgen -source=public_key.go -package=datastoretest -destination=./datastoretest/public_key_mock.go
 
 type PublicKey struct {
 	PublicKey crypto.PublicKey

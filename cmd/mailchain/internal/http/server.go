@@ -63,6 +63,8 @@ func CreateRouter(s *settings.Root, cmd *cobra.Command) (http.Handler, error) {
 
 	api.HandleFunc("/addresses", handlers.GetAddresses(config.keystore)).Methods("GET")
 
+	api.HandleFunc("/envelope", handlers.GetEnvelope()).Methods("GET")
+
 	api.HandleFunc("/messages", handlers.GetMessages(config.mailboxStateStore, config.receivers, config.keystore, deriveKeyOptions)).Methods("GET") //nolint:lll
 	api.HandleFunc("/messages", handlers.SendMessage(config.sentStore, config.senders, config.keystore, deriveKeyOptions)).Methods("POST")
 
@@ -77,7 +79,6 @@ func CreateRouter(s *settings.Root, cmd *cobra.Command) (http.Handler, error) {
 	api.HandleFunc("/nameservice/address/{address}/resolve", handlers.GetResolveAddress(config.addressResolvers)).Methods("GET")
 	api.HandleFunc("/nameservice/name/{domain-name}/resolve", handlers.GetResolveName(config.domainResolvers)).Methods("GET")
 
-	api.HandleFunc("/envelope", handlers.GetEnvelope()).Methods("GET")
 	api.HandleFunc("/version", handlers.GetVersion()).Methods("GET")
 
 	_ = r.Walk(gorillaWalkFn)

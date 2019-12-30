@@ -102,6 +102,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 }
 
 func TestPrivateKey_PublicKey(t *testing.T) {
+	assert := assert.New(t)
 	tests := []struct {
 		name string
 		pk   PrivateKey
@@ -110,17 +111,17 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 		{
 			"sofia",
 			sofiaPrivateKey,
-			sofiaPublicKey,
+			&sofiaPublicKey,
 		},
 		{
 			"charlotte",
 			charlottePrivateKey,
-			charlottePublicKey,
+			&charlottePublicKey,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pk.PublicKey(); !reflect.DeepEqual(got, tt.want) {
+			if got := tt.pk.PublicKey(); !assert.Equal(tt.want, got) {
 				t.Errorf("PrivateKey.PublicKey() = %v, want %v", got, tt.want)
 			}
 		})

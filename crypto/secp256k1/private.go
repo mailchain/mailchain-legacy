@@ -42,7 +42,7 @@ func (pk PrivateKey) Sign(message []byte) (signature []byte, err error) {
 
 // PublicKey return the public key that is derived from the private key
 func (pk PrivateKey) PublicKey() crypto.PublicKey {
-	return PublicKey{ecdsa: pk.ecdsa.PublicKey}
+	return &PublicKey{ecdsa: pk.ecdsa.PublicKey}
 }
 
 // Kind is the type of private key.

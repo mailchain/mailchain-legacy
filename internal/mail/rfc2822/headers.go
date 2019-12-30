@@ -16,8 +16,12 @@ package rfc2822
 
 import (
 	nm "net/mail"
+	"strings"
 	"time"
 
+	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/multikey"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
@@ -39,12 +43,19 @@ func parseHeaders(h nm.Header) (*mail.Headers, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to parse `from`")
 	}
+
+	publicKey, err := parsePublicKey(h)
+	if err != nil {
+		return nil, errors.WithMessage(err, "failed to parse `public-key`")
+	}
+
 	return &mail.Headers{
 		Date:        *date,
 		Subject:     subject,
 		To:          *to,
 		From:        *from,
 		ContentType: parseContentType(h),
+		PublicKey:   publicKey,
 	}, nil
 }
 
@@ -105,4 +116,60 @@ func parseContentType(h nm.Header) string {
 	}
 
 	return sources[0]
+}
+
+func parsePublicKey(h nm.Header) (crypto.PublicKey, error) {
+	sources, ok := h["Public-Key"]
+	if !ok {
+		return nil, nil
+	}
+
+	if len(sources) == 0 {
+		return nil, errors.Errorf("empty header")
+	}
+
+	firstDelim := strings.IndexAny(sources[0], ";")
+	if firstDelim == -1 {
+		return nil, errors.Errorf("invalid header")
+	}
+
+	encodedPubKey := sources[0][:firstDelim]
+	values := parseHeaderValues(sources[0][firstDelim:])
+
+	keyBytes, err := encoding.DecodeHexZeroX(encodedPubKey)
+	if err != nil {
+		return nil, err
+	}
+
+	pubKeyType, ok := values["type"]
+	if !ok {
+		return nil, errors.Errorf("missing public key type")
+	}
+
+	return multikey.PublicKeyFromBytes(pubKeyType, keyBytes)
+}
+
+func parseHeaderValues(query string) map[string]string {
+	m := map[string]string{}
+
+	for _, item := range strings.Split(strings.TrimSpace(query), ";") {
+		if item == "" {
+			continue
+		}
+
+		kv := strings.Split(item, "=")
+		key := strings.ToLower(strings.TrimSpace(kv[0]))
+		value := ""
+
+		if len(kv) == 2 {
+			tmp := strings.ReplaceAll(kv[1], "\"", "")
+			tmp = strings.TrimSpace(tmp)
+			tmp = strings.ToLower(tmp)
+			value = tmp
+		}
+
+		m[key] = value
+	}
+
+	return m
 }

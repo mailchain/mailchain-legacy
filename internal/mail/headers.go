@@ -16,6 +16,8 @@ package mail
 
 import (
 	"time"
+
+	"github.com/mailchain/mailchain/crypto"
 )
 
 // DefaultContentType value.
@@ -39,12 +41,11 @@ func NewHeaders(date time.Time, from, to Address, replyTo *Address, subject, con
 
 // Headers for the message
 type Headers struct {
-	From          Address
-	To            Address
-	Date          time.Time
-	Subject       string
-	ReplyTo       *Address
-	ContentType   string
-	PublicKey     []byte
-	PublicKeyType string
+	From        Address
+	To          Address
+	Date        time.Time
+	Subject     string
+	ReplyTo     *Address
+	ContentType string
+	PublicKey   crypto.PublicKey
 }

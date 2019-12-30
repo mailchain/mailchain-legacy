@@ -7,7 +7,7 @@ package datastoretest
 import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
-	crypto "github.com/mailchain/mailchain/crypto"
+	datastore "github.com/mailchain/mailchain/cmd/indexer/internal/datastore"
 	reflect "reflect"
 )
 
@@ -35,7 +35,7 @@ func (m *MockPublicKeyStore) EXPECT() *MockPublicKeyStoreMockRecorder {
 }
 
 // PutPublicKey mocks base method
-func (m *MockPublicKeyStore) PutPublicKey(ctx context.Context, protocol, network string, address []byte, pubKey crypto.PublicKey) error {
+func (m *MockPublicKeyStore) PutPublicKey(ctx context.Context, protocol, network string, address []byte, pubKey *datastore.PublicKey) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "PutPublicKey", ctx, protocol, network, address, pubKey)
 	ret0, _ := ret[0].(error)
@@ -49,10 +49,10 @@ func (mr *MockPublicKeyStoreMockRecorder) PutPublicKey(ctx, protocol, network, a
 }
 
 // GetPublicKey mocks base method
-func (m *MockPublicKeyStore) GetPublicKey(ctx context.Context, protocol, network string, address []byte) (crypto.PublicKey, error) {
+func (m *MockPublicKeyStore) GetPublicKey(ctx context.Context, protocol, network string, address []byte) (*datastore.PublicKey, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetPublicKey", ctx, protocol, network, address)
-	ret0, _ := ret[0].(crypto.PublicKey)
+	ret0, _ := ret[0].(*datastore.PublicKey)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

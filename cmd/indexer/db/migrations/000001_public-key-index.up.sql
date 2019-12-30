@@ -6,8 +6,9 @@ CREATE TABLE IF NOT EXISTS public_keys(
     -- Values
     public_key_type         SMALLINT NOT NULL,
     public_key              BYTEA NOT NULL,
-    -- Metadata
-    created_at              TIMESTAMP NOT NULL,
-    updated_at              TIMESTAMP NOT NULL,
+    created_block_hash      BYTEA NOT NULL,
+    updated_block_hash      BYTEA NOT NULL,
+    created_tx_hash         BYTEA NOT NULL,
+    updated_tx_hash         BYTEA NOT NULL,
     PRIMARY KEY(protocol, network, address)
 );

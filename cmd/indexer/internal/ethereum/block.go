@@ -5,11 +5,11 @@ import (
 	"errors"
 
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/mailchain/mailchain/cmd/indexer/internal/processor"
+	"github.com/mailchain/mailchain/cmd/indexer/internal/actions"
 )
 
 type Block struct {
-	txProcessor processor.Transaction
+	txProcessor actions.Transaction
 }
 
 func (b *Block) Run(ctx context.Context, protocol, network string, blk interface{}) error {

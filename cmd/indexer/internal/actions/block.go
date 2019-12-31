@@ -1,8 +1,8 @@
-package processor
+package actions
 
 import "context"
 
-//go:generate mockgen -source=block.go -package=processortest -destination=./processortest/block_mock.go
+//go:generate mockgen -source=block.go -package=actionstest -destination=./actionstest/block_mock.go
 
 // Block processes an individual block
 type Block interface {

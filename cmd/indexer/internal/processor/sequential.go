@@ -3,6 +3,7 @@ package processor
 import (
 	"context"
 
+	"github.com/mailchain/mailchain/cmd/indexer/internal/actions"
 	"github.com/mailchain/mailchain/cmd/indexer/internal/clients"
 	"github.com/mailchain/mailchain/cmd/indexer/internal/datastore"
 )
@@ -12,7 +13,7 @@ type Sequential struct {
 	network  string
 
 	syncStore      datastore.SyncStore
-	blockProcessor Block
+	blockProcessor actions.Block
 	blockClient    clients.BlockByNumber
 }
 

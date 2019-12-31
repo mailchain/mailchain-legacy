@@ -71,7 +71,7 @@ func TestInternalEncrypt(t *testing.T) {
 	}
 	ephemeralPrivateKey := ecies.ImportECDSA(tmpEphemeralPrivateKey)
 
-	tp, ok := secp256k1test.SofiaPublicKey.(secp256k1.PublicKey)
+	tp, ok := secp256k1test.SofiaPublicKey.(*secp256k1.PublicKey)
 	if !ok {
 		t.Error("failed to cast")
 	}

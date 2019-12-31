@@ -60,7 +60,8 @@ func (t *Transaction) Run(ctx context.Context, protocol, network string, tx inte
 		return err
 	}
 
-	if err := t.pkStore.PutPublicKey(ctx, protocol, network, storeTx.From, pubKey); err != nil {
+	if err := t.pkStore.PutPublicKey(ctx, protocol, network, storeTx.From,
+		&datastore.PublicKey{PublicKey: pubKey, BlockHash: storeTx.BlockHash, TxHash: storeTx.Hash}); err != nil {
 		return err
 	}
 

@@ -18,8 +18,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mailchain/mailchain/crypto/ed25519"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/ed25519"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mr-tron/base58"
 	"github.com/stretchr/testify/assert"
@@ -105,8 +105,10 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 				t.Errorf("PublicKeyFinder.PublicKeyFromAddress() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
-				t.Errorf("PublicKeyFinder.PublicKeyFromAddress() = %v, want %v", got, tt.want)
+			if got != nil {
+				if !assert.Equal(tt.want, got) {
+					t.Errorf("PublicKeyFinder.PublicKeyFromAddress() = %v, want %v", got, tt.want)
+				}
 			}
 		})
 	}

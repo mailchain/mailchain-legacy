@@ -3,10 +3,8 @@ Message-ID: 47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a82
 Subject: Hello world
 From: <5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum>
 To: <4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum>
-Reply-To: <4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@mainnet.ethereum>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Public-Key: 0x69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0; type="secp256k1"; encoding="hex/0x-prefix"
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus =
 metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectu=

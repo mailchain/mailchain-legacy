@@ -44,9 +44,11 @@ func bytesDecode(raw []byte) (*encryptedData, error) {
 	if len(raw) == 0 {
 		return nil, errors.Errorf("raw must not be empty")
 	}
+
 	if len(raw) < macLen+ivLen+pubKeyBytesLenCompressed+1 {
 		return nil, errors.Errorf("raw data does not have enough bytes to be encoded")
 	}
+
 	if raw[0] != cipher.AES256CBC {
 		return nil, errors.Errorf("invalid prefix")
 	}

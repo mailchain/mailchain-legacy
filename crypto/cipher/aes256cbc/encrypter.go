@@ -46,14 +46,17 @@ func (e Encrypter) Encrypt(message mc.PlainContent) (mc.EncryptedContent, error)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert")
 	}
+
 	ephemeral, err := ecies.GenerateKey(e.rand, ecies.DefaultCurve, nil)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not generate ephemeral key")
 	}
+
 	iv, err := e.generateIV()
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not generate iv")
 	}
+
 	encryptedData, err := encrypt(ephemeral, epk, message, iv)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not encrypt data")

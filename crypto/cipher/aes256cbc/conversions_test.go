@@ -15,12 +15,12 @@
 package aes256cbc
 
 import (
-	"encoding/hex"
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 )
 
 func Test_asPrivateECIES(t *testing.T) {
@@ -34,54 +34,21 @@ func Test_asPrivateECIES(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-secp256k1-val",
+			"success-secp256k1-sofia-val",
 			args{
 				func() secp256k1.PrivateKey {
-					encryptedKey, err := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
-					if err != nil {
-						t.Error(err)
-					}
-					k, err := secp256k1.PrivateKeyFromBytes(encryptedKey)
-					if err != nil {
-						t.Error(err)
-					}
-					return *k
+					t := secp256k1test.SofiaPrivateKey.(*secp256k1.PrivateKey)
+					return *t
 				}(),
 			},
 			false,
 			false,
 		},
 		{
-			"success-secp256k1-pointer",
+			"success-secp256k1-sofia-pointer",
 			args{
 				func() *secp256k1.PrivateKey {
-					encryptedKey, err := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
-					if err != nil {
-						t.Error(err)
-					}
-					k, err := secp256k1.PrivateKeyFromBytes(encryptedKey)
-					if err != nil {
-						t.Error(err)
-					}
-					return k
-				}(),
-			},
-			false,
-			false,
-		},
-		{
-			"success-secp256k1-pointer",
-			args{
-				func() *secp256k1.PrivateKey {
-					encryptedKey, err := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
-					if err != nil {
-						t.Error(err)
-					}
-					k, err := secp256k1.PrivateKeyFromBytes(encryptedKey)
-					if err != nil {
-						t.Error(err)
-					}
-					return k
+					return secp256k1test.SofiaPrivateKey.(*secp256k1.PrivateKey)
 				}(),
 			},
 			false,
@@ -122,20 +89,21 @@ func Test_asPublicECIES(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-val",
+			"success-secp256k1-sofia-pointer",
 			args{
 				func() crypto.PublicKey {
-
-					encryptedPublicKey, err := hex.DecodeString("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
-					if err != nil {
-						t.Error(err)
-					}
-					k, err := secp256k1.PrivateKeyFromBytes(encryptedPublicKey)
-
-					if err != nil {
-						t.Error(err)
-					}
-					return k.PublicKey()
+					return secp256k1test.SofiaPublicKey.(*secp256k1.PublicKey)
+				}(),
+			},
+			false,
+			false,
+		},
+		{
+			"success-secp256k1-sofia-val",
+			args{
+				func() crypto.PublicKey {
+					pk := secp256k1test.SofiaPublicKey.(*secp256k1.PublicKey)
+					return *pk
 				}(),
 			},
 			false,

@@ -17,7 +17,6 @@ package aes256cbc
 import (
 	"crypto/elliptic"
 	"crypto/hmac"
-	"crypto/rand"
 	"crypto/sha256"
 	"crypto/sha512"
 	"io"
@@ -42,9 +41,9 @@ func generateMacKeyAndEncryptionKey(sharedSecret []byte) (macKey, encryptionKey 
 	return macKey, encryptionKey
 }
 
-func generateIV() ([]byte, error) {
+func (e Encrypter) generateIV() ([]byte, error) {
 	iv := make([]byte, 16)
-	_, err := io.ReadFull(rand.Reader, iv)
+	_, err := io.ReadFull(e.rand, iv)
 	return iv, err
 }
 

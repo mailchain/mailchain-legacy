@@ -8,6 +8,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values/valuestest"
 	"github.com/mailchain/mailchain/stores"
+	"github.com/mailchain/mailchain/stores/bdbstore"
 	"github.com/mailchain/mailchain/stores/ldbstore"
 	"github.com/stretchr/testify/assert"
 )
@@ -49,8 +50,9 @@ func TestMailboxState_Produce(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
-		Kind                values.String
-		mailboxStateLevelDB MailboxStateLevelDB
+		Kind                 values.String
+		mailboxStateLevelDB  MailboxStateLevelDB
+		mailboxStateBadgerDB MailBoxStateBadgerDB
 	}
 	tests := []struct {
 		name     string
@@ -59,7 +61,7 @@ func TestMailboxState_Produce(t *testing.T) {
 		wantErr  bool
 	}{
 		{
-			"success",
+			"success-leveldb",
 			fields{
 				func() values.String {
 					m := valuestest.NewMockString(mockCtrl)
@@ -77,8 +79,31 @@ func TestMailboxState_Produce(t *testing.T) {
 						return m
 					}(),
 				),
+				MailBoxStateBadgerDB{},
 			},
 			&ldbstore.Database{},
+			false,
+		},
+		{
+			"success-badgerdb",
+			fields{
+				func() values.String {
+					m := valuestest.NewMockString(mockCtrl)
+					m.EXPECT().Get().Return("badgerdb")
+					return m
+				}(),
+				MailboxStateLevelDB{},
+				mailboxStateBadgerDB(
+					func() values.Store {
+						m := valuestest.NewMockStore(mockCtrl)
+						os.MkdirAll("./tmp/mailboxstate", os.ModePerm)
+						m.EXPECT().IsSet("mailboxState.badgerdb.path").Return(true)
+						m.EXPECT().GetString("mailboxState.badgerdb.path").Return("./tmp/mailboxstate")
+						return m
+					}(),
+				),
+			},
+			&bdbstore.Database{},
 			false,
 		},
 		{
@@ -95,6 +120,7 @@ func TestMailboxState_Produce(t *testing.T) {
 						return m
 					}(),
 				),
+				MailBoxStateBadgerDB{},
 			},
 			nil,
 			true,
@@ -103,8 +129,9 @@ func TestMailboxState_Produce(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := MailboxState{
-				Kind:                tt.fields.Kind,
-				mailboxStateLevelDB: tt.fields.mailboxStateLevelDB,
+				Kind:                 tt.fields.Kind,
+				mailboxStateLevelDB:  tt.fields.mailboxStateLevelDB,
+				mailBoxStateBadgerDB: tt.fields.mailboxStateBadgerDB,
 			}
 			got, err := s.Produce()
 			if (err != nil) != tt.wantErr {
@@ -113,6 +140,52 @@ func TestMailboxState_Produce(t *testing.T) {
 			}
 			if !assert.IsType(tt.wantType, got) {
 				t.Errorf("MailboxState.Produce() = %v, want %v", got, tt.wantType)
+			}
+		})
+	}
+}
+
+func TestMailBoxStateBadgerDB_Produce(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type fields struct {
+		Path values.String
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantNil bool
+		wantErr bool
+	}{
+		{
+			"success",
+			fields{
+				func() values.String {
+					m := valuestest.NewMockString(mockCtrl)
+					os.MkdirAll("./tmp/badgerdb", os.ModePerm)
+					m.EXPECT().Get().Return("./tmp/badgerdb")
+					return m
+				}(),
+			},
+			false,
+			false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := MailBoxStateBadgerDB{
+				Path: tt.fields.Path,
+			}
+
+			got, err := s.Produce()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("MailboxStateBadgerDB.Produce() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if (got == nil) != tt.wantNil {
+				t.Errorf("MailboxStateBadgerDB.Produce() nil = %v, wantErr %v", got == nil, tt.wantNil)
+				return
 			}
 		})
 	}

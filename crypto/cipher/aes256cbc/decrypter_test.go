@@ -15,6 +15,7 @@
 package aes256cbc
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto/cipher"
@@ -22,39 +23,6 @@ import (
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
-
-func TestDecryptCBC(t *testing.T) {
-	assert := assert.New(t)
-	cases := []struct {
-		name          string
-		iv            []byte
-		encryptionKey []byte
-		ciphertext    []byte
-		expected      []byte
-		err           error
-	}{
-		{"short text",
-			encodingtest.MustDecodeHex("05050505050505050505050505050505"),
-			encodingtest.MustDecodeHex("af0ad81e7d9194721d6c26f6c1f2a2b7fd06e2c99c4f5deefe59fb93936c981e"),
-			encodingtest.MustDecodeHex("747ef78a32eb582d325a634e4acffd61"),
-			[]byte("Hi Tim"),
-			nil,
-		}, {"medium text",
-			encodingtest.MustDecodeHex("05050505050505050505050505050505"),
-			encodingtest.MustDecodeHex("af0ad81e7d9194721d6c26f6c1f2a2b7fd06e2c99c4f5deefe59fb93936c981e"),
-			encodingtest.MustDecodeHex("2ec66aac453ff543f47830d4b8cbc68d9965bf7c6bb69724fd4de26d41001256dfa6f7f0b3956ce21d4717caf75b0c2ad753852f216df6cfbcda4911619c5fc34798a19f81adff902c1ad906ab0edaec"),
-			[]byte("Hi Tim, this is a much longer message to make sure there are no problems"),
-			nil,
-		},
-	}
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			res, err := decryptCBC(tc.encryptionKey, tc.iv, tc.ciphertext)
-			assert.EqualValues(string(tc.expected), string(res))
-			assert.Equal(tc.err, err)
-		})
-	}
-}
 
 func TestDecrypter(t *testing.T) {
 	assert := assert.New(t)
@@ -92,6 +60,62 @@ func TestDecrypter(t *testing.T) {
 			res, err := tc.decrypter.Decrypt(tc.encryptedData)
 			assert.EqualValues(string(tc.expected), string(res))
 			assert.Equal(tc.err, err)
+		})
+	}
+}
+
+func Test_decryptCBC(t *testing.T) {
+	type args struct {
+		key        []byte
+		iv         []byte
+		ciphertext []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			"success-short-text",
+			args{
+				encodingtest.MustDecodeHex("af0ad81e7d9194721d6c26f6c1f2a2b7fd06e2c99c4f5deefe59fb93936c981e"),
+				encodingtest.MustDecodeHex("05050505050505050505050505050505"),
+				encodingtest.MustDecodeHex("747ef78a32eb582d325a634e4acffd61"),
+			},
+			[]byte("Hi Tim"),
+			false,
+		},
+		{
+			"success-medium-text",
+			args{
+				encodingtest.MustDecodeHex("af0ad81e7d9194721d6c26f6c1f2a2b7fd06e2c99c4f5deefe59fb93936c981e"),
+				encodingtest.MustDecodeHex("05050505050505050505050505050505"),
+				encodingtest.MustDecodeHex("2ec66aac453ff543f47830d4b8cbc68d9965bf7c6bb69724fd4de26d41001256dfa6f7f0b3956ce21d4717caf75b0c2ad753852f216df6cfbcda4911619c5fc34798a19f81adff902c1ad906ab0edaec"),
+			},
+			[]byte("Hi Tim, this is a much longer message to make sure there are no problems"),
+			false,
+		},
+		{
+			"err-key",
+			args{
+				nil,
+				encodingtest.MustDecodeHex("05050505050505050505050505050505"),
+				encodingtest.MustDecodeHex("2ec66aac453ff543f47830d4b8cbc68d9965bf7c6bb69724fd4de26d41001256dfa6f7f0b3956ce21d4717caf75b0c2ad753852f216df6cfbcda4911619c5fc34798a19f81adff902c1ad906ab0edaec"),
+			},
+			nil,
+			true,
+		}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := decryptCBC(tt.args.key, tt.args.iv, tt.args.ciphertext)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("decryptCBC() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("decryptCBC() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }

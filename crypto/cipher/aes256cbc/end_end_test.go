@@ -1,6 +1,7 @@
 package aes256cbc
 
 import (
+	"bytes"
 	"crypto/rand"
 	"testing"
 
@@ -16,49 +17,87 @@ func TestEncryptDecrypt(t *testing.T) {
 		recipientPublicKey  crypto.PublicKey
 		recipientPrivateKey crypto.PrivateKey
 		data                []byte
-		err                 error
+		wantEncryptErr      bool
+		wantDecryptErr      bool
+		wantDecrypt         bool
 	}{
 		{
-			"to-sofia-short-text",
+			"success-to-sofia-short-text",
 			secp256k1test.SofiaPublicKey,
 			secp256k1test.SofiaPrivateKey,
 			[]byte("Hi Sofia"),
-			nil,
+			false,
+			false,
+			true,
 		},
 		{
-			"to-sofia-medium-text",
+			"success-to-sofia-medium-text",
 			secp256k1test.SofiaPublicKey,
 			secp256k1test.SofiaPrivateKey,
 			[]byte("Hi Sofia, this is a little bit of a longer message to make sure there are no problems"),
-			nil,
+			false,
+			false,
+			true,
 		},
 		{
-			"to-charlotte-short-text",
+			"success-to-charlotte-short-text",
 			secp256k1test.CharlottePublicKey,
 			secp256k1test.CharlottePrivateKey,
 			[]byte("Hi Charlotte"),
-			nil,
+			false,
+			false,
+			true,
 		},
 		{
-			"to-charlotte-medium-text",
+			"success-to-charlotte-medium-text",
 			secp256k1test.CharlottePublicKey,
 			secp256k1test.CharlottePrivateKey,
 			[]byte("Hi Charlotte, this is a little bit of a longer message to make sure there are no problems"),
-			nil,
+			false,
+			false,
+			true,
+		},
+		{
+			"err-sofia-with-charlotte",
+			secp256k1test.SofiaPublicKey,
+			secp256k1test.CharlottePrivateKey,
+			[]byte("Hi Sofia"),
+			false,
+			true,
+			false,
+		},
+		{
+			"err-charlotte-with-sofia",
+			secp256k1test.CharlottePublicKey,
+			secp256k1test.SofiaPrivateKey,
+			[]byte("Hi Sofia"),
+			false,
+			true,
+			false,
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			encrypter := Encrypter{rand.Reader, tc.recipientPublicKey}
-			encrypted, err := encrypter.Encrypt(tc.data)
-			assert.Equal(tc.err, err)
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			encrypter := Encrypter{rand.Reader, tt.recipientPublicKey}
+			encrypted, err := encrypter.Encrypt(tt.data)
+			if (err != nil) != tt.wantEncryptErr {
+				t.Errorf("Encrypt() error = %v, wantEncryptErr %v", err, tt.wantEncryptErr)
+				return
+			}
 			assert.NotNil(encrypted)
 
-			decrypter := Decrypter{tc.recipientPrivateKey}
+			decrypter := Decrypter{tt.recipientPrivateKey}
 			decrypted, err := decrypter.Decrypt(encrypted)
-			assert.Equal(tc.err, err)
-			assert.Equal(tc.data, []byte(decrypted))
+			if (err != nil) != tt.wantDecryptErr {
+				t.Errorf("Decrypt() error = %v, wantDecryptErr %v", err, tt.wantDecryptErr)
+				return
+			}
+
+			if bytes.Equal(tt.data, []byte(decrypted)) != tt.wantDecrypt {
+				t.Errorf("Decrypt() result = %v, wantDecrypt %v", err, tt.wantDecrypt)
+				return
+			}
 		})
 	}
 }

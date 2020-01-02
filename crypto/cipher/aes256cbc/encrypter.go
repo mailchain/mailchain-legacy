@@ -46,14 +46,17 @@ func (e Encrypter) Encrypt(message mc.PlainContent) (mc.EncryptedContent, error)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert")
 	}
+
 	ephemeral, err := ecies.GenerateKey(e.rand, ecies.DefaultCurve, nil)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not generate ephemeral key")
 	}
-	iv, err := generateIV()
+
+	iv, err := e.generateIV()
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not generate iv")
 	}
+
 	encryptedData, err := encrypt(ephemeral, epk, message, iv)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not encrypt data")
@@ -95,6 +98,10 @@ func encryptCBC(data, iv, key []byte) ([]byte, error) {
 	data, err = padding.NewPkcs7Padding(block.BlockSize()).Pad(data)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not pad")
+	}
+
+	if len(iv) != block.BlockSize() {
+		return nil, errors.Errorf("cipher.NewCBCEncrypter: IV length must equal block size")
 	}
 
 	ciphertext := make([]byte, len(data))

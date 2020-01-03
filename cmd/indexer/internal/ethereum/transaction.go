@@ -79,8 +79,12 @@ func (t *Transaction) Run(ctx context.Context, protocol, network string, tx inte
 
 func (t *Transaction) toTransaction(blk *types.Block, tx *types.Transaction) (*datastore.Transaction, error) {
 	txs := blk.Transactions()
-	for _, t := range txs {
-		if t.Hash() != tx.Hash() {
+	numTxs := txs.Len()
+
+	for i, t := range txs {
+		if t.Hash() == tx.Hash() {
+			break
+		} else if (t.Hash() != tx.Hash()) && i == numTxs-1 {
 			return nil, errors.New("Transaction doesn't exist in block")
 		}
 	}

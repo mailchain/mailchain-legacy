@@ -16,11 +16,8 @@ package secp256k1
 
 import (
 	"crypto/ecdsa"
-	"log"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/mailchain/mailchain/encoding"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -161,14 +158,7 @@ func TestPublicKey_Kind(t *testing.T) {
 		{
 			"charlotte",
 			fields{
-				func() ecdsa.PublicKey {
-					b, _ := encoding.DecodeHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
-					key, err := crypto.ToECDSA(b)
-					if err != nil {
-						log.Fatal(err)
-					}
-					return key.PublicKey
-				}(),
+				ecdsaPublicKeyCharlotte(),
 			},
 			"secp256k1",
 		},

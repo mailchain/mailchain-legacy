@@ -18,7 +18,6 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
-	"github.com/mailchain/mailchain/crypto/cipher/nacl"
 	"github.com/pkg/errors"
 )
 
@@ -27,8 +26,6 @@ func Decrypter(cipherType byte, pk crypto.PrivateKey) (cipher.Decrypter, error) 
 	switch cipherType {
 	case cipher.AES256CBC:
 		return aes256cbc.NewDecrypter(pk), nil
-	case cipher.NACL:
-		return nacl.NewDecrypter(pk)
 	default:
 		return nil, errors.Errorf("unsupported decrypter type")
 	}

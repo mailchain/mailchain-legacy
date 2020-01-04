@@ -25,7 +25,7 @@ import (
 func EncryptionMethods(kind string) ([]string, error) {
 	switch kind {
 	case crypto.ED25519:
-		return []string{encrypter.NACL, encrypter.NoOperation}, nil
+		return []string{encrypter.NoOperation}, nil
 	case crypto.SECP256K1:
 		return []string{encrypter.AES256CBC, encrypter.NoOperation}, nil
 	default:

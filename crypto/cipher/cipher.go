@@ -18,8 +18,6 @@ package cipher //go:generate mockgen -source=cipher.go -package=ciphertest -dest
 const (
 	// NoOperation identified for Encrypt and Decrypter in noop package.
 	NoOperation byte = 0x20
-	// NACL identified for Encrypt and Decrypter in nacl package.
-	NACL byte = 0x2a
 	// AES256CBC identified for Encrypt and Decrypter in aes256cbc package.
 	AES256CBC byte = 0x2e
 )

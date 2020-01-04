@@ -37,7 +37,7 @@ func TestEncryptionMethods(t *testing.T) {
 			args{
 				crypto.ED25519,
 			},
-			[]string{encrypter.NACL, encrypter.NoOperation},
+			[]string{encrypter.NoOperation},
 			false,
 		},
 		{

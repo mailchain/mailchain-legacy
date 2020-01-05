@@ -57,5 +57,6 @@ func GenerateKey(rand io.Reader) (*PrivateKey, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return PrivateKeyFromBytes(pPrivKey)
 }

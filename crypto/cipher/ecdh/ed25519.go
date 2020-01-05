@@ -19,6 +19,7 @@ func NewED25519(rand io.Reader) (*ED25519, error) {
 	if rand == nil {
 		return nil, errors.New("rand must not be nil")
 	}
+
 	return &ED25519{rand: rand}, nil
 }
 
@@ -31,6 +32,7 @@ func (kx ED25519) SharedSecret(ephemeralKey crypto.PrivateKey, recipientKey cryp
 	if err != nil {
 		return nil, ErrSharedSecretGenerate
 	}
+
 	recipientPublicKey, err := kx.publicKey(recipientKey)
 	if err != nil {
 		return nil, ErrSharedSecretGenerate
@@ -43,6 +45,7 @@ func (kx ED25519) SharedSecret(ephemeralKey crypto.PrivateKey, recipientKey cryp
 	}
 
 	var secret [32]byte
+
 	curve25519.ScalarMult(&secret, &ephemeralPrivateKey, &recipientPublicKey)
 
 	return secret[:], nil
@@ -52,6 +55,7 @@ func (kx ED25519) publicKey(pubKey crypto.PublicKey) (key [32]byte, err error) {
 	switch pk := pubKey.(type) {
 	case *ed25519.PublicKey:
 		var ed25519Key, key [32]byte
+
 		copy(ed25519Key[:], pk.Bytes())
 		extra25519.PublicKeyToCurve25519(&key, &ed25519Key)
 
@@ -65,6 +69,7 @@ func (kx ED25519) privateKey(privKey crypto.PrivateKey) (key [32]byte, err error
 	switch pk := privKey.(type) {
 	case *ed25519.PrivateKey:
 		var ed25519Key [64]byte
+
 		copy(ed25519Key[:], pk.Bytes())
 		extra25519.PrivateKeyToCurve25519(&key, &ed25519Key)
 

@@ -12,6 +12,12 @@ type Block struct {
 	txProcessor actions.Transaction
 }
 
+func NewBlockProcessor(tx actions.Transaction) *Block {
+	return &Block{
+		txProcessor: tx,
+	}
+}
+
 func (b *Block) Run(ctx context.Context, protocol, network string, blk interface{}) error {
 	ethBlk, ok := blk.(*types.Block)
 	if !ok {

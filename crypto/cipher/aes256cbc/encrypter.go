@@ -44,7 +44,7 @@ type Encrypter struct {
 func (e Encrypter) Encrypt(message mc.PlainContent) (mc.EncryptedContent, error) {
 	epk, err := asPublicECIES(e.publicKey)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not convert")
+		return nil, mc.ErrEncrypt()
 	}
 
 	ephemeral, err := ecies.GenerateKey(e.rand, ecies.DefaultCurve, nil)

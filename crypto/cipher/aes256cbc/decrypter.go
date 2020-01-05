@@ -40,7 +40,7 @@ type Decrypter struct {
 func (d Decrypter) Decrypt(data mc.EncryptedContent) (mc.PlainContent, error) {
 	encryptedData, err := bytesDecode(data)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not convert encryptedData")
+		return nil, mc.ErrDecrypt()
 	}
 
 	return decryptEncryptedData(d.privateKey, encryptedData)

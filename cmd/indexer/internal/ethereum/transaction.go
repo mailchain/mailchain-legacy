@@ -25,6 +25,15 @@ type txOptions struct {
 	block *types.Block
 }
 
+func NewTransactionProcessor(store datastore.TransactionStore, rawStore datastore.RawTransactionStore, pkStore datastore.PublicKeyStore, networkID *big.Int) *Transaction {
+	return &Transaction{
+		txStore:    store,
+		rawTxStore: rawStore,
+		pkStore:    pkStore,
+		networkID:  networkID,
+	}
+}
+
 func (t *Transaction) Run(ctx context.Context, protocol, network string, tx interface{}, txOpts actions.TransactionOptions) error {
 	// blk *types.Block, ethTx *types.Transaction
 	ethTx, ok := tx.(*types.Transaction)

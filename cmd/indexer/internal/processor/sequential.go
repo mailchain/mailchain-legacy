@@ -17,6 +17,16 @@ type Sequential struct {
 	blockClient    clients.BlockByNumber
 }
 
+func NewSequential(protocol, network string, store datastore.SyncStore, proc actions.Block, client clients.BlockByNumber) *Sequential {
+	return &Sequential{
+		protocol:       protocol,
+		network:        network,
+		syncStore:      store,
+		blockProcessor: proc,
+		blockClient:    client,
+	}
+}
+
 func (s *Sequential) NextBlock(ctx context.Context) error {
 	blkNo, err := s.syncStore.GetBlockNumber(ctx, s.protocol, s.network)
 	if err != nil {

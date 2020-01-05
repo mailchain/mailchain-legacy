@@ -78,15 +78,8 @@ func (t *Transaction) Run(ctx context.Context, protocol, network string, tx inte
 }
 
 func (t *Transaction) toTransaction(blk *types.Block, tx *types.Transaction) (*datastore.Transaction, error) {
-	txs := blk.Transactions()
-	numTxs := txs.Len()
-
-	for i, t := range txs {
-		if t.Hash() == tx.Hash() {
-			break
-		} else if (t.Hash() != tx.Hash()) && i == numTxs-1 {
-			return nil, errors.New("Transaction doesn't exist in block")
-		}
+	if blk.Transaction(tx.Hash()) == nil {
+		return nil, errors.New("Transaction doesn't exist in block")
 	}
 
 	msg, err := tx.AsMessage(types.MakeSigner(&params.ChainConfig{ChainID: t.networkID}, blk.Number()))

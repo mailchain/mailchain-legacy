@@ -20,6 +20,7 @@ func NewSECP256K1(rand io.Reader) (*SECP256K1, error) {
 	if rand == nil {
 		return nil, errors.New("rand must not be nil")
 	}
+
 	return &SECP256K1{rand: rand, curve: ethcrypto.S256()}, nil
 }
 
@@ -32,6 +33,7 @@ func (kx SECP256K1) SharedSecret(ephemeralKey crypto.PrivateKey, recipientKey cr
 	if err != nil {
 		return nil, ErrSharedSecretGenerate
 	}
+
 	recipientPublicKey, err := kx.publicKey(recipientKey)
 	if err != nil {
 		return nil, ErrSharedSecretGenerate

@@ -1,5 +1,9 @@
 package cipher
 
+import (
+	"github.com/mailchain/mailchain/crypto"
+)
+
 type KeyExchange interface {
 	// EphemeralKey generates a private/public key pair.
 	EphemeralKey() (private crypto.PrivateKey, public crypto.PublicKey, err error)

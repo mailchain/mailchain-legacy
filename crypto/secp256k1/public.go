@@ -90,3 +90,7 @@ func (pk PublicKey) ECIES() (*ecies.PublicKey, error) {
 
 	return ecies.ImportECDSAPublic(rpk), nil
 }
+
+func (pk PublicKey) ECDSA() *ecdsa.PublicKey {
+	return &pk.ecdsa
+}

@@ -83,12 +83,7 @@ func PublicKeyFromBytes(keyBytes []byte) (crypto.PublicKey, error) {
 
 // ECIES returns an ECIES representation of the public key.
 func (pk PublicKey) ECIES() (*ecies.PublicKey, error) {
-	rpk, err := ethcrypto.UnmarshalPubkey(append([]byte{byte(4)}, pk.Bytes()...))
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not convert pk")
-	}
-
-	return ecies.ImportECDSAPublic(rpk), nil
+	return ecies.ImportECDSAPublic(&pk.ecdsa), nil
 }
 
 func (pk PublicKey) ECDSA() *ecdsa.PublicKey {

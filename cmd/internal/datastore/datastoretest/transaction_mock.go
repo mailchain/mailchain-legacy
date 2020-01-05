@@ -7,7 +7,7 @@ package datastoretest
 import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
-	datastore "github.com/mailchain/mailchain/cmd/indexer/internal/datastore"
+	datastore "github.com/mailchain/mailchain/cmd/internal/datastore"
 	reflect "reflect"
 )
 

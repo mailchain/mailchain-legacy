@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 
-	"github.com/mailchain/mailchain/cmd/indexer/internal/datastore"
+	"github.com/mailchain/mailchain/cmd/internal/datastore"
 	"github.com/mailchain/mailchain/encoding"
 )
 

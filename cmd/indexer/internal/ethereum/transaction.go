@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/mailchain/mailchain/cmd/indexer/internal/actions"
-	"github.com/mailchain/mailchain/cmd/indexer/internal/datastore"
+	"github.com/mailchain/mailchain/cmd/internal/datastore"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 )
@@ -23,6 +23,15 @@ type Transaction struct {
 
 type txOptions struct {
 	block *types.Block
+}
+
+func NewTransactionProcessor(store datastore.TransactionStore, rawStore datastore.RawTransactionStore, pkStore datastore.PublicKeyStore, networkID *big.Int) *Transaction {
+	return &Transaction{
+		txStore:    store,
+		rawTxStore: rawStore,
+		pkStore:    pkStore,
+		networkID:  networkID,
+	}
 }
 
 func (t *Transaction) Run(ctx context.Context, protocol, network string, tx interface{}, txOpts actions.TransactionOptions) error {

@@ -25,7 +25,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto/ecies"
 	"github.com/mailchain/mailchain/crypto"
 	mc "github.com/mailchain/mailchain/crypto/cipher"
-	"github.com/pkg/errors"
 )
 
 // NewEncrypter create a new encrypter with crypto rand for reader
@@ -44,22 +43,22 @@ type Encrypter struct {
 func (e Encrypter) Encrypt(message mc.PlainContent) (mc.EncryptedContent, error) {
 	epk, err := asPublicECIES(e.publicKey)
 	if err != nil {
-		return nil, mc.ErrEncrypt()
+		return nil, mc.ErrEncrypt
 	}
 
 	ephemeral, err := ecies.GenerateKey(e.rand, ecies.DefaultCurve, nil)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not generate ephemeral key")
+		return nil, mc.ErrEncrypt
 	}
 
 	iv, err := e.generateIV()
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not generate iv")
+		return nil, mc.ErrEncrypt
 	}
 
 	encryptedData, err := encrypt(ephemeral, epk, message, iv)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not encrypt data")
+		return nil, mc.ErrEncrypt
 	}
 
 	return bytesEncode(encryptedData)
@@ -74,12 +73,12 @@ func encrypt(ephemeralPrivateKey *ecies.PrivateKey, pub *ecies.PublicKey, input,
 	macKey, encryptionKey := generateMacKeyAndEncryptionKey(sharedSecret)
 	ciphertext, err := encryptCBC(input, iv, encryptionKey)
 	if err != nil {
-		return nil, errors.WithMessage(err, "encryptCBC failed")
+		return nil, mc.ErrEncrypt
 	}
 
 	mac, err := generateMac(macKey, iv, ephemeralPublicKey, ciphertext)
 	if err != nil {
-		return nil, errors.WithMessage(err, "generateMac failed")
+		return nil, mc.ErrEncrypt
 	}
 
 	return &encryptedData{
@@ -97,11 +96,11 @@ func encryptCBC(data, iv, key []byte) ([]byte, error) {
 	}
 	data, err = padding.NewPkcs7Padding(block.BlockSize()).Pad(data)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not pad")
+		return nil, mc.ErrEncrypt
 	}
 
 	if len(iv) != block.BlockSize() {
-		return nil, errors.Errorf("cipher.NewCBCEncrypter: IV length must equal block size")
+		return nil, mc.ErrEncrypt
 	}
 
 	ciphertext := make([]byte, len(data))

@@ -58,7 +58,7 @@ func decryptEncryptedData(privKey crypto.PrivateKey, data *encryptedData) ([]byt
 
 	recipientPrivKey, err := asPrivateECIES(privKey)
 	if err != nil {
-		return nil, err
+		return nil, mc.ErrDecrypt
 	}
 
 	sharedSecret, err := deriveSharedSecret(ephemeralPublicKey, recipientPrivKey)
@@ -75,14 +75,14 @@ func decryptEncryptedData(privKey crypto.PrivateKey, data *encryptedData) ([]byt
 
 	if subtle.ConstantTimeCompare(data.MessageAuthenticationCode, mac) != 1 {
 		return nil, mc.ErrDecrypt
-
+	}
 	return decryptCBC(encryptionKey, data.InitializationVector, data.Ciphertext)
 }
 
 func decryptCBC(key, iv, ciphertext []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, err
+		return nil, mc.ErrDecrypt
 	}
 
 	plaintext := make([]byte, len(ciphertext))

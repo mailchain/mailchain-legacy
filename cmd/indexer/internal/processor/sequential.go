@@ -5,7 +5,7 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/indexer/internal/actions"
 	"github.com/mailchain/mailchain/cmd/indexer/internal/clients"
-	"github.com/mailchain/mailchain/cmd/indexer/internal/datastore"
+	"github.com/mailchain/mailchain/cmd/internal/datastore"
 )
 
 type Sequential struct {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
-	"github.com/mailchain/mailchain/cmd/indexer/internal/datastore"
+	"github.com/mailchain/mailchain/cmd/internal/datastore"
 	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/pkg/errors"
 )

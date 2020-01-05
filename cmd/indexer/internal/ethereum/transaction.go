@@ -25,6 +25,12 @@ type txOptions struct {
 	block *types.Block
 }
 
+func NewTxOptions(block *types.Block) actions.TransactionOptions {
+	return &txOptions{
+		block: block,
+	}
+}
+
 func NewTransactionProcessor(store datastore.TransactionStore, rawStore datastore.RawTransactionStore, pkStore datastore.PublicKeyStore, networkID *big.Int) *Transaction {
 	return &Transaction{
 		txStore:    store,

@@ -127,6 +127,8 @@ keystore:
   nacl-filestore:
     path: "/home/user/.mailchain/.keystore"
 mailboxState:
+  badgerdb:
+    path: "/home/user/.mailchain/.mailbox"
   leveldb:
     cache: 256
     handles: 0

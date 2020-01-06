@@ -17,7 +17,7 @@ package secp256k1
 import (
 	"crypto/ecdsa"
 	"crypto/sha256"
-	"encoding/hex"
+	"io"
 
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
@@ -43,7 +43,7 @@ func (pk PrivateKey) Sign(message []byte) (signature []byte, err error) {
 
 // PublicKey return the public key that is derived from the private key
 func (pk PrivateKey) PublicKey() crypto.PublicKey {
-	return PublicKey{ecdsa: pk.ecdsa.PublicKey}
+	return &PublicKey{ecdsa: pk.ecdsa.PublicKey}
 }
 
 // Kind is the type of private key.
@@ -77,12 +77,11 @@ func PrivateKeyFromBytes(pk []byte) (*PrivateKey, error) {
 	return &PrivateKey{ecdsa: *rpk}, nil
 }
 
-// PrivateKeyFromHex get a private key from hex string
-func PrivateKeyFromHex(hexkey string) (*PrivateKey, error) {
-	b, err := hex.DecodeString(hexkey)
+func GenerateKey(rand io.Reader) (*PrivateKey, error) {
+	pk, err := ecdsa.GenerateKey(ethcrypto.S256(), rand)
 	if err != nil {
-		return nil, errors.New("invalid hex string")
+		return nil, err
 	}
 
-	return PrivateKeyFromBytes(b)
+	return &PrivateKey{ecdsa: *pk}, nil
 }

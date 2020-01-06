@@ -29,7 +29,6 @@ func init() {
 	SofiaPublicKey = SofiaPrivateKey.PublicKey()
 
 	CharlottePrivateKey, err = secp256k1.PrivateKeyFromBytes(encodingtest.MustDecodeHex("DF4BA9F6106AD2846472F759476535E55C5805D8337DF5A11C3B139F438B98B3"))
-
 	if err != nil {
 		log.Fatal(err)
 	}

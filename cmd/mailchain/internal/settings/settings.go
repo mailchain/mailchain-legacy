@@ -21,4 +21,6 @@ const (
 	StoreS3 = "s3"
 	// StoreLevelDB settings name for level db storage.
 	StoreLevelDB = "leveldb"
+	// StoreBadgerDB settings name for badger db storage.
+	StoreBadgerDB = "badgerdb"
 )

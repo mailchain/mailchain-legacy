@@ -5,22 +5,30 @@ import (
 	"reflect"
 	"testing"
 
+	keys "github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 )
 
 func TestNewEncrypter(t *testing.T) {
 	tests := []struct {
-		name string
-		want Encrypter
+		name    string
+		want    cipher.Encrypter
+		wantErr bool
 	}{
 		{
 			"success",
-			Encrypter{},
+			&Encrypter{},
+			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewEncrypter(); !reflect.DeepEqual(got, tt.want) {
+			got, err := NewEncrypter(nil)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Encrypter.Encrypt() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewEncrypter() = %v, want %v", got, tt.want)
 			}
 		})
@@ -28,20 +36,25 @@ func TestNewEncrypter(t *testing.T) {
 }
 
 func TestEncrypter_Encrypt(t *testing.T) {
+	type fields struct {
+		publicKey keys.PublicKey
+	}
 	type args struct {
 		recipientPublicKey crypto.PublicKey
 		message            cipher.PlainContent
 	}
 	tests := []struct {
 		name    string
-		e       Encrypter
+		fields  fields
 		args    args
 		want    cipher.EncryptedContent
 		wantErr bool
 	}{
 		{
 			"success",
-			NewEncrypter(),
+			fields{
+				nil,
+			},
 			args{
 				nil,
 				cipher.PlainContent([]byte("test content")),
@@ -52,8 +65,8 @@ func TestEncrypter_Encrypt(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			e := Encrypter{}
-			got, err := e.Encrypt(tt.args.recipientPublicKey, tt.args.message)
+			e := Encrypter{publicKey: tt.fields.publicKey}
+			got, err := e.Encrypt(tt.args.message)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Encrypter.Encrypt() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -22,6 +22,7 @@ import (
 	nm "net/mail"
 	"time"
 
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
@@ -39,18 +40,28 @@ func EncodeNewMessage(message *mail.Message) ([]byte, error) {
 	if message == nil {
 		return nil, errors.Errorf("nil message")
 	}
-	// TODO: Check if valid
 	headers := ""
 	headers += fmt.Sprintf("Date: %s\r\n", message.Headers.Date.Format(time.RFC1123))
 	headers += fmt.Sprintf("Message-ID: %s\r\n", messageIDHeaderValue(message.ID))
 	headers += fmt.Sprintf("Subject: %s\r\n", message.Headers.Subject)
 	headers += fmt.Sprintf("From: %s\r\n", message.Headers.From.String())
 	headers += fmt.Sprintf("To: %s\r\n", message.Headers.To.String())
+
 	if message.Headers.ReplyTo != nil {
 		headers += fmt.Sprintf("Reply-To: %s\r\n", message.Headers.ReplyTo.String())
 	}
+
 	headers += fmt.Sprintf("Content-Type: %s\r\n", message.Headers.ContentType)
 	headers += "Content-Transfer-Encoding: quoted-printable\r\n"
+
+	if message.Headers.PublicKey != nil {
+		value := fmt.Sprintf("%s; type=%q; encoding=%q",
+			encoding.EncodeHexZeroX(message.Headers.PublicKey.Bytes()),
+			message.Headers.PublicKey.Kind(),
+			encoding.KindHex0XPrefix)
+		headers += fmt.Sprintf("Public-Key: %s\r\n", value)
+	}
+
 	// 	// Thread-Topic TODO:
 	var ac bytes.Buffer
 	w := quotedprintable.NewWriter(&ac)

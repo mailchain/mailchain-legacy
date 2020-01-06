@@ -44,12 +44,12 @@ func (pk PublicKey) Verify(message, sig []byte) bool {
 
 	hash := sha256.Sum256(message)
 
-	return ethcrypto.VerifySignature(pk.Bytes(), hash[:], sig)
+	return ethcrypto.VerifySignature(ethcrypto.CompressPubkey(&pk.ecdsa), hash[:], sig)
 }
 
 // Bytes returns the byte representation of the public key
 func (pk PublicKey) Bytes() []byte {
-	return ethcrypto.CompressPubkey(&pk.ecdsa)
+	return append(pk.ecdsa.X.Bytes(), pk.ecdsa.Y.Bytes()...)
 }
 
 // PublicKeyFromBytes create a public key from []byte
@@ -83,10 +83,9 @@ func PublicKeyFromBytes(keyBytes []byte) (crypto.PublicKey, error) {
 
 // ECIES returns an ECIES representation of the public key.
 func (pk PublicKey) ECIES() (*ecies.PublicKey, error) {
-	rpk, err := ethcrypto.DecompressPubkey(pk.Bytes())
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not convert pk")
-	}
+	return ecies.ImportECDSAPublic(&pk.ecdsa), nil
+}
 
-	return ecies.ImportECDSAPublic(rpk), nil
+func (pk PublicKey) ECDSA() *ecdsa.PublicKey {
+	return &pk.ecdsa
 }

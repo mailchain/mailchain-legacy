@@ -5,6 +5,7 @@ From: <5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.
 To: <4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+Public-Key: 0x723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671; type="ed25519"; encoding="hex/0x-prefix"
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus =
 metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectu=

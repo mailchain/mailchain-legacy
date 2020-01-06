@@ -1,6 +1,7 @@
 package nacl
 
 import (
+	"crypto/rand"
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
@@ -64,11 +65,12 @@ func TestEncryptDecrypt(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			encrypted, err := NewEncrypter().Encrypt(tc.recipientPublicKey, tc.data)
+			encrypter := Encrypter{rand.Reader, tc.recipientPublicKey}
+			encrypted, err := encrypter.Encrypt(tc.data)
 			assert.Equal(tc.err, err)
 			assert.NotNil(encrypted)
-			decrypter := Decrypter{tc.recipientPrivateKey}
 
+			decrypter := Decrypter{tc.recipientPrivateKey}
 			decrypted, err := decrypter.Decrypt(encrypted)
 			assert.Equal(tc.err, err)
 			assert.Equal(tc.data, []byte(decrypted))

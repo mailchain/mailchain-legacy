@@ -11,30 +11,31 @@ import (
 	"github.com/pkg/errors"
 )
 
-// NewEncrypter create a new encrypter with crypto rand for reader
-func NewEncrypter() Encrypter {
-	return Encrypter{rand: rand.Reader}
-}
-
-// Encrypter will encrypt data using AES256CBC method
-type Encrypter struct {
-	rand io.Reader
-}
-
-// Encrypt contents with the recipients public key.
-func (e Encrypter) Encrypt(recipientPublicKey crypto.PublicKey, message cipher.PlainContent) (cipher.EncryptedContent, error) {
-	if err := validatePublicKeyType(recipientPublicKey); err != nil {
-		return nil, err
+// NewEncrypter creates a new encrypter with crypto rand for reader,
+// and attaching the public key to the encrypter.
+func NewEncrypter(publicKey crypto.PublicKey) (*Encrypter, error) {
+	if err := validatePublicKeyType(publicKey); err != nil {
+		return nil, errors.WithStack(err)
 	}
 
-	encrypted, err := easySeal(message, recipientPublicKey.Bytes(), e.rand)
+	return &Encrypter{rand: rand.Reader, publicKey: publicKey}, nil
+}
 
+// Encrypter will encrypt data using AES256CBC method.
+type Encrypter struct {
+	rand      io.Reader
+	publicKey crypto.PublicKey
+}
+
+// Encrypt encrypts the message with the key that was attached to it.
+func (e Encrypter) Encrypt(message cipher.PlainContent) (cipher.EncryptedContent, error) {
+	encrypted, err := easySeal(message, e.publicKey.Bytes(), e.rand)
 	return bytesEncode(encrypted), err
 }
 
 func validatePublicKeyType(recipientPublicKey crypto.PublicKey) error {
 	switch recipientPublicKey.(type) {
-	case ed25519.PublicKey:
+	case ed25519.PublicKey, *ed25519.PublicKey:
 		return nil
 	case sr25519.PublicKey:
 		return nil

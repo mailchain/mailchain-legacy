@@ -20,7 +20,7 @@
 //
 //     Schemes: https
 //     BasePath: /api
-//     Version: 0.0.1
+//     Version: ~mailchain-version~
 //
 //     Consumes:
 //     - application/json
@@ -31,3 +31,8 @@
 //
 // swagger:meta
 package handlers
+
+import (
+	// include errors from generic package.
+	_ "github.com/mailchain/mailchain/cmd/internal/http/handlers"
+)

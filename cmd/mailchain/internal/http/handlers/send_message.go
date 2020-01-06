@@ -45,7 +45,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 	// Send message.
 	//
 	// Securely send message on the protocol and network specified in the query string to the address.
-	// Only the private key holder for the recipient address can decrypted any encrypted contents.
+	// Only the private key holder for the recipient address can decrypt any encrypted contents.
 	//
 	// - Create mailchain message
 	// - Encrypt content with public key
@@ -98,7 +98,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			return
 		}
 
-		encrypter, err := ec.GetEncrypter(req.Body.EncryptionName)
+		encrypter, err := ec.GetEncrypter(req.Body.EncryptionName, req.Body.publicKey)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not get `encrypter`"))
 		}
@@ -109,8 +109,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			return
 		}
 
-		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network,
-			msg, req.Body.publicKey,
+		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network, msg,
 			encrypter, messageSender, sent, signer, env); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return

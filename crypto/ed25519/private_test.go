@@ -1,8 +1,12 @@
 package ed25519
 
 import (
+	"bytes"
+	"crypto/rand"
+	"io"
 	"reflect"
 	"testing"
+	"testing/iotest"
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
@@ -102,6 +106,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 }
 
 func TestPrivateKey_PublicKey(t *testing.T) {
+	assert := assert.New(t)
 	tests := []struct {
 		name string
 		pk   PrivateKey
@@ -110,17 +115,17 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 		{
 			"sofia",
 			sofiaPrivateKey,
-			sofiaPublicKey,
+			&sofiaPublicKey,
 		},
 		{
 			"charlotte",
 			charlottePrivateKey,
-			charlottePublicKey,
+			&charlottePublicKey,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pk.PublicKey(); !reflect.DeepEqual(got, tt.want) {
+			if got := tt.pk.PublicKey(); !assert.Equal(tt.want, got) {
 				t.Errorf("PrivateKey.PublicKey() = %v, want %v", got, tt.want)
 			}
 		})
@@ -189,6 +194,47 @@ func TestPrivateKey_Sign(t *testing.T) {
 			}
 			if !assert.Equal(tt.want, got) {
 				t.Errorf("Sign() = %v,\n want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGenerateKey(t *testing.T) {
+	type args struct {
+		rand io.Reader
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantNil bool
+		wantErr bool
+	}{
+		{
+			"success",
+			args{
+				rand.Reader,
+			},
+			false,
+			false,
+		},
+		{
+			"err-rand",
+			args{
+				iotest.DataErrReader(bytes.NewReader(nil)),
+			},
+			true,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GenerateKey(tt.args.rand)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GenerateKey() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if (got == nil) != tt.wantNil {
+				t.Errorf("GenerateKey() = %v, want %v", got, tt.wantNil)
 			}
 		})
 	}

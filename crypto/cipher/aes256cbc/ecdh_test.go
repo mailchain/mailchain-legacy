@@ -15,57 +15,21 @@
 package aes256cbc
 
 import (
+	"bytes"
+	"io"
 	"log"
 	"math/big"
+	"reflect"
 	"testing"
 
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-
-	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
-
-func TestGenerateMacKeyAndEncryptionKey(t *testing.T) {
-	assert := assert.New(t)
-	secret, err := encoding.DecodeHex("04695325aac70f9f9ebe676248ebbfefa87b3eff16117559d2a0953d0e695be6")
-	if err != nil {
-		log.Fatal(err)
-	}
-	macKey, encryptionKey := generateMacKeyAndEncryptionKey(secret)
-
-	assert.Equal("2cea25760305bdb3194057646bc46dc2eeee4890b711741c0b525454ac7c5ea8", encoding.EncodeHex(macKey))
-	assert.Equal("af0ad81e7d9194721d6c26f6c1f2a2b7fd06e2c99c4f5deefe59fb93936c981e", encoding.EncodeHex(encryptionKey))
-}
-
-func TestGenerateIV(t *testing.T) {
-	assert := assert.New(t)
-	iv, err := generateIV()
-	if err != nil {
-		log.Fatal(err)
-	}
-	assert.Len(iv, 16)
-}
-
-func TestGenerateMac(t *testing.T) {
-	assert := assert.New(t)
-	macKey := encodingtest.MustDecodeHex("2cea25760305bdb3194057646bc46dc2eeee4890b711741c0b525454ac7c5ea8")
-	iv := encodingtest.MustDecodeHex("05050505050505050505050505050505")
-	cipherText := encodingtest.MustDecodeHex("2ec66aac453ff543f47830d4b8cbc68d9965bf7c6bb69724fd4de26d41001256dfa6f7f0b3956ce21d4717caf75b0c2ad753852f216df6cfbcda4911619c5fc34798a19f81adff902c1ad906ab0edaec")
-	tmpEphemeralPrivateKey, err := ethcrypto.HexToECDSA("0404040404040404040404040404040404040404040404040404040404040404")
-	if err != nil {
-		log.Fatal(err)
-	}
-	ephemeralPrivateKey := ecies.ImportECDSA(tmpEphemeralPrivateKey)
-	actual, err := generateMac(macKey, iv, ephemeralPrivateKey.PublicKey, cipherText)
-	if err != nil {
-		log.Fatal(err)
-	}
-	assert.Equal("4367ae8a54b65f99e4f2fd315ba65bf85e1138967a7bea451faf80f75cdf3404", encoding.EncodeHex(actual))
-}
 
 func Test_deriveSharedSecret(t *testing.T) {
 	assert := assert.New(t)
@@ -83,7 +47,7 @@ func Test_deriveSharedSecret(t *testing.T) {
 			"success",
 			args{
 				func() *ecies.PublicKey {
-					tp, ok := secp256k1test.CharlottePublicKey.(secp256k1.PublicKey)
+					tp, ok := secp256k1test.CharlottePublicKey.(*secp256k1.PublicKey)
 					if !ok {
 						t.Error("failed to cast")
 					}
@@ -108,7 +72,7 @@ func Test_deriveSharedSecret(t *testing.T) {
 			"err-scalar-mult",
 			args{
 				func() *ecies.PublicKey {
-					tp, ok := secp256k1test.CharlottePublicKey.(secp256k1.PublicKey)
+					tp, ok := secp256k1test.CharlottePublicKey.(*secp256k1.PublicKey)
 					if !ok {
 						t.Error("failed to cast")
 					}
@@ -143,6 +107,123 @@ func Test_deriveSharedSecret(t *testing.T) {
 			}
 			if !assert.Equal(tt.want, got) {
 				t.Errorf("deriveSharedSecret() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_generateMacKeyAndEncryptionKey(t *testing.T) {
+	type args struct {
+		sharedSecret []byte
+	}
+	tests := []struct {
+		name              string
+		args              args
+		wantMacKey        []byte
+		wantEncryptionKey []byte
+	}{
+		{
+			"success",
+			args{
+				encodingtest.MustDecodeHex("04695325aac70f9f9ebe676248ebbfefa87b3eff16117559d2a0953d0e695be6"),
+			},
+			encodingtest.MustDecodeHex("2cea25760305bdb3194057646bc46dc2eeee4890b711741c0b525454ac7c5ea8"),
+			encodingtest.MustDecodeHex("af0ad81e7d9194721d6c26f6c1f2a2b7fd06e2c99c4f5deefe59fb93936c981e"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotMacKey, gotEncryptionKey := generateMacKeyAndEncryptionKey(tt.args.sharedSecret)
+			if !reflect.DeepEqual(gotMacKey, tt.wantMacKey) {
+				t.Errorf("generateMacKeyAndEncryptionKey() gotMacKey = %v, want %v", gotMacKey, tt.wantMacKey)
+			}
+			if !reflect.DeepEqual(gotEncryptionKey, tt.wantEncryptionKey) {
+				t.Errorf("generateMacKeyAndEncryptionKey() gotEncryptionKey = %v, want %v", gotEncryptionKey, tt.wantEncryptionKey)
+			}
+		})
+	}
+}
+
+func TestEncrypter_generateIV(t *testing.T) {
+	assert := assert.New(t)
+	type fields struct {
+		rand      io.Reader
+		publicKey crypto.PublicKey
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    []byte
+		wantErr bool
+	}{
+		{
+			"success",
+			fields{
+				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
+				nil,
+			},
+			[]byte{0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := Encrypter{
+				rand:      tt.fields.rand,
+				publicKey: tt.fields.publicKey,
+			}
+			got, err := e.generateIV()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Encrypter.generateIV() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("Encrypter.generateIV() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_generateMac(t *testing.T) {
+	type args struct {
+		macKey             []byte
+		iv                 []byte
+		ephemeralPublicKey ecies.PublicKey
+		ciphertext         []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			"success",
+			args{
+				encodingtest.MustDecodeHex("2cea25760305bdb3194057646bc46dc2eeee4890b711741c0b525454ac7c5ea8"),
+				encodingtest.MustDecodeHex("05050505050505050505050505050505"),
+				func() ecies.PublicKey {
+					tmpEphemeralPrivateKey, err := ethcrypto.HexToECDSA("0404040404040404040404040404040404040404040404040404040404040404")
+					if err != nil {
+						log.Fatal(err)
+					}
+					return ecies.ImportECDSA(tmpEphemeralPrivateKey).PublicKey
+				}(),
+				encodingtest.MustDecodeHex("2ec66aac453ff543f47830d4b8cbc68d9965bf7c6bb69724fd4de26d41001256dfa6f7f0b3956ce21d4717caf75b0c2ad753852f216df6cfbcda4911619c5fc34798a19f81adff902c1ad906ab0edaec"),
+			},
+			encodingtest.MustDecodeHex("4367ae8a54b65f99e4f2fd315ba65bf85e1138967a7bea451faf80f75cdf3404"),
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := generateMac(tt.args.macKey, tt.args.iv, tt.args.ephemeralPublicKey, tt.args.ciphertext)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("generateMac() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("generateMac() = %v, want %v", got, tt.want)
 			}
 		})
 	}

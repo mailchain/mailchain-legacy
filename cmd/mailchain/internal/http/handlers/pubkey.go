@@ -66,7 +66,13 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
-		encodedKey, encodingType, err := pubkey.EncodeByProtocol(publicKey, req.Protocol)
+		encodedKey, encodingType, err := pubkey.EncodeByProtocol(publicKey.Bytes(), req.Protocol)
+		if err != nil {
+			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+			return
+		}
+
+		encryptionTypes, err := pubkey.EncryptionMethods(publicKey.Kind())
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
@@ -76,6 +82,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 		_ = json.NewEncoder(w).Encode(GetPublicKeyResponseBody{
 			PublicKey:         encodedKey,
 			PublicKeyEncoding: encodingType,
+			SupportedEncryptionTypes: encryptionTypes,
 		})
 	}
 }
@@ -160,4 +167,10 @@ type GetPublicKeyResponseBody struct {
 	// Required: true
 	// example: hex/0x-prefix
 	PublicKeyEncoding string `json:"public_key_encoding"`
+
+	// Supported encryption methods for public keys.
+	//
+	// Required: true
+	// example: ["aes256cbc", "nacl", "noop"]
+	SupportedEncryptionTypes []string `json:"supported_encryption_types"`
 }

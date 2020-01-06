@@ -1,3 +1,17 @@
+// Copyright 2020 Finobo
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package handlers
 
 //nolint: gofmt
@@ -19,7 +33,7 @@ func spec() string {
   "info": {
     "description": "All the information needed to talk to the API.\n\nTo raise see anything wrong? Raise an [issue](https://github.com/mailchain/mailchain/issues)",
     "title": "Mailchain API",
-    "version": "0.0.1"
+    "version": "~mailchain-version~"
   },
   "basePath": "/api",
   "paths": {
@@ -71,6 +85,24 @@ func spec() string {
           },
           "422": {
             "$ref": "#/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/envelope": {
+      "get": {
+        "description": "Get envelope\nThis method returns the available envelope types",
+        "tags": [
+          "Envelope"
+        ],
+        "summary": "Get Mailchain envelope",
+        "operationId": "GetEnvelope",
+        "responses": {
+          "200": {
+            "description": "GetEnvelopeResponseBody",
+            "schema": {
+              "$ref": "#/definitions/GetEnvelopeResponseBody"
+            }
           }
         }
       }
@@ -133,7 +165,7 @@ func spec() string {
         }
       },
       "post": {
-        "description": "Securely send message on the protocol and network specified in the query string to the address.\nOnly the private key holder for the recipient address can decrypted any encrypted contents.\n\nCreate mailchain message\nEncrypt content with public key\nStore message\nEncrypt location\nStore encrypted location on the blockchain.",
+        "description": "Securely send message on the protocol and network specified in the query string to the address.\nOnly the private key holder for the recipient address can decrypt any encrypted contents.\n\nCreate mailchain message\nEncrypt content with public key\nStore message\nEncrypt location\nStore encrypted location on the blockchain.",
         "tags": [
           "Send"
         ],
@@ -491,6 +523,29 @@ func spec() string {
     }
   },
   "definitions": {
+    "GetEnvelopeResponseBody": {
+      "description": "GetEnvelopeResponseBody response",
+      "type": "object",
+      "required": [
+        "type",
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "description": "The envelope description",
+          "type": "string",
+          "x-go-name": "Description",
+          "example": "Private Message Stored with MLI"
+        },
+        "type": {
+          "description": "The envelope type",
+          "type": "string",
+          "x-go-name": "Type",
+          "example": "0x01"
+        }
+      },
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+    },
     "GetMessagesResponseHeaders": {
       "type": "object",
       "properties": {
@@ -542,6 +597,18 @@ func spec() string {
     "GetMessagesResponseMessage": {
       "type": "object",
       "properties": {
+        "block-id": {
+          "description": "Transaction's block number",
+          "type": "string",
+          "x-go-name": "BlockID",
+          "readOnly": true
+        },
+        "block-id-encoding": {
+          "description": "Transaction's block number encoding type used by the specific protocol",
+          "type": "string",
+          "x-go-name": "BlockIDEncoding",
+          "readOnly": true
+        },
         "body": {
           "description": "Body of the mail message",
           "type": "string",
@@ -575,13 +642,24 @@ func spec() string {
           "x-go-name": "Subject",
           "readOnly": true,
           "example": "Hello world"
+        },
+        "transaction-hash": {
+          "description": "Transaction's hash",
+          "type": "string",
+          "x-go-name": "TransactionHash",
+          "readOnly": true
+        },
+        "transaction-hash-encoding": {
+          "description": "Transaction's hash encoding type used by the specific protocol",
+          "type": "string",
+          "x-go-name": "TransactionHashEncoding",
+          "readOnly": true
         }
       },
       "x-go-name": "getMessage",
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
     "GetProtocolsProtocol": {
-      "description": "GetProtocolsProtocol body",
       "type": "object",
       "properties": {
         "name": {
@@ -593,7 +671,7 @@ func spec() string {
           "description": "in: body",
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/Network"
           },
           "x-go-name": "Networks"
         }
@@ -605,7 +683,8 @@ func spec() string {
       "type": "object",
       "required": [
         "public_key",
-        "public_key_encoding"
+        "public_key_encoding",
+        "supported_encryption_types"
       ],
       "properties": {
         "public_key": {
@@ -619,6 +698,19 @@ func spec() string {
           "type": "string",
           "x-go-name": "PublicKeyEncoding",
           "example": "hex/0x-prefix"
+        },
+        "supported_encryption_types": {
+          "description": "Supported encryption methods for public keys.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "SupportedEncryptionTypes",
+          "example": [
+            "aes256cbc",
+            "nacl",
+            "noop"
+          ]
         }
       },
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
@@ -714,6 +806,20 @@ func spec() string {
       },
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
     },
+    "Network": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "x-go-name": "ID"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        }
+      },
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+    },
     "PostMessagesResponseHeaders": {
       "description": "PostHeaders body",
       "type": "object",
@@ -780,9 +886,39 @@ func spec() string {
       "description": "PostRequestBody body",
       "type": "object",
       "required": [
-        "message"
+        "message",
+        "envelope",
+        "encryption-method-name"
       ],
       "properties": {
+        "content-type": {
+          "description": "Message content-type provided by the client\nrequired: false (default text/plain; charset=\\\"UTF-8\\\")",
+          "type": "string",
+          "enum": [
+            "'text/plain; charset=\\\"UTF-8\\\"'",
+            " 'text/html; charset=\\\"UTF-8\\\"'"
+          ],
+          "x-go-name": "ContentType"
+        },
+        "encryption-method-name": {
+          "description": "Encryption method name",
+          "type": "string",
+          "enum": [
+            "aes256cbc",
+            " nacl",
+            " noop"
+          ],
+          "x-go-name": "EncryptionName"
+        },
+        "envelope": {
+          "description": "Envelope that should be used",
+          "type": "string",
+          "enum": [
+            "0x01",
+            " 0x50"
+          ],
+          "x-go-name": "Envelope"
+        },
         "message": {
           "$ref": "#/definitions/PostMessagesResponseMessage"
         }
@@ -798,6 +934,15 @@ func spec() string {
         "type": "array",
         "items": {
           "type": "string"
+        }
+      }
+    },
+    "GetEnvelopeResponse": {
+      "description": "GetEnvelopeResponse envelope response",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/GetEnvelopeResponseBody"
         }
       }
     },

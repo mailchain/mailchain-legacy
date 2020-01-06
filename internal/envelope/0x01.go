@@ -20,14 +20,13 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/pkg/errors"
 )
 
 // NewZeroX01 creates a new envelope of type ZeroX01.
 // ZeroX01 envelope allows sending private messages with the minimal bytes by using `Uint64Bytes`.
-func NewZeroX01(encrypter cipher.Encrypter, pubkey crypto.PublicKey, opts *CreateOpts) (*ZeroX01, error) {
+func NewZeroX01(encrypter cipher.Encrypter, opts *CreateOpts) (*ZeroX01, error) {
 	if opts.Location == 0 {
 		return nil, errors.Errorf("location must be set")
 	}
@@ -48,7 +47,7 @@ func NewZeroX01(encrypter cipher.Encrypter, pubkey crypto.PublicKey, opts *Creat
 
 	locHash := NewUInt64Bytes(opts.Location, opts.DecryptedHash)
 
-	enc, err := encrypter.Encrypt(pubkey, cipher.PlainContent(locHash))
+	enc, err := encrypter.Encrypt(cipher.PlainContent(locHash))
 	if err != nil {
 		return nil, err
 	}

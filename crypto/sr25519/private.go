@@ -1,6 +1,9 @@
 package sr25519
 
 import (
+	"crypto/ed25519"
+	"io"
+
 	"github.com/developerfred/go-schnorrkel"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/pkg/errors"
@@ -14,6 +17,16 @@ const (
 
 // SigningContext sr25519
 var SigningContext = []byte("substrate") //nolint gochecknoglobals
+
+func GenerateKey(rand io.Reader) (*PrivateKey, error) {
+	_, pPrivKey, err := ed25519.GenerateKey(rand)
+	if err != nil {
+		return nil, err
+	}
+
+	return PrivateKeyFromBytes(pPrivKey)
+
+}
 
 // PrivateKey sr25519
 type PrivateKey struct {

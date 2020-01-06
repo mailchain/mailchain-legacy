@@ -8,6 +8,8 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/ed25519"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
+	"github.com/mailchain/mailchain/crypto/sr25519"
+	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/stretchr/testify/assert"
@@ -93,6 +95,42 @@ func Test_SharedSecretEndToEnd(t *testing.T) {
 					return kx
 				}(),
 				ed25519test.CharlottePrivateKey,
+			},
+		},
+		{
+			"sr25519-random",
+			args{
+				func() cipher.KeyExchange {
+					kx, _ := NewSR25519(rand.Reader)
+					return kx
+				}(),
+				func() crypto.PrivateKey {
+					pk, err := ed25519.GenerateKey(rand.Reader)
+					if err != nil {
+						assert.FailNow("sr25519.GenerateKey error = %v", err)
+					}
+					return pk
+				}(),
+			},
+		},
+		{
+			"sr25519-sofia",
+			args{
+				func() cipher.KeyExchange {
+					kx, _ := NewED25519(rand.Reader)
+					return kx
+				}(),
+				sr25519test.SofiaPrivateKey,
+			},
+		},
+		{
+			"sr25519-charlotte",
+			args{
+				func() cipher.KeyExchange {
+					kx, _ := NewSR25519(rand.Reader)
+					return kx
+				}(),
+				sr25519test.CharlottePrivateKey,
 			},
 		},
 	}

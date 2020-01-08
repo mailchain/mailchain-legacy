@@ -27,8 +27,11 @@ import (
 )
 
 // NewDecrypter create a new decrypter attaching the private key to it
-func NewDecrypter(privateKey crypto.PrivateKey) Decrypter {
-	return Decrypter{privateKey: privateKey}
+func NewDecrypter(privateKey crypto.PrivateKey) (*Decrypter, error) {
+	if err := validatePrivateKeyType(privateKey); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &Decrypter{privateKey: privateKey}, nil
 }
 
 // Decrypter will decrypt data using AES256CBC method
@@ -100,4 +103,11 @@ func decryptCBC(key, iv, ciphertext []byte) ([]byte, error) {
 	copy(ret, plaintext)
 
 	return ret, nil
+}
+
+func validatePrivateKeyType(privateKey crypto.PrivateKey) error {
+	if privateKey.Kind() != crypto.SECP256K1 {
+		return errors.New("invalid private key type for aes256cbc decryption")
+	}
+	return nil
 }

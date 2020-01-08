@@ -31,6 +31,7 @@ func NewDecrypter(privateKey crypto.PrivateKey) (*Decrypter, error) {
 	if err := validatePrivateKeyType(privateKey); err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	return &Decrypter{privateKey: privateKey}, nil
 }
 
@@ -109,5 +110,6 @@ func validatePrivateKeyType(privateKey crypto.PrivateKey) error {
 	if privateKey.Kind() != crypto.SECP256K1 {
 		return errors.New("invalid private key type for aes256cbc decryption")
 	}
+
 	return nil
 }

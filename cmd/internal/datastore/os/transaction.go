@@ -45,6 +45,7 @@ func (s RawTransactionStore) PutRawTransaction(ctx context.Context, protocol, ne
 
 	const filePerm = 0700
 	err := afero.WriteFile(s.fs, fileName, rawTransaction, filePerm)
+
 	if err != nil {
 		return err
 	}

@@ -21,19 +21,19 @@ type RawTransactionStore struct {
 }
 
 type rawTransaction struct {
-	protocol string
-	network  string
-	hash     []byte
-	tx       interface{}
+	Protocol string      `json:"protocol"`
+	Network  string      `json:"network"`
+	Hash     []byte      `json:"hash"`
+	Tx       interface{} `json:"transaction"`
 }
 
 // PutRawTransaction writes the raw transaction to the file system
 func (s RawTransactionStore) PutRawTransaction(ctx context.Context, protocol, network string, hash []byte, tx interface{}) error {
 	rawTransactionJSON := rawTransaction{
-		protocol: protocol,
-		network:  network,
-		hash:     hash,
-		tx:       tx,
+		Protocol: protocol,
+		Network:  network,
+		Hash:     hash,
+		Tx:       tx,
 	}
 
 	// This cannot fail here, as the only possible failures would be:
@@ -43,7 +43,8 @@ func (s RawTransactionStore) PutRawTransaction(ctx context.Context, protocol, ne
 
 	fileName := fmt.Sprintf("%s.json", encoding.EncodeHex(rawTransaction))
 
-	err := afero.WriteFile(s.fs, fileName, rawTransaction, 0700)
+	const filePerm = 0700
+	err := afero.WriteFile(s.fs, fileName, rawTransaction, filePerm)
 	if err != nil {
 		return err
 	}

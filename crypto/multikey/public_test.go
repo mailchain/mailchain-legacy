@@ -67,7 +67,7 @@ func TestPublicKeyFromBytes(t *testing.T) {
 			"err",
 			args{
 				"unknown",
-				encodingtest.MustDecodeHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F"),
+				secp256k1test.SofiaPublicKey.Bytes(),
 			},
 			nil,
 			true,

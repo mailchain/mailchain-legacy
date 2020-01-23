@@ -72,7 +72,7 @@ func TestPublicKeyFromBytes(t *testing.T) {
 			args{
 				sofiaPublicKeyBytes,
 			},
-			sofiaPublicKey,
+			&sofiaPublicKey,
 			false,
 		},
 		{
@@ -80,7 +80,7 @@ func TestPublicKeyFromBytes(t *testing.T) {
 			args{
 				charlottePublicKeyBytes,
 			},
-			charlottePublicKey,
+			&charlottePublicKey,
 			false,
 		},
 		{

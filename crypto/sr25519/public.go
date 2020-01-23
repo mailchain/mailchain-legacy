@@ -3,31 +3,17 @@ package sr25519
 import (
 	"errors"
 
-	"github.com/developerfred/go-schnorrkel"
+	"github.com/gtank/ristretto255"
 	"github.com/mailchain/mailchain/crypto"
 )
 
 const (
-	publicKeySize   = 32
-	signatureLength = 64
+	publicKeySize = 32
 )
 
-// PublicKey is a interface
+// PublicKey based on the sr25519 curve
 type PublicKey struct {
 	key []byte
-}
-
-func (pk PublicKey) generate() (*schnorrkel.PublicKey, error) {
-	if pk.key == nil {
-		return nil, errors.New("cannot create public key: input is not 32 bytes")
-	}
-
-	buf := [32]byte{}
-	copy(buf[:], pk.key)
-
-	public := schnorrkel.NewPublicKey(buf)
-
-	return &public, nil
 }
 
 // Bytes return Publickey Bytes
@@ -40,41 +26,40 @@ func (pk PublicKey) Kind() string {
 	return crypto.SR25519
 }
 
-func newPublicKey(b []byte) PublicKey { //nolint
-	return PublicKey{key: b}
-}
-
 // Verify uses the sr25519 signature algorithm to verify that the message was signed by
 // this public key; it returns true if this key created the signature for the message,
 // false otherwise
 func (pk PublicKey) Verify(message, sig []byte) bool {
-	b := [signatureLength]byte{}
-	copy(b[:], sig)
-
-	s := &schnorrkel.Signature{}
-
-	err := s.Decode(b)
-	if err != nil {
+	signature := signature{}
+	if err := signature.Decode(sig); err != nil {
 		return false
 	}
 
-	signingContext := schnorrkel.NewSigningContext(SigningContext, message)
+	context := newSigningContext(substrateContext, message)
+	context.AppendMessage([]byte("proto-name"), []byte("Schnorr-sig"))
+	context.AppendMessage([]byte("sign:pk"), pk.key)                      // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L212
+	context.AppendMessage([]byte("sign:R"), signature.R.Encode([]byte{})) // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L213
 
-	pub, err := pk.generate()
-	if err != nil {
+	k := context.challengeScalar([]byte("sign:c")) // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L215
+	// https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L216
+	a := ristretto255.NewElement()
+	if err := a.Decode(pk.key); err != nil {
 		return false
 	}
+	Rp := ristretto255.NewElement()
+	Rp = Rp.ScalarBaseMult(signature.S)
+	// Rp.Encode()
+	ky := a.ScalarMult(k, a)
+	Rp = Rp.Subtract(Rp, ky)
 
-	return pub.Verify(s, signingContext)
+	return Rp.Equal(signature.R) == 1
 }
 
 // PublicKeyFromBytes - Convert byte array to PublicKey
 func PublicKeyFromBytes(keyBytes []byte) (crypto.PublicKey, error) {
 	switch len(keyBytes) {
 	case publicKeySize:
-		pubKey := newPublicKey(keyBytes)
-
-		return pubKey, nil
+		return &PublicKey{key: keyBytes}, nil
 	default:
 		return nil, errors.New("public key must be 32 bytes")
 	}

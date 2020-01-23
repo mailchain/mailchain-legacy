@@ -1,122 +1,84 @@
 package sr25519
 
 import (
-	"crypto/ed25519"
 	"io"
 
-	"github.com/developerfred/go-schnorrkel"
+	"github.com/gtank/ristretto255"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/internal/schnorrkel"
 	"github.com/pkg/errors"
 )
 
 const (
-	privateKeySize   = 64
-	seedSize         = 32
-	privateKeyLength = 32
+	seedSize = 32
 )
 
-// SigningContext sr25519
-var SigningContext = []byte("substrate") //nolint gochecknoglobals
-
 func GenerateKey(rand io.Reader) (*PrivateKey, error) {
-	_, pPrivKey, err := ed25519.GenerateKey(rand)
-	if err != nil {
+	seed := make([]byte, seedSize)
+	if _, err := io.ReadFull(rand, seed); err != nil {
 		return nil, err
 	}
 
-	return PrivateKeyFromBytes(pPrivKey)
-
+	return PrivateKeyFromBytes(seed)
 }
 
-// PrivateKey sr25519
+// PrivateKey based on the sr25519 curve
 type PrivateKey struct {
-	key []byte
-}
-
-func (pk PrivateKey) generate() (*schnorrkel.SecretKey, error) {
-	if pk.key == nil {
-		return &schnorrkel.SecretKey{}, errors.New("invalid key")
-	}
-
-	b := [32]byte{}
-	copy(b[:], pk.key)
-
-	msc, err := schnorrkel.NewMiniSecretKeyFromRaw(b)
-	if err != nil {
-		return nil, err
-	}
-
-	return msc.ExpandEd25519(), nil
+	secretKey schnorrkel.SecretKey
 }
 
 // Bytes returns the byte representation of the private key
-func (pk PrivateKey) Bytes() []byte {
-	return pk.key
+func (pk *PrivateKey) Bytes() []byte {
+	return pk.secretKey.Seed()
 }
 
 // Kind is the type of private key.
-func (pk PrivateKey) Kind() string {
+func (pk *PrivateKey) Kind() string {
 	return crypto.SR25519
 }
 
 // PublicKey return the crypto.PublicKey that is derived from the Privatekey
-func (pk PrivateKey) PublicKey() crypto.PublicKey {
-	if pk.key == nil {
-		return PublicKey{}
+func (pk *PrivateKey) PublicKey() crypto.PublicKey {
+	key := ristretto255.NewScalar()
+	if err := key.Decode(pk.secretKey.Key()); err != nil {
+		return nil
 	}
 
-	msc, _ := pk.generate()
-
-	public, _ := msc.Public()
-	pb := public.Encode()
-
-	return PublicKey{key: pb[:]}
+	return &PublicKey{key: ristretto255.NewElement().ScalarBaseMult(key).Encode([]byte{})}
 }
 
 // Sign uses the PrivateKey to sign the message using the sr25519 signature algorithm
-func (pk PrivateKey) Sign(message []byte) (signature []byte, err error) {
-	if pk.key == nil {
-		return nil, errors.New("cannot create private key: input is not 32 bytes")
-	}
+func (pk *PrivateKey) Sign(message []byte) ([]byte, error) {
+	context := newSigningContext(substrateContext, message)
 
-	priv, _ := pk.generate()
+	context.AppendMessage([]byte("proto-name"), []byte("Schnorr-sig")) // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L173
+	context.AppendMessage([]byte("sign:pk"), pk.PublicKey().Bytes())   // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L174
 
-	signingContext := schnorrkel.NewSigningContext(SigningContext, message)
-
-	sig, err := priv.Sign(signingContext)
+	r, err := witness(pk.secretKey.Nonce()) // witness_scalar Not implemented https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L176
 	if err != nil {
-		return []byte{}, err
+		return nil, err
+	}
+	R := ristretto255.NewElement().ScalarBaseMult(r)            // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L177
+	context.AppendMessage([]byte("sign:R"), R.Encode([]byte{})) // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L179
+
+	k := context.challengeScalar([]byte("sign:c")) // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L181
+	pkScalar := ristretto255.NewScalar()
+	if err := pkScalar.Decode(pk.secretKey.Key()); err != nil {
+		return nil, err
 	}
 
-	enc := sig.Encode()
-
-	return enc[:], nil
-}
-
-func keyFromSeed(in []byte) (*schnorrkel.SecretKey, error) {
-	if len(in) != seedSize {
-		return nil, errors.New("input to sr25519 private key decode is not 32 bytes")
-	}
-
-	b := [privateKeyLength]byte{}
-	copy(b[:], in)
-
-	key := schnorrkel.SecretKey{}
-	err := key.Decode(b)
-
-	return &key, err
+	s := pkScalar.Multiply(pkScalar, k).Add(pkScalar, r) // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L182
+	sig := signature{R: R, S: s}
+	return sig.Encode(), nil
 }
 
 // PrivateKeyFromBytes get a private key from seed []byte
 func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 	switch len(privKey) {
-	case privateKeySize:
-		return &PrivateKey{key: privKey}, nil
 	case seedSize:
-		k, _ := keyFromSeed(privKey)
-		b := k.Encode()
-
-		return &PrivateKey{key: b[:]}, nil
+		seed := [seedSize]byte{}
+		copy(seed[:], privKey)
+		return &PrivateKey{secretKey: schnorrkel.NewSecretKeyED25519(seed)}, nil
 	default:
 		return nil, errors.Errorf("sr25519: bad key length")
 	}

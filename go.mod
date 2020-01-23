@@ -1,8 +1,10 @@
 module github.com/mailchain/mailchain
 
 require (
+	github.com/ChainSafe/go-schnorrkel v0.0.0-20200115165343-aa45d48b5ed6
 	github.com/DATA-DOG/go-sqlmock v1.3.3
 	github.com/Masterminds/squirrel v1.1.0
+	github.com/aead/ecdh v0.2.0
 	github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412
 	github.com/andreburgaud/crypt2go v0.0.0-20170529041511-18fdff33d8fa
 	github.com/apilayer/freegeoip v3.5.0+incompatible // indirect
@@ -20,11 +22,12 @@ require (
 	github.com/gballet/go-libpcsclite v0.0.0-20190607065134-2772fd86a8ff // indirect
 	github.com/gogo/protobuf v1.2.1
 	github.com/golang/mock v1.3.1
-	github.com/golang/protobuf v1.3.2
+	github.com/golang/protobuf v1.3.1
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.1
 	github.com/graph-gophers/graphql-go v0.0.0-20190902214650-641ae197eec7 // indirect
-	github.com/gtank/merlin v0.1.1 // indirect
+	github.com/gtank/merlin v0.1.1-0.20191105220539-8318aed1a79f
+	github.com/gtank/ristretto255 v0.1.2
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/huin/goupnp v1.0.0 // indirect
@@ -62,9 +65,8 @@ require (
 	github.com/urfave/negroni v1.0.0
 	github.com/wealdtech/go-ens v1.0.0
 	github.com/wsddn/go-ecdh v0.0.0-20161211032359-48726bab9208 // indirect
-	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f
-	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
-	golang.org/x/sys v0.0.0-20191220142924-d4481acd189f // indirect
+	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413
+	golang.org/x/lint v0.0.0-20190930215403-16217165b5de // indirect
 	golang.org/x/text v0.3.2 // indirect
 	golang.org/x/tools v0.0.0-20191112005509-a3f652f18032 // indirect
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20180810215634-df19058c872c // indirect

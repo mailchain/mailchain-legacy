@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/rand"
 	"io"
-	"reflect"
 	"testing"
 	"testing/iotest"
 
@@ -52,6 +51,7 @@ func TestGenerateKey(t *testing.T) {
 	}
 }
 func TestPrivateKeyFromBytes(t *testing.T) {
+	assert := assert.New(t)
 	type args struct {
 		pk []byte
 	}
@@ -109,7 +109,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 				t.Errorf("PrivateKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if !assert.Equal(tt.want, got) {
 				t.Errorf("PrivateKeyFromBytes() = %v, want %v", got, tt.want)
 			}
 		})
@@ -144,12 +144,12 @@ func TestPrivateKey_Bytes(t *testing.T) {
 		want []byte
 	}{
 		{
-			"sucess-sofia",
+			"success-sofia",
 			sofiaPrivateKey,
 			sofiaPrivateKeyBytes,
 		},
 		{
-			"sucess-charllotte",
+			"success-charlotte",
 			charlottePrivateKey,
 			charlottePrivateKeyBytes,
 		},
@@ -183,7 +183,7 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pk.PublicKey(); !assert.Equal(tt.want, got) {
+			if got := tt.pk.PublicKey(); !assert.Equal(tt.want.Bytes(), got.Bytes()) {
 				t.Errorf("PrivateKey.PublicKey() = %v, want %v", got, tt.want)
 			}
 		})
@@ -191,7 +191,6 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 }
 
 func TestPrivateKey_Sign(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		name    string
 		pk      PrivateKey
@@ -216,6 +215,7 @@ func TestPrivateKey_Sign(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			assert := assert.New(t)
 			got, err := tt.pk.Sign(tt.msg)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Sign() error = %v, wantErr %v", err, tt.wantErr)

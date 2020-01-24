@@ -25,6 +25,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
+	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
 	"github.com/spf13/afero"
@@ -137,6 +138,26 @@ func TestFileStore_Store(t *testing.T) {
 				},
 			},
 			ed25519test.SofiaPublicKey,
+			false,
+			nil,
+		},
+		{
+			"success-charlotte-sr25519",
+			fields{
+				afero.NewMemMapFs(),
+				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
+				ioutil.Discard,
+			},
+			args{
+				sr25519test.CharlottePrivateKey,
+				multi.OptionsBuilders{
+					Scrypt: []scrypt.DeriveOptionsBuilder{
+						scrypt.DefaultDeriveOptions(),
+						scrypt.WithPassphrase("passphrase"),
+					},
+				},
+			},
+			sr25519test.CharlottePublicKey,
 			false,
 			nil,
 		},

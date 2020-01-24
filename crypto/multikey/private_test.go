@@ -20,6 +20,8 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
+	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
+	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -51,6 +53,15 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 				ed25519test.SofiaPrivateKey.Bytes(),
 			},
 			ed25519test.SofiaPrivateKey,
+			false,
+		},
+		{
+			"sr25519-Charlotte",
+			args{
+				"sr25519",
+				encodingtest.MustDecodeHex("23b063a581fd8e5e847c4e2b9c494247298791530f5293be369e8bf23a45d2bd"),
+			},
+			sr25519test.CharlottePrivateKey,
 			false,
 		},
 		{

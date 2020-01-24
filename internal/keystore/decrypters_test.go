@@ -23,7 +23,6 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher/nacl"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
-	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -56,18 +55,6 @@ func TestDecrypter(t *testing.T) {
 			},
 			func() cipher.Decrypter {
 				m, _ := nacl.NewDecrypter(ed25519test.CharlottePrivateKey)
-				return m
-			}(),
-			false,
-		},
-		{
-			"nacl-sr25519",
-			args{
-				cipher.NACL,
-				sr25519test.CharlottePrivateKey,
-			},
-			func() cipher.Decrypter {
-				m, _ := nacl.NewDecrypter(sr25519test.CharlottePrivateKey)
 				return m
 			}(),
 			false,

@@ -5,9 +5,8 @@ import (
 	"errors"
 	"io"
 
-	"github.com/agl/ed25519/extra25519"
 	"github.com/mailchain/mailchain/crypto"
-	"golang.org/x/crypto/curve25519"
+	"github.com/mailchain/mailchain/crypto/sr25519"
 )
 
 type SR25519 struct {
@@ -39,41 +38,31 @@ func (kx SR25519) SharedSecret(ephemeralKey crypto.PrivateKey, recipientKey cryp
 
 	ephemeralPublicKey, _ := kx.publicKey(ephemeralKey.PublicKey())
 
-	if bytes.Equal(ephemeralPublicKey[:], recipientPublicKey[:]) {
+	if bytes.Equal(ephemeralPublicKey.Bytes(), recipientPublicKey.Bytes()) {
 		return nil, ErrSharedSecretGenerate
 	}
 
-	var secret [32]byte
-
-	curve25519.ScalarMult(&secret, &ephemeralPrivateKey, &recipientPublicKey)
-
-	return secret[:], nil
+	sharedSecret, err := sr25519.ExchangeKeys(ephemeralPrivateKey, recipientPublicKey)
+	if err != nil {
+		return nil, ErrSharedSecretGenerate
+	}
+	return sharedSecret[:], nil
 }
 
-func (kx SR25519) publicKey(pubKey crypto.PublicKey) (key [32]byte, err error) {
+func (kx SR25519) publicKey(pubKey crypto.PublicKey) (*sr25519.PublicKey, error) {
 	switch pk := pubKey.(type) {
 	case *sr25519.PublicKey:
-		var sr25519Key, key [32]byte
-
-		copy(sr25519Key[:], pk.Bytes())
-		extra25519.PublicKeyToCurve25519(&key, &sr25519Key)
-
-		return key, nil
+		return pk, nil
 	default:
-		return [32]byte{}, ErrSharedSecretGenerate
+		return nil, ErrSharedSecretGenerate
 	}
 }
 
-func (kx SR25519) privateKey(privKey crypto.PrivateKey) (key [32]byte, err error) {
+func (kx SR25519) privateKey(privKey crypto.PrivateKey) (*sr25519.PrivateKey, error) {
 	switch pk := privKey.(type) {
 	case *sr25519.PrivateKey:
-		var sr25519Key [64]byte
-
-		copy(sr25519Key[:], pk.Bytes())
-		extra25519.PrivateKeyToCurve25519(&key, &sr25519Key)
-
-		return key, nil
+		return pk, nil
 	default:
-		return [32]byte{}, ErrSharedSecretGenerate
+		return nil, ErrSharedSecretGenerate
 	}
 }

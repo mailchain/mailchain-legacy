@@ -3,6 +3,7 @@ package sr25519
 import (
 	"io"
 
+	"github.com/gtank/merlin"
 	"github.com/gtank/ristretto255"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/internal/schnorrkel"
@@ -82,4 +83,26 @@ func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 	default:
 		return nil, errors.Errorf("sr25519: bad key length")
 	}
+}
+
+func ExchangeKeys(privKey *PrivateKey, pubKey *PublicKey) ([64]byte, error) {
+	// https://github.com/w3f/schnorrkel/tree/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src
+	transcript := merlin.NewTranscript("KEX")
+	transcript.AppendMessage([]byte("ctx"), []byte{})
+	privKey.secretKey.Key()
+
+	a := ristretto255.NewElement()
+	if err := a.Decode(pubKey.key); err != nil {
+		return [64]byte{}, err
+	}
+
+	pkScalar := ristretto255.NewScalar()
+	if err := pkScalar.Decode(privKey.secretKey.Key()); err != nil {
+		return [64]byte{}, err
+	}
+	a.ScalarMult(pkScalar, a)
+	transcript.AppendMessage([]byte{}, a.Encode([]byte{}))
+	sharedSecret := [64]byte{}
+	copy(sharedSecret[:], transcript.ExtractBytes([]byte{}, 64))
+	return sharedSecret, nil
 }

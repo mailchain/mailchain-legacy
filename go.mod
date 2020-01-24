@@ -1,10 +1,8 @@
 module github.com/mailchain/mailchain
 
 require (
-	github.com/ChainSafe/go-schnorrkel v0.0.0-20200115165343-aa45d48b5ed6
 	github.com/DATA-DOG/go-sqlmock v1.3.3
 	github.com/Masterminds/squirrel v1.1.0
-	github.com/aead/ecdh v0.2.0
 	github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412
 	github.com/andreburgaud/crypt2go v0.0.0-20170529041511-18fdff33d8fa
 	github.com/apilayer/freegeoip v3.5.0+incompatible // indirect
@@ -12,7 +10,6 @@ require (
 	github.com/aws/aws-sdk-go v1.19.11
 	github.com/btcsuite/btcd v0.0.0-20190410025418-9bfb2ca0346b // indirect
 	github.com/cespare/cp v1.1.1 // indirect
-	github.com/developerfred/go-schnorrkel v0.0.0-20191215172135-00427f722b5a
 	github.com/dgraph-io/badger/v2 v2.0.0
 	github.com/docker/docker v1.13.1 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect

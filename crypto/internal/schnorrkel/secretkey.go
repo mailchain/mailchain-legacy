@@ -41,14 +41,14 @@ func NewSecretKeyED25519(seed [32]byte) SecretKey {
 
 // https://github.com/w3f/schnorrkel/blob/718678e51006d84c7d8e4b6cde758906172e74f8/src/scalars.rs#L18
 func divideScalarByCofactor(s []byte) []byte {
-	l := len(s) - 1
+	l := len(s) - 1 //nolint: gomnd length-1
 	low := byte(0)
 
 	for i := range s {
-		r := s[l-i] & 0b00000111 // remainder
+		r := s[l-i] & 0b00000111 // //nolint: gomnd remainder
 		s[l-i] >>= 3
 		s[l-i] += low
-		low = r << 5
+		low = r << 5 //nolint: gomnd https://github.com/w3f/schnorrkel/blob/718678e51006d84c7d8e4b6cde758906172e74f8/src/scalars.rs#L34
 	}
 
 	return s

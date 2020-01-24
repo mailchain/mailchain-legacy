@@ -24,9 +24,9 @@ func newSigningContext(context, msg []byte) signingContext {
 }
 
 func (c *signingContext) challengeScalar(label []byte) *ristretto255.Scalar {
-	// form k
 	b := c.ExtractBytes(label, 64)
 	k := ristretto255.NewScalar()
+
 	return k.FromUniformBytes(b)
 }
 
@@ -52,6 +52,7 @@ func (s *signature) Encode() []byte { // https://github.com/w3f/schnorrkel/blob/
 	copy(out[:32], s.R.Encode([]byte{}))
 	copy(out[32:], s.S.Encode([]byte{}))
 	out[63] |= 128
+
 	return out
 }
 
@@ -70,7 +71,7 @@ func (s *signature) Decode(sig []byte) error { // https://github.com/w3f/schnorr
 	}
 
 	sig[63] &= 127
-
 	s.S = ristretto255.NewScalar()
+
 	return s.S.Decode(sig[32:])
 }

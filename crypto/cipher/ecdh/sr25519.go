@@ -46,6 +46,7 @@ func (kx SR25519) SharedSecret(ephemeralKey crypto.PrivateKey, recipientKey cryp
 	if err != nil {
 		return nil, ErrSharedSecretGenerate
 	}
+
 	return sharedSecret[:], nil
 }
 

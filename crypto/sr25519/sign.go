@@ -10,6 +10,9 @@ import (
 )
 
 var substrateContext = []byte("substrate") //nolint gochecknoglobals
+const (
+	signatureSize = 64
+)
 
 type signingContext struct {
 	*merlin.Transcript
@@ -24,7 +27,7 @@ func newSigningContext(context, msg []byte) signingContext {
 }
 
 func (c *signingContext) challengeScalar(label []byte) *ristretto255.Scalar {
-	b := c.ExtractBytes(label, 64)
+	b := c.ExtractBytes(label, signatureSize)
 	k := ristretto255.NewScalar()
 
 	return k.FromUniformBytes(b)
@@ -32,7 +35,7 @@ func (c *signingContext) challengeScalar(label []byte) *ristretto255.Scalar {
 
 func witness(nonce []byte) (*ristretto255.Scalar, error) {
 	_ = nonce
-	b := make([]byte, 64)
+	b := make([]byte, signatureSize)
 
 	_, err := io.ReadFull(rand.Reader, b)
 	if err != nil {
@@ -48,7 +51,7 @@ type signature struct {
 }
 
 func (s *signature) Encode() []byte { // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L91
-	out := make([]byte, 64)
+	out := make([]byte, signatureSize)
 	copy(out[:32], s.R.Encode([]byte{}))
 	copy(out[32:], s.S.Encode([]byte{}))
 	out[63] |= 128
@@ -57,7 +60,7 @@ func (s *signature) Encode() []byte { // https://github.com/w3f/schnorrkel/blob/
 }
 
 func (s *signature) Decode(sig []byte) error { // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L114
-	if len(sig) != 64 {
+	if len(sig) != signatureSize {
 		return errors.New("signature length must be 64")
 	}
 

@@ -59,10 +59,12 @@ func (pk *PrivateKey) Sign(message []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	R := ristretto255.NewElement().ScalarBaseMult(r)            // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L177
 	context.AppendMessage([]byte("sign:R"), R.Encode([]byte{})) // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L179
 
 	k := context.challengeScalar([]byte("sign:c")) // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L181
+
 	pkScalar := ristretto255.NewScalar()
 	if err := pkScalar.Decode(pk.secretKey.Key()); err != nil {
 		return nil, err
@@ -70,6 +72,7 @@ func (pk *PrivateKey) Sign(message []byte) ([]byte, error) {
 
 	s := pkScalar.Multiply(pkScalar, k).Add(pkScalar, r) // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L182
 	sig := signature{R: R, S: s}
+
 	return sig.Encode(), nil
 }
 
@@ -79,6 +82,7 @@ func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 	case seedSize:
 		seed := [seedSize]byte{}
 		copy(seed[:], privKey)
+
 		return &PrivateKey{secretKey: schnorrkel.NewSecretKeyED25519(seed)}, nil
 	default:
 		return nil, errors.Errorf("sr25519: bad key length")
@@ -87,6 +91,7 @@ func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 
 func ExchangeKeys(privKey *PrivateKey, pubKey *PublicKey) ([64]byte, error) {
 	// https://github.com/w3f/schnorrkel/tree/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src
+	sharedSecret := [64]byte{}
 	transcript := merlin.NewTranscript("KEX")
 	transcript.AppendMessage([]byte("ctx"), []byte{})
 	privKey.secretKey.Key()
@@ -100,9 +105,10 @@ func ExchangeKeys(privKey *PrivateKey, pubKey *PublicKey) ([64]byte, error) {
 	if err := pkScalar.Decode(privKey.secretKey.Key()); err != nil {
 		return [64]byte{}, err
 	}
+
 	a.ScalarMult(pkScalar, a)
 	transcript.AppendMessage([]byte{}, a.Encode([]byte{}))
-	sharedSecret := [64]byte{}
 	copy(sharedSecret[:], transcript.ExtractBytes([]byte{}, 64))
+
 	return sharedSecret, nil
 }

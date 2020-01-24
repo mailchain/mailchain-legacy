@@ -31,6 +31,7 @@ func (c *signingContext) challengeScalar(label []byte) *ristretto255.Scalar {
 }
 
 func witness(nonce []byte) (*ristretto255.Scalar, error) {
+	_ = nonce
 	b := make([]byte, 64)
 
 	_, err := io.ReadFull(rand.Reader, b)

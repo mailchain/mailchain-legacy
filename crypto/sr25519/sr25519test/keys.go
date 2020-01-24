@@ -9,13 +9,13 @@ import (
 )
 
 // SofiaPrivateKey sr25519 key for testing purposes. Key is compromised do not use on mainnet's.
-var SofiaPrivateKey crypto.PrivateKey //nolint: gochecknoglobals
+var SofiaPrivateKey crypto.PrivateKey //nolint: gochecknoglobals test key
 // SofiaPublicKey sr25519 key for testing purposes. Key is compromised do not use on mainnet's.
-var SofiaPublicKey crypto.PublicKey //nolint: gochecknoglobals
+var SofiaPublicKey crypto.PublicKey //nolint: gochecknoglobals test key
 // CharlottePrivateKey sr25519 key for testing purposes. Key is compromised do not use on mainnet's.
-var CharlottePrivateKey crypto.PrivateKey //nolint: gochecknoglobals
+var CharlottePrivateKey crypto.PrivateKey //nolint: gochecknoglobals test key
 // CharlottePublicKey sr25519 key for testing purposes. Key is compromised do not use on mainnet's.
-var CharlottePublicKey crypto.PublicKey //nolint: gochecknoglobals
+var CharlottePublicKey crypto.PublicKey //nolint: gochecknoglobals test key
 
 //nolint: gochecknoinits
 func init() {

@@ -46,9 +46,9 @@ func (pk PublicKey) Verify(message, sig []byte) bool {
 	if err := a.Decode(pk.key); err != nil {
 		return false
 	}
+
 	Rp := ristretto255.NewElement()
 	Rp = Rp.ScalarBaseMult(signature.S)
-	// Rp.Encode()
 	ky := a.ScalarMult(k, a)
 	Rp = Rp.Subtract(Rp, ky)
 

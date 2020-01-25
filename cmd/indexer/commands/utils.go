@@ -28,21 +28,21 @@ func sslMode(useSSL bool) string {
 // NewPostgresConnection returns a connection to a postres database.
 // The arguments are parsed from cmd.
 func newPostgresConnection(cmd *cobra.Command) (*sqlx.DB, error) {
-	host, _ := cmd.Flags().GetString("host")
-	port, _ := cmd.Flags().GetInt("port")
-	useSSL, _ := cmd.Flags().GetBool("ssl")
+	host, _ := cmd.Flags().GetString("postgres_host")
+	port, _ := cmd.Flags().GetInt("postgres_port")
+	useSSL, _ := cmd.Flags().GetBool("postgres_ssl")
 
-	user, err := cmd.Flags().GetString("user")
+	user, err := cmd.Flags().GetString("postgres_user")
 	if err != nil {
 		return nil, err
 	}
 
-	psswd, err := cmd.Flags().GetString("password")
+	psswd, err := cmd.Flags().GetString("postgres_password")
 	if err != nil {
 		return nil, err
 	}
 
-	dbname, err := cmd.Flags().GetString("dbname")
+	dbname, err := cmd.Flags().GetString("postgres_name")
 	if err != nil {
 		return nil, err
 	}

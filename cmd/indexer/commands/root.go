@@ -8,16 +8,6 @@ func rootCmd() (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "indexer",
 		Short: "Mailchain indexer",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			conn, err := newPostgresConnection(cmd)
-			if err != nil {
-				return err
-			}
-
-			defer conn.Close()
-
-			panic("implement me!")
-		},
 	}
 
 	dbInit, err := dbUpCmd()
@@ -30,15 +20,16 @@ func rootCmd() (*cobra.Command, error) {
 		return nil, err
 	}
 
+	cmd.AddCommand(ethereumCmd())
 	cmd.AddCommand(dbInit)
 	cmd.AddCommand(dbDestroy)
 
-	cmd.PersistentFlags().String("host", "localhost", "host url")
-	cmd.PersistentFlags().Int("port", 5432, "")
-	cmd.PersistentFlags().String("user", "", "")
-	cmd.PersistentFlags().String("password", "", "")
-	cmd.PersistentFlags().String("dbname", "", "")
-	cmd.PersistentFlags().Bool("ssl", false, "")
+	cmd.PersistentFlags().String("postgres_host", "localhost", "Postgres server host")
+	cmd.PersistentFlags().Int("postgres_port", 5432, "Postgres server port")
+	cmd.PersistentFlags().String("postgres_user", "", "Postgres database user")
+	cmd.PersistentFlags().String("postgres_password", "", "Postgres database password")
+	cmd.PersistentFlags().String("postgres_name", "", "Postgres database name")
+	cmd.PersistentFlags().Bool("postgres_ssl", false, "Use SSL when connecting to Postgres")
 	cmd.PersistentFlags().String("path", "", "path to migration source files")
 
 	return cmd, nil

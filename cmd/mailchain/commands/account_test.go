@@ -24,6 +24,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/keystoretest"
@@ -162,7 +163,7 @@ func Test_accountAddCmd(t *testing.T) {
 					return m
 				}(),
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
-				promptstest.MockRequiredSecret(t, "01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F", nil),
+				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
 			},
 			nil,
 			map[string]string{
@@ -181,7 +182,7 @@ func Test_accountAddCmd(t *testing.T) {
 					return m
 				}(),
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
-				promptstest.MockRequiredSecret(t, "01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F", nil),
+				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
 			},
 			nil,
 			map[string]string{
@@ -198,7 +199,7 @@ func Test_accountAddCmd(t *testing.T) {
 					return m
 				}(),
 				promptstest.MockRequiredSecret(t, "", errors.Errorf("failed")),
-				promptstest.MockRequiredSecret(t, "01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F", nil),
+				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
 			},
 			nil,
 			map[string]string{
@@ -249,7 +250,7 @@ func Test_accountAddCmd(t *testing.T) {
 					return m
 				}(),
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
-				promptstest.MockRequiredSecret(t, "01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F", nil),
+				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
 			},
 			nil,
 			map[string]string{
@@ -266,7 +267,7 @@ func Test_accountAddCmd(t *testing.T) {
 					return m
 				}(),
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
-				promptstest.MockRequiredSecret(t, "01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F", nil),
+				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
 			},
 			nil,
 			map[string]string{

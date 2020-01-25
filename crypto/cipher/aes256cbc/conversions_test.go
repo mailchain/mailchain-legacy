@@ -21,6 +21,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
+	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
 )
 
 func Test_asPrivateECIES(t *testing.T) {
@@ -58,6 +59,14 @@ func Test_asPrivateECIES(t *testing.T) {
 			"err-unsupported",
 			args{
 				ed25519test.SofiaPrivateKey,
+			},
+			true,
+			true,
+		},
+		{
+			"err-unsupported-sr25519",
+			args{
+				sr25519test.SofiaPrivateKey,
 			},
 			true,
 			true,
@@ -113,6 +122,14 @@ func Test_asPublicECIES(t *testing.T) {
 			"err-invalid",
 			args{
 				ed25519test.SofiaPublicKey,
+			},
+			true,
+			true,
+		},
+		{
+			"err-invalid-sr25519",
+			args{
+				sr25519test.CharlottePublicKey,
 			},
 			true,
 			true,

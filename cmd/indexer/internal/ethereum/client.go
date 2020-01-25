@@ -23,3 +23,7 @@ type Client struct {
 func (c *Client) Get(ctx context.Context, blockNo uint64) (blk interface{}, err error) {
 	return c.client.BlockByNumber(ctx, big.NewInt(int64(blockNo)))
 }
+
+func (c *Client) NetworkID(ctx context.Context) (*big.Int, error) {
+	return c.client.NetworkID(ctx)
+}

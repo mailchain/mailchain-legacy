@@ -107,9 +107,10 @@ func decryptCBC(key, iv, ciphertext []byte) ([]byte, error) {
 }
 
 func validatePrivateKeyType(privateKey crypto.PrivateKey) error {
-	if privateKey.Kind() != crypto.SECP256K1 {
+	switch privateKey.(type) {
+	case *secp256k1.PrivateKey:
+		return nil
+	default:
 		return errors.New("invalid private key type for aes256cbc decryption")
 	}
-
-	return nil
 }

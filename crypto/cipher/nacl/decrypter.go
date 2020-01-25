@@ -39,7 +39,7 @@ func (d Decrypter) Decrypt(data cipher.EncryptedContent) (cipher.PlainContent, e
 
 func validatePrivateKeyType(pk crypto.PrivateKey) ([]byte, error) {
 	switch pk := pk.(type) {
-	case ed25519.PrivateKey, *ed25519.PrivateKey:
+	case *ed25519.PrivateKey:
 		return pk.Bytes()[32:], nil
 	default:
 		return nil, errors.Errorf("invalid private key type for nacl decryption")

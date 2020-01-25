@@ -4,8 +4,9 @@ import (
 	"crypto/rand"
 	"testing"
 
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
+
+	"github.com/mailchain/mailchain/crypto"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -46,6 +47,20 @@ func TestEncryptDecrypt(t *testing.T) {
 			[]byte("Hi Charlotte, this is a little bit of a longer message to make sure there are no problems"),
 			nil,
 		},
+		// {
+		// 	"to-charlotte-medium-text-sr25519",
+		// 	sr25519test.CharlottePublicKey,
+		// 	sr25519test.CharlottePrivateKey,
+		// 	[]byte("Hi Charlotte, this is a little bit of a longer message to make sure there are no problems"),
+		// 	nil,
+		// },
+		// {
+		// 	"to-sofia-medium-text-sr25519",
+		// 	sr25519test.SofiaPublicKey,
+		// 	sr25519test.SofiaPrivateKey,
+		// 	[]byte("Hi Charlotte, this is a little bit of a longer message to make sure there are no problems"),
+		// 	nil,
+		// },
 	}
 
 	for _, tc := range cases {

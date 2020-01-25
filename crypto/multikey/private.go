@@ -18,6 +18,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/sr25519"
 	"github.com/pkg/errors"
 )
 
@@ -31,6 +32,8 @@ func PrivateKeyFromBytes(keyType string, data []byte) (crypto.PrivateKey, error)
 		return secp256k1.PrivateKeyFromBytes(data)
 	case crypto.ED25519:
 		return ed25519.PrivateKeyFromBytes(data)
+	case crypto.SR25519:
+		return sr25519.PrivateKeyFromBytes(data)
 	default:
 		return nil, errors.Errorf("unsupported key type: %q", keyType)
 	}

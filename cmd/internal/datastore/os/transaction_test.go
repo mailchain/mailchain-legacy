@@ -77,7 +77,7 @@ func TestRawTransactionStore_PutRawTransaction(t *testing.T) {
 				txn,
 			},
 			true,
-			nil,
+			[]string{},
 		},
 	}
 	for _, tt := range tests {

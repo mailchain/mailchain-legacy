@@ -44,5 +44,6 @@ func (s RawTransactionStore) PutRawTransaction(ctx context.Context, protocol, ne
 	fileName := fmt.Sprintf("%s.json", encoding.EncodeHex(hash))
 
 	const filePerm = 0700
+
 	return afero.WriteFile(s.fs, fileName, rawTransaction, filePerm)
 }

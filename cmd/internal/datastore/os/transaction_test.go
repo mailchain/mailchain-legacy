@@ -6,14 +6,18 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/cmd/internal/datastore"
+	"github.com/mailchain/mailchain/cmd/internal/datastore/datastoretest"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/address/addresstest"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRawTransactionStore_PutRawTransaction(t *testing.T) {
+
+	assert := assert.New(t)
 
 	var txHash = encodingtest.MustDecodeHexZeroX("0x98beb27135aa0a25650557005ad962919d6a278c4b3dde7f4f6a3a1e65aa746c")
 	var blockHash = encodingtest.MustDecodeHexZeroX("0x373d339e45a701447367d7b9c7cef84aab79c2b2714271b908cda0ab3ad0849b")
@@ -39,10 +43,11 @@ func TestRawTransactionStore_PutRawTransaction(t *testing.T) {
 		tx       interface{}
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
+		name      string
+		fields    fields
+		args      args
+		wantErr   bool
+		wantFiles []string
 	}{
 		{
 			"success",
@@ -57,6 +62,7 @@ func TestRawTransactionStore_PutRawTransaction(t *testing.T) {
 				txn,
 			},
 			false,
+			[]string{"98beb27135aa0a25650557005ad962919d6a278c4b3dde7f4f6a3a1e65aa746c.json"},
 		},
 		{
 			"err-read-only-dir",
@@ -71,6 +77,7 @@ func TestRawTransactionStore_PutRawTransaction(t *testing.T) {
 				txn,
 			},
 			true,
+			nil,
 		},
 	}
 	for _, tt := range tests {
@@ -78,6 +85,8 @@ func TestRawTransactionStore_PutRawTransaction(t *testing.T) {
 			s := RawTransactionStore{fs: tt.fields.fs}
 			if err := s.PutRawTransaction(tt.args.ctx, tt.args.protocol, tt.args.network, tt.args.hash, tt.args.tx); (err != nil) != tt.wantErr {
 				t.Errorf("RawTransactionStore.PutRawTransaction() error = %v, wantErr %v", err, tt.wantErr)
+			} else {
+				assert.Equal(tt.wantFiles, datastoretest.ReadDir(tt.fields.fs, "/"))
 			}
 		})
 	}

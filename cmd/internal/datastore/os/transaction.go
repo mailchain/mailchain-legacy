@@ -41,14 +41,8 @@ func (s RawTransactionStore) PutRawTransaction(ctx context.Context, protocol, ne
 	// passing an invalid value like math.Inf
 	rawTransaction, _ := json.Marshal(rawTransactionJSON)
 
-	fileName := fmt.Sprintf("%s.json", encoding.EncodeHex(rawTransaction))
+	fileName := fmt.Sprintf("%s.json", encoding.EncodeHex(hash))
 
 	const filePerm = 0700
-	err := afero.WriteFile(s.fs, fileName, rawTransaction, filePerm)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return afero.WriteFile(s.fs, fileName, rawTransaction, filePerm)
 }

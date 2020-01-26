@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func dbUpCmd() (*cobra.Command, error) {
+func dbUpCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:              "up",
 		Short:            "init postgres database for mailchain indexer",
@@ -30,7 +30,7 @@ func dbUpCmd() (*cobra.Command, error) {
 				path.Join(p, syncUp),
 			}
 
-			if err = execSQLFiles(conn, files...); err != nil {
+			if err := execSQLFiles(conn, files...); err != nil {
 				return err
 			}
 
@@ -39,5 +39,5 @@ func dbUpCmd() (*cobra.Command, error) {
 		},
 	}
 
-	return cmd, nil
+	return cmd
 }

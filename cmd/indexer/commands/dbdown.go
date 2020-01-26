@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func dbDownCmd() (*cobra.Command, error) {
+func dbDownCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:              "down",
 		Short:            "destroy postgres database for mailchain indexer",
@@ -30,7 +30,7 @@ func dbDownCmd() (*cobra.Command, error) {
 				path.Join(p, syncDown),
 			}
 
-			if err = execSQLFiles(conn, files...); err != nil {
+			if err := execSQLFiles(conn, files...); err != nil {
 				return err
 			}
 
@@ -39,5 +39,5 @@ func dbDownCmd() (*cobra.Command, error) {
 		},
 	}
 
-	return cmd, nil
+	return cmd
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	eth "github.com/mailchain/mailchain/cmd/indexer/internal/ethereum"
 	"github.com/mailchain/mailchain/cmd/indexer/internal/processor"
+	"github.com/mailchain/mailchain/cmd/internal/datastore/os"
 	"github.com/mailchain/mailchain/cmd/internal/datastore/pq"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
@@ -23,10 +24,12 @@ func ethereumCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			network, _ := cmd.Flags().GetString("network")
 
-			addressRPC, _ := cmd.Flags().GetString("rpc_address")
+			addressRPC, _ := cmd.Flags().GetString("rpc-address")
 			if addressRPC == "" {
-				return errors.New("rpc_address must not be empty")
+				return errors.New("rpc-address must not be empty")
 			}
+
+			rawStorePath, _ := cmd.Flags().GetString("raw-store-path")
 
 			conn, err := newPostgresConnection(cmd)
 			if err != nil {
@@ -35,7 +38,7 @@ func ethereumCmd() *cobra.Command {
 
 			defer conn.Close()
 
-			seqProcessor, err := createEthereumProcessor(conn, network, addressRPC)
+			seqProcessor, err := createEthereumProcessor(conn, network, rawStorePath, addressRPC)
 			if err != nil {
 				return err
 			}
@@ -52,12 +55,12 @@ func ethereumCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().String("network", ethereum.Mainnet, "Network to run against")
-	cmd.Flags().String("rpc_address", "", "Ethereum RPC-JSON address")
+	cmd.Flags().String("rpc-address", "", "Ethereum RPC-JSON address")
 
 	return cmd
 }
 
-func createEthereumProcessor(conn *sqlx.DB, network, addressRPC string) (*processor.Sequential, error) {
+func createEthereumProcessor(conn *sqlx.DB, network, rawStorePath, addressRPC string) (*processor.Sequential, error) {
 	ethClient, err := eth.NewRPC(addressRPC)
 	if err != nil {
 		return nil, err
@@ -84,12 +87,14 @@ func createEthereumProcessor(conn *sqlx.DB, network, addressRPC string) (*proces
 	// 	return err
 	// }
 
-	// TODO: rawStore does not exist yet but there is a PR https://github.com/mailchain/mailchain/pull/517
-	// os.NewRawTransactionStore()
+	rawStore, err := os.NewRawTransactionStore(rawStorePath)
+	if err != nil {
+		return nil, err
+	}
 
 	processorTransaction := eth.NewTransactionProcessor(
 		nil, // TODO: transactionStore,
-		nil, // TODO: rawStore,
+		rawStore,
 		pubKeyStore,
 		networkID,
 	)

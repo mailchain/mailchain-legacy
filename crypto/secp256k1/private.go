@@ -17,6 +17,7 @@ package secp256k1
 import (
 	"crypto/ecdsa"
 	"crypto/sha256"
+	"io"
 
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
@@ -74,4 +75,13 @@ func PrivateKeyFromBytes(pk []byte) (*PrivateKey, error) {
 	}
 
 	return &PrivateKey{ecdsa: *rpk}, nil
+}
+
+func GenerateKey(rand io.Reader) (*PrivateKey, error) {
+	pk, err := ecdsa.GenerateKey(ethcrypto.S256(), rand)
+	if err != nil {
+		return nil, err
+	}
+
+	return &PrivateKey{ecdsa: *pk}, nil
 }

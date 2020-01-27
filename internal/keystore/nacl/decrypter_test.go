@@ -70,7 +70,7 @@ func TestFileStore_GetDecrypter(t *testing.T) {
 					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("test")},
 				},
 			},
-			aes256cbc.Decrypter{},
+			&aes256cbc.Decrypter{},
 			false,
 		},
 		{

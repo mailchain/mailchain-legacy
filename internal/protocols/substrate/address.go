@@ -17,6 +17,7 @@ package substrate
 import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519"
+	"github.com/mailchain/mailchain/crypto/sr25519"
 	"github.com/minio/blake2b-simd"
 	"github.com/pkg/errors"
 )
@@ -41,6 +42,8 @@ func SS58AddressFormat(network string, pubKey crypto.PublicKey) ([]byte, error) 
 func validPublicKeyType(pubKey crypto.PublicKey) error {
 	switch pubKey.(type) {
 	case ed25519.PublicKey, *ed25519.PublicKey:
+		return nil
+	case sr25519.PublicKey, *sr25519.PublicKey:
 		return nil
 	default:
 		return errors.Errorf("invalid public key type: %T", pubKey)

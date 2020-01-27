@@ -16,11 +16,8 @@ package secp256k1
 
 import (
 	"crypto/ecdsa"
-	"log"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/mailchain/mailchain/encoding"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -161,14 +158,7 @@ func TestPublicKey_Kind(t *testing.T) {
 		{
 			"charlotte",
 			fields{
-				func() ecdsa.PublicKey {
-					b, _ := encoding.DecodeHex("01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A415943F")
-					key, err := crypto.ToECDSA(b)
-					if err != nil {
-						log.Fatal(err)
-					}
-					return key.PublicKey
-				}(),
+				ecdsaPublicKeyCharlotte(),
 			},
 			"secp256k1",
 		},
@@ -249,6 +239,49 @@ func TestPublicKey_Verify(t *testing.T) {
 			got := tt.pk.Verify(tt.message, tt.sig)
 			if !assert.Equal(tt.want, got) {
 				t.Errorf("PublicKey.Verify() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPublicKey_ECDSA(t *testing.T) {
+	assert := assert.New(t)
+	type fields struct {
+		ecdsa ecdsa.PublicKey
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   *ecdsa.PublicKey
+	}{
+		{
+			"success-charlotte",
+			fields{
+				ecdsaPublicKeyCharlotte(),
+			},
+			func() *ecdsa.PublicKey {
+				k := ecdsaPublicKeyCharlotte()
+				return &k
+			}(),
+		},
+		{
+			"success-sofia",
+			fields{
+				ecdsaPublicKeySofia(),
+			},
+			func() *ecdsa.PublicKey {
+				k := ecdsaPublicKeySofia()
+				return &k
+			}(),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			pk := PublicKey{
+				ecdsa: tt.fields.ecdsa,
+			}
+			if got := pk.ECDSA(); !assert.Equal(tt.want, got) {
+				t.Errorf("PublicKey.ECDSA() = %v, want %v", got, tt.want)
 			}
 		})
 	}

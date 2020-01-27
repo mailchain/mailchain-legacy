@@ -44,7 +44,10 @@ func TestDecrypter(t *testing.T) {
 				cipher.AES256CBC,
 				secp256k1test.CharlottePrivateKey,
 			},
-			aes256cbc.NewDecrypter(secp256k1test.CharlottePrivateKey),
+			func() cipher.Decrypter {
+				m, _ := aes256cbc.NewDecrypter(secp256k1test.CharlottePrivateKey)
+				return m
+			}(),
 			false,
 		},
 		{
@@ -68,12 +71,33 @@ func TestDecrypter(t *testing.T) {
 			nil,
 			true,
 		},
+		{
+			"err due to wrong private key type in nacl",
+			args{
+				cipher.NACL,
+				secp256k1test.CharlottePrivateKey,
+			},
+			nil,
+			true,
+		},
+		{
+			"err due to wrong private key type in aes256cbc",
+			args{
+				cipher.AES256CBC,
+				ed25519test.CharlottePrivateKey,
+			},
+			nil,
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := Decrypter(tt.args.cipherType, tt.args.pk)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Decrypter() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if err != nil {
 				return
 			}
 			if !assert.Equal(tt.want, got) {

@@ -18,6 +18,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/sr25519"
 	"github.com/pkg/errors"
 )
 
@@ -28,6 +29,8 @@ func PublicKeyFromBytes(keyType string, data []byte) (crypto.PublicKey, error) {
 		return secp256k1.PublicKeyFromBytes(data)
 	case crypto.ED25519:
 		return ed25519.PublicKeyFromBytes(data)
+	case crypto.SR25519:
+		return sr25519.PublicKeyFromBytes(data)
 	default:
 		return nil, errors.Errorf("unsupported curve type")
 	}

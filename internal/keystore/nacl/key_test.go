@@ -169,6 +169,22 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 			ed25519test.SofiaPrivateKey,
 			false,
 		},
+		//{
+		//	"success-charlotte-sr25519",
+		//	fields{
+		//		nil,
+		//		nil,
+		//		ioutil.Discard,
+		//	},
+		//	args{
+		//		&encryptedKeyCharlotteSR25519,
+		//		multi.OptionsBuilders{
+		//			Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("sofia-ed25519")},
+		//		},
+		//	},
+		//	sr25519test.SofiaPrivateKey,
+		//	false,
+		//},
 		{
 			"err-private-key-bytes",
 			fields{

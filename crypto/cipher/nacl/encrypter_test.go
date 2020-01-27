@@ -123,7 +123,7 @@ func TestEncrypter_Encrypt(t *testing.T) {
 			false,
 		},
 		{
-			"success-sofia",
+			"err-key-type",
 			fields{
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
 				ed25519test.SofiaPublicKey,

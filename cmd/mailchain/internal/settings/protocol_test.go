@@ -6,8 +6,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values/valuestest"
+	"github.com/mailchain/mailchain/cmd/internal/settings/values"
+	"github.com/mailchain/mailchain/cmd/internal/settings/values/valuestest"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/stretchr/testify/assert"

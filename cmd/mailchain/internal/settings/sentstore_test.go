@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values/valuestest"
+	"github.com/mailchain/mailchain/cmd/internal/settings/values"
+	"github.com/mailchain/mailchain/cmd/internal/settings/values/valuestest"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/s3store"
 	"github.com/stretchr/testify/assert"

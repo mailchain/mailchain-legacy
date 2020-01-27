@@ -4,8 +4,8 @@ import (
 	"io"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
+	"github.com/mailchain/mailchain/cmd/internal/settings/output"
+	"github.com/mailchain/mailchain/cmd/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"

@@ -2,9 +2,9 @@ package substraterpc
 
 import (
 	"context"
-	"fmt"
-	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
-	"github.com/centrifuge/go-substrate-rpc-client/signature"
+	// "fmt"
+	// gsrpc "github.com/centrifuge/go-substrate-rpc-client"
+	// "github.com/centrifuge/go-substrate-rpc-client/signature"
 	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
@@ -80,7 +80,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 					m.EXPECT().GetRuntimeVersion(types.Hash{}).Return(rv, nil)
 					nonce := uint32(0)
 					m.EXPECT().GetNonce(context.Background(), protocols.Substrate, substrate.EdgewareTestnet, from, metadata).Return(nonce, nil)
-					m.EXPECT().CreateSignatureOptions(types.Hash{}, types.Hash{}, false, nonce, *rv, uint32(0))
+					m.EXPECT().CreateSignatureOptions(types.Hash{}, types.Hash{}, false, *rv, nonce, uint32(0))
 					m.EXPECT().SubmitExtrinsic(types.NewExtrinsic(types.Call{})).Return(types.Hash{}, nil)
 					return m
 				}(),
@@ -389,7 +389,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 					m.EXPECT().GetRuntimeVersion(types.Hash{}).Return(rv, nil)
 					nonce := uint32(0)
 					m.EXPECT().GetNonce(context.Background(), protocols.Substrate, substrate.EdgewareTestnet, from, metadata).Return(nonce, nil)
-					m.EXPECT().CreateSignatureOptions(types.Hash{}, types.Hash{}, false, nonce, *rv, uint32(0))
+					m.EXPECT().CreateSignatureOptions(types.Hash{}, types.Hash{}, false, *rv, nonce, uint32(0))
 					return m
 				}(),
 			},
@@ -453,7 +453,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 					m.EXPECT().GetRuntimeVersion(types.Hash{}).Return(rv, nil)
 					nonce := uint32(0)
 					m.EXPECT().GetNonce(context.Background(), protocols.Substrate, substrate.EdgewareTestnet, from, metadata).Return(nonce, nil)
-					m.EXPECT().CreateSignatureOptions(types.Hash{}, types.Hash{}, false, nonce, *rv, uint32(0))
+					m.EXPECT().CreateSignatureOptions(types.Hash{}, types.Hash{}, false, *rv, nonce, uint32(0))
 					m.EXPECT().SubmitExtrinsic(types.NewExtrinsic(types.Call{})).Return(types.Hash{}, errors.New("error submitting transaction"))
 					return m
 				}(),
@@ -496,81 +496,81 @@ func TestSubstrateRPC_Send(t *testing.T) {
 	}
 }
 
-// not real test, to be deleted
-func Test_SubstrateCallExample(t *testing.T) {
-	t.Run("s", func(t *testing.T) {
-		// This sample shows how to create a transaction to make a transfer from one an account to another.
+// // not real test, to be deleted
+// func Test_SubstrateCallExample(t *testing.T) {
+// 	t.Run("s", func(t *testing.T) {
+// 		// This sample shows how to create a transaction to make a transfer from one an account to another.
 
-		// Instantiate the API
-		api, err := gsrpc.NewSubstrateAPI("ws://testnet3.edgewa.re:9944")
-		if err != nil {
-			panic(err)
-		}
+// 		// Instantiate the API
+// 		api, err := gsrpc.NewSubstrateAPI("ws://testnet3.edgewa.re:9944")
+// 		if err != nil {
+// 			panic(err)
+// 		}
 
-		meta, err := api.RPC.State.GetMetadataLatest()
-		if err != nil {
-			panic(err)
-		}
+// 		meta, err := api.RPC.State.GetMetadataLatest()
+// 		if err != nil {
+// 			panic(err)
+// 		}
 
-		//from, err := types.NewAddressFromHexAccountID("0x9aff809089623c64ccd7ca79b8fffb114cef2c251b2b3e4f2d5144eee962fb6f")
-		to, err := types.NewAddressFromHexAccountID("0xf49a6b6deb3cdb00d86e735ced8f48b649273fc6ff6a3bbba021a6b4a1c5d067") // account id
-		if err != nil {
-			panic(err)
-		}
+// 		//from, err := types.NewAddressFromHexAccountID("0x9aff809089623c64ccd7ca79b8fffb114cef2c251b2b3e4f2d5144eee962fb6f")
+// 		to, err := types.NewAddressFromHexAccountID("0xf49a6b6deb3cdb00d86e735ced8f48b649273fc6ff6a3bbba021a6b4a1c5d067") // account id
+// 		if err != nil {
+// 			panic(err)
+// 		}
 
-		c, err := types.NewCall(meta, "Contracts.call", to, types.UCompact(0), types.UCompact(32000), "0x6d61696c636861696e383162336636383539326431393338396439656432346664636338316331666630323835383962653535303436303532366631633961613436623864333739346337653032616565363563386631373733376361366637333564393565303965366131396636303838366638313239326535373835373133343562386531653466393238326531306433396637316238636639653731613231656336393939333637346634616261643231623831393531646565346665643565666465663334643131303264346333336538626662613330623461343730646162643434653938653262363439346136653862363963393336353864393631393639356633313561356266356262313865363265336266623237363463363335323631616366363730303862353761316262333838353164396132656635353730323861336166373839646537396234346662346130336137653637393037343030376531623237")
-		if err != nil {
-			panic(err)
-		}
+// 		c, err := types.NewCall(meta, "Contracts.call", to, types.UCompact(0), types.UCompact(32000), "0x6d61696c636861696e383162336636383539326431393338396439656432346664636338316331666630323835383962653535303436303532366631633961613436623864333739346337653032616565363563386631373733376361366637333564393565303965366131396636303838366638313239326535373835373133343562386531653466393238326531306433396637316238636639653731613231656336393939333637346634616261643231623831393531646565346665643565666465663334643131303264346333336538626662613330623461343730646162643434653938653262363439346136653862363963393336353864393631393639356633313561356266356262313865363265336266623237363463363335323631616366363730303862353761316262333838353164396132656635353730323861336166373839646537396234346662346130336137653637393037343030376531623237")
+// 		if err != nil {
+// 			panic(err)
+// 		}
 
-		// Create the extrinsic
-		ext := types.NewExtrinsic(c)
-		if err != nil {
-			panic(err)
-		}
+// 		// Create the extrinsic
+// 		ext := types.NewExtrinsic(c)
+// 		if err != nil {
+// 			panic(err)
+// 		}
 
-		genesisHash, err := api.RPC.Chain.GetBlockHash(0)
-		if err != nil {
-			panic(err)
-		}
+// 		genesisHash, err := api.RPC.Chain.GetBlockHash(0)
+// 		if err != nil {
+// 			panic(err)
+// 		}
 
-		rv, err := api.RPC.State.GetRuntimeVersionLatest()
-		if err != nil {
-			panic(err)
-		}
-		pair, _ := signature.KeyringPairFromSecret("<private key or seed phrase here>")
-		key, err := types.CreateStorageKey(meta, "System", "AccountNonce", pair.PublicKey, nil)
-		if err != nil {
-			panic(err)
-		}
+// 		rv, err := api.RPC.State.GetRuntimeVersionLatest()
+// 		if err != nil {
+// 			panic(err)
+// 		}
+// 		pair, _ := signature.KeyringPairFromSecret("<private key or seed phrase here>")
+// 		key, err := types.CreateStorageKey(meta, "System", "AccountNonce", pair.PublicKey, nil)
+// 		if err != nil {
+// 			panic(err)
+// 		}
 
-		var nonce uint32
-		err = api.RPC.State.GetStorageLatest(key, &nonce)
-		if err != nil {
-			panic(err)
-		}
+// 		var nonce uint32
+// 		err = api.RPC.State.GetStorageLatest(key, &nonce)
+// 		if err != nil {
+// 			panic(err)
+// 		}
 
-		o := types.SignatureOptions{
-			BlockHash:   genesisHash,
-			Era:         types.ExtrinsicEra{IsMortalEra: false},
-			GenesisHash: genesisHash,
-			Nonce:       types.UCompact(nonce),
-			SpecVersion: rv.SpecVersion,
-			Tip:         0,
-		}
+// 		o := types.SignatureOptions{
+// 			BlockHash:   genesisHash,
+// 			Era:         types.ExtrinsicEra{IsMortalEra: false},
+// 			GenesisHash: genesisHash,
+// 			Nonce:       types.UCompact(nonce),
+// 			SpecVersion: rv.SpecVersion,
+// 			Tip:         0,
+// 		}
 
-		// Sign the transaction using Alice's default account
-		err = ext.Sign(pair, o)
-		if err != nil {
-			panic(err)
-		}
+// 		// Sign the transaction using Alice's default account
+// 		err = ext.Sign(pair, o)
+// 		if err != nil {
+// 			panic(err)
+// 		}
 
-		// Send the extrinsic
-		hash, err := api.RPC.Author.SubmitExtrinsic(ext)
-		if err != nil {
-			panic(err)
-		}
+// 		// Send the extrinsic
+// 		hash, err := api.RPC.Author.SubmitExtrinsic(ext)
+// 		if err != nil {
+// 			panic(err)
+// 		}
 
-		fmt.Printf("Transfer sent with hash %#x\n", hash)
-	})
-}
+// 		fmt.Printf("Transfer sent with hash %#x\n", hash)
+// 	})
+// }

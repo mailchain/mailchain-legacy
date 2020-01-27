@@ -3,6 +3,7 @@ package substraterpc
 import (
 	"context"
 	"fmt"
+
 	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/protocols"
@@ -44,7 +45,7 @@ func (s SubstrateRPC) Send(ctx context.Context, network string, to, from, data [
 		return errors.WithMessage(err, "could not get nonce")
 	}
 
-	o := client.CreateSignatureOptions(genesisHash, genesisHash, false, nonce, *rv, 0)
+	o := client.CreateSignatureOptions(genesisHash, genesisHash, false, *rv, nonce, 0)
 
 	signedExt, err := txSigner.Sign(substrate.SignerOptions{
 		Tx:               ext,
@@ -54,7 +55,7 @@ func (s SubstrateRPC) Send(ctx context.Context, network string, to, from, data [
 		return errors.WithMessage(err, "could not sign the transaction")
 	}
 
-	hash, err := client.SubmitExtrinsic(signedExt.(types.Extrinsic))
+	hash, err := client.SubmitExtrinsic(signedExt.(*types.Extrinsic))
 	if err != nil {
 		return errors.WithMessage(err, "could not submit the transaction")
 	}

@@ -11,6 +11,7 @@ require (
 	github.com/btcsuite/btcd v0.0.0-20190410025418-9bfb2ca0346b // indirect
 	github.com/centrifuge/go-substrate-rpc-client v0.0.4-0.20191231113815-b277fcc48a0f
 	github.com/cespare/cp v1.1.1 // indirect
+	github.com/cweill/gotests v1.5.3 // indirect
 	github.com/dgraph-io/badger/v2 v2.0.0
 	github.com/docker/docker v1.13.1 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
@@ -69,7 +70,7 @@ require (
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
 	golang.org/x/sys v0.0.0-20191220142924-d4481acd189f // indirect
 	golang.org/x/text v0.3.2 // indirect
-	golang.org/x/tools v0.0.0-20200113040837-eac381796e91 // indirect
+	golang.org/x/tools v0.0.0-20200125223703-d33eef8e6825 // indirect
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20180810215634-df19058c872c // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	gopkg.in/olebedev/go-duktape.v3 v3.0.0-20190709231704-1e4459ed25ff // indirect

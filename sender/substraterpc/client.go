@@ -2,25 +2,26 @@ package substraterpc
 
 import (
 	"context"
+	"math/big"
+
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
 	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
-	"math/big"
 )
 
 //go:generate mockgen -source=client.go -package=substraterpctest -destination=./substraterpctest/client_mock.go
 
 type Client interface {
 	GetMetadata(blockHash types.Hash) (*types.Metadata, error)
-	GetAddress(accountId []byte) types.Address
+	GetAddress(accountID []byte) types.Address
 	SuggestGasPrice(ctx context.Context) (*big.Int, error)
 	Call(metadata *types.Metadata, to types.Address, gas *big.Int, data []byte) (types.Call, error)
 	NewExtrinsic(call types.Call) types.Extrinsic
 	GetBlockHash(blockNumber uint64) (types.Hash, error)
 	GetRuntimeVersion(blockHash types.Hash) (*types.RuntimeVersion, error)
 	GetNonce(ctx context.Context, protocol, network string, address []byte, meta *types.Metadata) (uint32, error)
-	CreateSignatureOptions(blockHash types.Hash, genesisHash types.Hash, mortalEra bool, nonce uint32, rv types.RuntimeVersion, tip uint32) types.SignatureOptions
-	SubmitExtrinsic(extrinsic types.Extrinsic) (types.Hash, error)
+	CreateSignatureOptions(blockHash, genesisHash types.Hash, mortalEra bool, rv types.RuntimeVersion, nonce, tip uint32) types.SignatureOptions
+	SubmitExtrinsic(extrinsic *types.Extrinsic) (types.Hash, error)
 }
 
 type SubstrateClient struct {
@@ -38,8 +39,8 @@ func (s SubstrateClient) GetMetadata(blockHash types.Hash) (*types.Metadata, err
 	return s.api.RPC.State.GetMetadata(blockHash)
 }
 
-func (s SubstrateClient) GetAddress(accountId []byte) types.Address {
-	return types.NewAddressFromAccountID(accountId)
+func (s SubstrateClient) GetAddress(accountID []byte) types.Address {
+	return types.NewAddressFromAccountID(accountID)
 }
 
 func (s SubstrateClient) SuggestGasPrice(ctx context.Context) (*big.Int, error) {
@@ -80,11 +81,14 @@ func (s SubstrateClient) GetNonce(ctx context.Context, protocol, network string,
 	}
 
 	var nonce uint32
-	err = s.api.RPC.State.GetStorageLatest(key, &nonce)
+
+	if err := s.api.RPC.State.GetStorageLatest(key, &nonce); err != nil {
+		return uint32(0), err
+	}
 	return nonce, nil
 }
 
-func (s SubstrateClient) CreateSignatureOptions(blockHash types.Hash, genesisHash types.Hash, mortalEra bool, nonce uint32, rv types.RuntimeVersion, tip uint32) types.SignatureOptions {
+func (s SubstrateClient) CreateSignatureOptions(blockHash, genesisHash types.Hash, mortalEra bool, rv types.RuntimeVersion, nonce, tip uint32) types.SignatureOptions {
 	return types.SignatureOptions{
 		BlockHash:   blockHash,
 		Era:         types.ExtrinsicEra{IsMortalEra: mortalEra},
@@ -95,8 +99,8 @@ func (s SubstrateClient) CreateSignatureOptions(blockHash types.Hash, genesisHas
 	}
 }
 
-func (s SubstrateClient) SubmitExtrinsic(extrinsic types.Extrinsic) (types.Hash, error) {
-	hash, err := s.api.RPC.Author.SubmitExtrinsic(extrinsic)
+func (s SubstrateClient) SubmitExtrinsic(extrinsic *types.Extrinsic) (types.Hash, error) {
+	hash, err := s.api.RPC.Author.SubmitExtrinsic(*extrinsic)
 	if err != nil {
 		return types.Hash{}, err
 	}

@@ -51,17 +51,17 @@ func (mr *MockClientMockRecorder) GetMetadata(blockHash interface{}) *gomock.Cal
 }
 
 // GetAddress mocks base method
-func (m *MockClient) GetAddress(accountId []byte) types.Address {
+func (m *MockClient) GetAddress(accountID []byte) types.Address {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAddress", accountId)
+	ret := m.ctrl.Call(m, "GetAddress", accountID)
 	ret0, _ := ret[0].(types.Address)
 	return ret0
 }
 
 // GetAddress indicates an expected call of GetAddress
-func (mr *MockClientMockRecorder) GetAddress(accountId interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) GetAddress(accountID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddress", reflect.TypeOf((*MockClient)(nil).GetAddress), accountId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddress", reflect.TypeOf((*MockClient)(nil).GetAddress), accountID)
 }
 
 // SuggestGasPrice mocks base method
@@ -154,21 +154,21 @@ func (mr *MockClientMockRecorder) GetNonce(ctx, protocol, network, address, meta
 }
 
 // CreateSignatureOptions mocks base method
-func (m *MockClient) CreateSignatureOptions(blockHash, genesisHash types.Hash, mortalEra bool, nonce uint32, rv types.RuntimeVersion, tip uint32) types.SignatureOptions {
+func (m *MockClient) CreateSignatureOptions(blockHash, genesisHash types.Hash, mortalEra bool, rv types.RuntimeVersion, nonce, tip uint32) types.SignatureOptions {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateSignatureOptions", blockHash, genesisHash, mortalEra, nonce, rv, tip)
+	ret := m.ctrl.Call(m, "CreateSignatureOptions", blockHash, genesisHash, mortalEra, rv, nonce, tip)
 	ret0, _ := ret[0].(types.SignatureOptions)
 	return ret0
 }
 
 // CreateSignatureOptions indicates an expected call of CreateSignatureOptions
-func (mr *MockClientMockRecorder) CreateSignatureOptions(blockHash, genesisHash, mortalEra, nonce, rv, tip interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) CreateSignatureOptions(blockHash, genesisHash, mortalEra, rv, nonce, tip interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSignatureOptions", reflect.TypeOf((*MockClient)(nil).CreateSignatureOptions), blockHash, genesisHash, mortalEra, nonce, rv, tip)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSignatureOptions", reflect.TypeOf((*MockClient)(nil).CreateSignatureOptions), blockHash, genesisHash, mortalEra, rv, nonce, tip)
 }
 
 // SubmitExtrinsic mocks base method
-func (m *MockClient) SubmitExtrinsic(extrinsic types.Extrinsic) (types.Hash, error) {
+func (m *MockClient) SubmitExtrinsic(extrinsic *types.Extrinsic) (types.Hash, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SubmitExtrinsic", extrinsic)
 	ret0, _ := ret[0].(types.Hash)

@@ -3,7 +3,7 @@ package values //nolint:dupl
 import (
 	"strings"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
+	"github.com/mailchain/mailchain/cmd/internal/settings/output"
 )
 
 //go:generate mockgen -source=int.go -package=valuestest -destination=./valuestest/int_mock.go
@@ -27,6 +27,7 @@ func (d DefaultInt) Get() int {
 	if d.store.IsSet(d.setting) {
 		return d.store.GetInt(d.setting)
 	}
+
 	return d.def
 }
 

@@ -1,47 +1,45 @@
-//nolint:dupl
 package values
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values/valuestest"
+	"github.com/mailchain/mailchain/cmd/internal/settings/output"
+	"github.com/mailchain/mailchain/cmd/internal/settings/values/valuestest"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDefaultStringSlice_Get(t *testing.T) {
+func TestDefaultBool_Get(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
-		def     []string
+		def     bool
 		setting string
 		store   Store
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   []string
+		want   bool
 	}{
 		{
 			"use-value",
 			fields{
-				[]string{"def-1", "def-2"},
+				false,
 				"setting-name",
 				func() Store {
 					m := valuestest.NewMockStore(mockCtrl)
 					m.EXPECT().IsSet("setting-name").Return(true)
-					m.EXPECT().GetStringSlice("setting-name").Return([]string{"val-1", "val-2"})
+					m.EXPECT().GetBool("setting-name").Return(true)
 					return m
 				}(),
 			},
-			[]string{"val-1", "val-2"},
+			true,
 		},
 		{
 			"use-default",
 			fields{
-				[]string{"def-1", "def-2"},
+				true,
 				"setting-name",
 				func() Store {
 					m := valuestest.NewMockStore(mockCtrl)
@@ -49,33 +47,33 @@ func TestDefaultStringSlice_Get(t *testing.T) {
 					return m
 				}(),
 			},
-			[]string{"def-1", "def-2"},
+			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := DefaultStringSlice{
+			d := DefaultBool{
 				def:     tt.fields.def,
 				setting: tt.fields.setting,
 				store:   tt.fields.store,
 			}
-			if got := d.Get(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DefaultStringSlice.Get() = %v, want %v", got, tt.want)
+			if got := d.Get(); got != tt.want {
+				t.Errorf("DefaultBool.Get() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestDefaultStringSlice_Set(t *testing.T) {
+func TestDefaultBool_Set(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
-		def     []string
+		def     bool
 		setting string
 		store   Store
 	}
 	type args struct {
-		v []string
+		v bool
 	}
 	tests := []struct {
 		name   string
@@ -85,22 +83,22 @@ func TestDefaultStringSlice_Set(t *testing.T) {
 		{
 			"set",
 			fields{
-				[]string{"val-1", "val-2"},
+				true,
 				"setting-name",
 				func() Store {
 					m := valuestest.NewMockStore(mockCtrl)
-					m.EXPECT().Set("setting-name", []string{"val-1", "val-2"})
+					m.EXPECT().Set("setting-name", true)
 					return m
 				}(),
 			},
 			args{
-				[]string{"val-1", "val-2"},
+				true,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := DefaultStringSlice{
+			d := DefaultBool{
 				def:     tt.fields.def,
 				setting: tt.fields.setting,
 				store:   tt.fields.store,
@@ -110,42 +108,43 @@ func TestDefaultStringSlice_Set(t *testing.T) {
 	}
 }
 
-func TestNewDefaultStringSlice(t *testing.T) {
+func TestNewDefaultBool(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
-		defVal  []string
+		defVal  bool
 		store   Store
 		setting string
 	}
 	tests := []struct {
 		name string
 		args args
-		want StringSlice
+		want Bool
 	}{
 		{
 			"success",
 			args{
-				[]string{"a", "b"},
+				true,
 				valuestest.NewMockStore(nil),
 				"setting",
 			},
-			DefaultStringSlice{[]string{"a", "b"}, "setting", valuestest.NewMockStore(nil)},
+			DefaultBool{true, "setting", valuestest.NewMockStore(nil)},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewDefaultStringSlice(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(tt.want, got) {
-				t.Errorf("NewDefaultStringSlice() = %v, want %v", got, tt.want)
+			if got := NewDefaultBool(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(tt.want, got) {
+				t.Errorf("NewDefaultBool() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestDefaultStringSlice_Attribute(t *testing.T) {
+func TestDefaultBool_Attribute(t *testing.T) {
+	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
-		def     []string
+		def     bool
 		setting string
 		store   Store
 	}
@@ -157,27 +156,27 @@ func TestDefaultStringSlice_Attribute(t *testing.T) {
 		{
 			"success",
 			fields{
-				[]string{"value1", "value2"},
+				false,
 				"test.setting.name1",
 				func() Store {
 					m := valuestest.NewMockStore(mockCtrl)
 					m.EXPECT().IsSet("test.setting.name1").Return(true).AnyTimes()
-					m.EXPECT().GetStringSlice("test.setting.name1").Return([]string{"value1", "value2"}).AnyTimes()
+					m.EXPECT().GetBool("test.setting.name1").Return(true).AnyTimes()
 					return m
 				}(),
 			},
-			output.Attribute{FullName: "name1", IsDefault: true, AdditionalComment: "", Value: []string{"value1", "value2"}},
+			output.Attribute{FullName: "name1", IsDefault: false, AdditionalComment: "", Value: true},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := DefaultStringSlice{
+			d := DefaultBool{
 				def:     tt.fields.def,
 				setting: tt.fields.setting,
 				store:   tt.fields.store,
 			}
-			if got := d.Attribute(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DefaultStringSlice.Attribute() = %v, want %v", got, tt.want)
+			if got := d.Attribute(); !assert.Equal(tt.want, got) {
+				t.Errorf("DefaultBool.Attribute() = %v, want %v", got, tt.want)
 			}
 		})
 	}

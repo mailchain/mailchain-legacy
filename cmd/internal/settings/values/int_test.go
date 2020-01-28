@@ -1,45 +1,46 @@
+//nolint:dupl
 package values
 
 import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values/valuestest"
+	"github.com/mailchain/mailchain/cmd/internal/settings/output"
+	"github.com/mailchain/mailchain/cmd/internal/settings/values/valuestest"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDefaultBool_Get(t *testing.T) {
+func TestDefaultInt_Get(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
-		def     bool
+		def     int
 		setting string
 		store   Store
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   bool
+		want   int
 	}{
 		{
 			"use-value",
 			fields{
-				false,
+				100,
 				"setting-name",
 				func() Store {
 					m := valuestest.NewMockStore(mockCtrl)
 					m.EXPECT().IsSet("setting-name").Return(true)
-					m.EXPECT().GetBool("setting-name").Return(true)
+					m.EXPECT().GetInt("setting-name").Return(50)
 					return m
 				}(),
 			},
-			true,
+			50,
 		},
 		{
 			"use-default",
 			fields{
-				true,
+				100,
 				"setting-name",
 				func() Store {
 					m := valuestest.NewMockStore(mockCtrl)
@@ -47,33 +48,33 @@ func TestDefaultBool_Get(t *testing.T) {
 					return m
 				}(),
 			},
-			true,
+			100,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := DefaultBool{
+			d := DefaultInt{
 				def:     tt.fields.def,
 				setting: tt.fields.setting,
 				store:   tt.fields.store,
 			}
 			if got := d.Get(); got != tt.want {
-				t.Errorf("DefaultBool.Get() = %v, want %v", got, tt.want)
+				t.Errorf("DefaultInt.Get() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestDefaultBool_Set(t *testing.T) {
+func TestDefaultInt_Set(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
-		def     bool
+		def     int
 		setting string
 		store   Store
 	}
 	type args struct {
-		v bool
+		v int
 	}
 	tests := []struct {
 		name   string
@@ -83,22 +84,22 @@ func TestDefaultBool_Set(t *testing.T) {
 		{
 			"set",
 			fields{
-				true,
+				100,
 				"setting-name",
 				func() Store {
 					m := valuestest.NewMockStore(mockCtrl)
-					m.EXPECT().Set("setting-name", true)
+					m.EXPECT().Set("setting-name", 100)
 					return m
 				}(),
 			},
 			args{
-				true,
+				100,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := DefaultBool{
+			d := DefaultInt{
 				def:     tt.fields.def,
 				setting: tt.fields.setting,
 				store:   tt.fields.store,
@@ -108,43 +109,43 @@ func TestDefaultBool_Set(t *testing.T) {
 	}
 }
 
-func TestNewDefaultBool(t *testing.T) {
+func TestNewDefaultInt(t *testing.T) {
 	assert := assert.New(t)
 	type args struct {
-		defVal  bool
+		defVal  int
 		store   Store
 		setting string
 	}
 	tests := []struct {
 		name string
 		args args
-		want Bool
+		want Int
 	}{
 		{
 			"success",
 			args{
-				true,
+				100,
 				valuestest.NewMockStore(nil),
 				"setting",
 			},
-			DefaultBool{true, "setting", valuestest.NewMockStore(nil)},
+			DefaultInt{100, "setting", valuestest.NewMockStore(nil)},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewDefaultBool(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(tt.want, got) {
-				t.Errorf("NewDefaultBool() = %v, want %v", got, tt.want)
+			if got := NewDefaultInt(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(tt.want, got) {
+				t.Errorf("NewDefaultInt() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestDefaultBool_Attribute(t *testing.T) {
+func TestDefaultInt_Attribute(t *testing.T) {
 	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
-		def     bool
+		def     int
 		setting string
 		store   Store
 	}
@@ -156,27 +157,27 @@ func TestDefaultBool_Attribute(t *testing.T) {
 		{
 			"success",
 			fields{
-				false,
+				100,
 				"test.setting.name1",
 				func() Store {
 					m := valuestest.NewMockStore(mockCtrl)
 					m.EXPECT().IsSet("test.setting.name1").Return(true).AnyTimes()
-					m.EXPECT().GetBool("test.setting.name1").Return(true).AnyTimes()
+					m.EXPECT().GetInt("test.setting.name1").Return(100).AnyTimes()
 					return m
 				}(),
 			},
-			output.Attribute{FullName: "name1", IsDefault: false, AdditionalComment: "", Value: true},
+			output.Attribute{FullName: "name1", IsDefault: true, AdditionalComment: "", Value: 100},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := DefaultBool{
+			d := DefaultInt{
 				def:     tt.fields.def,
 				setting: tt.fields.setting,
 				store:   tt.fields.store,
 			}
 			if got := d.Attribute(); !assert.Equal(tt.want, got) {
-				t.Errorf("DefaultBool.Attribute() = %v, want %v", got, tt.want)
+				t.Errorf("DefaultInt.Attribute() = %v, want %v", got, tt.want)
 			}
 		})
 	}

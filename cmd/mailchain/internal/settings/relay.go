@@ -1,8 +1,8 @@
 package settings
 
 import (
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
+	"github.com/mailchain/mailchain/cmd/internal/settings/output"
+	"github.com/mailchain/mailchain/cmd/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/sender"
 	relayer "github.com/mailchain/mailchain/sender/relay"

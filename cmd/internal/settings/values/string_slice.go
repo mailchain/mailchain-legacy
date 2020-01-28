@@ -3,7 +3,7 @@ package values //nolint:dupl
 import (
 	"strings"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
+	"github.com/mailchain/mailchain/cmd/internal/settings/output"
 )
 
 //go:generate mockgen -source=string_slice.go -package=valuestest -destination=./valuestest/string_slice_mock.go

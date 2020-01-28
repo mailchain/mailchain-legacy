@@ -40,7 +40,7 @@ contributing changes.
 
 ## Get involved
 
-* Join our community discussion on our [Slack channel](https://mailchain.slack.com).
+* Join our community discussion on our [Slack channel](https://join.slack.com/t/mailchain/shared_invite/enQtODgzNjIxMTEwODY1LWI3ZTU2MTBiODFhMmZmZmU5ODhmNzk4ZWFjM2ZkZTE5ZTNjNGZjMjU2NGY1MmM0ZjkwNzM5OTk4YTk4ZmZkN2E).
 * Follow [@mailchain_xyz](https://twitter.com/mailchain_xyz) on Twitter.
 * Contact us via regular [email](mailto:team@mailchain.xyz).
 

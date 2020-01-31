@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:generate mockgen -source=public.go -package=cryptotest -destination=./cryptotest/public_mock.go
 package crypto
 
 // PublicKey definition usable in all mailchain crypto operations

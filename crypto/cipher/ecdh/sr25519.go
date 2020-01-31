@@ -47,7 +47,7 @@ func (kx SR25519) SharedSecret(privateKey crypto.PrivateKey, publicKey crypto.Pu
 		return nil, ErrSharedSecretGenerate
 	}
 
-	sharedSecret, err := sr25519.ExchangeKeys(sr25519PrivateKey, sr25519PublicKey)
+	sharedSecret, err := sr25519.ExchangeKeys(sr25519PrivateKey, sr25519PublicKey, 32)
 	if err != nil {
 		return nil, ErrSharedSecretGenerate
 	}

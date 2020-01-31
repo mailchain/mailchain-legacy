@@ -1,9 +1,9 @@
 package settings
 
 import (
+	"github.com/mailchain/mailchain/cmd/internal/settings/output"
+	"github.com/mailchain/mailchain/cmd/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
 )
 
 func server(s values.Store) *Server {

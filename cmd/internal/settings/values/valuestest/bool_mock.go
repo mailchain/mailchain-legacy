@@ -5,9 +5,10 @@
 package valuestest
 
 import (
-	gomock "github.com/golang/mock/gomock"
-	output "github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
+	output "github.com/mailchain/mailchain/cmd/internal/settings/output"
 )
 
 // MockBool is a mock of Bool interface

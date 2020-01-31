@@ -16,6 +16,10 @@ var SofiaPublicKey crypto.PublicKey //nolint: gochecknoglobals test key
 var CharlottePrivateKey crypto.PrivateKey //nolint: gochecknoglobals test key
 // CharlottePublicKey sr25519 key for testing purposes. Key is compromised do not use on mainnet's.
 var CharlottePublicKey crypto.PublicKey //nolint: gochecknoglobals test key
+// EvePrivateKey sr25519 key for testing purposes. Key is compromised do not use on mainnet's.
+var EvePrivateKey crypto.PrivateKey //nolint: gochecknoglobals test key
+// EvePublicKey sr25519 key for testing purposes. Key is compromised do not use on mainnet's.
+var EvePublicKey crypto.PublicKey //nolint: gochecknoglobals test key
 
 //nolint: gochecknoinits test key
 func init() {
@@ -33,4 +37,11 @@ func init() {
 	}
 
 	CharlottePublicKey = CharlottePrivateKey.PublicKey()
+
+	EvePrivateKey, err = sr25519.PrivateKeyFromBytes(encodingtest.MustDecodeHex("000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f")) //nolint: lll test key
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	EvePublicKey = EvePrivateKey.PublicKey()
 }

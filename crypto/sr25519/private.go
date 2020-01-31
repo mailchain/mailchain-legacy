@@ -89,26 +89,24 @@ func PrivateKeyFromBytes(privKey []byte) (*PrivateKey, error) {
 	}
 }
 
-func ExchangeKeys(privKey *PrivateKey, pubKey *PublicKey) ([64]byte, error) {
+func ExchangeKeys(privKey *PrivateKey, pubKey *PublicKey, length int) ([]byte, error) {
 	// https://github.com/w3f/schnorrkel/tree/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src
-	sharedSecret := [64]byte{}
 	transcript := merlin.NewTranscript("KEX")
 	transcript.AppendMessage([]byte("ctx"), []byte{})
 	privKey.secretKey.Key()
 
 	a := ristretto255.NewElement()
 	if err := a.Decode(pubKey.key); err != nil {
-		return [64]byte{}, err
+		return []byte{}, err
 	}
 
 	pkScalar := ristretto255.NewScalar()
 	if err := pkScalar.Decode(privKey.secretKey.Key()); err != nil {
-		return [64]byte{}, err
+		return []byte{}, err
 	}
 
 	a.ScalarMult(pkScalar, a)
 	transcript.AppendMessage([]byte{}, a.Encode([]byte{}))
-	copy(sharedSecret[:], transcript.ExtractBytes([]byte{}, 64))
 
-	return sharedSecret, nil
+	return transcript.ExtractBytes([]byte{}, length), nil
 }

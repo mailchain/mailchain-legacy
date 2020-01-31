@@ -25,29 +25,34 @@ func (kx SR25519) EphemeralKey() (crypto.PrivateKey, error) {
 	return sr25519.GenerateKey(kx.rand)
 }
 
-func (kx SR25519) SharedSecret(ephemeralKey crypto.PrivateKey, recipientKey crypto.PublicKey) ([]byte, error) {
-	ephemeralPrivateKey, err := kx.privateKey(ephemeralKey)
+// SharedSecret computes a secret value from a private / public key pair.
+// On sending a message the private key should be an ephemeralKey or generated private key,
+// the public key is the recipient public key.
+// On reading a message the private key is the recipient private key, the public key is the
+// ephemeralKey or generated public key.
+func (kx SR25519) SharedSecret(privateKey crypto.PrivateKey, publicKey crypto.PublicKey) ([]byte, error) {
+	sr25519PrivateKey, err := kx.privateKey(privateKey)
 	if err != nil {
 		return nil, ErrSharedSecretGenerate
 	}
 
-	recipientPublicKey, err := kx.publicKey(recipientKey)
+	sr25519PublicKey, err := kx.publicKey(publicKey)
 	if err != nil {
 		return nil, ErrSharedSecretGenerate
 	}
 
-	ephemeralPublicKey, _ := kx.publicKey(ephemeralKey.PublicKey())
+	ephemeralPublicKey, _ := kx.publicKey(privateKey.PublicKey())
 
-	if bytes.Equal(ephemeralPublicKey.Bytes(), recipientPublicKey.Bytes()) {
+	if bytes.Equal(ephemeralPublicKey.Bytes(), sr25519PublicKey.Bytes()) {
 		return nil, ErrSharedSecretGenerate
 	}
 
-	sharedSecret, err := sr25519.ExchangeKeys(ephemeralPrivateKey, recipientPublicKey)
+	sharedSecret, err := sr25519.ExchangeKeys(sr25519PrivateKey, sr25519PublicKey)
 	if err != nil {
 		return nil, ErrSharedSecretGenerate
 	}
 
-	return sharedSecret[:], nil
+	return sharedSecret, nil
 }
 
 func (kx SR25519) publicKey(pubKey crypto.PublicKey) (*sr25519.PublicKey, error) {

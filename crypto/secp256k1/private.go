@@ -48,7 +48,7 @@ func (pk PrivateKey) PublicKey() crypto.PublicKey {
 
 // Kind is the type of private key.
 func (pk PrivateKey) Kind() string {
-	return crypto.SECP256K1
+	return crypto.KindSECP256K1
 }
 
 // ECIES returns an ECIES representation of the private key.

@@ -28,23 +28,28 @@ func (kx SECP256K1) EphemeralKey() (crypto.PrivateKey, error) {
 	return secp256k1.GenerateKey(kx.rand)
 }
 
-func (kx SECP256K1) SharedSecret(ephemeralKey crypto.PrivateKey, recipientKey crypto.PublicKey) ([]byte, error) {
-	ephemeralPrivateKey, err := kx.privateKey(ephemeralKey)
+// SharedSecret computes a secret value from a private / public key pair.
+// On sending a message the private key should be an ephemeralKey or generated private key,
+// the public key is the recipient public key.
+// On reading a message the private key is the recipient private key, the public key is the
+// ephemeralKey or generated public key.
+func (kx SECP256K1) SharedSecret(privateKey crypto.PrivateKey, publicKey crypto.PublicKey) ([]byte, error) {
+	secp256k1PrivateKey, err := kx.privateKey(privateKey)
 	if err != nil {
 		return nil, ErrSharedSecretGenerate
 	}
 
-	recipientPublicKey, err := kx.publicKey(recipientKey)
+	secp256k1PublicKey, err := kx.publicKey(publicKey)
 	if err != nil {
 		return nil, ErrSharedSecretGenerate
 	}
 
-	ephemeralPublicKey, _ := kx.publicKey(ephemeralKey.PublicKey())
-	if ephemeralPublicKey.X == recipientPublicKey.X && ephemeralPublicKey.Y == recipientPublicKey.Y {
+	ephemeralPublicKey, _ := kx.publicKey(privateKey.PublicKey())
+	if ephemeralPublicKey.X == secp256k1PublicKey.X && ephemeralPublicKey.Y == secp256k1PublicKey.Y {
 		return nil, ErrSharedSecretGenerate
 	}
 
-	sX, _ := kx.curve.ScalarMult(recipientPublicKey.X, recipientPublicKey.Y, ephemeralPrivateKey.D.Bytes())
+	sX, _ := kx.curve.ScalarMult(secp256k1PublicKey.X, secp256k1PublicKey.Y, secp256k1PrivateKey.D.Bytes())
 
 	return sX.Bytes(), nil
 }

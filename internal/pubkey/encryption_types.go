@@ -24,11 +24,11 @@ import (
 // EncryptionMethods returns supported encryption methods.
 func EncryptionMethods(kind string) ([]string, error) {
 	switch kind {
-	case crypto.ED25519:
-		return []string{encrypter.NACL, encrypter.NoOperation}, nil
-	case crypto.SECP256K1:
+	case crypto.KindED25519:
+		return []string{encrypter.NACLECDH, encrypter.NoOperation}, nil
+	case crypto.KindSECP256K1:
 		return []string{encrypter.AES256CBC, encrypter.NoOperation}, nil
 	default:
-		return nil, fmt.Errorf("%q unsuported public key type", kind)
+		return nil, fmt.Errorf("%q unsupported public key type", kind)
 	}
 }

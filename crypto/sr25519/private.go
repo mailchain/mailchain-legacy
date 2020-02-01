@@ -35,7 +35,7 @@ func (pk *PrivateKey) Bytes() []byte {
 
 // Kind is the type of private key.
 func (pk *PrivateKey) Kind() string {
-	return crypto.SR25519
+	return crypto.KindSR25519
 }
 
 // PublicKey return the crypto.PublicKey that is derived from the Privatekey

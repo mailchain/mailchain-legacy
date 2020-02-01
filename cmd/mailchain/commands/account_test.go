@@ -167,7 +167,7 @@ func Test_accountAddCmd(t *testing.T) {
 			},
 			nil,
 			map[string]string{
-				"key-type": crypto.SECP256K1,
+				"key-type": crypto.KindSECP256K1,
 			},
 			"\x1b[32mPrivate key added\n\x1b[39mPublic key=69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0\n",
 			false,
@@ -186,7 +186,7 @@ func Test_accountAddCmd(t *testing.T) {
 			},
 			nil,
 			map[string]string{
-				"key-type": crypto.SECP256K1,
+				"key-type": crypto.KindSECP256K1,
 			},
 			"Error: key could not be stored: failed",
 			true,
@@ -203,7 +203,7 @@ func Test_accountAddCmd(t *testing.T) {
 			},
 			nil,
 			map[string]string{
-				"key-type": crypto.SECP256K1,
+				"key-type": crypto.KindSECP256K1,
 			},
 			"Error: could not get `passphrase`: failed",
 			true,
@@ -220,7 +220,7 @@ func Test_accountAddCmd(t *testing.T) {
 			},
 			nil,
 			map[string]string{
-				"key-type": crypto.SECP256K1,
+				"key-type": crypto.KindSECP256K1,
 			},
 			"Error: `private-key` could not be decoded: encoding/hex: odd length hex string",
 			true,
@@ -237,7 +237,7 @@ func Test_accountAddCmd(t *testing.T) {
 			},
 			nil,
 			map[string]string{
-				"key-type": crypto.SECP256K1,
+				"key-type": crypto.KindSECP256K1,
 			},
 			"Error: could not get private key: failed",
 			true,

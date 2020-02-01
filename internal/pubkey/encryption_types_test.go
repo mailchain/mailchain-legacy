@@ -35,15 +35,15 @@ func TestEncryptionMethods(t *testing.T) {
 		{
 			"ed25519",
 			args{
-				crypto.ED25519,
+				crypto.KindED25519,
 			},
-			[]string{encrypter.NACL, encrypter.NoOperation},
+			[]string{encrypter.NACLECDH, encrypter.NoOperation},
 			false,
 		},
 		{
 			"secp256k1",
 			args{
-				crypto.SECP256K1,
+				crypto.KindSECP256K1,
 			},
 			[]string{encrypter.AES256CBC, encrypter.NoOperation},
 			false,

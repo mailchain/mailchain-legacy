@@ -13,7 +13,7 @@ const (
 	// NoOperation encryption type name.
 	NoOperation string = "noop"
 	// NACL encryption type name.
-	NACL string = "nacl"
+	NACLECDH string = "nacl-ecdh"
 	// AES256CBC encryption type name.
 	AES256CBC string = "aes256cbc"
 )
@@ -23,7 +23,7 @@ func GetEncrypter(encryption string, pubKey keys.PublicKey) (crypto.Encrypter, e
 	switch encryption {
 	case AES256CBC:
 		return aes256cbc.NewEncrypter(pubKey)
-	case NACL:
+	case NACLECDH:
 		return nacl.NewEncrypter(pubKey)
 	case "":
 		return nil, errors.Errorf("`encryption` provided is set to empty")

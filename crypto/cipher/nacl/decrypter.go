@@ -28,6 +28,7 @@ func (d Decrypter) Decrypt(data cipher.EncryptedContent) (cipher.PlainContent, e
 	if err != nil {
 		return nil, err
 	}
+
 	sharedSecret, err := d.keyExchange.SharedSecret(d.privateKey, pubKey)
 	if err != nil {
 		return nil, err

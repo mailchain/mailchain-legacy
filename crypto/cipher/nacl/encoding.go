@@ -37,6 +37,7 @@ func pubKeyElements(pubKey crypto.PublicKey) (id byte, data []byte, err error) {
 	default:
 		err = errors.New("unsupported public key")
 	}
+
 	return
 }
 
@@ -46,6 +47,7 @@ func bytesEncode(data cipher.EncryptedContent, pubKey crypto.PublicKey) (cipher.
 	if err != nil {
 		return nil, err
 	}
+
 	pkLen := len(pkBytes)
 	encodedData := make(cipher.EncryptedContent, 2+len(data)+pkLen)
 	encodedData[0] = cipher.NACLECDH
@@ -61,9 +63,11 @@ func bytesDecode(raw cipher.EncryptedContent) (cph cipher.EncryptedContent, pubK
 	if raw[0] != cipher.NACLECDH {
 		return nil, nil, errors.Errorf("invalid prefix")
 	}
+
 	if len(raw) < 35 {
 		return nil, nil, errors.Errorf("cipher is too short")
 	}
+
 	switch raw[1] {
 	case crypto.ByteED25519:
 		pubKey, err = ed25519.PublicKeyFromBytes(raw[2:34])
@@ -77,5 +81,6 @@ func bytesDecode(raw cipher.EncryptedContent) (cph cipher.EncryptedContent, pubK
 	default:
 		return nil, nil, errors.New("unrecognized pubKeyID")
 	}
+
 	return cph, pubKey, err
 }

@@ -64,7 +64,7 @@ func bytesDecode(raw cipher.EncryptedContent) (cph cipher.EncryptedContent, pubK
 		return nil, nil, errors.Errorf("invalid prefix")
 	}
 
-	if len(raw) < 35 {
+	if len(raw) < 35 { //nolint: mnd will result in error is less than this
 		return nil, nil, errors.Errorf("cipher is too short")
 	}
 

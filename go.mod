@@ -9,9 +9,8 @@ require (
 	github.com/aristanetworks/goarista v0.0.0-20190409234242-46f4bc7b73ef // indirect
 	github.com/aws/aws-sdk-go v1.19.11
 	github.com/btcsuite/btcd v0.0.0-20190410025418-9bfb2ca0346b // indirect
-	github.com/centrifuge/go-substrate-rpc-client v0.0.4-0.20191231113815-b277fcc48a0f
+	github.com/centrifuge/go-substrate-rpc-client v0.0.4-0.20200117100327-4dc63dc6b2e6
 	github.com/cespare/cp v1.1.1 // indirect
-	github.com/cweill/gotests v1.5.3 // indirect
 	github.com/dgraph-io/badger/v2 v2.0.0
 	github.com/docker/docker v1.13.1 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
@@ -22,7 +21,6 @@ require (
 	github.com/gogo/protobuf v1.2.1
 	github.com/golang/mock v1.3.1
 	github.com/golang/protobuf v1.3.2
-	github.com/google/go-cmp v0.2.0
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.1
 	github.com/graph-gophers/graphql-go v0.0.0-20190902214650-641ae197eec7 // indirect

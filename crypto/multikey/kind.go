@@ -35,7 +35,7 @@ var (
 	// ErrKindNotFound key kind is not found
 	ErrKindNotFound = errors.New("key kind is not found")
 
-	// Possible key kinds for now
+	// possibleKeyKinds current possible key kinds
 	possibleKeyKinds = []string{crypto.KindED25519, crypto.KindSECP256K1, crypto.KindSR25519}
 
 	// errPrivateKeyPublicKeyNotMatched private and public keys do not match
@@ -72,15 +72,18 @@ func KeyKindFromSignature(pubKey, message, sig []byte, keyKinds []string) (crypt
 
 // GetKeyKindFromBytes extracts the private key type from the publicKey and privateKey.
 // Supported private key types are defined in possibleKeyKinds variable.
-func GetKeyKindFromBytes(publicKey []byte, privateKey []byte) (crypto.PrivateKey, error) {
+func GetKeyKindFromBytes(publicKey, privateKey []byte) (crypto.PrivateKey, error) {
 	matches := make([]crypto.PrivateKey, 0, 1)
+
 	for _, keyKind := range possibleKeyKinds {
 		cPrivateKey, err := verifyPrivateAndPublicKey(publicKey, privateKey, keyKind)
 		if err != nil {
 			continue
 		}
+
 		matches = append(matches, cPrivateKey)
 	}
+
 	switch len(matches) {
 	case 0:
 		return nil, ErrNoMatch
@@ -98,6 +101,7 @@ func verifyPrivateAndPublicKey(publicKey []byte, privateKey []byte, kind string)
 		if err != nil {
 			return nil, err
 		}
+
 		if bytes.Equal(privateKey.PublicKey().Bytes(), publicKey) {
 			return privateKey, nil
 		}
@@ -106,6 +110,7 @@ func verifyPrivateAndPublicKey(publicKey []byte, privateKey []byte, kind string)
 		if err != nil {
 			return nil, err
 		}
+
 		if bytes.Equal(privateKey.PublicKey().Bytes(), publicKey) {
 			return privateKey, nil
 		}
@@ -114,12 +119,14 @@ func verifyPrivateAndPublicKey(publicKey []byte, privateKey []byte, kind string)
 		if err != nil {
 			return nil, err
 		}
+
 		if bytes.Equal(privateKey.PublicKey().Bytes(), publicKey) {
 			return privateKey, nil
 		}
 	default:
 		return nil, ErrKindNotFound
 	}
+
 	return nil, errPrivateAndPublicKeyNotMatched
 }
 

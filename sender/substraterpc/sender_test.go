@@ -2,9 +2,7 @@ package substraterpc
 
 import (
 	"context"
-	// "fmt"
-	// gsrpc "github.com/centrifuge/go-substrate-rpc-client"
-	// "github.com/centrifuge/go-substrate-rpc-client/signature"
+
 	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
@@ -94,7 +92,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 				signer: func() signer.Signer {
 					m := signertest.NewMockSigner(mockCtrl)
 					m.EXPECT().Sign(substrate.SignerOptions{
-						Tx: types.NewExtrinsic(types.Call{}),
+						Extrinsic: types.NewExtrinsic(types.Call{}),
 						SignatureOptions: types.SignatureOptions{
 							BlockHash:   types.Hash{},
 							Era:         types.ExtrinsicEra{IsMortalEra: false},
@@ -402,7 +400,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 				signer: func() signer.Signer {
 					m := signertest.NewMockSigner(mockCtrl)
 					m.EXPECT().Sign(substrate.SignerOptions{
-						Tx: types.NewExtrinsic(types.Call{}),
+						Extrinsic: types.NewExtrinsic(types.Call{}),
 						SignatureOptions: types.SignatureOptions{
 							BlockHash:   types.Hash{},
 							Era:         types.ExtrinsicEra{IsMortalEra: false},
@@ -467,7 +465,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 				signer: func() signer.Signer {
 					m := signertest.NewMockSigner(mockCtrl)
 					m.EXPECT().Sign(substrate.SignerOptions{
-						Tx: types.NewExtrinsic(types.Call{}),
+						Extrinsic: types.NewExtrinsic(types.Call{}),
 						SignatureOptions: types.SignatureOptions{
 							BlockHash:   types.Hash{},
 							Era:         types.ExtrinsicEra{IsMortalEra: false},

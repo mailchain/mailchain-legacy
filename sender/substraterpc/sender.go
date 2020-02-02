@@ -48,7 +48,7 @@ func (s SubstrateRPC) Send(ctx context.Context, network string, to, from, data [
 	o := client.CreateSignatureOptions(genesisHash, genesisHash, false, *rv, nonce, 0)
 
 	signedExt, err := txSigner.Sign(substrate.SignerOptions{
-		Tx:               ext,
+		Extrinsic:        ext,
 		SignatureOptions: o,
 	})
 	if err != nil {

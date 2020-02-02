@@ -32,7 +32,7 @@ func TestSigner_Sign(t *testing.T) {
 				sr25519test.CharlottePrivateKey,
 			},
 			args{
-				SignerOptions{
+				&SignerOptions{
 					types.Extrinsic{
 						Version: 0x4,
 						Signature: types.ExtrinsicSignatureV4{
@@ -166,55 +166,42 @@ func TestSigner_Sign(t *testing.T) {
 				privateKey: tt.fields.privateKey,
 			}
 			gotSignedTransactionInterface, err := e.Sign(tt.args.opts)
-			// todo: nikos make this check more elegant, @Rob check this out
-			opts := tt.args.opts
-			switch opts := opts.(type) {
-			case SignerOptions:
-				o := opts.SignatureOptions
-				ext := opts.Tx
-				mb, _ := types.EncodeToBytes(ext.Method)
-				era := o.Era
-				if !o.Era.IsMortalEra {
-					era = types.ExtrinsicEra{IsImmortalEra: true}
-				}
-				payload := types.ExtrinsicPayloadV3{
-					Method:      mb,
-					Era:         era,
-					Nonce:       o.Nonce,
-					Tip:         o.Tip,
-					SpecVersion: o.SpecVersion,
-					GenesisHash: o.GenesisHash,
-					BlockHash:   o.BlockHash,
-				}
-				data, _ := types.EncodeToBytes(payload)
-				sign, _ := types.EncodeToBytes(gotSignedTransactionInterface.(*types.Extrinsic).Signature.Signature.AsSr25519)
-				verify := e.privateKey.PublicKey().Verify(data, sign)
-				if !verify {
-					t.Errorf("NO MATCH")
-					return
-				}
-			}
-			// -------
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Signer.Sign() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if err == nil {
-				assert.IsType(t, &types.Extrinsic{}, gotSignedTransactionInterface)
-				gotSignedTransaction := gotSignedTransactionInterface.(*types.Extrinsic)
-				if !assert.Equal(t, tt.wantSigner, &gotSignedTransaction.Signature.Signer) {
-					t.Errorf("Signer.Sign().Signature.Signer = %v, want %v", gotSignedTransaction.Signature.Signer, tt.wantSigner)
-				}
-				if !assert.Equal(t, tt.wantMethod, &gotSignedTransaction.Method) {
-					t.Errorf("Signer.Sign().Method = %v, want %v", gotSignedTransaction.Method, tt.wantMethod)
-				}
-				switch tt.fields.privateKey.(type) {
-				case *sr25519.PrivateKey:
-					assert.NotEqual(t, [64]byte{}, gotSignedTransaction.Signature.Signature.AsSr25519[:])
-				default:
-					t.Error("unsupported key type")
-				}
+			if err != nil {
+				return
 			}
+			gotSignedTransaction, ok := gotSignedTransactionInterface.(*types.Extrinsic)
+			if !ok {
+				assert.FailNow(t, "invalid return type")
+			}
+			opts, ok := tt.args.opts.(*SignerOptions)
+			if !ok {
+				assert.FailNow(t, "invalid signature options")
+			}
+			data, err := e.prepareData(&opts.Extrinsic, &opts.SignatureOptions)
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			if !assert.Equal(t, tt.wantMethod, &gotSignedTransaction.Method) {
+				t.Errorf("Signer.Sign().Method = %v, want %v", gotSignedTransaction.Method, tt.wantMethod)
+			}
+			var signature []byte
+			switch tt.fields.privateKey.(type) {
+			case *sr25519.PrivateKey:
+				signature, _ = types.EncodeToBytes(gotSignedTransaction.Signature.Signature.AsSr25519)
+			default:
+				t.Error("unsupported key type")
+			}
+
+			verify := e.privateKey.PublicKey().Verify(data, signature)
+			if !verify {
+				t.Errorf("signature can not be verified by public key")
+				return
+			}
+
 		})
 	}
 }

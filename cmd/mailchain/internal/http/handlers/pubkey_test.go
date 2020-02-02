@@ -15,6 +15,8 @@
 package handlers
 
 import (
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -29,7 +31,6 @@ import (
 )
 
 func Test_parseGetPublicKey(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		queryParams map[string]string
 	}
@@ -118,7 +119,7 @@ func Test_parseGetPublicKey(t *testing.T) {
 				t.Errorf("parseGetPublicKey() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.wantRes, gotRes) {
+			if !assert.Equal(t, tt.wantRes, gotRes) {
 				t.Errorf("parseGetPublicKey() gotRes = %v, want %v", gotRes, tt.wantRes)
 			}
 		})
@@ -126,7 +127,6 @@ func Test_parseGetPublicKey(t *testing.T) {
 }
 
 func TestGetPublicKey(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -136,20 +136,18 @@ func TestGetPublicKey(t *testing.T) {
 		name        string
 		args        args
 		queryParams map[string]string
-		wantBody    string
 		wantStatus  int
 	}{
 		{
-			"err-invalid-request",
+			"422-invalid-request",
 			args{
 				nil,
 			},
 			map[string]string{},
-			"{\"code\":422,\"message\":\"'protocol' must be specified exactly once\"}\n",
 			http.StatusUnprocessableEntity,
 		},
 		{
-			"no-network-finder",
+			"422-no-network-finder",
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
@@ -161,11 +159,10 @@ func TestGetPublicKey(t *testing.T) {
 				"network":  "mainnet",
 				"protocol": "ethereum",
 			},
-			"{\"code\":422,\"message\":\"public key finder not supported on \\\"ethereum/mainnet\\\"\"}\n",
 			http.StatusUnprocessableEntity,
 		},
 		{
-			"nil-network-finder",
+			"422-nil-network-finder",
 			args{
 				map[string]mailbox.PubKeyFinder{"ethereum/mainnet": nil},
 			},
@@ -174,11 +171,10 @@ func TestGetPublicKey(t *testing.T) {
 				"network":  "mainnet",
 				"protocol": "ethereum",
 			},
-			"{\"code\":422,\"message\":\"no public key finder configured for \\\"ethereum/mainnet\\\"\"}\n",
 			http.StatusUnprocessableEntity,
 		},
 		{
-			"networkNotSupportedError",
+			"406-network-not-supported",
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
@@ -191,15 +187,14 @@ func TestGetPublicKey(t *testing.T) {
 				"network":  "mainnet",
 				"protocol": "ethereum",
 			},
-			"{\"code\":406,\"message\":\"network \\\"mainnet\\\" not supported\"}\n",
 			http.StatusNotAcceptable,
 		},
 		{
-			"PublicKeyFromAddress_error",
+			"500-public-key-from-address-error",
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
-					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "ethereum", "mainnet", []byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}).Return(nil, errors.New("error")).Times(1)
+					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "ethereum", "mainnet", []byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}).Return(nil, errors.New("error: PublicKeyFromAddress")).Times(1)
 					return map[string]mailbox.PubKeyFinder{"ethereum/mainnet": finder}
 				}(),
 			},
@@ -208,11 +203,10 @@ func TestGetPublicKey(t *testing.T) {
 				"network":  "mainnet",
 				"protocol": "ethereum",
 			},
-			"{\"code\":500,\"message\":\"error\"}\n",
 			http.StatusInternalServerError,
 		},
 		{
-			"success-sofia-secp256k1",
+			"200-sofia-secp256k1",
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
@@ -225,11 +219,10 @@ func TestGetPublicKey(t *testing.T) {
 				"network":  "mainnet",
 				"protocol": "ethereum",
 			},
-			"{\"public_key\":\"0x69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0\",\"public_key_encoding\":\"hex/0x-prefix\",\"supported_encryption_types\":[\"aes256cbc\",\"noop\"]}\n",
 			http.StatusOK,
 		},
 		{
-			"success-charlotte-secp256k1",
+			"200-charlotte-secp256k1",
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
@@ -242,12 +235,12 @@ func TestGetPublicKey(t *testing.T) {
 				"network":  "mainnet",
 				"protocol": "ethereum",
 			},
-			"{\"public_key\":\"0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d\",\"public_key_encoding\":\"hex/0x-prefix\",\"supported_encryption_types\":[\"aes256cbc\",\"noop\"]}\n",
 			http.StatusOK,
 		},
 	}
 
 	for _, tt := range tests {
+		testName := t.Name()
 		t.Run(tt.name, func(t *testing.T) {
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 			req, _ := http.NewRequest("GET", "/", nil)
@@ -265,14 +258,15 @@ func TestGetPublicKey(t *testing.T) {
 			handler.ServeHTTP(rr, req)
 
 			// Check the status code is what we expect.
-			if !assert.Equal(tt.wantStatus, rr.Code) {
+			if !assert.Equal(t, tt.wantStatus, rr.Code) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.wantStatus)
 			}
-			if !assert.Equal(tt.wantBody, rr.Body.String()) {
-				t.Errorf("handler returned unexpected body: got %v want %v",
-					rr.Body.String(), tt.wantBody)
+			golden, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/%s.json", testName, tt.name))
+			if err != nil {
+				assert.FailNow(t, err.Error())
 			}
+			assert.JSONEq(t, string(golden), rr.Body.String())
 		})
 	}
 }

@@ -83,6 +83,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 			PublicKey:                encodedKey,
 			PublicKeyEncoding:        encodingType,
 			SupportedEncryptionTypes: encryptionTypes,
+			PublicKeyKind:            publicKey.Kind(),
 		})
 	}
 }
@@ -167,6 +168,12 @@ type GetPublicKeyResponseBody struct {
 	// Required: true
 	// example: hex/0x-prefix
 	PublicKeyEncoding string `json:"public_key_encoding"`
+
+	// Encoding method used for encoding the `public_key`
+	//
+	// Required: true
+	// example: ["secp256k1", "sr25519", "ed25519"]
+	PublicKeyKind string `json:"public_key_kind"`
 
 	// Supported encryption methods for public keys.
 	//

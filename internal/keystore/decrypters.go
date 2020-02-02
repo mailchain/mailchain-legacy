@@ -26,8 +26,8 @@ import (
 func Decrypter(cipherType byte, pk crypto.PrivateKey) (cipher.Decrypter, error) {
 	switch cipherType {
 	case cipher.AES256CBC:
-		return aes256cbc.NewDecrypter(pk), nil
-	case cipher.NACL:
+		return aes256cbc.NewDecrypter(pk)
+	case cipher.NACLECDH:
 		return nacl.NewDecrypter(pk)
 	default:
 		return nil, errors.Errorf("unsupported decrypter type")

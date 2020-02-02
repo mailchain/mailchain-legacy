@@ -17,17 +17,21 @@ package keystore
 import (
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
 	"github.com/mailchain/mailchain/crypto/cipher/nacl"
+	"github.com/mailchain/mailchain/crypto/cryptotest"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDecrypter(t *testing.T) {
-	assert := assert.New(t)
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
 	type args struct {
 		cipherType byte
 		pk         crypto.PrivateKey
@@ -44,13 +48,16 @@ func TestDecrypter(t *testing.T) {
 				cipher.AES256CBC,
 				secp256k1test.CharlottePrivateKey,
 			},
-			aes256cbc.NewDecrypter(secp256k1test.CharlottePrivateKey),
+			func() cipher.Decrypter {
+				m, _ := aes256cbc.NewDecrypter(secp256k1test.CharlottePrivateKey)
+				return m
+			}(),
 			false,
 		},
 		{
 			"nacl",
 			args{
-				cipher.NACL,
+				cipher.NACLECDH,
 				ed25519test.CharlottePrivateKey,
 			},
 			func() cipher.Decrypter {
@@ -60,12 +67,30 @@ func TestDecrypter(t *testing.T) {
 			false,
 		},
 		{
-			"err",
+			"err-invalid-key-type",
 			args{
 				0xFF,
 				secp256k1test.CharlottePrivateKey,
 			},
 			nil,
+			true,
+		},
+		{
+			"err-invalid-nacl-key-type",
+			args{
+				cipher.NACLECDH,
+				cryptotest.NewMockPrivateKey(mockCtrl),
+			},
+			(*nacl.Decrypter)(nil),
+			true,
+		},
+		{
+			"err-invalid-aes256cbc-key-type",
+			args{
+				cipher.AES256CBC,
+				ed25519test.CharlottePrivateKey,
+			},
+			(*aes256cbc.Decrypter)(nil),
 			true,
 		},
 	}
@@ -76,7 +101,7 @@ func TestDecrypter(t *testing.T) {
 				t.Errorf("Decrypter() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Decrypter() = %v, want %v", got, tt.want)
 			}
 		})

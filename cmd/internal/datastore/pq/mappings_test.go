@@ -90,10 +90,10 @@ func TestGetPublicKeyTypeUint8(t *testing.T) {
 		{
 			"success",
 			args{
-				crypto.SECP256K1,
+				crypto.KindSECP256K1,
 			},
 			result{
-				1,
+				crypto.ByteSECP256K1,
 				false,
 			},
 		},
@@ -119,7 +119,6 @@ func TestGetPublicKeyTypeUint8(t *testing.T) {
 }
 
 func TestGetPublicKeyTypeString(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		pub_key_type uint8
 	}
@@ -135,10 +134,10 @@ func TestGetPublicKeyTypeString(t *testing.T) {
 		{
 			"success",
 			args{
-				1,
+				crypto.ByteSECP256K1,
 			},
 			result{
-				crypto.SECP256K1,
+				crypto.KindSECP256K1,
 				false,
 			},
 		},
@@ -159,6 +158,6 @@ func TestGetPublicKeyTypeString(t *testing.T) {
 			t.Errorf("getPublicKeyTypeString() error = %v, wantErr %v", err, tt.result.wantErr)
 			return
 		}
-		assert.Equal(tt.result.pub_key_type, sPubKeyType)
+		assert.Equal(t, tt.result.pub_key_type, sPubKeyType)
 	}
 }

@@ -23,7 +23,7 @@ func (pk PublicKey) Bytes() []byte {
 
 // Kind returns the key type
 func (pk PublicKey) Kind() string {
-	return crypto.ED25519
+	return crypto.KindED25519
 }
 
 // PublicKeyFromBytes create a public key from []byte

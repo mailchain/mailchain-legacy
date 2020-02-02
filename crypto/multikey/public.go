@@ -18,16 +18,19 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/sr25519"
 	"github.com/pkg/errors"
 )
 
 // PublicKeyFromBytes use the correct function to get the private key from bytes
 func PublicKeyFromBytes(keyType string, data []byte) (crypto.PublicKey, error) {
 	switch keyType {
-	case crypto.SECP256K1:
+	case crypto.KindSECP256K1:
 		return secp256k1.PublicKeyFromBytes(data)
-	case crypto.ED25519:
+	case crypto.KindED25519:
 		return ed25519.PublicKeyFromBytes(data)
+	case crypto.KindSR25519:
+		return sr25519.PublicKeyFromBytes(data)
 	default:
 		return nil, errors.Errorf("unsupported curve type")
 	}

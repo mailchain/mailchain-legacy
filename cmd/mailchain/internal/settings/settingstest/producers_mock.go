@@ -6,8 +6,8 @@ package settingstest
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	output "github.com/mailchain/mailchain/cmd/internal/settings/output"
 	settings "github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
-	output "github.com/mailchain/mailchain/cmd/mailchain/internal/settings/output"
 	mailbox "github.com/mailchain/mailchain/internal/mailbox"
 	nameservice "github.com/mailchain/mailchain/nameservice"
 	sender "github.com/mailchain/mailchain/sender"

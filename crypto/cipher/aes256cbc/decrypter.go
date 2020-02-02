@@ -23,6 +23,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	mc "github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/pkg/errors"
 )
 
 // NewDecrypter create a new decrypter attaching the private key to it

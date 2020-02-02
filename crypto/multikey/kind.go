@@ -28,12 +28,6 @@ var (
 	// ErrNoMatch is returned when no public key matches for the input.
 	ErrNoMatch = errors.New("no match found")
 
-	// ErrKindNotFound key kind is not found
-	ErrKindNotFound = errors.New("key kind is not found")
-
-	// PossibleKeyKinds current possible key kinds
-	PossibleKeyKinds = []string{crypto.KindED25519, crypto.KindSECP256K1, crypto.KindSR25519}
-
 	// errPrivateKeyPublicKeyNotMatched private and public keys do not match
 	errPrivateAndPublicKeyNotMatched = errors.New("public and private keys do not match")
 )
@@ -71,7 +65,7 @@ func KeyKindFromSignature(pubKey, message, sig []byte, keyKinds []string) (crypt
 func GetKeyKindFromBytes(publicKey, privateKey []byte) (crypto.PrivateKey, error) {
 	matches := make([]crypto.PrivateKey, 0, 1)
 
-	for _, keyKind := range PossibleKeyKinds {
+	for keyKind := range crypto.KeyTypes() {
 		cPrivateKey, err := extractKeyTypeAndVerifyPrivateAndPublicKey(publicKey, privateKey, keyKind)
 		if err != nil {
 			continue
@@ -83,7 +77,7 @@ func GetKeyKindFromBytes(publicKey, privateKey []byte) (crypto.PrivateKey, error
 	switch len(matches) {
 	case 0:
 		return nil, ErrNoMatch
-	case 1: //nolint:gomnd
+	case 1:
 		return matches[0], nil
 	default:
 		return nil, ErrInconclusive

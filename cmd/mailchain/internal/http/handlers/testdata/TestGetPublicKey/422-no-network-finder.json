@@ -1,0 +1,4 @@
+{
+    "code":422,
+    "message":"public key finder not supported on \"ethereum/mainnet\""
+}

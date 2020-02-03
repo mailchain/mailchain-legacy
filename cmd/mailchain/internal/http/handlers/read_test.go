@@ -30,7 +30,6 @@ import (
 )
 
 func Test_doRead(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		inboxFunc func(messageID mail.ID) error
 		r         *http.Request
@@ -100,7 +99,7 @@ func Test_doRead(t *testing.T) {
 			// Check the response body is what we expect.
 			// o := io.Reader
 
-			if !assert.Equal(tt.expectedResponse, resp.Body.String()) {
+			if !assert.Equal(t, tt.expectedResponse, resp.Body.String()) {
 				t.Errorf("handler returned unexpected body: got %v want %v",
 					resp.Body.String(), tt.expectedResponse)
 			}
@@ -113,7 +112,6 @@ func Test_doRead(t *testing.T) {
 }
 
 func TestPutRead(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -178,11 +176,11 @@ func TestPutRead(t *testing.T) {
 			handler.ServeHTTP(rr, tt.req)
 
 			// Check the status code is what we expect.
-			if !assert.Equal(tt.expectedStatus, rr.Code) {
+			if !assert.Equal(t, tt.expectedStatus, rr.Code) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.expectedStatus)
 			}
-			if !assert.Equal(tt.expectedResponse, rr.Body.String()) {
+			if !assert.Equal(t, tt.expectedResponse, rr.Body.String()) {
 				t.Errorf("handler returned unexpected body: got %v want %v",
 					rr.Body.String(), tt.expectedResponse)
 			}
@@ -191,7 +189,6 @@ func TestPutRead(t *testing.T) {
 }
 
 func TestDeleteRead(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -256,11 +253,11 @@ func TestDeleteRead(t *testing.T) {
 			handler.ServeHTTP(rr, tt.req)
 
 			// Check the status code is what we expect.
-			if !assert.Equal(tt.expectedStatus, rr.Code) {
+			if !assert.Equal(t, tt.expectedStatus, rr.Code) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.expectedStatus)
 			}
-			if !assert.Equal(tt.expectedResponse, rr.Body.String()) {
+			if !assert.Equal(t, tt.expectedResponse, rr.Body.String()) {
 				t.Errorf("handler returned unexpected body: got %v want %v",
 					rr.Body.String(), tt.expectedResponse)
 			}
@@ -269,7 +266,6 @@ func TestDeleteRead(t *testing.T) {
 }
 
 func TestGetRead(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -391,11 +387,11 @@ func TestGetRead(t *testing.T) {
 			handler.ServeHTTP(rr, tt.req)
 
 			// Check the status code is what we expect.
-			if !assert.Equal(tt.expectedStatus, rr.Code) {
+			if !assert.Equal(t, tt.expectedStatus, rr.Code) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.expectedStatus)
 			}
-			if !assert.Equal(tt.expectedResponse, rr.Body.String()) {
+			if !assert.Equal(t, tt.expectedResponse, rr.Body.String()) {
 				t.Errorf("handler returned unexpected body: got %v want %v",
 					rr.Body.String(), tt.expectedResponse)
 			}

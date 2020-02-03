@@ -12,7 +12,6 @@ import (
 )
 
 func Test_easySeal(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		message []byte
 		key     []byte
@@ -82,7 +81,7 @@ func Test_easySeal(t *testing.T) {
 				t.Errorf("easySeal() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("easySeal() = %v, want %v", got, tt.want)
 			}
 		})
@@ -90,7 +89,6 @@ func Test_easySeal(t *testing.T) {
 }
 
 func Test_easyOpen(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		box []byte
 		key []byte
@@ -144,7 +142,7 @@ func Test_easyOpen(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("easyOpen() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("easyOpen() = %v, want %v", got, tt.want)
 			}
 		})
@@ -152,7 +150,6 @@ func Test_easyOpen(t *testing.T) {
 }
 
 func Test_easyOpen_SR25519(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		box []byte
 		key []byte
@@ -206,7 +203,7 @@ func Test_easyOpen_SR25519(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("easyOpen() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("easyOpen() = %v, want %v", got, tt.want)
 			}
 		})

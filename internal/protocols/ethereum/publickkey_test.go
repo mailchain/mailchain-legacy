@@ -23,7 +23,6 @@ import (
 )
 
 func TestDeriveChainID(t *testing.T) {
-	assert := assert.New(t)
 	cases := []struct {
 		name     string
 		chainID  *big.Int
@@ -35,13 +34,12 @@ func TestDeriveChainID(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.EqualValues(tc.expected, deriveChainID(tc.chainID))
+			assert.EqualValues(t, tc.expected, deriveChainID(tc.chainID))
 		})
 	}
 }
 
 func TestCreateSignatureToUseInRecovery(t *testing.T) {
-	assert := assert.New(t)
 	cases := []struct {
 		name     string
 		r        *big.Int
@@ -61,13 +59,13 @@ func TestCreateSignatureToUseInRecovery(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			res := createSignatureToUseInRecovery(tc.r, tc.s, tc.v)
-			assert.EqualValues(tc.expected, res)
+			assert.EqualValues(t, tc.expected, res)
 		})
 	}
 }
 
 func TestGetPublicKeyFromTransaction(t *testing.T) {
-	assert := assert.New(t)
+
 	cases := []struct {
 		name     string
 		r        *big.Int
@@ -113,8 +111,8 @@ func TestGetPublicKeyFromTransaction(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			res, err := GetPublicKeyFromTransaction(tc.r, tc.s, tc.v, tc.to, tc.input, tc.nonce, tc.gasPrice, tc.gas, tc.value)
-			assert.EqualValues(tc.expected, res)
-			assert.Equal(tc.err, err)
+			assert.EqualValues(t, tc.expected, res)
+			assert.Equal(t, tc.err, err)
 		})
 	}
 }

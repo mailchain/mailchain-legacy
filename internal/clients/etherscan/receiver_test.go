@@ -17,17 +17,17 @@ package etherscan
 import (
 	"context"
 	"errors"
-	"github.com/mailchain/mailchain/crypto/cipher"
-	"github.com/mailchain/mailchain/internal/mailbox"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestReceive(t *testing.T) {
-	assert := assert.New(t)
 	networkStackError := errors.New("Get http://somethignnotvalid:1334")
 	type args struct {
 		ctx     context.Context
@@ -161,7 +161,7 @@ func TestReceive(t *testing.T) {
 				t.Errorf("APIClient.Receive() nil = %v, wantNil %v", got == nil, tt.wantNil)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("APIClient.Receive() = %v, want %v", got, tt.want)
 			}
 		})

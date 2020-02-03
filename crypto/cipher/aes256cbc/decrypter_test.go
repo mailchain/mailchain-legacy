@@ -25,7 +25,6 @@ import (
 )
 
 func TestDecrypter(t *testing.T) {
-	assert := assert.New(t)
 	cases := []struct {
 		name          string
 		decrypter     Decrypter
@@ -58,8 +57,8 @@ func TestDecrypter(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			res, err := tc.decrypter.Decrypt(tc.encryptedData)
-			assert.EqualValues(string(tc.expected), string(res))
-			assert.Equal(tc.err, err)
+			assert.EqualValues(t, string(tc.expected), string(res))
+			assert.Equal(t, tc.err, err)
 		})
 	}
 }

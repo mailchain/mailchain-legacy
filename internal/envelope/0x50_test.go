@@ -178,7 +178,6 @@ func TestZeroX50_ContentsHash(t *testing.T) {
 }
 
 func TestZeroX50_IntegrityHash(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -281,7 +280,7 @@ func TestZeroX50_IntegrityHash(t *testing.T) {
 				t.Errorf("ZeroX50.IntegrityHash() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("ZeroX50.IntegrityHash() = %v, want %v", got, tt.want)
 			}
 		})

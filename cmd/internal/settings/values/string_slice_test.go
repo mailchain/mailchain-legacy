@@ -111,7 +111,7 @@ func TestDefaultStringSlice_Set(t *testing.T) {
 }
 
 func TestNewDefaultStringSlice(t *testing.T) {
-	assert := assert.New(t)
+	
 	type args struct {
 		defVal  []string
 		store   Store
@@ -134,7 +134,7 @@ func TestNewDefaultStringSlice(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewDefaultStringSlice(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(tt.want, got) {
+			if got := NewDefaultStringSlice(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(t, tt.want, got) {
 				t.Errorf("NewDefaultStringSlice() = %v, want %v", got, tt.want)
 			}
 		})

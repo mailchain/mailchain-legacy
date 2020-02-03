@@ -28,7 +28,7 @@ import (
 )
 
 func TestFileStore_GetSigner(t *testing.T) {
-	assert := assert.New(t)
+
 	type fields struct {
 		fs     afero.Fs
 		rand   io.Reader
@@ -129,7 +129,7 @@ func TestFileStore_GetSigner(t *testing.T) {
 				t.Errorf("FileStore.GetSigner() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.IsType(got, tt.want) {
+			if !assert.IsType(t, got, tt.want) {
 				t.Errorf("FileStore.GetSigner() = %v, want %v", got, tt.want)
 			}
 		})

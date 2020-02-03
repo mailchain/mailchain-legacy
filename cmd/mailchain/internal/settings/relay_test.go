@@ -11,7 +11,6 @@ import (
 )
 
 func Test_relaySender(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -42,8 +41,8 @@ func Test_relaySender(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := relaySender(tt.args.s, tt.args.network)
-			assert.Equal(tt.wantEnabledProtocolNetworks, got.EnabledProtocolNetworks.Get())
-			assert.Equal(tt.wantBaseURL, got.BaseURL.Get())
+			assert.Equal(t, tt.wantEnabledProtocolNetworks, got.EnabledProtocolNetworks.Get())
+			assert.Equal(t, tt.wantBaseURL, got.BaseURL.Get())
 		})
 	}
 }

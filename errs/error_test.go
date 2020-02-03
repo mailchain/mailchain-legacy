@@ -27,7 +27,6 @@ import (
 )
 
 func TestJSONWriter(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		w    http.ResponseWriter
 		code int
@@ -98,7 +97,7 @@ func TestJSONWriter(t *testing.T) {
 			}()
 			JSONWriter(tt.args.w, tt.args.code, tt.args.err)
 			gotLogOut := buf.String()
-			if !assert.Equal(tt.logOut, gotLogOut) {
+			if !assert.Equal(t, tt.logOut, gotLogOut) {
 				t.Errorf("logOut = %v, want %v", gotLogOut, tt.logOut)
 			}
 		})

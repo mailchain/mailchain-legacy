@@ -24,7 +24,6 @@ import (
 )
 
 func Test_settingsCmd(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		config *settings.Root
 	}
@@ -54,7 +53,7 @@ func Test_settingsCmd(t *testing.T) {
 			for _, x := range got.Commands() {
 				subCommandNames = append(subCommandNames, x.Name())
 			}
-			if !assert.Equal(tt.wantCommandNames, subCommandNames) {
+			if !assert.Equal(t, tt.wantCommandNames, subCommandNames) {
 				t.Errorf("settingsCmd().Commands = %v, wantCommandNames %v", subCommandNames, strings.Join(tt.wantCommandNames, ","))
 			}
 		})

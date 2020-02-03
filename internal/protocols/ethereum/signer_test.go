@@ -30,7 +30,6 @@ import (
 )
 
 func TestNewSigner(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		privateKey crypto.PrivateKey
 	}
@@ -66,7 +65,7 @@ func TestNewSigner(t *testing.T) {
 				t.Errorf("NewSigner() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("NewSigner() = %v, want %v", got, tt.want)
 			}
 		})
@@ -161,7 +160,6 @@ func TestSigner_Sign(t *testing.T) {
 }
 
 func Test_validatePrivateKeyType(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		pk crypto.PrivateKey
 	}
@@ -218,7 +216,7 @@ func Test_validatePrivateKeyType(t *testing.T) {
 				return
 			}
 
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("validatePrivateKeyType() = %v, want %v", got, tt.want)
 			}
 		})

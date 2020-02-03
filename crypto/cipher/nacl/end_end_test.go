@@ -11,7 +11,6 @@ import (
 )
 
 func TestEncryptDecrypt(t *testing.T) {
-	assert := assert.New(t)
 	cases := []struct {
 		name                string
 		recipientPublicKey  crypto.PublicKey
@@ -123,13 +122,13 @@ func TestEncryptDecrypt(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			encrypter, _ := NewEncrypter(tc.recipientPublicKey)
 			encrypted, err := encrypter.Encrypt(tc.data)
-			assert.Equal(tc.err, err)
-			assert.NotNil(encrypted)
+			assert.Equal(t, tc.err, err)
+			assert.NotNil(t, encrypted)
 
 			decrypter, _ := NewDecrypter(tc.recipientPrivateKey)
 			decrypted, err := decrypter.Decrypt(encrypted)
-			assert.Equal(tc.err, err)
-			assert.Equal(tc.data, []byte(decrypted))
+			assert.Equal(t, tc.err, err)
+			assert.Equal(t, tc.data, []byte(decrypted))
 		})
 	}
 }

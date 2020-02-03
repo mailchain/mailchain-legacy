@@ -10,7 +10,6 @@ import (
 )
 
 func Test_copyHeader(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		src http.Header
 		dst http.Header
@@ -55,7 +54,7 @@ func Test_copyHeader(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			copyHeader(tt.args.src, tt.args.dst)
-			if !assert.Equal(tt.want, tt.args.dst) {
+			if !assert.Equal(t, tt.want, tt.args.dst) {
 				t.Errorf("want %v dst %v", tt.want, tt.args.dst)
 			}
 		})
@@ -63,7 +62,6 @@ func Test_copyHeader(t *testing.T) {
 }
 
 func TestChangeURL(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		url string
 		req *http.Request
@@ -118,7 +116,7 @@ func TestChangeURL(t *testing.T) {
 				return
 			}
 			if tt.want != nil && req != nil {
-				assert.Equal(tt.want.url, req.URL.String())
+				assert.Equal(t, tt.want.url, req.URL.String())
 			}
 
 		})
@@ -126,7 +124,6 @@ func TestChangeURL(t *testing.T) {
 }
 
 func TestRelayFunc_HandleRequest(t *testing.T) {
-	assert := assert.New(t)
 
 	type args struct {
 		w      *httptest.ResponseRecorder
@@ -200,7 +197,7 @@ func TestRelayFunc_HandleRequest(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.args.f.HandleRequest(tt.args.w, tt.args.req)
 		})
-		if !assert.Equal(tt.expectedStatus, tt.args.w.Result().StatusCode) {
+		if !assert.Equal(t, tt.expectedStatus, tt.args.w.Result().StatusCode) {
 			t.Errorf("expectedStatus %v != result %v", tt.expectedStatus, tt.args.w.Result().StatusCode)
 		}
 	}

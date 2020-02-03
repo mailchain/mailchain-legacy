@@ -97,7 +97,6 @@ func TestEthereumRPC2_Supports(t *testing.T) {
 }
 
 func Test_ethereumRPC2Sender(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -127,8 +126,8 @@ func Test_ethereumRPC2Sender(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ethereumRPC2Sender(tt.args.s, tt.args.network)
-			assert.Equal(tt.wantAddress, got.Address.Get())
-			assert.Equal(tt.wantNetwork, got.network)
+			assert.Equal(t, tt.wantAddress, got.Address.Get())
+			assert.Equal(t, tt.wantNetwork, got.network)
 		})
 	}
 }

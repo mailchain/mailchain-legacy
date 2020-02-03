@@ -35,7 +35,6 @@ import (
 var update = flag.Bool("update", false, "update .golden files")
 
 func Test_writeTemporaryKeyFile(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		fs      afero.Fs
 		file    string
@@ -75,7 +74,7 @@ func Test_writeTemporaryKeyFile(t *testing.T) {
 				t.Errorf("writeTemporaryKeyFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Contains(got, tt.wantFileName) {
+			if !assert.Contains(t, got, tt.wantFileName) {
 				t.Errorf("writeTemporaryKeyFile() = %v, want %v", got, tt.wantFileName)
 			}
 		})
@@ -83,7 +82,6 @@ func Test_writeTemporaryKeyFile(t *testing.T) {
 }
 
 func TestFileStore_Store(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		fs     afero.Fs
 		rand   io.Reader
@@ -231,7 +229,7 @@ func TestFileStore_Store(t *testing.T) {
 				t.Errorf("FileStore.Store() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("FileStore.Store() = %v, want %v", got, tt.want)
 			}
 		})

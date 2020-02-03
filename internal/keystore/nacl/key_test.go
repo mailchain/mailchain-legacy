@@ -30,7 +30,6 @@ import (
 )
 
 func Test_deriveKey(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		ek               *keystore.EncryptedKey
 		deriveKeyOptions multi.OptionsBuilders
@@ -112,7 +111,7 @@ func Test_deriveKey(t *testing.T) {
 				t.Errorf("deriveKey() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("deriveKey() = %v, want %v", got, tt.want)
 			}
 		})
@@ -120,7 +119,6 @@ func Test_deriveKey(t *testing.T) {
 }
 
 func TestFileStore_getPrivateKey(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		fs     afero.Fs
 		rand   io.Reader
@@ -270,7 +268,7 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 				t.Errorf("FileStore.getPrivateKey() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("FileStore.getPrivateKey() = %v, want %v", got, tt.want)
 			}
 		})

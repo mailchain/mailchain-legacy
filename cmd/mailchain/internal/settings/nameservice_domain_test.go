@@ -45,7 +45,6 @@ func Test_DomainNameServices(t *testing.T) {
 }
 
 func TestDomainNameServices_Produce(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -112,7 +111,7 @@ func TestDomainNameServices_Produce(t *testing.T) {
 				t.Errorf("DomainNameServices.Produce() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.IsType(tt.wantType, got) {
+			if !assert.IsType(t, tt.wantType, got) {
 				t.Errorf("DomainNameServices.Produce() = %v, want %v", got, tt.wantType)
 			}
 		})
@@ -120,7 +119,6 @@ func TestDomainNameServices_Produce(t *testing.T) {
 }
 
 func TestMailchainDomainNameServices_Supports(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -151,7 +149,7 @@ func TestMailchainDomainNameServices_Supports(t *testing.T) {
 				BaseURL:                 tt.fields.BaseURL,
 				EnabledProtocolNetworks: tt.fields.EnabledProtocolNetworks,
 			}
-			if got := s.Supports(); !assert.Equal(tt.want, got) {
+			if got := s.Supports(); !assert.Equal(t, tt.want, got) {
 				t.Errorf("MailchainDomainNameServices.Supports() = %v, want %v", got, tt.want)
 			}
 		})

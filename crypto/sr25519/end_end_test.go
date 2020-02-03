@@ -7,7 +7,6 @@ import (
 )
 
 func TestSignVerify(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		name         string
 		signedBy     PrivateKey
@@ -52,9 +51,9 @@ func TestSignVerify(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotSig, err := tt.signedBy.Sign(tt.message)
-			assert.Equal(tt.wantErr, err != nil)
+			assert.Equal(t, tt.wantErr, err != nil)
 			verified := tt.verifiedBy.Verify(tt.message, gotSig)
-			assert.Equal(tt.wantVerified, verified)
+			assert.Equal(t, tt.wantVerified, verified)
 		})
 	}
 }

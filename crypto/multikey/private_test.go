@@ -26,7 +26,6 @@ import (
 )
 
 func TestPrivateKeyFromBytes(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		hex     string
 		keyType []byte
@@ -81,7 +80,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 				t.Errorf("PrivateKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("PrivateKeyFromBytes() = %v, want %v", got, tt.want)
 			}
 		})

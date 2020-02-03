@@ -17,19 +17,19 @@ package etherscan
 import (
 	"errors"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/mailchain/mailchain/internal/protocols/ethereum"
-	"github.com/stretchr/testify/assert"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewAPIClient(t *testing.T) {
-	assert := assert.New(t)
 	apiClient, _ := NewAPIClient("api-key")
 	want := &APIClient{
 		key: "api-key",
@@ -41,13 +41,12 @@ func TestNewAPIClient(t *testing.T) {
 			ethereum.Goerli:  {url: "https://api-goerli.etherscan.io/api"},
 		},
 	}
-	if !assert.Equal(want, apiClient) {
+	if !assert.Equal(t, want, apiClient) {
 		t.Errorf("NewAPIClient() = %v, want %v", apiClient, want)
 	}
 }
 
 func TestGetTransactionByHash(t *testing.T) {
-	assert := assert.New(t)
 	networkStackError := errors.New("Get http://somethignnotvalid:1334")
 	type args struct {
 		server  *httptest.Server
@@ -188,12 +187,12 @@ func TestGetTransactionByHash(t *testing.T) {
 				return
 			}
 			if got != nil &&
-				(!assert.Equal(tt.want.Nonce(), got.Nonce()) ||
-					!assert.Equal(tt.want.To(), got.To()) ||
-					!assert.Equal(tt.want.Value(), got.Value()) ||
-					!assert.Equal(tt.want.Gas(), got.Gas()) ||
-					!assert.Equal(tt.want.GasPrice(), got.GasPrice()) ||
-					!assert.Equal(tt.want.Data(), got.Data())) {
+				(!assert.Equal(t, tt.want.Nonce(), got.Nonce()) ||
+					!assert.Equal(t, tt.want.To(), got.To()) ||
+					!assert.Equal(t, tt.want.Value(), got.Value()) ||
+					!assert.Equal(t, tt.want.Gas(), got.Gas()) ||
+					!assert.Equal(t, tt.want.GasPrice(), got.GasPrice()) ||
+					!assert.Equal(t, tt.want.Data(), got.Data())) {
 				t.Errorf("APIClient.getTransactionByHash() = %v, want %v", got, tt.want)
 			}
 		})
@@ -201,7 +200,6 @@ func TestGetTransactionByHash(t *testing.T) {
 }
 
 func TestGetTransactionsByAddress(t *testing.T) {
-	assert := assert.New(t)
 	networkStackError := errors.New("Get http://somethignnotvalid:1334")
 	type args struct {
 		server  *httptest.Server
@@ -333,7 +331,7 @@ func TestGetTransactionsByAddress(t *testing.T) {
 				t.Errorf("APIClient.getTransactionsByAddress() nil = %v, wantNil %v", got == nil, tt.wantNil)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("APIClient.getTransactionsByAddress() = %v, want %v", got, tt.want)
 			}
 		})

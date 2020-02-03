@@ -17,6 +17,8 @@ package multikey
 import (
 	"testing"
 
+	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
+
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
@@ -24,7 +26,6 @@ import (
 )
 
 func TestKeyKindFromSignature(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		pubKey  []byte
 		message []byte
@@ -156,15 +157,106 @@ func TestKeyKindFromSignature(t *testing.T) {
 				t.Errorf("KeyKindFromSignature() err = %v, want %v", err, tt.wantErr)
 			}
 
-			if !assert.Equal(key, tt.wantKey) {
+			if !assert.Equal(t, key, tt.wantKey) {
 				t.Errorf("KeyKindFromSignature() key = %v, want %v", key, tt.wantKey)
 			}
 		})
 	}
 }
 
+func TestGetKeyKindFromBytes(t *testing.T) {
+	type args struct {
+		publicKey  []byte
+		privateKey []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantKey crypto.PrivateKey
+		wantErr error
+	}{
+		{
+			name: "success-ed25519-sofia-key",
+			args: args{
+				publicKey:  ed25519test.SofiaPublicKey.Bytes(),
+				privateKey: ed25519test.SofiaPrivateKey.Bytes(),
+			},
+			wantKey: ed25519test.SofiaPrivateKey,
+		},
+		{
+			name: "success-ed25519-charlotte-key",
+			args: args{
+				publicKey:  ed25519test.CharlottePublicKey.Bytes(),
+				privateKey: ed25519test.CharlottePrivateKey.Bytes(),
+			},
+			wantKey: ed25519test.CharlottePrivateKey,
+		},
+		{
+			name: "success-secp256k1-sofia-key",
+			args: args{
+				publicKey:  secp256k1test.SofiaPublicKey.Bytes(),
+				privateKey: secp256k1test.SofiaPrivateKey.Bytes(),
+			},
+			wantKey: secp256k1test.SofiaPrivateKey,
+		},
+		{
+			name: "success-secp256k1-charlotte-key",
+			args: args{
+				publicKey:  secp256k1test.CharlottePublicKey.Bytes(),
+				privateKey: secp256k1test.CharlottePrivateKey.Bytes(),
+			},
+			wantKey: secp256k1test.CharlottePrivateKey,
+		},
+		{
+			name: "success-sr25519-sofia-key",
+			args: args{
+				publicKey:  sr25519test.SofiaPublicKey.Bytes(),
+				privateKey: sr25519test.SofiaPrivateKey.Bytes(),
+			},
+			wantKey: sr25519test.SofiaPrivateKey,
+		},
+		{
+			name: "success-sr25519-charlotte-key",
+			args: args{
+				publicKey:  sr25519test.CharlottePublicKey.Bytes(),
+				privateKey: sr25519test.CharlottePrivateKey.Bytes(),
+			},
+			wantKey: sr25519test.CharlottePrivateKey,
+		},
+		{
+			name: "err-invalid-public-key-bytes",
+			args: args{
+				publicKey:  []byte{0x1},
+				privateKey: sr25519test.CharlottePrivateKey.Bytes(),
+			},
+			wantErr: ErrNoMatch,
+		},
+		{
+			name: "err-no-key-kinds",
+			args: args{
+				publicKey:  []byte{0x1},
+				privateKey: []byte{0x2},
+			},
+			wantErr: ErrNoMatch,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			privateKey, err := GetKeyKindFromBytes(tt.args.publicKey, tt.args.privateKey)
+
+			if !(err == tt.wantErr) {
+				t.Errorf("GetKeyKindFromBytes() err = %v, want %v", err, tt.wantErr)
+			}
+
+			if !assert.Equal(t, privateKey, tt.wantKey) {
+				t.Errorf("GetKeyKindFromBytes() key = %v, want %v", privateKey, tt.wantKey)
+			}
+		})
+	}
+}
+
 func TestRemoveDuplicates(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		in   []string
 		want []string
@@ -193,7 +285,7 @@ func TestRemoveDuplicates(t *testing.T) {
 	for _, tt := range tests {
 		t.Run("remove-duplicates", func(t *testing.T) {
 			got := removeDuplicates(tt.in)
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("removeDuplicates() = %v, want %v", got, tt.want)
 			}
 		})

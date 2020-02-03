@@ -49,16 +49,16 @@ func (mr *MockKeyExchangeMockRecorder) EphemeralKey() *gomock.Call {
 }
 
 // SharedSecret mocks base method
-func (m *MockKeyExchange) SharedSecret(ephemeralKey crypto.PrivateKey, recipientKey crypto.PublicKey) ([]byte, error) {
+func (m *MockKeyExchange) SharedSecret(privateKey crypto.PrivateKey, publicKey crypto.PublicKey) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SharedSecret", ephemeralKey, recipientKey)
+	ret := m.ctrl.Call(m, "SharedSecret", privateKey, publicKey)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SharedSecret indicates an expected call of SharedSecret
-func (mr *MockKeyExchangeMockRecorder) SharedSecret(ephemeralKey, recipientKey interface{}) *gomock.Call {
+func (mr *MockKeyExchangeMockRecorder) SharedSecret(privateKey, publicKey interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SharedSecret", reflect.TypeOf((*MockKeyExchange)(nil).SharedSecret), ephemeralKey, recipientKey)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SharedSecret", reflect.TypeOf((*MockKeyExchange)(nil).SharedSecret), privateKey, publicKey)
 }

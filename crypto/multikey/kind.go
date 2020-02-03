@@ -32,6 +32,11 @@ var (
 	errPrivateAndPublicKeyNotMatched = errors.New("public and private keys do not match")
 )
 
+const (
+	noKeyMatch     = 0
+	singleKeyMatch = 1
+)
+
 // KeyKindsFromSignature tries to determine the key type from the pubKey, message, sig bytes combination.
 // The key kinds against which the function should match are specified in the keyKinds slice.
 func KeyKindFromSignature(pubKey, message, sig []byte, keyKinds []string) (crypto.PublicKey, error) {
@@ -51,9 +56,9 @@ func KeyKindFromSignature(pubKey, message, sig []byte, keyKinds []string) (crypt
 	}
 
 	switch len(matches) {
-	case 0:
+	case noKeyMatch:
 		return nil, ErrNoMatch
-	case 1:
+	case singleKeyMatch:
 		return matches[0], nil
 	default:
 		return nil, ErrInconclusive
@@ -75,9 +80,9 @@ func GetKeyKindFromBytes(publicKey, privateKey []byte) (crypto.PrivateKey, error
 	}
 
 	switch len(matches) {
-	case 0:
+	case noKeyMatch:
 		return nil, ErrNoMatch
-	case 1:
+	case singleKeyMatch:
 		return matches[0], nil
 	default:
 		return nil, ErrInconclusive

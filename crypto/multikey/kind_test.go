@@ -26,7 +26,6 @@ import (
 )
 
 func TestKeyKindFromSignature(t *testing.T) {
-	assertion := assert.New(t)
 	type args struct {
 		pubKey  []byte
 		message []byte
@@ -158,7 +157,7 @@ func TestKeyKindFromSignature(t *testing.T) {
 				t.Errorf("KeyKindFromSignature() err = %v, want %v", err, tt.wantErr)
 			}
 
-			if !assertion.Equal(key, tt.wantKey) {
+			if !assert.Equal(t, key, tt.wantKey) {
 				t.Errorf("KeyKindFromSignature() key = %v, want %v", key, tt.wantKey)
 			}
 		})
@@ -166,7 +165,6 @@ func TestKeyKindFromSignature(t *testing.T) {
 }
 
 func TestGetKeyKindFromBytes(t *testing.T) {
-	assertion := assert.New(t)
 	type args struct {
 		publicKey  []byte
 		privateKey []byte
@@ -251,7 +249,7 @@ func TestGetKeyKindFromBytes(t *testing.T) {
 				t.Errorf("GetKeyKindFromBytes() err = %v, want %v", err, tt.wantErr)
 			}
 
-			if !assertion.Equal(privateKey, tt.wantKey) {
+			if !assert.Equal(t, privateKey, tt.wantKey) {
 				t.Errorf("GetKeyKindFromBytes() key = %v, want %v", privateKey, tt.wantKey)
 			}
 		})
@@ -259,7 +257,6 @@ func TestGetKeyKindFromBytes(t *testing.T) {
 }
 
 func TestRemoveDuplicates(t *testing.T) {
-	assertion := assert.New(t)
 	tests := []struct {
 		in   []string
 		want []string
@@ -288,7 +285,7 @@ func TestRemoveDuplicates(t *testing.T) {
 	for _, tt := range tests {
 		t.Run("remove-duplicates", func(t *testing.T) {
 			got := removeDuplicates(tt.in)
-			if !assertion.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("removeDuplicates() = %v, want %v", got, tt.want)
 			}
 		})

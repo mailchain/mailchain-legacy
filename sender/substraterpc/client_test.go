@@ -2,7 +2,9 @@ package substraterpc
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"github.com/mr-tron/base58/base58"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
@@ -133,7 +135,7 @@ func TestSubstrateClient_Call(t *testing.T) {
 					a := types.NewAddressFromAccountID(sr25519test.CharlottePublicKey.Bytes())
 					return a
 				}(),
-				big.NewInt(32000),
+				big.NewInt(SuggestedGas),
 				[]byte("message"),
 			},
 			types.Call{
@@ -153,7 +155,7 @@ func TestSubstrateClient_Call(t *testing.T) {
 			args{
 				types.ExamplaryMetadataV4,
 				types.NewAddressFromAccountID(sr25519test.CharlottePublicKey.Bytes()),
-				big.NewInt(32000),
+				big.NewInt(SuggestedGas),
 				[]byte("message"),
 			},
 			types.Call{},
@@ -307,7 +309,7 @@ func TestSubstrateClient_SuggestGasPrice(t *testing.T) {
 			args{
 				context.Background(),
 			},
-			big.NewInt(32000),
+			big.NewInt(SuggestedGas),
 			false,
 		},
 	}
@@ -323,6 +325,226 @@ func TestSubstrateClient_SuggestGasPrice(t *testing.T) {
 			}
 			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("SubstrateClient.SuggestGasPrice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSubstrateClient_GetBlockHash(t *testing.T) {
+	assert := assert.New(t)
+	var hash32 = []byte{
+		1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2,
+	}
+	type args struct {
+		server      *httptest.Server
+		blockNumber uint64
+	}
+	type fields struct {
+		api *gsrpc.SubstrateAPI
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    types.Hash
+		wantErr bool
+	}{
+		{
+			"success-latest",
+			fields{},
+			args{
+				func() *httptest.Server {
+					s := httptest.NewServer(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+							w.Write([]byte("{\"result\":\"0x0102030405060708090001020304050607080900010203040506070809000102\"}"))
+						}),
+					)
+					return s
+				}(),
+				0,
+			},
+			types.NewHash(hash32),
+			false,
+		},
+		{
+			"success",
+			fields{},
+			args{
+				func() *httptest.Server {
+					s := httptest.NewServer(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+							w.Write([]byte("{\"result\":\"0x0102030405060708090001020304050607080900010203040506070809000102\"}"))
+						}),
+					)
+					return s
+				}(),
+				1,
+			},
+			types.NewHash(hash32),
+			false,
+		},
+		{
+			"error-latest",
+			fields{},
+			args{
+				func() *httptest.Server {
+					s := httptest.NewServer(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+							w.WriteHeader(http.StatusBadRequest)
+						}),
+					)
+					return s
+				}(),
+				0,
+			},
+			types.Hash{},
+			true,
+		},
+		{
+			"error",
+			fields{},
+			args{
+				func() *httptest.Server {
+					s := httptest.NewServer(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+							w.WriteHeader(http.StatusBadRequest)
+						}),
+					)
+					return s
+				}(),
+				1,
+			},
+			types.Hash{},
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			api, _ := gsrpc.NewSubstrateAPI(tt.args.server.URL)
+			client := NewClient(api)
+			got, err := client.GetBlockHash(tt.args.blockNumber)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("SubstrateClient.GetBlockHash() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("SubstrateClient.GetBlockHash() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSubstrateClient_GetNonce(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		server   *httptest.Server
+		ctx      context.Context
+		protocol string
+		network  string
+		address  []byte
+		meta     *types.Metadata
+	}
+	type fields struct {
+		api *gsrpc.SubstrateAPI
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    uint32
+		wantErr error
+	}{
+		{
+			"error-pk",
+			fields{},
+			args{
+				server:   httptest.NewServer(nil),
+				ctx:      context.Background(),
+				protocol: "invalid",
+				network:  "edgeware",
+				address:  nil,
+				meta:     nil,
+			},
+			uint32(0),
+			errors.New("protocol must be 'substrate'"),
+		},
+		{
+			"error-sk",
+			fields{},
+			args{
+				server:   httptest.NewServer(nil),
+				ctx:      context.Background(),
+				protocol: "substrate",
+				network:  "edgeware",
+				address: func() []byte {
+					addr, _ := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzP")
+					return addr
+				}(),
+				meta: &types.Metadata{},
+			},
+			uint32(0),
+			errors.New("unsupported metadata version"),
+		},
+		{
+			"error",
+			fields{},
+			args{
+				server: func() *httptest.Server {
+					s := httptest.NewServer(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+							w.WriteHeader(http.StatusBadRequest)
+						}),
+					)
+					return s
+				}(),
+				ctx:      context.Background(),
+				protocol: "substrate",
+				network:  "edgeware",
+				address: func() []byte {
+					addr, _ := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzP")
+					return addr
+				}(),
+				meta: types.ExamplaryMetadataV4,
+			},
+			uint32(0),
+			errors.New("400 Bad Request "),
+		},
+		{
+			"success",
+			fields{},
+			args{
+				server: func() *httptest.Server {
+					s := httptest.NewServer(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+							w.Write([]byte("{\"result\":\"0x0e4944cfd98d6f4cc374d16f5a4e3f9c\"}"))
+						}),
+					)
+					return s
+				}(),
+				ctx:      context.Background(),
+				protocol: "substrate",
+				network:  "edgeware",
+				address: func() []byte {
+					addr, _ := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzP")
+					return addr
+				}(),
+				meta: types.ExamplaryMetadataV4,
+			},
+			uint32(0xcf44490e),
+			nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			api, _ := gsrpc.NewSubstrateAPI(tt.args.server.URL)
+			client := NewClient(api)
+			got, err := client.GetNonce(tt.args.ctx, tt.args.protocol, tt.args.network, tt.args.address, tt.args.meta)
+			if (err != nil) && err.Error() != tt.wantErr.Error() {
+				t.Errorf("SubstrateClient.GetBlockHash() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("SubstrateClient.GetBlockHash() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -381,6 +603,67 @@ func TestSubstrateClient_CreateSignatureOptions(t *testing.T) {
 			}
 			if got := s.CreateSignatureOptions(tt.args.blockHash, tt.args.genesisHash, tt.args.mortalEra, tt.args.rv, tt.args.nonce, tt.args.tip); !assert.Equal(t, tt.want, got) {
 				t.Errorf("SubstrateClient.CreateSignatureOptions() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSubstrateClient_SubmitExtrinsic(t *testing.T) {
+	assert := assert.New(t)
+	type args struct {
+		server *httptest.Server
+		xt     *types.Extrinsic
+	}
+	type fields struct {
+		api *gsrpc.SubstrateAPI
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    types.Hash
+		wantErr bool
+	}{
+		{
+			"error",
+			fields{},
+			args{
+				httptest.NewServer(
+					http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						w.WriteHeader(http.StatusBadRequest)
+					}),
+				),
+				&types.Extrinsic{Version: 0x84, Signature: types.ExtrinsicSignatureV4{Signer: types.Address{IsAccountID: true, AsAccountID: types.AccountID{0xd4, 0x35, 0x93, 0xc7, 0x15, 0xfd, 0xd3, 0x1c, 0x61, 0x14, 0x1a, 0xbd, 0x4, 0xa9, 0x9f, 0xd6, 0x82, 0x2c, 0x85, 0x58, 0x85, 0x4c, 0xcd, 0xe3, 0x9a, 0x56, 0x84, 0xe7, 0xa5, 0x6d, 0xa2, 0x7d}, IsAccountIndex: false, AsAccountIndex: 0x0}, Signature: types.MultiSignature{IsSr25519: true, AsSr25519: types.Signature{0xc0, 0x42, 0x19, 0x5f, 0x93, 0x25, 0xd, 0x3e, 0xda, 0xa2, 0xe4, 0xa4, 0x2d, 0xcf, 0x4e, 0x41, 0xc1, 0x6c, 0xa7, 0x1c, 0xfc, 0x3a, 0x2b, 0x23, 0x99, 0x8a, 0xd4, 0xec, 0x97, 0x4f, 0x8b, 0x1a, 0xcd, 0xcd, 0xad, 0x97, 0xd1, 0x4b, 0x6d, 0xf5, 0xcb, 0x89, 0x6, 0xff, 0x61, 0xc8, 0x92, 0x17, 0x96, 0x54, 0xa5, 0xec, 0xcc, 0xb, 0x66, 0x85, 0xf6, 0xc1, 0x7f, 0xed, 0x49, 0x21, 0x94, 0x0}}, Era: types.ExtrinsicEra{IsImmortalEra: true, IsMortalEra: false, AsMortalEra: types.MortalEra{First: 0x0, Second: 0x0}}, Nonce: 0x1, Tip: 0x0}, Method: types.Call{CallIndex: types.CallIndex{SectionIndex: 0x6, MethodIndex: 0x0}, Args: types.Args{0xff, 0x8e, 0xaf, 0x4, 0x15, 0x16, 0x87, 0x73, 0x63, 0x26, 0xc9, 0xfe, 0xa1, 0x7e, 0x25, 0xfc, 0x52, 0x87, 0x61, 0x36, 0x93, 0xc9, 0x12, 0x90, 0x9c, 0xb2, 0x26, 0xaa, 0x47, 0x94, 0xf2, 0x6a, 0x48, 0xe5, 0x6c}}},
+			},
+			types.Hash{},
+			true,
+		},
+		{
+			"success",
+			fields{},
+			args{
+				httptest.NewServer(
+					http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						w.Write([]byte("{\"result\":\"0x9a8ef9794ded03b4d1ae45034351210e87f970f1f9500994bca82f9cd5a1166e\"}"))
+					}),
+				),
+				&types.Extrinsic{Version: 0x84, Signature: types.ExtrinsicSignatureV4{Signer: types.Address{IsAccountID: true, AsAccountID: types.AccountID{0xd4, 0x35, 0x93, 0xc7, 0x15, 0xfd, 0xd3, 0x1c, 0x61, 0x14, 0x1a, 0xbd, 0x4, 0xa9, 0x9f, 0xd6, 0x82, 0x2c, 0x85, 0x58, 0x85, 0x4c, 0xcd, 0xe3, 0x9a, 0x56, 0x84, 0xe7, 0xa5, 0x6d, 0xa2, 0x7d}, IsAccountIndex: false, AsAccountIndex: 0x0}, Signature: types.MultiSignature{IsSr25519: true, AsSr25519: types.Signature{0xc0, 0x42, 0x19, 0x5f, 0x93, 0x25, 0xd, 0x3e, 0xda, 0xa2, 0xe4, 0xa4, 0x2d, 0xcf, 0x4e, 0x41, 0xc1, 0x6c, 0xa7, 0x1c, 0xfc, 0x3a, 0x2b, 0x23, 0x99, 0x8a, 0xd4, 0xec, 0x97, 0x4f, 0x8b, 0x1a, 0xcd, 0xcd, 0xad, 0x97, 0xd1, 0x4b, 0x6d, 0xf5, 0xcb, 0x89, 0x6, 0xff, 0x61, 0xc8, 0x92, 0x17, 0x96, 0x54, 0xa5, 0xec, 0xcc, 0xb, 0x66, 0x85, 0xf6, 0xc1, 0x7f, 0xed, 0x49, 0x21, 0x94, 0x0}}, Era: types.ExtrinsicEra{IsImmortalEra: true, IsMortalEra: false, AsMortalEra: types.MortalEra{First: 0x0, Second: 0x0}}, Nonce: 0x1, Tip: 0x0}, Method: types.Call{CallIndex: types.CallIndex{SectionIndex: 0x6, MethodIndex: 0x0}, Args: types.Args{0xff, 0x8e, 0xaf, 0x4, 0x15, 0x16, 0x87, 0x73, 0x63, 0x26, 0xc9, 0xfe, 0xa1, 0x7e, 0x25, 0xfc, 0x52, 0x87, 0x61, 0x36, 0x93, 0xc9, 0x12, 0x90, 0x9c, 0xb2, 0x26, 0xaa, 0x47, 0x94, 0xf2, 0x6a, 0x48, 0xe5, 0x6c}}},
+			},
+			types.Hash{0x9a, 0x8e, 0xf9, 0x79, 0x4d, 0xed, 0x3, 0xb4, 0xd1, 0xae, 0x45, 0x3, 0x43, 0x51, 0x21, 0xe, 0x87, 0xf9, 0x70, 0xf1, 0xf9, 0x50, 0x9, 0x94, 0xbc, 0xa8, 0x2f, 0x9c, 0xd5, 0xa1, 0x16, 0x6e},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			api, _ := gsrpc.NewSubstrateAPI(tt.args.server.URL)
+			client := NewClient(api)
+			got, err := client.SubmitExtrinsic(tt.args.xt)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("SubstrateClient.SubmitExtrinsic() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(tt.want, got) {
+				t.Errorf("SubstrateClient.SubmitExtrinsic() = %v, want %v", got, tt.want)
 			}
 		})
 	}

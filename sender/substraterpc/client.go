@@ -24,6 +24,8 @@ type Client interface {
 	SubmitExtrinsic(extrinsic *types.Extrinsic) (types.Hash, error)
 }
 
+const SuggestedGas = 32000
+
 type SubstrateClient struct {
 	api *gsrpc.SubstrateAPI
 }
@@ -36,6 +38,7 @@ func (s SubstrateClient) GetMetadata(blockHash types.Hash) (*types.Metadata, err
 	if (blockHash == types.Hash{}) {
 		return s.api.RPC.State.GetMetadataLatest()
 	}
+
 	return s.api.RPC.State.GetMetadata(blockHash)
 }
 
@@ -44,7 +47,7 @@ func (s SubstrateClient) GetAddress(accountID []byte) types.Address {
 }
 
 func (s SubstrateClient) SuggestGasPrice(ctx context.Context) (*big.Int, error) {
-	return big.NewInt(32000), nil
+	return big.NewInt(SuggestedGas), nil
 }
 
 func (s SubstrateClient) Call(metadata *types.Metadata, to types.Address, gas *big.Int, data []byte) (types.Call, error) {
@@ -59,6 +62,7 @@ func (s SubstrateClient) GetBlockHash(blockNumber uint64) (types.Hash, error) {
 	if blockNumber == 0 {
 		return s.api.RPC.Chain.GetBlockHashLatest()
 	}
+
 	return s.api.RPC.Chain.GetBlockHash(blockNumber)
 }
 
@@ -66,15 +70,18 @@ func (s SubstrateClient) GetRuntimeVersion(blockHash types.Hash) (*types.Runtime
 	if (blockHash == types.Hash{}) {
 		return s.api.RPC.State.GetRuntimeVersionLatest()
 	}
+
 	return s.api.RPC.State.GetRuntimeVersion(blockHash)
 }
 
 func (s SubstrateClient) GetNonce(ctx context.Context, protocol, network string, address []byte, meta *types.Metadata) (uint32, error) {
 	pkf := &substrate.PublicKeyFinder{}
+
 	pk, err := pkf.PublicKeyFromAddress(ctx, protocol, network, address)
 	if err != nil {
 		return uint32(0), err
 	}
+
 	key, err := types.CreateStorageKey(meta, "System", "AccountNonce", pk.Bytes(), nil)
 	if err != nil {
 		return uint32(0), err
@@ -85,6 +92,7 @@ func (s SubstrateClient) GetNonce(ctx context.Context, protocol, network string,
 	if err := s.api.RPC.State.GetStorageLatest(key, &nonce); err != nil {
 		return uint32(0), err
 	}
+
 	return nonce, nil
 }
 
@@ -104,5 +112,6 @@ func (s SubstrateClient) SubmitExtrinsic(extrinsic *types.Extrinsic) (types.Hash
 	if err != nil {
 		return types.Hash{}, err
 	}
+
 	return hash, nil
 }

@@ -13,8 +13,8 @@ type SignerOptions struct {
 	SignatureOptions types.SignatureOptions
 }
 
-func NewSigner(privateKey crypto.PrivateKey) (*Signer, error) {
-	return &Signer{privateKey: privateKey}, nil
+func NewSigner(privateKey crypto.PrivateKey) *Signer {
+	return &Signer{privateKey: privateKey}
 }
 
 type Signer struct {
@@ -23,6 +23,7 @@ type Signer struct {
 
 func (e Signer) createSignature(signedData []byte) (*types.MultiSignature, error) {
 	sig := types.NewSignature(signedData)
+
 	switch e.privateKey.(type) {
 	case *sr25519.PrivateKey:
 		return &types.MultiSignature{IsSr25519: true, AsSr25519: sig}, nil
@@ -36,10 +37,12 @@ func (e Signer) prepareData(ext *types.Extrinsic, opts *types.SignatureOptions) 
 	if err != nil {
 		return nil, err
 	}
+
 	era := opts.Era
 	if !opts.Era.IsMortalEra {
 		era = types.ExtrinsicEra{IsImmortalEra: true}
 	}
+
 	payload := types.ExtrinsicPayloadV3{
 		Method:      mb,
 		Era:         era,
@@ -49,6 +52,7 @@ func (e Signer) prepareData(ext *types.Extrinsic, opts *types.SignatureOptions) 
 		GenesisHash: opts.GenesisHash,
 		BlockHash:   opts.BlockHash,
 	}
+
 	return types.EncodeToBytes(payload)
 }
 
@@ -59,14 +63,17 @@ func (e Signer) Sign(opts signer.Options) (signedTransaction interface{}, err er
 		if err != nil {
 			return nil, err
 		}
+
 		signedData, err := e.privateKey.Sign(data)
 		if err != nil {
 			return nil, err
 		}
+
 		signature, err := e.createSignature(signedData)
 		if err != nil {
 			return nil, err
 		}
+
 		extSig := types.ExtrinsicSignatureV4{
 			Signer:    types.NewAddressFromAccountID(e.privateKey.PublicKey().Bytes()),
 			Signature: *signature,
@@ -77,6 +84,7 @@ func (e Signer) Sign(opts signer.Options) (signedTransaction interface{}, err er
 		ext := &opts.Extrinsic
 		ext.Signature = extSig
 		ext.Version |= types.ExtrinsicBitSigned
+
 		return ext, nil
 	default:
 		return nil, errors.New("invalid options for substrate signing")

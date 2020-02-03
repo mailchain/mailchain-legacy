@@ -24,17 +24,21 @@ func (s SubstrateRPC) Send(ctx context.Context, network string, to, from, data [
 	if err != nil {
 		return errors.WithMessage(err, "could not get gas price")
 	}
+
 	addressTo := client.GetAddress(to)
+
 	c, err := client.Call(meta, addressTo, gasPrice, data)
 	if err != nil {
 		return errors.WithMessage(err, "could not create call")
 	}
+
 	ext := client.NewExtrinsic(c)
 
 	genesisHash, err := client.GetBlockHash(0)
 	if err != nil {
 		return errors.WithMessage(err, "could not get block hash")
 	}
+
 	rv, err := client.GetRuntimeVersion(types.Hash{})
 	if err != nil {
 		return errors.WithMessage(err, "could not get runtime version")
@@ -55,7 +59,9 @@ func (s SubstrateRPC) Send(ctx context.Context, network string, to, from, data [
 		return errors.WithMessage(err, "could not sign the transaction")
 	}
 
-	hash, err := client.SubmitExtrinsic(signedExt.(*types.Extrinsic))
+	signedExtTyped := signedExt.(types.Extrinsic)
+
+	hash, err := client.SubmitExtrinsic(&signedExtTyped)
 	if err != nil {
 		return errors.WithMessage(err, "could not submit the transaction")
 	}

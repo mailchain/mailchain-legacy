@@ -20,11 +20,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
 	ec "github.com/mailchain/mailchain/crypto/cipher/encrypter"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/envelope"
@@ -231,7 +231,7 @@ type PostRequestBody struct {
 	EncryptionName string `json:"encryption-method-name"`
 	// Message content-type provided by the client
 	// required: false (default text/plain; charset=\"UTF-8\")
-	// enum: 'text/plain; charset=\"UTF-8\"', 'text/html; charset=\"UTF-8\"'
+	// enum: 'text/plain; charset=\"UTF-8\":q', 'text/html; charset=\"UTF-8\"'
 	ContentType string `json:"content-type"`
 }
 
@@ -287,8 +287,7 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		}
 	}
 
-	//nolint TODO: be more general when getting key from hex
-	encodeMessage, err := hexutil.Decode(p.Message.PublicKey)
+	encodeMessage, err := encoding.DecodeHex(p.Message.PublicKey)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `data`")
 	}

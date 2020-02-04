@@ -44,7 +44,7 @@ func TestPublicKey_Kind(t *testing.T) {
 		{
 			"charlotte",
 			charlottePublicKey,
-			crypto.SR25519,
+			crypto.KindSR25519,
 		},
 	}
 	for _, tt := range tests {

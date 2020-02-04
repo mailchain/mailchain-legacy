@@ -27,26 +27,31 @@ func (kx ED25519) EphemeralKey() (crypto.PrivateKey, error) {
 	return ed25519.GenerateKey(kx.rand)
 }
 
-func (kx ED25519) SharedSecret(ephemeralKey crypto.PrivateKey, recipientKey crypto.PublicKey) ([]byte, error) {
-	ephemeralPrivateKey, err := kx.privateKey(ephemeralKey)
+// SharedSecret computes a secret value from a private / public key pair.
+// On sending a message the private key should be an ephemeralKey or generated private key,
+// the public key is the recipient public key.
+// On reading a message the private key is the recipient private key, the public key is the
+// ephemeralKey or generated public key.
+func (kx ED25519) SharedSecret(privateKey crypto.PrivateKey, publicKey crypto.PublicKey) ([]byte, error) {
+	privateKeyBytes, err := kx.privateKey(privateKey)
 	if err != nil {
 		return nil, ErrSharedSecretGenerate
 	}
 
-	recipientPublicKey, err := kx.publicKey(recipientKey)
+	publicKeyBytes, err := kx.publicKey(publicKey)
 	if err != nil {
 		return nil, ErrSharedSecretGenerate
 	}
 
-	ephemeralPublicKey, _ := kx.publicKey(ephemeralKey.PublicKey())
+	ephemeralPublicKey, _ := kx.publicKey(privateKey.PublicKey())
 
-	if bytes.Equal(ephemeralPublicKey[:], recipientPublicKey[:]) {
+	if bytes.Equal(ephemeralPublicKey[:], publicKeyBytes[:]) {
 		return nil, ErrSharedSecretGenerate
 	}
 
 	var secret [32]byte
 
-	curve25519.ScalarMult(&secret, &ephemeralPrivateKey, &recipientPublicKey)
+	curve25519.ScalarMult(&secret, &privateKeyBytes, &publicKeyBytes)
 
 	return secret[:], nil
 }

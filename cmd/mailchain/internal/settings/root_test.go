@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/values/valuestest"
+	"github.com/mailchain/mailchain/cmd/internal/settings/values"
+	"github.com/mailchain/mailchain/cmd/internal/settings/values/valuestest"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )

@@ -31,7 +31,7 @@ type PublicKey struct {
 
 // Kind returns the key type
 func (pk PublicKey) Kind() string {
-	return crypto.SECP256K1
+	return crypto.KindSECP256K1
 }
 
 // Verify verifies whether sig is a valid signature of message.
@@ -50,6 +50,10 @@ func (pk PublicKey) Verify(message, sig []byte) bool {
 // Bytes returns the byte representation of the public key
 func (pk PublicKey) Bytes() []byte {
 	return append(pk.ecdsa.X.Bytes(), pk.ecdsa.Y.Bytes()...)
+}
+
+func (pk PublicKey) CompressedBytes() []byte {
+	return ethcrypto.CompressPubkey(&pk.ecdsa)
 }
 
 // PublicKeyFromBytes create a public key from []byte

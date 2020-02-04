@@ -44,7 +44,7 @@ type Decrypter struct {
 func (d Decrypter) Decrypt(data mc.EncryptedContent) (mc.PlainContent, error) {
 	encryptedData, err := bytesDecode(data)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not convert encryptedData")
+		return nil, mc.ErrDecrypt
 	}
 
 	return decryptEncryptedData(d.privateKey, encryptedData)
@@ -53,42 +53,41 @@ func (d Decrypter) Decrypt(data mc.EncryptedContent) (mc.PlainContent, error) {
 func decryptEncryptedData(privKey crypto.PrivateKey, data *encryptedData) ([]byte, error) {
 	tmpEphemeralPublicKey, err := secp256k1.PublicKeyFromBytes(data.EphemeralPublicKey)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not convert ephemeralPublicKey")
+		return nil, mc.ErrDecrypt
 	}
 
 	ephemeralPublicKey, err := tmpEphemeralPublicKey.(*secp256k1.PublicKey).ECIES()
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not convert to ecies")
+		return nil, mc.ErrDecrypt
 	}
 
 	recipientPrivKey, err := asPrivateECIES(privKey)
 	if err != nil {
-		return nil, err
+		return nil, mc.ErrDecrypt
 	}
 
 	sharedSecret, err := deriveSharedSecret(ephemeralPublicKey, recipientPrivKey)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not derive shared secret")
+		return nil, mc.ErrDecrypt
 	}
 
 	macKey, encryptionKey := generateMacKeyAndEncryptionKey(sharedSecret)
 	mac, err := generateMac(macKey, data.InitializationVector, *ephemeralPublicKey, data.Ciphertext)
 
 	if err != nil {
-		return nil, errors.WithMessage(err, "generateMac failed")
+		return nil, mc.ErrDecrypt
 	}
 
 	if subtle.ConstantTimeCompare(data.MessageAuthenticationCode, mac) != 1 {
-		return nil, errors.Errorf("invalid mac")
+		return nil, mc.ErrDecrypt
 	}
-
 	return decryptCBC(encryptionKey, data.InitializationVector, data.Ciphertext)
 }
 
 func decryptCBC(key, iv, ciphertext []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, err
+		return nil, mc.ErrDecrypt
 	}
 
 	plaintext := make([]byte, len(ciphertext))
@@ -97,7 +96,7 @@ func decryptCBC(key, iv, ciphertext []byte) ([]byte, error) {
 
 	plaintext, err = padding.NewPkcs7Padding(block.BlockSize()).Unpad(plaintext)
 	if err != nil {
-		return nil, errors.WithMessage(err, "could not pad")
+		return nil, mc.ErrDecrypt
 	}
 
 	ret := make([]byte, len(plaintext))

@@ -11,8 +11,6 @@ func rootCmd() (*cobra.Command, error) {
 	}
 
 	cmd.AddCommand(ethereumCmd())
-	cmd.AddCommand(dbUpCmd())
-	cmd.AddCommand(dbDownCmd())
 
 	cmd.PersistentFlags().String("postgres-host", "localhost", "Postgres server host")
 	cmd.PersistentFlags().String("postgres-user", "", "Postgres database user")
@@ -22,8 +20,6 @@ func rootCmd() (*cobra.Command, error) {
 	cmd.PersistentFlags().Int("postgres-port", 5432, "Postgres server port")
 
 	cmd.PersistentFlags().String("raw-store-path", "", "Path where raw transactions are stored")
-
-	cmd.PersistentFlags().String("path", "", "path to migration source files")
 
 	return cmd, nil
 }

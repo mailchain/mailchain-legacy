@@ -43,7 +43,7 @@ func ethereumCmd() *cobra.Command {
 				return err
 			}
 
-			for true {
+			for {
 				if err := seqProcessor.NextBlock(context.Background()); err != nil {
 					fmt.Fprintf(cmd.ErrOrStderr(), "%+v", err)
 				}
@@ -81,11 +81,10 @@ func createEthereumProcessor(conn *sqlx.DB, network, rawStorePath, addressRPC st
 		return nil, err
 	}
 
-	// TODO: transaction store does not exist yet issue/515
-	// transactionStore, err := pq.NewTransactionStore(conn)
-	// if err != nil {
-	// 	return err
-	// }
+	transactionStore, err := pq.NewTransactionStore(conn)
+	if err != nil {
+		return nil, err
+	}
 
 	rawStore, err := os.NewRawTransactionStore(rawStorePath)
 	if err != nil {
@@ -93,7 +92,7 @@ func createEthereumProcessor(conn *sqlx.DB, network, rawStorePath, addressRPC st
 	}
 
 	processorTransaction := eth.NewTransactionProcessor(
-		nil, // TODO: transactionStore,
+		transactionStore,
 		rawStore,
 		pubKeyStore,
 		networkID,
@@ -106,4 +105,47 @@ func createEthereumProcessor(conn *sqlx.DB, network, rawStorePath, addressRPC st
 		eth.NewBlockProcessor(processorTransaction),
 		ethClient,
 	), nil
+}
+
+func sslMode(useSSL bool) string {
+	if useSSL {
+		return "enable"
+	}
+
+	return "disable"
+}
+
+// newPostgresConnection returns a connection to a postres database.
+// The arguments are parsed from cmd.
+func newPostgresConnection(cmd *cobra.Command) (*sqlx.DB, error) {
+	host, _ := cmd.Flags().GetString("postgres-host")
+	port, _ := cmd.Flags().GetInt("postgres-port")
+	useSSL, _ := cmd.Flags().GetBool("postgres-ssl")
+
+	user, err := cmd.Flags().GetString("postgres-user")
+	if err != nil {
+		return nil, err
+	}
+
+	psswd, err := cmd.Flags().GetString("postgres-password")
+	if err != nil {
+		return nil, err
+	}
+
+	dbname, err := cmd.Flags().GetString("postgres-name")
+	if err != nil {
+		return nil, err
+	}
+
+	// use default dbname is not provided
+	if dbname == "" {
+		dbname = user
+	}
+
+	conn, err := pq.NewConnection(user, psswd, dbname, host, sslMode(useSSL), port)
+	if err != nil {
+		return nil, err
+	}
+
+	return conn, nil
 }

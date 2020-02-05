@@ -10,25 +10,12 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/cmd/internal/datastore"
 	"github.com/mailchain/mailchain/cmd/internal/datastore/datastoretest"
+	"github.com/mailchain/mailchain/crypto/cryptotest"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
-
-type unknownPublicKey struct{}
-
-func (pk unknownPublicKey) Bytes() []byte {
-	return []byte("unknown public key")
-}
-
-func (pk unknownPublicKey) Kind() string {
-	return "unknown"
-}
-
-func (pk unknownPublicKey) Verify(message, sig []byte) bool {
-	return true
-}
 
 func Test_GetPublicKey(t *testing.T) {
 	address := encodingtest.MustDecodeHexZeroX("0xD5ab4CE3605Cd590Db609b6b5C8901fdB2ef7FE6")
@@ -86,12 +73,15 @@ func Test_GetPublicKey(t *testing.T) {
 			"500-encryption-methods-unsupported-public-key-type",
 			args{
 				func() datastore.PublicKeyStore {
-					store := datastoretest.NewMockPublicKeyStore(mockCtrl)
+					mockPublicKey := cryptotest.NewMockPublicKey(mockCtrl)
+					mockPublicKey.EXPECT().Bytes().Return([]byte("unknown public key")).Times(1)
+					mockPublicKey.EXPECT().Kind().Return("unknown").Times(1)
 					res := &datastore.PublicKey{
-						PublicKey: &unknownPublicKey{},
+						PublicKey: mockPublicKey,
 						BlockHash: blockHash,
 						TxHash:    txHash,
 					}
+					store := datastoretest.NewMockPublicKeyStore(mockCtrl)
 					store.EXPECT().GetPublicKey(gomock.Any(), "ethereum", "mainnet", address).Return(res, nil).Times(1)
 					return store
 				}(),
@@ -170,7 +160,7 @@ func Test_GetPublicKey(t *testing.T) {
 					rr.Code, tt.wantStatus)
 			}
 
-			golden, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/%s.json", testName, tt.name))
+			golden, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/response-%s.json", testName, tt.name))
 			if err != nil {
 				assert.FailNow(t, err.Error())
 			}

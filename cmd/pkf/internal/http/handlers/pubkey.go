@@ -6,7 +6,6 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/internal/datastore"
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
-	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/pubkey"
@@ -15,7 +14,7 @@ import (
 
 // GetPublicKey returns a handler get spec
 func GetPublicKey(store datastore.PublicKeyStore) func(w http.ResponseWriter, r *http.Request) {
-	// Get swagger:route GET /public-key PublicKey GetPublicKey
+	// Get swagger:route GET / PublicKey GetPublicKey
 	//
 	// Public key from address.
 	//
@@ -59,8 +58,6 @@ func GetPublicKey(store datastore.PublicKeyStore) func(w http.ResponseWriter, r 
 			PublicKeyEncoding:        encodingType,
 			SupportedEncryptionTypes: encryptionTypes,
 			PublicKeyKind:            publicKey.PublicKey.Kind(),
-			BlockHash:                encoding.EncodeHexZeroX(publicKey.BlockHash),
-			TxHash:                   encoding.EncodeHexZeroX(publicKey.TxHash),
 		})
 	}
 }
@@ -140,35 +137,23 @@ type GetPublicKeyResponseBody struct {
 	//
 	// Required: true
 	// example: 0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463
-	PublicKey string `json:"public_key"`
+	PublicKey string `json:"public-key"`
 
 	// Encoding method used for encoding the `public_key`
 	//
 	// Required: true
 	// example: hex/0x-prefix
-	PublicKeyEncoding string `json:"public_key_encoding"`
+	PublicKeyEncoding string `json:"public-key-encoding"`
 
 	// Encoding method used for encoding the `public_key`
 	//
 	// Required: true
 	// example: ["secp256k1", "sr25519", "ed25519"]
-	PublicKeyKind string `json:"public_key_kind"`
+	PublicKeyKind string `json:"public-key-kind"`
 
 	// Supported encryption methods for public keys.
 	//
 	// Required: true
 	// example: ["aes256cbc", "nacl-ecdh", "noop"]
-	SupportedEncryptionTypes []string `json:"supported_encryption_types"`
-
-	// Block hash where we found the PublicKey
-	//
-	// Required: true
-	// example: 0x373d339e45a701447367d7b9c7cef84aab79c2b2714271b908cda0ab3ad0849b
-	BlockHash string `json:"block_hash"`
-
-	// Transaction hash where we found the PublicKey
-	//
-	// Required: true
-	// example: 0x98beb27135aa0a25650557005ad962919d6a278c4b3dde7f4f6a3a1e65aa746c
-	TxHash string `json:"tx_hash"`
+	SupportedEncryptionTypes []string `json:"supported-encryption-types"`
 }

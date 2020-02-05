@@ -157,27 +157,27 @@ type GetPublicKeyResponse struct {
 //
 // swagger:model GetPublicKeyResponseBody
 type GetPublicKeyResponseBody struct {
-	// The public key encoded as per `public_key_encoding`
+	// The public key encoded as per `public-key-encoding`
 	//
 	// Required: true
 	// example: 0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463
-	PublicKey string `json:"public_key"`
+	PublicKey string `json:"public-key"`
 
-	// Encoding method used for encoding the `public_key`
+	// Encoding method used for encoding the `public-key`
 	//
 	// Required: true
 	// example: hex/0x-prefix
-	PublicKeyEncoding string `json:"public_key_encoding"`
+	PublicKeyEncoding string `json:"public-key-encoding"`
 
-	// Encoding method used for encoding the `public_key`
+	// Encoding method used for encoding the `public-key`
 	//
 	// Required: true
 	// example: ["secp256k1", "sr25519", "ed25519"]
-	PublicKeyKind string `json:"public_key_kind"`
+	PublicKeyKind string `json:"public-key-kind"`
 
 	// Supported encryption methods for public keys.
 	//
 	// Required: true
 	// example: ["aes256cbc", "nacl-ecdh", "noop"]
-	SupportedEncryptionTypes []string `json:"supported_encryption_types"`
+	SupportedEncryptionTypes []string `json:"supported-encryption-types"`
 }

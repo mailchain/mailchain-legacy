@@ -682,24 +682,24 @@ func spec() string {
       "description": "GetPublicKeyResponseBody body response",
       "type": "object",
       "required": [
-        "public_key",
-        "public_key_encoding",
-        "supported_encryption_types"
+        "public-key",
+        "public-key-encoding",
+        "supported-encryption-types"
       ],
       "properties": {
-        "public_key": {
-          "description": "The public key encoded as per ¬public_key_encoding¬",
+        "public-key": {
+          "description": "The public key encoded as per ¬public-key-encoding¬",
           "type": "string",
           "x-go-name": "PublicKey",
           "example": "0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463"
         },
-        "public_key_encoding": {
-          "description": "Encoding method used for encoding the ¬public_key¬",
+        "public-key-encoding": {
+          "description": "Encoding method used for encoding the ¬public-key¬",
           "type": "string",
           "x-go-name": "PublicKeyEncoding",
           "example": "hex/0x-prefix"
         },
-        "supported_encryption_types": {
+        "supported-encryption-types": {
           "description": "Supported encryption methods for public keys.",
           "type": "array",
           "items": {

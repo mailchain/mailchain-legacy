@@ -44,10 +44,12 @@ func Test_checkForEmpties(t *testing.T) {
 			"success",
 			args{
 				PostMessage{
-					Headers:   &PostHeaders{},
-					Subject:   "subject-value",
-					Body:      "body-value",
-					PublicKey: "public-key-value",
+					Headers:           &PostHeaders{},
+					Subject:           "subject-value",
+					Body:              "body-value",
+					PublicKey:         "public-key-value",
+					PublicKeyEncoding: "public-key-Encoding",
+					PublicKeyKind:     "public-key-kind",
 				},
 			},
 			false,
@@ -56,9 +58,11 @@ func Test_checkForEmpties(t *testing.T) {
 			"empty-headers",
 			args{
 				PostMessage{
-					Subject:   "subject-value",
-					Body:      "body-value",
-					PublicKey: "public-key-value",
+					Subject:           "subject-value",
+					Body:              "body-value",
+					PublicKey:         "public-key-value",
+					PublicKeyEncoding: "public-key-Encoding",
+					PublicKeyKind:     "public-key-kind",
 				},
 			},
 			true,
@@ -67,9 +71,11 @@ func Test_checkForEmpties(t *testing.T) {
 			"empty-subject",
 			args{
 				PostMessage{
-					Headers:   &PostHeaders{},
-					Body:      "body-value",
-					PublicKey: "public-key-value",
+					Headers:           &PostHeaders{},
+					Body:              "body-value",
+					PublicKey:         "public-key-value",
+					PublicKeyEncoding: "public-key-Encoding",
+					PublicKeyKind:     "public-key-kind",
 				},
 			},
 			true,
@@ -78,9 +84,11 @@ func Test_checkForEmpties(t *testing.T) {
 			"empty-body",
 			args{
 				PostMessage{
-					Headers:   &PostHeaders{},
-					Subject:   "subject-value",
-					PublicKey: "public-key-value",
+					Headers:           &PostHeaders{},
+					Subject:           "subject-value",
+					PublicKey:         "public-key-value",
+					PublicKeyEncoding: "public-key-Encoding",
+					PublicKeyKind:     "public-key-kind",
 				},
 			},
 			true,
@@ -136,10 +144,12 @@ func Test_isValid(t *testing.T) {
 			args{
 				&PostRequestBody{
 					Message: PostMessage{
-						Headers:   &PostHeaders{},
-						Subject:   "subject-value",
-						Body:      "body-value",
-						PublicKey: "public-key-value",
+						Headers:           &PostHeaders{},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "public-key-value",
+						PublicKeyEncoding: "public-key-Encoding",
+						PublicKeyKind:     "public-key-kind",
 					},
 				},
 				"ethereum",
@@ -271,9 +281,11 @@ func Test_isValid(t *testing.T) {
 							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
 							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
-						Subject:   "subject-value",
-						Body:      "body-value",
-						PublicKey: "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKeyEncoding: "public-key-Encoding",
+						PublicKeyKind:     "public-key-kind",
 					},
 					Envelope:       "0x01",
 					EncryptionName: "aes256cbc",
@@ -320,6 +332,7 @@ func Test_parsePostRequest(t *testing.T) {
 						},
 						"envelope": "0x01",
 						"encryption-method-name": "aes256cbc",
+						"public-key-encoding":  "secp256k1",
 						"content-type": "text/plain; charset=\"UTF-8\""
 					}
 					`))
@@ -428,7 +441,6 @@ func Test_parsePostRequest(t *testing.T) {
 }
 
 func TestSendMessage(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -510,11 +522,11 @@ func TestSendMessage(t *testing.T) {
 			handler.ServeHTTP(rr, tt.req)
 
 			// Check the status code is what we expect.
-			if !assert.Equal(tt.expectedStatus, rr.Code) {
+			if !assert.Equal(t, tt.expectedStatus, rr.Code) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.expectedStatus)
 			}
-			if !assert.Equal(tt.expectedResponse, rr.Body.String()) {
+			if !assert.Equal(t, tt.expectedResponse, rr.Body.String()) {
 				t.Errorf("handler returned unexpected body: got %v want %v",
 					rr.Body.String(), tt.expectedResponse)
 			}

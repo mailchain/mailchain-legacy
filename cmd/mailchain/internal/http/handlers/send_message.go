@@ -23,7 +23,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
 	ec "github.com/mailchain/mailchain/crypto/cipher/encrypter"
-	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
@@ -210,6 +210,12 @@ type PostMessage struct {
 	// Public key of the recipient to encrypt with
 	// required: true
 	PublicKey string `json:"public-key"`
+	// Public key Encoding
+	// required: true
+	PublicKeyEncoding string `json:"public-key-encoding"`
+	// Public key kind
+	// require: true
+	PublicKeyKind string `json:"public-key-kind"`
 }
 
 // PostRequestBody body
@@ -231,7 +237,7 @@ type PostRequestBody struct {
 	EncryptionName string `json:"encryption-method-name"`
 	// Message content-type provided by the client
 	// required: false (default text/plain; charset=\"UTF-8\")
-	// enum: 'text/plain; charset=\"UTF-8\":q', 'text/html; charset=\"UTF-8\"'
+	// enum: 'text/plain; charset=\"UTF-8\"', 'text/html; charset=\"UTF-8\"'
 	ContentType string `json:"content-type"`
 }
 
@@ -250,6 +256,14 @@ func checkForEmpties(msg PostMessage) error {
 
 	if msg.PublicKey == "" {
 		return errors.Errorf("`public-key` can not be empty")
+	}
+
+	if msg.PublicKeyEncoding == "" {
+		return errors.Errorf("`public-key-encoding` can not be empty")
+	}
+
+	if msg.PublicKeyKind == "" {
+		return errors.Errorf("`public-key-kind` can not be empty")
 	}
 
 	return nil
@@ -292,7 +306,18 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		return errors.WithMessage(err, "invalid `data`")
 	}
 
-	p.publicKey, err = secp256k1.PublicKeyFromBytes(encodeMessage)
+	// PublicKeyEncoding and KeyType s valid?
+	if p.Message.PublicKeyEncoding != "" {
+		mapKind := crypto.KeyTypes()
+		_, OK := mapKind[p.Message.PublicKeyKind]
+		if !OK {
+			return err
+		}
+
+		// keyTypes := p.Message.PublicKeyKind
+	}
+
+	p.publicKey, err = multikey.PublicKeyFromBytes(p.Message.PublicKeyKind, encodeMessage)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
 	}

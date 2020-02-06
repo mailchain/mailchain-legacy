@@ -21,7 +21,6 @@ import (
 )
 
 func TestWithKind(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		kind byte
 	}
@@ -41,7 +40,7 @@ func TestWithKind(t *testing.T) {
 			got := WithKind(tt.args.kind)
 			opts := &CreateOpts{}
 			got(opts)
-			if !assert.Equal(tt.want, opts) {
+			if !assert.Equal(t, tt.want, opts) {
 				t.Errorf("WithKind() = %v, want %v", got, tt.want)
 			}
 		})
@@ -49,7 +48,6 @@ func TestWithKind(t *testing.T) {
 }
 
 func TestWithURL(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		address string
 	}
@@ -69,7 +67,7 @@ func TestWithURL(t *testing.T) {
 			got := WithURL(tt.args.address)
 			opts := &CreateOpts{}
 			got(opts)
-			if !assert.Equal(tt.want, opts) {
+			if !assert.Equal(t, tt.want, opts) {
 				t.Errorf("WithKind() = %v, want %v", got, tt.want)
 			}
 		})
@@ -77,7 +75,6 @@ func TestWithURL(t *testing.T) {
 }
 
 func TestWithResource(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		resource string
 	}
@@ -97,7 +94,7 @@ func TestWithResource(t *testing.T) {
 			got := WithResource(tt.args.resource)
 			opts := &CreateOpts{}
 			got(opts)
-			if !assert.Equal(tt.want, opts) {
+			if !assert.Equal(t, tt.want, opts) {
 				t.Errorf("WithKind() = %v, want %v", got, tt.want)
 			}
 		})
@@ -105,7 +102,6 @@ func TestWithResource(t *testing.T) {
 }
 
 func TestWithMessageLocationIdentifier(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		mli uint64
 	}
@@ -143,7 +139,7 @@ func TestWithMessageLocationIdentifier(t *testing.T) {
 			}
 			opts := &CreateOpts{}
 			got(opts)
-			if !assert.Equal(tt.want, opts) {
+			if !assert.Equal(t, tt.want, opts) {
 				t.Errorf("WithKind() = %v, want %v", got, tt.want)
 			}
 		})
@@ -151,7 +147,6 @@ func TestWithMessageLocationIdentifier(t *testing.T) {
 }
 
 func TestWithDecryptedHash(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		decryptedHash []byte
 	}
@@ -171,7 +166,7 @@ func TestWithDecryptedHash(t *testing.T) {
 			got := WithDecryptedHash(tt.args.decryptedHash)
 			opts := &CreateOpts{}
 			got(opts)
-			if !assert.Equal(tt.want, opts) {
+			if !assert.Equal(t, tt.want, opts) {
 				t.Errorf("WithKind() = %v, want %v", got, tt.want)
 			}
 		})
@@ -179,7 +174,6 @@ func TestWithDecryptedHash(t *testing.T) {
 }
 
 func TestWithEncryptedHash(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		encryptedHash []byte
 	}
@@ -199,7 +193,7 @@ func TestWithEncryptedHash(t *testing.T) {
 			got := WithEncryptedHash(tt.args.encryptedHash)
 			opts := &CreateOpts{}
 			got(opts)
-			if !assert.Equal(tt.want, opts) {
+			if !assert.Equal(t, tt.want, opts) {
 				t.Errorf("WithEncryptedHash() = %v, want %v", got, tt.want)
 			}
 		})

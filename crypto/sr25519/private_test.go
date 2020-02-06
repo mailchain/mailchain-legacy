@@ -51,7 +51,6 @@ func TestGenerateKey(t *testing.T) {
 	}
 }
 func TestPrivateKeyFromBytes(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		pk []byte
 	}
@@ -109,7 +108,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 				t.Errorf("PrivateKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("PrivateKeyFromBytes() = %v, want %v", got, tt.want)
 			}
 		})
@@ -137,7 +136,6 @@ func TestPrivateKey_Kind(t *testing.T) {
 }
 
 func TestPrivateKey_Bytes(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		name string
 		pk   PrivateKey
@@ -156,7 +154,7 @@ func TestPrivateKey_Bytes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pk.Bytes(); !assert.Equal(tt.want, got) {
+			if got := tt.pk.Bytes(); !assert.Equal(t, tt.want, got) {
 				t.Errorf("PrivateKey.Bytes() = %v, want %v", got, tt.want)
 			}
 		})
@@ -164,7 +162,6 @@ func TestPrivateKey_Bytes(t *testing.T) {
 }
 
 func TestPrivateKey_PublicKey(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		name string
 		pk   PrivateKey
@@ -183,7 +180,7 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pk.PublicKey(); !assert.Equal(tt.want.Bytes(), got.Bytes()) {
+			if got := tt.pk.PublicKey(); !assert.Equal(t, tt.want.Bytes(), got.Bytes()) {
 				t.Errorf("PrivateKey.PublicKey() = %v, want %v", got, tt.want)
 			}
 		})
@@ -215,13 +212,12 @@ func TestPrivateKey_Sign(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert := assert.New(t)
 			got, err := tt.pk.Sign(tt.msg)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Sign() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(len(tt.want), len(got)) {
+			if !assert.Equal(t, len(tt.want), len(got)) {
 				t.Errorf("Sign() = %v,\n want %v", got, tt.want)
 			}
 		})

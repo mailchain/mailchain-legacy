@@ -17,7 +17,6 @@ func TestHandleRequest(t *testing.T) {
 	)
 	defer server.Close()
 
-	assert := assert.New(t)
 	type args struct {
 		relayers map[string]relayer.RelayFunc
 	}
@@ -73,11 +72,11 @@ func TestHandleRequest(t *testing.T) {
 			handler.ServeHTTP(rr, tt.req)
 
 			// Check the status code is what we expect.
-			if !assert.Equal(tt.wantStatus, rr.Code) {
+			if !assert.Equal(t, tt.wantStatus, rr.Code) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.wantStatus)
 			}
-			if !assert.Equal(tt.wantBody, rr.Body.String()) {
+			if !assert.Equal(t, tt.wantBody, rr.Body.String()) {
 				t.Errorf("handler returned unexpected body: got %v want %v",
 					rr.Body.String(), tt.wantBody)
 			}

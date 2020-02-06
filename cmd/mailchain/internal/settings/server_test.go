@@ -10,7 +10,6 @@ import (
 )
 
 func Test_cors(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -39,14 +38,13 @@ func Test_cors(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := cors(tt.args.s)
-			assert.Equal(tt.wantDisabled, got.Disabled.Get())
-			assert.Equal(tt.wantAllowedOrigins, got.AllowedOrigins.Get())
+			assert.Equal(t, tt.wantDisabled, got.Disabled.Get())
+			assert.Equal(t, tt.wantAllowedOrigins, got.AllowedOrigins.Get())
 		})
 	}
 }
 
 func Test_server(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -72,7 +70,7 @@ func Test_server(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := server(tt.args.s)
-			assert.Equal(tt.wantPort, got.Port.Get())
+			assert.Equal(t, tt.wantPort, got.Port.Get())
 		})
 	}
 }

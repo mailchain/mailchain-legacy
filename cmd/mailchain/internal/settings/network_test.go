@@ -11,7 +11,6 @@ import (
 )
 
 func Test_network(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -58,12 +57,12 @@ func Test_network(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := network(tt.args.s, tt.args.protocol, tt.args.network, tt.args.nd)
-			assert.Equal(tt.wantNameServiceAddress, got.NameServiceAddress.Get())
-			assert.Equal(tt.wantNameServiceDomainName, got.NameServiceDomainName.Get())
-			assert.Equal(tt.wantPublicKeyFinder, got.PublicKeyFinder.Get())
-			assert.Equal(tt.wantReceiver, got.Receiver.Get())
-			assert.Equal(tt.wantSender, got.Sender.Get())
-			assert.Equal(tt.wantDisabled, got.Disabled())
+			assert.Equal(t, tt.wantNameServiceAddress, got.NameServiceAddress.Get())
+			assert.Equal(t, tt.wantNameServiceDomainName, got.NameServiceDomainName.Get())
+			assert.Equal(t, tt.wantPublicKeyFinder, got.PublicKeyFinder.Get())
+			assert.Equal(t, tt.wantReceiver, got.Receiver.Get())
+			assert.Equal(t, tt.wantSender, got.Sender.Get())
+			assert.Equal(t, tt.wantDisabled, got.Disabled())
 		})
 	}
 }

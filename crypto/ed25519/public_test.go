@@ -35,7 +35,6 @@ func TestPublicKey_Bytes(t *testing.T) {
 }
 
 func TestPublicKeyFromBytes(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		keyBytes []byte
 	}
@@ -69,7 +68,7 @@ func TestPublicKeyFromBytes(t *testing.T) {
 				t.Errorf("PublicKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("PublicKeyFromBytes() = %v, want %v", got, tt.want)
 			}
 		})
@@ -77,7 +76,6 @@ func TestPublicKeyFromBytes(t *testing.T) {
 }
 
 func TestPublicKey_Kind(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		name string
 		pk   PublicKey
@@ -91,7 +89,7 @@ func TestPublicKey_Kind(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pk.Kind(); !assert.Equal(tt.want, got) {
+			if got := tt.pk.Kind(); !assert.Equal(t, tt.want, got) {
 				t.Errorf("PublicKey.Kind() = %v, want %v", got, tt.want)
 			}
 		})
@@ -99,7 +97,6 @@ func TestPublicKey_Kind(t *testing.T) {
 }
 
 func TestPublicKey_Verify(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		name    string
 		pk      PublicKey
@@ -139,7 +136,7 @@ func TestPublicKey_Verify(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.pk.Verify(tt.message, tt.sig)
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("PublicKey.Verify() = %v, want %v", got, tt.want)
 			}
 		})

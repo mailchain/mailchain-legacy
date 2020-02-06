@@ -23,7 +23,6 @@ import (
 )
 
 func TestGetSpec(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		name   string
 		status int
@@ -48,7 +47,7 @@ func TestGetSpec(t *testing.T) {
 			handler.ServeHTTP(rr, req)
 
 			// Check the status code is what we expect.
-			if !assert.Equal(tt.status, rr.Code) {
+			if !assert.Equal(t, tt.status, rr.Code) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.status)
 			}

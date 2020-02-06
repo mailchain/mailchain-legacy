@@ -15,13 +15,13 @@
 package etherscan
 
 import (
+	"testing"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestGetFromResultHash(t *testing.T) {
-	assert := assert.New(t)
 
 	mockTxResult := []txResult{
 		{From: "address1", Hash: "aaa111"},
@@ -102,7 +102,7 @@ func TestGetFromResultHash(t *testing.T) {
 				t.Errorf("getFromResultHash() error = %v, wantErr %v", err, testCase.wantErr)
 				return
 			}
-			if !assert.Equal(testCase.want, hash) {
+			if !assert.Equal(t, testCase.want, hash) {
 				t.Errorf("getFromResultHash() = %v, want %v", hash, testCase.want)
 			}
 		})

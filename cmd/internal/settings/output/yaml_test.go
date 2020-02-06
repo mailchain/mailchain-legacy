@@ -8,7 +8,6 @@ import (
 )
 
 func Test_createNamePortion(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		name            string
 		isDefault       bool
@@ -93,7 +92,7 @@ func Test_createNamePortion(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			out := &bytes.Buffer{}
 			createNamePortion(tt.args.name, tt.args.isDefault, tt.args.trailingNewLine, tt.args.commentDefaults, tt.args.excludeDefaults, out, tt.args.tabsize, tt.args.indent)
-			if gotOut := out.String(); !assert.Equal(tt.wantOut, gotOut) {
+			if gotOut := out.String(); !assert.Equal(t, tt.wantOut, gotOut) {
 				t.Errorf("createNamePortion() = %v, want %v", gotOut, tt.wantOut)
 			}
 		})
@@ -209,7 +208,6 @@ func Test_yamlValueFormat(t *testing.T) {
 }
 
 func Test_yamlAttributeStringSlice(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		fullName        string
 		val             []string
@@ -281,7 +279,7 @@ func Test_yamlAttributeStringSlice(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			out := &bytes.Buffer{}
 			yamlAttributeStringSlice(tt.args.fullName, tt.args.val, tt.args.isDefault, out, tt.args.tabsize, tt.args.indent, tt.args.commentDefaults, tt.args.excludeDefaults)
-			if gotOut := out.String(); !assert.Equal(tt.wantOut, gotOut) {
+			if gotOut := out.String(); !assert.Equal(t, tt.wantOut, gotOut) {
 				t.Errorf("yamlAttributeStringSlice() = %v, want %v", gotOut, tt.wantOut)
 			}
 		})
@@ -289,7 +287,6 @@ func Test_yamlAttributeStringSlice(t *testing.T) {
 }
 
 func Test_yamlAttribute(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		a               Attribute
 		tabsize         int
@@ -329,7 +326,7 @@ func Test_yamlAttribute(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			out := &bytes.Buffer{}
 			yamlAttribute(tt.args.a, out, tt.args.tabsize, tt.args.indent, tt.args.commentDefaults, tt.args.excludeDefaults)
-			if gotOut := out.String(); !assert.Equal(tt.wantOut, gotOut) {
+			if gotOut := out.String(); !assert.Equal(t, tt.wantOut, gotOut) {
 				t.Errorf("yamlAttribute() = %v, want %v", gotOut, tt.wantOut)
 			}
 		})
@@ -337,7 +334,6 @@ func Test_yamlAttribute(t *testing.T) {
 }
 
 func Test_yamlElement(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		e               Element
 		tabsize         int
@@ -377,7 +373,7 @@ func Test_yamlElement(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			out := &bytes.Buffer{}
 			yamlElement(tt.args.e, out, tt.args.tabsize, tt.args.indent, tt.args.commentDefaults, tt.args.excludeDefaults)
-			if gotOut := out.String(); !assert.Equal(tt.wantOut, gotOut) {
+			if gotOut := out.String(); !assert.Equal(t, tt.wantOut, gotOut) {
 				t.Errorf("yamlElement() = %v, want %v", gotOut, tt.wantOut)
 			}
 		})
@@ -385,7 +381,6 @@ func Test_yamlElement(t *testing.T) {
 }
 
 func TestToYaml(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		root            Root
 		tabsize         int
@@ -419,7 +414,7 @@ func TestToYaml(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			out := &bytes.Buffer{}
 			ToYaml(tt.args.root, out, tt.args.tabsize, tt.args.commentDefaults, tt.args.excludeDefaults)
-			if gotOut := out.String(); !assert.Equal(tt.wantOut, gotOut) {
+			if gotOut := out.String(); !assert.Equal(t, tt.wantOut, gotOut) {
 				t.Errorf("ToYaml() = %v, want %v", gotOut, tt.wantOut)
 			}
 		})

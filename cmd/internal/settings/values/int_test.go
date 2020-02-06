@@ -110,7 +110,6 @@ func TestDefaultInt_Set(t *testing.T) {
 }
 
 func TestNewDefaultInt(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		defVal  int
 		store   Store
@@ -133,7 +132,7 @@ func TestNewDefaultInt(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewDefaultInt(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(tt.want, got) {
+			if got := NewDefaultInt(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(t, tt.want, got) {
 				t.Errorf("NewDefaultInt() = %v, want %v", got, tt.want)
 			}
 		})
@@ -141,7 +140,6 @@ func TestNewDefaultInt(t *testing.T) {
 }
 
 func TestDefaultInt_Attribute(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -176,7 +174,7 @@ func TestDefaultInt_Attribute(t *testing.T) {
 				setting: tt.fields.setting,
 				store:   tt.fields.store,
 			}
-			if got := d.Attribute(); !assert.Equal(tt.want, got) {
+			if got := d.Attribute(); !assert.Equal(t, tt.want, got) {
 				t.Errorf("DefaultInt.Attribute() = %v, want %v", got, tt.want)
 			}
 		})

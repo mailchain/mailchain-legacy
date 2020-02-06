@@ -45,7 +45,6 @@ func Test_AddressnameServices(t *testing.T) {
 }
 
 func TestAddressNameServices_Produce(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -112,7 +111,7 @@ func TestAddressNameServices_Produce(t *testing.T) {
 				t.Errorf("AddressNameServices.Produce() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.IsType(tt.wantType, got) {
+			if !assert.IsType(t, tt.wantType, got) {
 				t.Errorf("AddressNameServices.Produce() = %v, want %v", got, tt.wantType)
 			}
 		})
@@ -120,7 +119,6 @@ func TestAddressNameServices_Produce(t *testing.T) {
 }
 
 func TestMailchainAddressNameServices_Supports(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -151,7 +149,7 @@ func TestMailchainAddressNameServices_Supports(t *testing.T) {
 				BaseURL:                 tt.fields.BaseURL,
 				EnabledProtocolNetworks: tt.fields.EnabledProtocolNetworks,
 			}
-			if got := s.Supports(); !assert.Equal(tt.want, got) {
+			if got := s.Supports(); !assert.Equal(t, tt.want, got) {
 				t.Errorf("MailchainAddressNameServices.Supports() = %v, want %v", got, tt.want)
 			}
 		})

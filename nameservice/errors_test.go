@@ -18,12 +18,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
 	"github.com/pkg/errors"
 )
 
 func Test_WrapError(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		err error
 	}
@@ -88,7 +86,7 @@ func Test_WrapError(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("wrapError() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if (err != nil) && (tt.wantErrMessage != "") && !assert.EqualError(err, tt.wantErrMessage) {
+			if (err != nil) && (tt.wantErrMessage != "") && !assert.EqualError(t, err, tt.wantErrMessage) {
 				t.Errorf("wrapError() errorMessage = %v, wantErrMessage %v", err, tt.wantErrMessage)
 			}
 		})

@@ -14,7 +14,7 @@ import (
 )
 
 func TestProtocol_GetSenders(t *testing.T) {
-	assert := assert.New(t)
+
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -40,6 +40,7 @@ func TestProtocol_GetSenders(t *testing.T) {
 							m := valuestest.NewMockStore(mockCtrl)
 							m.EXPECT().IsSet("protocols.ethereum.networks.mainnet.sender").Return(false)
 							return m
+
 						}(), "ethereum", "mainnet", defaults.EthereumNetworkAny()),
 					"ropsten": network(
 						func() values.Store {
@@ -99,7 +100,7 @@ func TestProtocol_GetSenders(t *testing.T) {
 				gotKeys = append(gotKeys, k)
 			}
 			sort.Strings(gotKeys)
-			if !assert.EqualValues(gotKeys, tt.wantKeys) {
+			if !assert.EqualValues(t, gotKeys, tt.wantKeys) {
 				t.Errorf("Protocol.GetSenders() = %v, want %v", got, tt.wantKeys)
 			}
 		})
@@ -107,7 +108,7 @@ func TestProtocol_GetSenders(t *testing.T) {
 }
 
 func TestProtocol_GetReceivers(t *testing.T) {
-	assert := assert.New(t)
+
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -192,7 +193,7 @@ func TestProtocol_GetReceivers(t *testing.T) {
 				gotKeys = append(gotKeys, k)
 			}
 			sort.Strings(gotKeys)
-			if !assert.EqualValues(gotKeys, tt.wantKeys) {
+			if !assert.EqualValues(t, gotKeys, tt.wantKeys) {
 				t.Errorf("Protocol.GetReceivers() = %v, want %v", got, tt.wantKeys)
 			}
 		})
@@ -200,7 +201,7 @@ func TestProtocol_GetReceivers(t *testing.T) {
 }
 
 func TestProtocol_GetPublicKeyFinders(t *testing.T) {
-	assert := assert.New(t)
+
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -285,7 +286,7 @@ func TestProtocol_GetPublicKeyFinders(t *testing.T) {
 				gotKeys = append(gotKeys, k)
 			}
 			sort.Strings(gotKeys)
-			if !assert.EqualValues(gotKeys, tt.wantKeys) {
+			if !assert.EqualValues(t, gotKeys, tt.wantKeys) {
 				t.Errorf("Protocol.GetPublicKeyFinders() = %v, want %v", got, tt.wantKeys)
 			}
 		})
@@ -293,7 +294,7 @@ func TestProtocol_GetPublicKeyFinders(t *testing.T) {
 }
 
 func Test_protocol(t *testing.T) {
-	assert := assert.New(t)
+
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -336,16 +337,16 @@ func Test_protocol(t *testing.T) {
 				gotKeys = append(gotKeys, k)
 			}
 			sort.Strings(gotKeys)
-			if !assert.EqualValues(gotKeys, tt.wantKeys) {
+			if !assert.EqualValues(t, gotKeys, tt.wantKeys) {
 				t.Errorf("protocol().Networks = %v, want %v", got, tt.wantKeys)
 			}
-			assert.Equal(tt.wantDisabled, got.Disabled.Get())
+			assert.Equal(t, tt.wantDisabled, got.Disabled.Get())
 		})
 	}
 }
 
 func TestProtocol_GetAddressNameServices(t *testing.T) {
-	assert := assert.New(t)
+
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -435,7 +436,7 @@ func TestProtocol_GetAddressNameServices(t *testing.T) {
 				gotKeys = append(gotKeys, k)
 			}
 			sort.Strings(gotKeys)
-			if !assert.EqualValues(gotKeys, tt.wantKeys) {
+			if !assert.EqualValues(t, gotKeys, tt.wantKeys) {
 				t.Errorf("Protocol.GetPublicKeyFinders() = %v, want %v", got, tt.wantKeys)
 			}
 		})
@@ -443,7 +444,6 @@ func TestProtocol_GetAddressNameServices(t *testing.T) {
 }
 
 func TestProtocol_GetDomainNameServices(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -532,7 +532,7 @@ func TestProtocol_GetDomainNameServices(t *testing.T) {
 				gotKeys = append(gotKeys, k)
 			}
 			sort.Strings(gotKeys)
-			if !assert.EqualValues(gotKeys, tt.wantKeys) {
+			if !assert.EqualValues(t, gotKeys, tt.wantKeys) {
 				t.Errorf("Protocol.GetPublicKeyFinders() = %v, want %v", got, tt.wantKeys)
 			}
 		})

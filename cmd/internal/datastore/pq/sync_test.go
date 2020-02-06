@@ -14,7 +14,6 @@ import (
 )
 
 func TestSyncStore_GetblockNumber(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		ctx      context.Context
 		protocol string
@@ -109,7 +108,7 @@ func TestSyncStore_GetblockNumber(t *testing.T) {
 			if (err != nil) != tt.result.wantErr {
 				t.Errorf("SyncStore.GetBlockNumber() error = %v, wantErr %v", err, tt.result.wantErr)
 			} else {
-				assert.Equal(tt.result.blockNo, blockNo)
+				assert.Equal(t, tt.result.blockNo, blockNo)
 			}
 
 			if err := tt.mock.sqlmock.ExpectationsWereMet(); err != nil {

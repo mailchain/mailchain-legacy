@@ -5,10 +5,9 @@
 package valuestest
 
 import (
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
 	output "github.com/mailchain/mailchain/cmd/internal/settings/output"
+	reflect "reflect"
 )
 
 // MockInt is a mock of Int interface

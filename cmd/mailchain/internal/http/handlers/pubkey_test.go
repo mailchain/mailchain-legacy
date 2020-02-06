@@ -262,7 +262,7 @@ func TestGetPublicKey(t *testing.T) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.wantStatus)
 			}
-			golden, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/%s.json", testName, tt.name))
+			golden, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/request-%s.json", testName, tt.name))
 			if err != nil {
 				assert.FailNow(t, err.Error())
 			}

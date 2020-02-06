@@ -23,7 +23,6 @@ import (
 )
 
 func Test_parseID(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		h nm.Header
 	}
@@ -89,7 +88,7 @@ func Test_parseID(t *testing.T) {
 				t.Errorf("parseID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("parseID() = %v, want %v", got, tt.want)
 			}
 		})

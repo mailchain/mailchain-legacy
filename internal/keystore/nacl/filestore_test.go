@@ -99,7 +99,6 @@ func TestFileStore_filename(t *testing.T) {
 }
 
 func TestFileStore_getEncryptedKey(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		fs   afero.Fs
 		rand io.Reader
@@ -216,7 +215,7 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 				t.Errorf("FileStore.getEncryptedKey() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("FileStore.getEncryptedKey() = %v, want %v", got, tt.want)
 			}
 		})
@@ -224,7 +223,6 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 }
 
 func TestFileStore_getEncryptedKeys(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		fs     afero.Fs
 		rand   io.Reader
@@ -352,7 +350,7 @@ func TestFileStore_getEncryptedKeys(t *testing.T) {
 				t.Errorf("FileStore.getEncryptedKeys() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("FileStore.getEncryptedKeys() = %v, want %v", got, tt.want)
 			}
 		})

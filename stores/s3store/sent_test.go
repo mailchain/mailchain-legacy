@@ -88,7 +88,6 @@ func TestNewSent(t *testing.T) {
 }
 
 func TestSent_PutMessage(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		uploader func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
 		bucket   string
@@ -112,13 +111,13 @@ func TestSent_PutMessage(t *testing.T) {
 			"success-no-headers",
 			fields{
 				func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
-					if !assert.Equal(bytes.NewReader([]byte("test-data")), input.Body) {
+					if !assert.Equal(t, bytes.NewReader([]byte("test-data")), input.Body) {
 						t.Errorf("body incorrect")
 					}
-					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
+					if !assert.Equal(t, aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("636f6e74656e74732d68617368"), input.Key) {
+					if !assert.Equal(t, aws.String("636f6e74656e74732d68617368"), input.Key) {
 						t.Errorf("Bucket incorrect")
 					}
 
@@ -143,13 +142,13 @@ func TestSent_PutMessage(t *testing.T) {
 			"success-has-headers",
 			fields{
 				func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
-					if !assert.Equal(bytes.NewReader([]byte("test-data")), input.Body) {
+					if !assert.Equal(t, bytes.NewReader([]byte("test-data")), input.Body) {
 						t.Errorf("body incorrect")
 					}
-					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
+					if !assert.Equal(t, aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("636f6e74656e74732d68617368"), input.Key) {
+					if !assert.Equal(t, aws.String("636f6e74656e74732d68617368"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
@@ -176,13 +175,13 @@ func TestSent_PutMessage(t *testing.T) {
 			"err-uploader",
 			fields{
 				func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
-					if !assert.Equal(bytes.NewReader([]byte("test-data")), input.Body) {
+					if !assert.Equal(t, bytes.NewReader([]byte("test-data")), input.Body) {
 						t.Errorf("body incorrect")
 					}
-					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
+					if !assert.Equal(t, aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("636f6e74656e74732d68617368"), input.Key) {
+					if !assert.Equal(t, aws.String("636f6e74656e74732d68617368"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
@@ -207,13 +206,13 @@ func TestSent_PutMessage(t *testing.T) {
 			"err-nil-msg",
 			fields{
 				func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
-					if !assert.Equal(bytes.NewReader([]byte("test-data")), input.Body) {
+					if !assert.Equal(t, bytes.NewReader([]byte("test-data")), input.Body) {
 						t.Errorf("body incorrect")
 					}
-					if !assert.Equal(aws.String("bucket-id"), input.Bucket) {
+					if !assert.Equal(t, aws.String("bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
-					if !assert.Equal(aws.String("636f6e74656e74732d68617368"), input.Key) {
+					if !assert.Equal(t, aws.String("636f6e74656e74732d68617368"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 

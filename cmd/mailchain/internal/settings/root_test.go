@@ -50,7 +50,7 @@ func TestFromStore(t *testing.T) {
 }
 
 func TestRoot_ToYaml(t *testing.T) {
-	assert := assert.New(t)
+
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -123,10 +123,10 @@ func TestRoot_ToYaml(t *testing.T) {
 
 			if *update {
 				err := ioutil.WriteFile(golden, out.Bytes(), 0644)
-				assert.NoError(err)
+				assert.NoError(t, err)
 			}
 
-			assert.EqualValues(string(want), out.String())
+			assert.EqualValues(t, string(want), out.String())
 		})
 	}
 }

@@ -10,7 +10,6 @@ import (
 )
 
 func Test_sentStoreS3(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -45,10 +44,10 @@ func Test_sentStoreS3(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := sentStoreS3(tt.args.s)
-			assert.Equal(tt.wantBucket, got.Bucket.Get())
-			assert.Equal(tt.wantRegion, got.Region.Get())
-			assert.Equal(tt.wantAccessKeyID, got.AccessKeyID.Get())
-			assert.Equal(tt.wantSecretAccessKey, got.SecretAccessKey.Get())
+			assert.Equal(t, tt.wantBucket, got.Bucket.Get())
+			assert.Equal(t, tt.wantRegion, got.Region.Get())
+			assert.Equal(t, tt.wantAccessKeyID, got.AccessKeyID.Get())
+			assert.Equal(t, tt.wantSecretAccessKey, got.SecretAccessKey.Get())
 		})
 	}
 }

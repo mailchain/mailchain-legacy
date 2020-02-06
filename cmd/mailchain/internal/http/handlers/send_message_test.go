@@ -428,7 +428,6 @@ func Test_parsePostRequest(t *testing.T) {
 }
 
 func TestSendMessage(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -510,11 +509,11 @@ func TestSendMessage(t *testing.T) {
 			handler.ServeHTTP(rr, tt.req)
 
 			// Check the status code is what we expect.
-			if !assert.Equal(tt.expectedStatus, rr.Code) {
+			if !assert.Equal(t, tt.expectedStatus, rr.Code) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.expectedStatus)
 			}
-			if !assert.Equal(tt.expectedResponse, rr.Body.String()) {
+			if !assert.Equal(t, tt.expectedResponse, rr.Body.String()) {
 				t.Errorf("handler returned unexpected body: got %v want %v",
 					rr.Body.String(), tt.expectedResponse)
 			}

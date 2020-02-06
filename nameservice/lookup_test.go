@@ -54,7 +54,6 @@ func TestNewLookupService(t *testing.T) {
 }
 
 func TestLookupService_ResolveName(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		newRequest func(method string, url string, body io.Reader) (*http.Request, error)
 		doRequest  func(req *http.Request) (*http.Response, error)
@@ -266,7 +265,7 @@ func TestLookupService_ResolveName(t *testing.T) {
 				t.Errorf("LookupService.ResolveName() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("LookupService.ResolveName() = %v, want %v", got, tt.want)
 			}
 		})

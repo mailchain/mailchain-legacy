@@ -21,19 +21,17 @@ import (
 )
 
 func TestApplyDefault(t *testing.T) {
-	assert := assert.New(t)
 	opts := &DeriveOpts{}
 	apply(opts, []DeriveOptionsBuilder{DefaultDeriveOptions()})
-	assert.Equal(32, opts.Len)
-	assert.Equal(262144, opts.N)
-	assert.Equal(1, opts.P)
-	assert.Equal("", opts.Passphrase)
-	assert.Equal(8, opts.R)
-	assert.Nil(opts.Salt)
+	assert.Equal(t, 32, opts.Len)
+	assert.Equal(t, 262144, opts.N)
+	assert.Equal(t, 1, opts.P)
+	assert.Equal(t, "", opts.Passphrase)
+	assert.Equal(t, 8, opts.R)
+	assert.Nil(t, opts.Salt)
 }
 
 func TestApplyDefaultAndPassword(t *testing.T) {
-	assert := assert.New(t)
 	randomSalt, err := RandomSalt()
 	if err != nil {
 		t.Fail()
@@ -41,16 +39,15 @@ func TestApplyDefaultAndPassword(t *testing.T) {
 
 	opts := &DeriveOpts{}
 	apply(opts, []DeriveOptionsBuilder{DefaultDeriveOptions(), WithPassphrase("test"), randomSalt})
-	assert.Equal(32, opts.Len)
-	assert.Equal(262144, opts.N)
-	assert.Equal(1, opts.P)
-	assert.Equal("test", opts.Passphrase)
-	assert.Equal(8, opts.R)
-	assert.Equal(32, len(opts.Salt))
+	assert.Equal(t, 32, opts.Len)
+	assert.Equal(t, 262144, opts.N)
+	assert.Equal(t, 1, opts.P)
+	assert.Equal(t, "test", opts.Passphrase)
+	assert.Equal(t, 8, opts.R)
+	assert.Equal(t, 32, len(opts.Salt))
 }
 
 func TestApplyFromEncryptedKey(t *testing.T) {
-	assert := assert.New(t)
 
 	opts := &DeriveOpts{}
 	apply(opts, []DeriveOptionsBuilder{DefaultDeriveOptions(), FromEncryptedKey(32,
@@ -58,15 +55,14 @@ func TestApplyFromEncryptedKey(t *testing.T) {
 		1,
 		8,
 		[]byte("salt-value"))})
-	assert.Equal(32, opts.Len)
-	assert.Equal(262144, opts.N)
-	assert.Equal(1, opts.P)
-	assert.Equal(8, opts.R)
-	assert.Equal([]byte("salt-value"), opts.Salt)
+	assert.Equal(t, 32, opts.Len)
+	assert.Equal(t, 262144, opts.N)
+	assert.Equal(t, 1, opts.P)
+	assert.Equal(t, 8, opts.R)
+	assert.Equal(t, []byte("salt-value"), opts.Salt)
 }
 
 func TestCreateOptions(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		o []DeriveOptionsBuilder
 	}
@@ -85,7 +81,7 @@ func TestCreateOptions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CreateOptions(tt.args.o); !assert.Equal(tt.want, got) {
+			if got := CreateOptions(tt.args.o); !assert.Equal(t, tt.want, got) {
 				t.Errorf("CreateOptions() = %v, want %v", got, tt.want)
 			}
 		})
@@ -93,7 +89,6 @@ func TestCreateOptions(t *testing.T) {
 }
 
 func TestDeriveKey(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		o []DeriveOptionsBuilder
 	}
@@ -119,7 +114,7 @@ func TestDeriveKey(t *testing.T) {
 				t.Errorf("DeriveKey() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(got, tt.want) {
+			if !assert.Equal(t, got, tt.want) {
 				t.Errorf("DeriveKey() = %v, want %v", got, tt.want)
 			}
 		})

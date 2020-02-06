@@ -24,7 +24,6 @@ import (
 )
 
 func TestCreateIntegrityHash(t *testing.T) {
-	assert := assert.New(t)
 	cases := []struct {
 		name     string
 		original []byte
@@ -42,13 +41,12 @@ func TestCreateIntegrityHash(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			actual := crypto.CreateIntegrityHash(tc.original)
-			assert.EqualValues(encoding.EncodeHex(tc.expected), encoding.EncodeHex(actual))
+			assert.EqualValues(t, encoding.EncodeHex(tc.expected), encoding.EncodeHex(actual))
 		})
 	}
 }
 
 func TestCreateMessageHash(t *testing.T) {
-	assert := assert.New(t)
 	cases := []struct {
 		name     string
 		original []byte
@@ -66,7 +64,7 @@ func TestCreateMessageHash(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			actual := crypto.CreateMessageHash(tc.original)
-			assert.EqualValues(encoding.EncodeHex(tc.expected), encoding.EncodeHex(actual))
+			assert.EqualValues(t, encoding.EncodeHex(tc.expected), encoding.EncodeHex(actual))
 		})
 	}
 }

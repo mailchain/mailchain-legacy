@@ -34,7 +34,6 @@ import (
 )
 
 func Test_accountListCmd(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -121,7 +120,7 @@ func Test_accountListCmd(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := accountListCmd(tt.args.ks)
-			if !assert.NotNil(got) {
+			if !assert.NotNil(t, got) {
 				t.Error("accountListCmd() is nil")
 			}
 			_, out, err := commandstest.ExecuteCommandC(got, tt.cmdArgs, tt.cmdFlags)
@@ -137,7 +136,6 @@ func Test_accountListCmd(t *testing.T) {
 }
 
 func Test_accountAddCmd(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -280,7 +278,7 @@ func Test_accountAddCmd(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := accountAddCmd(tt.args.ks, tt.args.passphrasePrompt, tt.args.privateKeyPrompt)
-			if !assert.NotNil(got) {
+			if !assert.NotNil(t, got) {
 				t.Error("accountListCmd() is nil")
 			}
 			_, out, err := commandstest.ExecuteCommandC(got, tt.cmdArgs, tt.cmdFlags)

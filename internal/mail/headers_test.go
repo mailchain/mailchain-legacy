@@ -22,7 +22,6 @@ import (
 )
 
 func TestNewHeaders(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		date        time.Time
 		from        Address
@@ -95,7 +94,7 @@ func TestNewHeaders(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := NewHeaders(tt.args.date, tt.args.from, tt.args.to, tt.args.replyTo, tt.args.subject, tt.args.contentType)
-			if !assert.Equal(got, tt.want) {
+			if !assert.Equal(t, got, tt.want) {
 				t.Errorf("NewHeaders() = %v, want %v", got, tt.want)
 			}
 		})

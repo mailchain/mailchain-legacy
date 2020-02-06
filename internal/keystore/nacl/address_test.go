@@ -28,7 +28,6 @@ import (
 )
 
 func TestFileStore_GetPublicKeys(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		fs     afero.Fs
 		rand   io.Reader
@@ -109,7 +108,7 @@ func TestFileStore_GetPublicKeys(t *testing.T) {
 			for _, x := range got {
 				gotBytes = append(gotBytes, x.Bytes())
 			}
-			if !assert.Equal(tt.want, gotBytes) {
+			if !assert.Equal(t, tt.want, gotBytes) {
 				t.Errorf("FileStore.GetPublicKeys() = %v, want %v", got, tt.want)
 			}
 		})
@@ -117,7 +116,6 @@ func TestFileStore_GetPublicKeys(t *testing.T) {
 }
 
 func TestFileStore_GetAddresses(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		fs     afero.Fs
 		rand   io.Reader
@@ -209,7 +207,7 @@ func TestFileStore_GetAddresses(t *testing.T) {
 				t.Errorf("FileStore.GetAddresses() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("FileStore.GetAddresses() = %v, want %v", got, tt.want)
 			}
 		})
@@ -217,7 +215,6 @@ func TestFileStore_GetAddresses(t *testing.T) {
 }
 
 func TestFileStore_getEncryptedKeyByAddress(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		fs     afero.Fs
 		rand   io.Reader
@@ -371,7 +368,7 @@ func TestFileStore_getEncryptedKeyByAddress(t *testing.T) {
 				t.Errorf("FileStore.getEncryptedKeyByAddress() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("FileStore.getEncryptedKeyByAddress() = %v, want %v", got, tt.want)
 			}
 		})

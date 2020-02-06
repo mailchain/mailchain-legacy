@@ -20,13 +20,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/mailchain/mailchain/cmd/internal/settings/values/valuestest"
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetProtocols(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -114,11 +113,11 @@ func TestGetProtocols(t *testing.T) {
 			handler.ServeHTTP(rr, req)
 
 			// Check the status code is what we expect.
-			if !assert.Equal(tt.wantStatus, rr.Code) {
+			if !assert.Equal(t, tt.wantStatus, rr.Code) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.wantStatus)
 			}
-			if !assert.Equal(tt.wantBody, rr.Body.String()) {
+			if !assert.Equal(t, tt.wantBody, rr.Body.String()) {
 				t.Errorf("handler returned unexpected body: got %v want %v",
 					rr.Body.String(), tt.wantBody)
 			}

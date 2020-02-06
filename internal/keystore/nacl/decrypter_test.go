@@ -28,7 +28,6 @@ import (
 )
 
 func TestFileStore_GetDecrypter(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		fs     afero.Fs
 		rand   io.Reader
@@ -133,7 +132,7 @@ func TestFileStore_GetDecrypter(t *testing.T) {
 				t.Errorf("FileStore.GetDecrypter() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.IsType(tt.want, got) {
+			if !assert.IsType(t, tt.want, got) {
 				t.Errorf("FileStore.GetDecrypter() = %v, want %v", got, tt.want)
 			}
 		})

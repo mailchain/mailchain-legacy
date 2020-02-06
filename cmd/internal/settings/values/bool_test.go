@@ -109,7 +109,6 @@ func TestDefaultBool_Set(t *testing.T) {
 }
 
 func TestNewDefaultBool(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		defVal  bool
 		store   Store
@@ -132,7 +131,7 @@ func TestNewDefaultBool(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewDefaultBool(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(tt.want, got) {
+			if got := NewDefaultBool(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(t, tt.want, got) {
 				t.Errorf("NewDefaultBool() = %v, want %v", got, tt.want)
 			}
 		})
@@ -140,7 +139,6 @@ func TestNewDefaultBool(t *testing.T) {
 }
 
 func TestDefaultBool_Attribute(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -175,7 +173,7 @@ func TestDefaultBool_Attribute(t *testing.T) {
 				setting: tt.fields.setting,
 				store:   tt.fields.store,
 			}
-			if got := d.Attribute(); !assert.Equal(tt.want, got) {
+			if got := d.Attribute(); !assert.Equal(t, tt.want, got) {
 				t.Errorf("DefaultBool.Attribute() = %v, want %v", got, tt.want)
 			}
 		})

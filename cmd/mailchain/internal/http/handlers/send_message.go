@@ -262,10 +262,6 @@ func checkForEmpties(msg PostMessage) error {
 		return errors.Errorf("`public-key-encoding` can not be empty")
 	}
 
-	if msg.PublicKeyKind == "" {
-		return errors.Errorf("`public-key-kind` can not be empty")
-	}
-
 	return nil
 }
 
@@ -285,25 +281,20 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		return errors.WithMessage(err, "`to` is invalid")
 	}
 
-	// Validate Public-key Kind
-	mapKind := crypto.KeyTypes()
-	_, kindType := mapKind[p.Message.PublicKeyKind]
+	// Validate Public-key-encoding
+	pkEncod := encoding.PublicKeyEncoding()
+	_, validEncod := pkEncod[p.Message.PublicKeyEncoding]
 
-	if !kindType {
-		return errors.Errorf("invalid `public-key-kind` ")
+	if !validEncod {
+		return errors.Errorf("invalid `public-key-encoding` ")
 	}
 
-	//Validate Public-key-encoding
-	pubKeyEncoding := p.Message.PublicKeyEncoding
-	switch pubKeyEncoding != "" {
-	case pubKeyEncoding == encoding.KindHex:
-		return nil
-	case pubKeyEncoding == encoding.KindHex0XPrefix:
-		return nil
-	case pubKeyEncoding == encoding.KindBase58SubstrateAddress:
-		return nil
-	case pubKeyEncoding == encoding.KindBase58:
-		return nil
+	// Validate Public-key Kind
+	mapKind := crypto.KeyTypes()
+	_, validkindType := mapKind[p.Message.PublicKeyKind]
+
+	if !validkindType {
+		return errors.Errorf("invalid `public-key-kind` ")
 	}
 
 	//nolint TODO: figure this out

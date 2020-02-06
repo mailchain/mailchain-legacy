@@ -32,7 +32,6 @@ import (
 )
 
 func Test_deriveSharedSecret(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		pub     *ecies.PublicKey
 		private *ecies.PrivateKey
@@ -105,7 +104,7 @@ func Test_deriveSharedSecret(t *testing.T) {
 				t.Errorf("deriveSharedSecret() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("deriveSharedSecret() = %v, want %v", got, tt.want)
 			}
 		})
@@ -145,7 +144,6 @@ func Test_generateMacKeyAndEncryptionKey(t *testing.T) {
 }
 
 func TestEncrypter_generateIV(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		rand      io.Reader
 		publicKey crypto.PublicKey
@@ -177,7 +175,7 @@ func TestEncrypter_generateIV(t *testing.T) {
 				t.Errorf("Encrypter.generateIV() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Encrypter.generateIV() = %v, want %v", got, tt.want)
 			}
 		})

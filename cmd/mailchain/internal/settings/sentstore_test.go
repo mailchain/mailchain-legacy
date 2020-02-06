@@ -12,7 +12,6 @@ import (
 )
 
 func Test_sentStore(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -38,13 +37,12 @@ func Test_sentStore(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := sentStore(tt.args.s)
-			assert.Equal(tt.wantKind, got.Kind.Get())
+			assert.Equal(t, tt.wantKind, got.Kind.Get())
 		})
 	}
 }
 
 func TestSentStore_Produce(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -123,7 +121,7 @@ func TestSentStore_Produce(t *testing.T) {
 				return
 			}
 
-			if !assert.IsType(tt.wantType, got) {
+			if !assert.IsType(t, tt.wantType, got) {
 				t.Errorf("SentStore.Produce() = %v, want %v", got, tt.wantType)
 			}
 		})

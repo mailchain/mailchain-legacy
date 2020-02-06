@@ -228,7 +228,6 @@ func TestSECP256K1_privateKey(t *testing.T) {
 }
 
 func TestSECP256K1_SharedSecret(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		rand  io.Reader
 		curve elliptic.Curve
@@ -334,7 +333,7 @@ func TestSECP256K1_SharedSecret(t *testing.T) {
 				t.Errorf("SECP256K1.SharedSecret() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("SECP256K1.SharedSecret() = %v, want %v", got, tt.want)
 			}
 		})

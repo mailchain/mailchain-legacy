@@ -111,7 +111,6 @@ func TestDefaultString_Set(t *testing.T) {
 }
 
 func TestNewDefaultString(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		defVal  string
 		store   Store
@@ -134,7 +133,7 @@ func TestNewDefaultString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewDefaultString(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(tt.want, got) {
+			if got := NewDefaultString(tt.args.defVal, tt.args.store, tt.args.setting); !assert.Equal(t, tt.want, got) {
 				t.Errorf("NewDefaultString() = %v, want %v", got, tt.want)
 			}
 		})

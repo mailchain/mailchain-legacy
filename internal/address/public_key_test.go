@@ -25,7 +25,6 @@ import (
 )
 
 func TestFromPublicKey(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		pubKey   crypto.PublicKey
 		protocol string
@@ -75,7 +74,7 @@ func TestFromPublicKey(t *testing.T) {
 				t.Errorf("FromPublicKey() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.wantAddress, gotAddress) {
+			if !assert.Equal(t, tt.wantAddress, gotAddress) {
 				t.Errorf("FromPublicKey() = %v, want %v", gotAddress, tt.wantAddress)
 			}
 		})

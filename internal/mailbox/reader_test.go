@@ -34,7 +34,7 @@ func TestReadMessage(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	assert := assert.New(t)
+	
 	type args struct {
 		txData    []byte
 		decrypter cipher.Decrypter
@@ -160,7 +160,7 @@ func TestReadMessage(t *testing.T) {
 				t.Errorf("ReadMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("ReadMessage() = %v, want %v", got, tt.want)
 			}
 		})

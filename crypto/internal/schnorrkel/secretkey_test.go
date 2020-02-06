@@ -41,8 +41,7 @@ func TestNewSecretKeyED25519(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert := assert.New(t)
-			if got := NewSecretKeyED25519(tt.args.seed); !assert.Equal(tt.want, got) {
+			if got := NewSecretKeyED25519(tt.args.seed); !assert.Equal(t, tt.want, got) {
 				t.Errorf("NewSecretKeyED25519() = %v, want %v", got, tt.want)
 			}
 		})

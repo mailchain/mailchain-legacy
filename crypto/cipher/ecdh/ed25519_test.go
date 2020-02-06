@@ -96,7 +96,6 @@ func TestED25519_EphemeralKey(t *testing.T) {
 }
 
 func TestED25519_publicKey(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		rand io.Reader
 	}
@@ -154,7 +153,7 @@ func TestED25519_publicKey(t *testing.T) {
 				t.Errorf("ED25519.publicKey() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.wantKey, gotKey) {
+			if !assert.Equal(t, tt.wantKey, gotKey) {
 				t.Errorf("ED25519.publicKey() = %v, want %v", gotKey, tt.wantKey)
 			}
 		})
@@ -162,7 +161,6 @@ func TestED25519_publicKey(t *testing.T) {
 }
 
 func TestED25519_privateKey(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		rand io.Reader
 	}
@@ -220,7 +218,7 @@ func TestED25519_privateKey(t *testing.T) {
 				t.Errorf("ED25519.privateKey() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.wantKey, gotKey) {
+			if !assert.Equal(t, tt.wantKey, gotKey) {
 				t.Errorf("ED25519.privateKey() = %v, want %v", gotKey, tt.wantKey)
 			}
 		})
@@ -228,7 +226,6 @@ func TestED25519_privateKey(t *testing.T) {
 }
 
 func TestED25519_SharedSecret(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		rand io.Reader
 	}
@@ -326,7 +323,7 @@ func TestED25519_SharedSecret(t *testing.T) {
 				t.Errorf("ED25519.SharedSecret() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("ED25519.SharedSecret() = %v, want %v", got, tt.want)
 			}
 		})

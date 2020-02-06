@@ -93,7 +93,6 @@ func TestNewDecrypter(t *testing.T) {
 }
 
 func TestDecrypter_Decrypt(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		privateKey  crypto.PrivateKey
 		keyExchange cipher.KeyExchange
@@ -270,7 +269,7 @@ func TestDecrypter_Decrypt(t *testing.T) {
 				t.Errorf("Decrypter.Decrypt() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Decrypter.Decrypt() = %v, want %v", got, tt.want)
 			}
 		})

@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
+	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
 	ec "github.com/mailchain/mailchain/crypto/cipher/encrypter"
 	"github.com/mailchain/mailchain/crypto/secp256k1"

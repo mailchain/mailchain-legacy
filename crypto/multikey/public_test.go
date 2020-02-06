@@ -24,7 +24,6 @@ import (
 )
 
 func TestPublicKeyFromBytes(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		hex     string
 		keyType []byte
@@ -79,12 +78,12 @@ func TestPublicKeyFromBytes(t *testing.T) {
 				t.Errorf("PublicKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			if got != nil {
-				if !assert.EqualValues(tt.wantBytes, got.Bytes()) {
+				if !assert.EqualValues(t, tt.wantBytes, got.Bytes()) {
 					t.Errorf("PublicKeyFromBytes() = %v, want %v", got, tt.wantBytes)
 				}
 			}
 			if got == nil {
-				if !assert.Nil(tt.wantBytes) {
+				if !assert.Nil(t, tt.wantBytes) {
 					t.Errorf("PublicKeyFromBytes() = %v, want %v", got, tt.wantBytes)
 				}
 			}

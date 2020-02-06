@@ -138,7 +138,6 @@ func TestZeroX01_URL(t *testing.T) {
 }
 
 func TestZeroX01_ContentsHash(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -201,7 +200,7 @@ func TestZeroX01_ContentsHash(t *testing.T) {
 				t.Errorf("ZeroX01.ContentsHash() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("ZeroX01.ContentsHash() = %v, want %v", got, tt.want)
 			}
 		})
@@ -302,7 +301,6 @@ func TestZeroX01_Valid(t *testing.T) {
 func TestNewZeroX01(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	assert := assert.New(t)
 	type args struct {
 		encrypter cipher.Encrypter
 		pubkey    crypto.PublicKey
@@ -461,7 +459,7 @@ func TestNewZeroX01(t *testing.T) {
 				t.Errorf("NewZeroX01() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("NewZeroX01() = %v, want %v", got, tt.want)
 			}
 		})

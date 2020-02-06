@@ -26,7 +26,6 @@ import (
 )
 
 func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		ctx      context.Context
 		protocol string
@@ -106,7 +105,7 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 				return
 			}
 			if got != nil {
-				if !assert.Equal(tt.want, got) {
+				if !assert.Equal(t, tt.want, got) {
 					t.Errorf("PublicKeyFinder.PublicKeyFromAddress() = %v, want %v", got, tt.want)
 				}
 			}

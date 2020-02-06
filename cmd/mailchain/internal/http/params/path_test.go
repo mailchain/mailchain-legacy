@@ -25,7 +25,6 @@ import (
 )
 
 func TestPathMessageID(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		r *http.Request
 	}
@@ -85,7 +84,7 @@ func TestPathMessageID(t *testing.T) {
 				t.Errorf("PathMessageID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("PathMessageID() = %v, want %v", got, tt.want)
 			}
 		})

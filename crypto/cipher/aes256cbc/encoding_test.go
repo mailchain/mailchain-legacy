@@ -23,7 +23,6 @@ import (
 )
 
 func TestEncodeDecode(t *testing.T) {
-	assert := assert.New(t)
 	cases := []struct {
 		name        string
 		encodedData []byte
@@ -41,19 +40,18 @@ func TestEncodeDecode(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			decoded, err := bytesDecode(tc.encodedData)
-			assert.NoError(err)
+			assert.NoError(t, err)
 
 			encoded, err := bytesEncode(decoded)
-			assert.NoError(err)
-			assert.EqualValues(tc.encodedData, encoded)
-			assert.True(bytes.Equal(tc.encodedData, encoded))
-			assert.Equal(tc.err, err)
+			assert.NoError(t, err)
+			assert.EqualValues(t, tc.encodedData, encoded)
+			assert.True(t, bytes.Equal(tc.encodedData, encoded))
+			assert.Equal(t, tc.err, err)
 		})
 	}
 }
 
 func TestDecodeEncode(t *testing.T) {
-	assert := assert.New(t)
 	cases := []struct {
 		name          string
 		encryptedData *encryptedData
@@ -81,21 +79,20 @@ func TestDecodeEncode(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			encoded, err := bytesEncode(tc.encryptedData)
-			assert.NoError(err)
+			assert.NoError(t, err)
 			actual, err := bytesDecode(encoded)
-			assert.NoError(err)
-			assert.EqualValues(len(tc.encryptedData.Ciphertext), cap(actual.Ciphertext))
-			assert.EqualValues(len(tc.encryptedData.InitializationVector), cap(actual.InitializationVector))
-			assert.EqualValues(len(tc.encryptedData.MessageAuthenticationCode), cap(actual.MessageAuthenticationCode))
-			assert.EqualValues(len(tc.encryptedData.EphemeralPublicKey), cap(actual.EphemeralPublicKey))
-			assert.EqualValues(tc.encryptedData, actual)
-			assert.Equal(tc.err, err)
+			assert.NoError(t, err)
+			assert.EqualValues(t, len(tc.encryptedData.Ciphertext), cap(actual.Ciphertext))
+			assert.EqualValues(t, len(tc.encryptedData.InitializationVector), cap(actual.InitializationVector))
+			assert.EqualValues(t, len(tc.encryptedData.MessageAuthenticationCode), cap(actual.MessageAuthenticationCode))
+			assert.EqualValues(t, len(tc.encryptedData.EphemeralPublicKey), cap(actual.EphemeralPublicKey))
+			assert.EqualValues(t, tc.encryptedData, actual)
+			assert.Equal(t, tc.err, err)
 		})
 	}
 }
 
 func Test_bytesDecode(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		raw []byte
 	}
@@ -171,7 +168,7 @@ func Test_bytesDecode(t *testing.T) {
 				t.Errorf("bytesDecode() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("bytesDecode() = %v, want %v", got, tt.want)
 			}
 		})
@@ -179,7 +176,6 @@ func Test_bytesDecode(t *testing.T) {
 }
 
 func Test_bytesEncode(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		data *encryptedData
 	}
@@ -236,7 +232,7 @@ func Test_bytesEncode(t *testing.T) {
 				t.Errorf("bytesEncode() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("bytesEncode() = %v, want %v", got, tt.want)
 			}
 		})

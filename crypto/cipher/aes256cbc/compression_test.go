@@ -23,7 +23,6 @@ import (
 )
 
 func TestCompress(t *testing.T) {
-	assert := assert.New(t)
 	cases := []struct {
 		name     string
 		original []byte
@@ -53,7 +52,7 @@ func TestCompress(t *testing.T) {
 				t.Errorf("compress() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("compress() = %v, want %v", got, tt.want)
 			}
 		})

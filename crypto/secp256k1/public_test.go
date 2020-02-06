@@ -22,7 +22,6 @@ import (
 )
 
 func TestPublicKeyFromBytes(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		keyBytes []byte
 	}
@@ -111,7 +110,7 @@ func TestPublicKeyFromBytes(t *testing.T) {
 			if got != nil {
 				gotBytes = got.Bytes()
 			}
-			if !assert.Equal(tt.want, gotBytes) {
+			if !assert.Equal(t, tt.want, gotBytes) {
 				t.Errorf("PublicKeyFromBytes() = %v, want %v", gotBytes, tt.want)
 			}
 		})
@@ -119,7 +118,6 @@ func TestPublicKeyFromBytes(t *testing.T) {
 }
 
 func TestPublicKey_Bytes(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		name   string
 		pubKey PublicKey
@@ -138,7 +136,7 @@ func TestPublicKey_Bytes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pubKey.Bytes(); !assert.Equal(tt.want, got) {
+			if got := tt.pubKey.Bytes(); !assert.Equal(t, tt.want, got) {
 				t.Errorf("PublicKey.Bytes() = %v, want %v", got, tt.want)
 			}
 		})
@@ -146,7 +144,6 @@ func TestPublicKey_Bytes(t *testing.T) {
 }
 
 func TestPublicKey_Kind(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		ecdsa ecdsa.PublicKey
 	}
@@ -168,7 +165,7 @@ func TestPublicKey_Kind(t *testing.T) {
 			pk := PublicKey{
 				ecdsa: tt.fields.ecdsa,
 			}
-			if got := pk.Kind(); !assert.Equal(tt.want, got) {
+			if got := pk.Kind(); !assert.Equal(t, tt.want, got) {
 				t.Errorf("PublicKey.Kind() = %v, want %v", got, tt.want)
 			}
 		})
@@ -176,7 +173,6 @@ func TestPublicKey_Kind(t *testing.T) {
 }
 
 func TestPublicKey_Verify(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		name    string
 		pk      PublicKey
@@ -237,7 +233,7 @@ func TestPublicKey_Verify(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.pk.Verify(tt.message, tt.sig)
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("PublicKey.Verify() = %v, want %v", got, tt.want)
 			}
 		})
@@ -245,7 +241,6 @@ func TestPublicKey_Verify(t *testing.T) {
 }
 
 func TestPublicKey_ECDSA(t *testing.T) {
-	assert := assert.New(t)
 	type fields struct {
 		ecdsa ecdsa.PublicKey
 	}
@@ -280,7 +275,7 @@ func TestPublicKey_ECDSA(t *testing.T) {
 			pk := PublicKey{
 				ecdsa: tt.fields.ecdsa,
 			}
-			if got := pk.ECDSA(); !assert.Equal(tt.want, got) {
+			if got := pk.ECDSA(); !assert.Equal(t, tt.want, got) {
 				t.Errorf("PublicKey.ECDSA() = %v, want %v", got, tt.want)
 			}
 		})

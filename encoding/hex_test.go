@@ -22,7 +22,6 @@ import (
 )
 
 func Test_EncodeHexZeroX(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		in []byte
 	}
@@ -42,7 +41,7 @@ func Test_EncodeHexZeroX(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotEncoded := EncodeHexZeroX(tt.args.in)
-			if !assert.Equal(tt.wantEncoded, gotEncoded) {
+			if !assert.Equal(t, tt.wantEncoded, gotEncoded) {
 				t.Errorf("EncodeZeroX() gotEncoded = %v, want %v", gotEncoded, tt.wantEncoded)
 			}
 		})
@@ -99,7 +98,6 @@ func Test_DecodeHexZeroX(t *testing.T) {
 }
 
 func Test_EncodeHex(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		in []byte
 	}
@@ -119,7 +117,7 @@ func Test_EncodeHex(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotEncoding := EncodeHex(tt.args.in)
-			if !assert.Equal(tt.wantEncoding, gotEncoding) {
+			if !assert.Equal(t, tt.wantEncoding, gotEncoding) {
 				t.Errorf("EncodeHex() gotEncoding = %v, want %v", gotEncoding, tt.wantEncoding)
 			}
 		})

@@ -121,7 +121,6 @@ func TestLookupService_ResolveName(t *testing.T) {
 }
 
 func TestLookupService_ResolveAddress(t *testing.T) {
-	assert := assert.New(t)
 	server := httptest.NewServer(nil)
 	defer server.Close()
 	type fields struct {
@@ -168,7 +167,7 @@ func TestLookupService_ResolveAddress(t *testing.T) {
 				t.Errorf("LookupService.ResolveName() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("LookupService.ResolveName() = %v, want %v", got, tt.want)
 			}
 		})

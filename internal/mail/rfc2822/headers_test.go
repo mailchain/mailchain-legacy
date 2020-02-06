@@ -81,7 +81,6 @@ func Test_parseSubject(t *testing.T) {
 }
 
 func Test_parseDate(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		h nm.Header
 	}
@@ -140,7 +139,7 @@ func Test_parseDate(t *testing.T) {
 				t.Errorf("parseDate() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("parseDate() = %v, want %v", got, tt.want)
 			}
 		})
@@ -148,7 +147,6 @@ func Test_parseDate(t *testing.T) {
 }
 
 func Test_parseFrom(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		h nm.Header
 	}
@@ -194,7 +192,7 @@ func Test_parseFrom(t *testing.T) {
 				t.Errorf("parseFrom() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("parseFrom() = %v, want %v", got, tt.want)
 			}
 		})
@@ -202,7 +200,6 @@ func Test_parseFrom(t *testing.T) {
 }
 
 func Test_parseTo(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		h nm.Header
 	}
@@ -248,7 +245,7 @@ func Test_parseTo(t *testing.T) {
 				t.Errorf("parseTo() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("parseTo() = %v, want %v", got, tt.want)
 			}
 		})
@@ -256,7 +253,7 @@ func Test_parseTo(t *testing.T) {
 }
 
 func Test_parseContentType(t *testing.T) {
-	assert := assert.New(t)
+
 	type args struct {
 		h nm.Header
 	}
@@ -303,7 +300,7 @@ func Test_parseContentType(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := parseContentType(tt.args.h)
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("parseTo() = %v, want %v", got, tt.want)
 			}
 		})
@@ -314,7 +311,6 @@ func Test_parsePublicKey(t *testing.T) {
 	pubKeyHeader := func(pk crypto.PublicKey) string {
 		return encoding.EncodeHexZeroX(pk.Bytes()) + "; type=\"" + pk.Kind() + "\"; encoding=" + encoding.KindHex0XPrefix
 	}
-	assert := assert.New(t)
 	type args struct {
 		h nm.Header
 	}
@@ -400,7 +396,7 @@ func Test_parsePublicKey(t *testing.T) {
 				t.Errorf("parsePublicKey() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if !assert.EqualValues(tt.want, got) {
+			if !assert.EqualValues(t, tt.want, got) {
 				t.Errorf("PublicKeyFromBytes() = %v, want %v", got, tt.want)
 			}
 		})
@@ -412,7 +408,6 @@ func Test_parseHeaders(t *testing.T) {
 		return encoding.EncodeHexZeroX(pk.Bytes()) + "; type=" + pk.Kind() + "; encoding=" + encoding.KindHex0XPrefix
 	}
 
-	assert := assert.New(t)
 	type args struct {
 		h nm.Header
 	}
@@ -565,7 +560,7 @@ func Test_parseHeaders(t *testing.T) {
 				t.Errorf("parseHeaders() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("parseHeaders() = %v, want %v", got, tt.want)
 			}
 		})

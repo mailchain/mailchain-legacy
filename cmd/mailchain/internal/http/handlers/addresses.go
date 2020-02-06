@@ -18,7 +18,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
+	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/keystore"

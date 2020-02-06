@@ -11,7 +11,6 @@ import (
 )
 
 func Test_etherscanPublicKeyFinderAny(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -42,14 +41,13 @@ func Test_etherscanPublicKeyFinderAny(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := etherscanPublicKeyFinderAny(tt.args.s, tt.args.kind)
-			assert.Equal(tt.wantEnabledProtocolNetworks, got.EnabledProtocolNetworks.Get())
-			assert.Equal(tt.wantAPIKey, got.APIKey.Get())
+			assert.Equal(t, tt.wantEnabledProtocolNetworks, got.EnabledProtocolNetworks.Get())
+			assert.Equal(t, tt.wantAPIKey, got.APIKey.Get())
 		})
 	}
 }
 
 func Test_etherscanPublicKeyFinder(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -78,14 +76,13 @@ func Test_etherscanPublicKeyFinder(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := etherscanPublicKeyFinder(tt.args.s)
-			assert.Equal(tt.wantEnabledProtocolNetworks, got.EnabledProtocolNetworks.Get())
-			assert.Equal(tt.wantAPIKey, got.APIKey.Get())
+			assert.Equal(t, tt.wantEnabledProtocolNetworks, got.EnabledProtocolNetworks.Get())
+			assert.Equal(t, tt.wantAPIKey, got.APIKey.Get())
 		})
 	}
 }
 
 func Test_etherscanPublicKeyFinderNoAuth(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -114,8 +111,8 @@ func Test_etherscanPublicKeyFinderNoAuth(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := etherscanPublicKeyFinderNoAuth(tt.args.s)
-			assert.Equal(tt.wantEnabledProtocolNetworks, got.EnabledProtocolNetworks.Get())
-			assert.Equal(tt.wantAPIKey, got.APIKey.Get())
+			assert.Equal(t, tt.wantEnabledProtocolNetworks, got.EnabledProtocolNetworks.Get())
+			assert.Equal(t, tt.wantAPIKey, got.APIKey.Get())
 		})
 	}
 }

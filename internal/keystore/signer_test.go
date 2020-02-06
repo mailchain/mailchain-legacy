@@ -26,7 +26,6 @@ import (
 )
 
 func TestSigner(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		chain string
 		pk    crypto.PrivateKey
@@ -66,7 +65,7 @@ func TestSigner(t *testing.T) {
 				t.Errorf("Signer() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Signer() = %v, want %v", got, tt.want)
 			}
 		})

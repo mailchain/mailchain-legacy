@@ -10,7 +10,6 @@ import (
 )
 
 func TestGetProtocolNetworkUint8(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		protocol string
 		network  string
@@ -68,13 +67,12 @@ func TestGetProtocolNetworkUint8(t *testing.T) {
 			t.Errorf("getProtocolNetworkUint8() error = %v, wantErr %v", err, tt.result.wantErr)
 			return
 		}
-		assert.Equal(tt.result.protocol, uProtocol)
-		assert.Equal(tt.result.network, uNetwork)
+		assert.Equal(t, tt.result.protocol, uProtocol)
+		assert.Equal(t, tt.result.network, uNetwork)
 	}
 }
 
 func TestGetPublicKeyTypeUint8(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		pub_key_type string
 	}
@@ -114,7 +112,7 @@ func TestGetPublicKeyTypeUint8(t *testing.T) {
 			t.Errorf("getPublicKeyTypeUint8() error = %v, wantErr %v", err, tt.result.wantErr)
 			return
 		}
-		assert.Equal(tt.result.pub_key_type, uPubKeyType)
+		assert.Equal(t, tt.result.pub_key_type, uPubKeyType)
 	}
 }
 

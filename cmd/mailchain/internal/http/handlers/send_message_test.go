@@ -148,8 +148,8 @@ func Test_isValid(t *testing.T) {
 						Subject:           "subject-value",
 						Body:              "body-value",
 						PublicKey:         "public-key-value",
-						PublicKeyEncoding: "public-key-Encoding",
-						PublicKeyKind:     "public-key-kind",
+						PublicKeyEncoding: "public-key-Encoding-value",
+						PublicKeyKind:     "public-key-kind-value",
 					},
 				},
 				"ethereum",
@@ -165,9 +165,11 @@ func Test_isValid(t *testing.T) {
 						Headers: &PostHeaders{
 							To: encoding.EncodeHex(addresstest.EthereumCharlotte),
 						},
-						Subject:   "subject-value",
-						Body:      "body-value",
-						PublicKey: "public-key-value",
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "public-key-value",
+						PublicKeyEncoding: "public-key-Encoding-value",
+						PublicKeyKind:     "public-key-kind-value",
 					},
 				},
 				"ethereum",
@@ -284,8 +286,8 @@ func Test_isValid(t *testing.T) {
 						Subject:           "subject-value",
 						Body:              "body-value",
 						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
-						PublicKeyEncoding: "public-key-Encoding",
-						PublicKeyKind:     "public-key-kind",
+						PublicKeyEncoding: "hex/0x-prefix",
+						PublicKeyKind:     "secp256k1",
 					},
 					Envelope:       "0x01",
 					EncryptionName: "aes256cbc",
@@ -328,11 +330,13 @@ func Test_parsePostRequest(t *testing.T) {
 								"to": "0x92d8f10248c6a3953cc3692a894655ad05d61efb"
 							},
 							"public-key": "0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d",
-							"subject": "test"
+							"subject": "test",
+							"public-key-encoding":  "hex/0x-prefix",
+							"public-key-kind": "secp256k1"
 						},
 						"envelope": "0x01",
 						"encryption-method-name": "aes256cbc",
-						"public-key-encoding":  "secp256k1",
+						
 						"content-type": "text/plain; charset=\"UTF-8\""
 					}
 					`))

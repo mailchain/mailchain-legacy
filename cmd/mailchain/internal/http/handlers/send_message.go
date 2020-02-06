@@ -20,8 +20,7 @@ import (
 	"net/http"
 	"time"
 
-
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
+	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
 	ec "github.com/mailchain/mailchain/crypto/cipher/encrypter"
 	"github.com/mailchain/mailchain/crypto/multikey"
@@ -286,6 +285,27 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		return errors.WithMessage(err, "`to` is invalid")
 	}
 
+	// Validate Public-key Kind
+	mapKind := crypto.KeyTypes()
+	_, kindType := mapKind[p.Message.PublicKeyKind]
+
+	if !kindType {
+		return errors.Errorf("invalid `public-key-kind` ")
+	}
+
+	//Validate Public-key-encoding
+	pubKeyEncoding := p.Message.PublicKeyEncoding
+	switch pubKeyEncoding != "" {
+	case pubKeyEncoding == encoding.KindHex:
+		return nil
+	case pubKeyEncoding == encoding.KindHex0XPrefix:
+		return nil
+	case pubKeyEncoding == encoding.KindBase58SubstrateAddress:
+		return nil
+	case pubKeyEncoding == encoding.KindBase58:
+		return nil
+	}
+
 	//nolint TODO: figure this out
 	// if !ethereup.IsAddressValid(p.to.ChainAddress) {
 	// 	return errors.Errorf("'address' is invalid")
@@ -302,20 +322,9 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		}
 	}
 
-	encodeMessage, err := encoding.DecodeHex(p.Message.PublicKey)
+	encodeMessage, err := encoding.DecodeHexZeroX(p.Message.PublicKey)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `data`")
-	}
-
-	// PublicKeyEncoding and KeyType s valid?
-	if p.Message.PublicKeyEncoding != "" {
-		mapKind := crypto.KeyTypes()
-		_, OK := mapKind[p.Message.PublicKeyKind]
-		if !OK {
-			return err
-		}
-
-		// keyTypes := p.Message.PublicKeyKind
 	}
 
 	p.publicKey, err = multikey.PublicKeyFromBytes(p.Message.PublicKeyKind, encodeMessage)

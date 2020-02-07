@@ -281,26 +281,6 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		return errors.WithMessage(err, "`to` is invalid")
 	}
 
-	// Validate Public-key-encoding
-	pkEncod := encoding.PublicKeyEncoding()
-	_, validEncod := pkEncod[p.Message.PublicKeyEncoding]
-
-	if !validEncod {
-		return errors.Errorf("invalid `public-key-encoding` ")
-	}
-
-	// Validate Public-key Kind
-	mapKind := crypto.KeyTypes()
-	_, validkindType := mapKind[p.Message.PublicKeyKind]
-
-	if !validkindType {
-		return errors.Errorf("invalid `public-key-kind` ")
-	}
-
-	//nolint TODO: figure this out
-	// if !ethereup.IsAddressValid(p.to.ChainAddress) {
-	// 	return errors.Errorf("'address' is invalid")
-	// }
 	p.from, err = mail.ParseAddress(p.Message.Headers.From, protocol, network)
 	if err != nil {
 		return errors.WithMessage(err, "`from` is invalid")
@@ -313,12 +293,22 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		}
 	}
 
-	encodeMessage, err := encoding.DecodeHexZeroX(p.Message.PublicKey)
-	if err != nil {
-		return errors.WithMessage(err, "invalid `data`")
+	// Validate Public-key-encoding
+	if _, validEncod := encoding.PublicKeyEncoding()[p.Message.PublicKeyEncoding]; !validEncod {
+		return errors.Errorf("invalid `public-key-encoding` ")
 	}
 
-	p.publicKey, err = multikey.PublicKeyFromBytes(p.Message.PublicKeyKind, encodeMessage)
+	// Validate Public-key Kind
+	if _, validkindType := crypto.KeyTypes()[p.Message.PublicKeyKind]; !validkindType {
+		return errors.Errorf("invalid `public-key-kind` ")
+	}
+
+	keyBytes, err := encoding.DecodeHexZeroX(p.Message.PublicKey)
+	if err != nil {
+		return errors.WithMessage(err, "invalid `public-key-bytes`")
+	}
+
+	p.publicKey, err = multikey.PublicKeyFromBytes(p.Message.PublicKeyKind, keyBytes)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
 	}

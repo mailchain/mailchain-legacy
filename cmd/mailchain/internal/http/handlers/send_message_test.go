@@ -281,6 +281,121 @@ func Test_isValid(t *testing.T) {
 			true,
 		},
 		{
+			"err-invalid-key-kind",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
+						},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKeyEncoding: "hex/0x-prefix",
+						PublicKeyKind:     "invalid",
+					},
+					Envelope:       "0x01",
+					EncryptionName: "aes256cbc",
+				},
+				"ethereum",
+				"mainnet",
+			},
+			true,
+		},
+		{
+			"err-invalid-key-bytes",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
+						},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "invalid-bytes",
+						PublicKeyEncoding: "hex/0x-prefix",
+						PublicKeyKind:     "secp256k1",
+					},
+					Envelope:       "0x01",
+					EncryptionName: "aes256cbc",
+				},
+				"ethereum",
+				"mainnet",
+			},
+			true,
+		},
+		{
+			"err-public-bytes-for-kind",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
+						},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "0x" + encoding.EncodeHex([]byte{0x01}),
+						PublicKeyEncoding: "hex/0x-prefix",
+						PublicKeyKind:     "secp256k1",
+					},
+					Envelope:       "0x01",
+					EncryptionName: "aes256cbc",
+				},
+				"ethereum",
+				"mainnet",
+			},
+			true,
+		},
+		{
+			"err-envelope",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
+						},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKeyEncoding: "hex/0x-prefix",
+						PublicKeyKind:     "secp256k1",
+					},
+					Envelope:       "",
+					EncryptionName: "aes256cbc",
+				},
+				"ethereum",
+				"mainnet",
+			},
+			true,
+		},
+		{
+			"err-encryption-name",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
+						},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKeyEncoding: "hex/0x-prefix",
+						PublicKeyKind:     "secp256k1",
+					},
+					Envelope:       "0x01",
+					EncryptionName: "",
+				},
+				"ethereum",
+				"mainnet",
+			},
+			true,
+		},
+		{
 			"success",
 			args{
 				&PostRequestBody{

@@ -20,11 +20,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/crypto"
 	ec "github.com/mailchain/mailchain/crypto/cipher/encrypter"
-	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/multikey"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/envelope"
@@ -210,6 +210,12 @@ type PostMessage struct {
 	// Public key of the recipient to encrypt with
 	// required: true
 	PublicKey string `json:"public-key"`
+	// Public key Encoding
+	// required: true
+	PublicKeyEncoding string `json:"public-key-encoding"`
+	// Public key kind
+	// require: true
+	PublicKeyKind string `json:"public-key-kind"`
 }
 
 // PostRequestBody body
@@ -252,6 +258,10 @@ func checkForEmpties(msg PostMessage) error {
 		return errors.Errorf("`public-key` can not be empty")
 	}
 
+	if msg.PublicKeyEncoding == "" {
+		return errors.Errorf("`public-key-encoding` can not be empty")
+	}
+
 	return nil
 }
 
@@ -271,10 +281,6 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		return errors.WithMessage(err, "`to` is invalid")
 	}
 
-	//nolint TODO: figure this out
-	// if !ethereup.IsAddressValid(p.to.ChainAddress) {
-	// 	return errors.Errorf("'address' is invalid")
-	// }
 	p.from, err = mail.ParseAddress(p.Message.Headers.From, protocol, network)
 	if err != nil {
 		return errors.WithMessage(err, "`from` is invalid")
@@ -287,13 +293,22 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		}
 	}
 
-	//nolint TODO: be more general when getting key from hex
-	encodeMessage, err := hexutil.Decode(p.Message.PublicKey)
-	if err != nil {
-		return errors.WithMessage(err, "invalid `data`")
+	// Validate Public-key-encoding
+	if _, validEncod := encoding.PublicKeyEncoding()[p.Message.PublicKeyEncoding]; !validEncod {
+		return errors.Errorf("invalid `public-key-encoding` ")
 	}
 
-	p.publicKey, err = secp256k1.PublicKeyFromBytes(encodeMessage)
+	// Validate Public-key Kind
+	if _, validkindType := crypto.KeyTypes()[p.Message.PublicKeyKind]; !validkindType {
+		return errors.Errorf("invalid `public-key-kind` ")
+	}
+
+	keyBytes, err := encoding.DecodeHexZeroX(p.Message.PublicKey)
+	if err != nil {
+		return errors.WithMessage(err, "invalid `public-key-bytes`")
+	}
+
+	p.publicKey, err = multikey.PublicKeyFromBytes(p.Message.PublicKeyKind, keyBytes)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key`")
 	}

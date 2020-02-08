@@ -5,6 +5,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/substrate"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/pkg/errors"
 )
@@ -12,12 +13,15 @@ import (
 func senders(s values.Store) *Senders {
 	return &Senders{
 		clients: map[string]SenderClient{
-			"ethereum-rpc2-" + ethereum.Goerli:  ethereumRPC2Sender(s, ethereum.Goerli),
-			"ethereum-rpc2-" + ethereum.Kovan:   ethereumRPC2Sender(s, ethereum.Kovan),
-			"ethereum-rpc2-" + ethereum.Mainnet: ethereumRPC2Sender(s, ethereum.Mainnet),
-			"ethereum-rpc2-" + ethereum.Rinkeby: ethereumRPC2Sender(s, ethereum.Rinkeby),
-			"ethereum-rpc2-" + ethereum.Ropsten: ethereumRPC2Sender(s, ethereum.Ropsten),
-			protocols.Ethereum + "-relay":       relaySender(s, protocols.Ethereum),
+			"ethereum-rpc2-" + ethereum.Goerli:           ethereumRPC2Sender(s, ethereum.Goerli),
+			"ethereum-rpc2-" + ethereum.Kovan:            ethereumRPC2Sender(s, ethereum.Kovan),
+			"ethereum-rpc2-" + ethereum.Mainnet:          ethereumRPC2Sender(s, ethereum.Mainnet),
+			"ethereum-rpc2-" + ethereum.Rinkeby:          ethereumRPC2Sender(s, ethereum.Rinkeby),
+			"ethereum-rpc2-" + ethereum.Ropsten:          ethereumRPC2Sender(s, ethereum.Ropsten),
+			protocols.Ethereum + "-relay":                relaySender(s, protocols.Ethereum),
+			"substrate-rpc-" + substrate.EdgewareTestnet: substrateRPCSender(s, substrate.EdgewareTestnet),
+			"substrate-rpc-" + substrate.KusamaTestnet:   substrateRPCSender(s, substrate.KusamaTestnet),
+			"substrate-rpc-" + substrate.PolkadotTestnet: substrateRPCSender(s, substrate.PolkadotTestnet),
 		},
 	}
 }

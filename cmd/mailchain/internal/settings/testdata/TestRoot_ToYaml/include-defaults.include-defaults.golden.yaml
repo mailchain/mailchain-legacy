@@ -129,6 +129,12 @@ senders:
     address: "https://relay.mailchain.xyz/json-rpc/ethereum/rinkeby"
   ethereum-rpc2-ropsten:
     address: "https://relay.mailchain.xyz/json-rpc/ethereum/ropsten"
+  substrate-rpc-edgeware-testnet:
+    address: "ws://testnet3.edgewa.re:9944"
+  substrate-rpc-kusama-testnet:
+    address: ""
+  substrate-rpc-polkadot-testnet:
+    address: ""
 keystore:
   kind: "nacl-filestore"
   nacl-filestore:

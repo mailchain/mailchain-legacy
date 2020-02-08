@@ -107,9 +107,9 @@ func (t *Transaction) ToTransaction(blk *types.Block, tx *types.Transaction) (*d
 	value := tx.Value()
 	gasUsed := big.NewInt(int64(tx.Gas()))
 
-	to := tx.To()
-	if to == nil {
-		return nil, errors.New("must not be nil: to")
+	var to []byte
+	if tx.To() != nil {
+		to = tx.To().Bytes()
 	}
 
 	return &datastore.Transaction{
@@ -117,7 +117,7 @@ func (t *Transaction) ToTransaction(blk *types.Block, tx *types.Transaction) (*d
 		BlockHash: blk.Hash().Bytes(),
 		Hash:      tx.Hash().Bytes(),
 		Data:      tx.Data(),
-		To:        to.Bytes(),
+		To:        to,
 		Value:     *value,
 		GasUsed:   *gasUsed,
 		GasPrice:  *gasPrice,

@@ -48,11 +48,7 @@ func (s *Sequential) NextBlock(ctx context.Context) error {
 
 	fmt.Println("block number: ", blkNo)
 
-	nextBlockNo := blkNo + 1
-
-	fmt.Println("next block number: ", nextBlockNo)
-
-	blk, err := s.blockClient.Get(ctx, nextBlockNo)
+	blk, err := s.blockClient.Get(ctx, blkNo)
 	if err != nil {
 		return err
 	}
@@ -60,6 +56,10 @@ func (s *Sequential) NextBlock(ctx context.Context) error {
 	if err := s.blockProcessor.Run(ctx, s.protocol, s.network, blk); err != nil {
 		return err
 	}
+
+	nextBlockNo := blkNo + 1
+
+	fmt.Println("next block number: ", nextBlockNo)
 
 	if err := s.syncStore.PutBlockNumber(ctx, s.protocol, s.network, nextBlockNo); err != nil {
 		return err

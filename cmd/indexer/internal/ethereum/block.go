@@ -26,7 +26,7 @@ func (b *Block) Run(ctx context.Context, protocol, network string, blk interface
 
 	txs := ethBlk.Transactions()
 	for i := range txs {
-		if err := b.txProcessor.Run(ctx, protocol, network, txs[i], txOptions{block: ethBlk}); err != nil {
+		if err := b.txProcessor.Run(ctx, protocol, network, txs[i], &txOptions{block: ethBlk}); err != nil {
 			return err
 		}
 	}

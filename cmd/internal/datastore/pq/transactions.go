@@ -42,7 +42,7 @@ func (s *TransactionStore) PutTransaction(ctx context.Context, protocol, network
 		Columns("protocol", "network", "hash", "tx_from", "tx_to", "tx_data", "tx_block_hash", "tx_value", "tx_gas_used", "tx_gas_price").
 		Values(p, n, hash, tx.From, tx.To, tx.Data, tx.BlockHash, tx.Value.Bytes(), tx.GasUsed.Bytes(), tx.GasPrice.Bytes()).
 		PlaceholderFormat(squirrel.Dollar).
-		Suffix("ON CONFLICT DO UPDATE SET tx_from = $, tx_to = $, tx_data = $, tx_block_hash = $, tx_value = $, tx_gas_used = $, tx_gas_price = $",
+		Suffix("ON CONFLICT (protocol, network, hash) DO UPDATE SET tx_from = $11, tx_to = $12, tx_data = $13, tx_block_hash = $14, tx_value = $15, tx_gas_used = $16, tx_gas_price = $17",
 			tx.From, tx.To, tx.Data, tx.BlockHash, tx.Value.Bytes(), tx.GasUsed.Bytes(), tx.GasPrice.Bytes()).
 		ToSql()
 

@@ -23,6 +23,8 @@ func ethereumCmd() *cobra.Command {
 		TraverseChildren: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			network, _ := cmd.Flags().GetString("network")
+			protocol, _ := cmd.Flags().GetString("protocol")
+			blockNumber, _ := cmd.Flags().GetUint64("start-block")
 
 			addressRPC, _ := cmd.Flags().GetString("rpc-address")
 			if addressRPC == "" {
@@ -38,35 +40,45 @@ func ethereumCmd() *cobra.Command {
 
 			defer conn.Close()
 
-			seqProcessor, err := createEthereumProcessor(conn, network, rawStorePath, addressRPC)
+			seqProcessor, err := createEthereumProcessor(conn, blockNumber, protocol, network, rawStorePath, addressRPC)
 			if err != nil {
 				return err
 			}
 
 			for {
-				if err := seqProcessor.NextBlock(context.Background()); err != nil {
+				err := seqProcessor.NextBlock(context.Background())
+				if err == processor.ErrEndOfChain {
+					break
+				}
+
+				if err != nil {
 					fmt.Fprintf(cmd.ErrOrStderr(), "%+v", err)
 				}
-				fmt.Println("Infinite Loop 2")
+
 				time.Sleep(time.Second)
 			}
 
 			return nil
 		},
 	}
+
+	cmd.Flags().Uint64("start-block", 0, "Block number from which the indexer will start")
+	cmd.Flags().String("protocol", protocols.Ethereum, "Protocol to run against")
 	cmd.Flags().String("network", ethereum.Mainnet, "Network to run against")
 	cmd.Flags().String("rpc-address", "", "Ethereum RPC-JSON address")
 
 	return cmd
 }
 
-func createEthereumProcessor(conn *sqlx.DB, network, rawStorePath, addressRPC string) (*processor.Sequential, error) {
+func createEthereumProcessor(conn *sqlx.DB, blockNumber uint64, protocol, network, rawStorePath, addressRPC string) (*processor.Sequential, error) {
+	ctx := context.Background()
+
 	ethClient, err := eth.NewRPC(addressRPC)
 	if err != nil {
 		return nil, err
 	}
 
-	networkID, err := ethClient.NetworkID(context.Background())
+	networkID, err := ethClient.NetworkID(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -98,6 +110,10 @@ func createEthereumProcessor(conn *sqlx.DB, network, rawStorePath, addressRPC st
 		networkID,
 	)
 
+	if err := syncStore.PutBlockNumber(ctx, protocol, network, blockNumber); err != nil {
+		return nil, err
+	}
+
 	return processor.NewSequential(
 		protocols.Ethereum,
 		network,
@@ -115,7 +131,7 @@ func sslMode(useSSL bool) string {
 	return "disable"
 }
 
-// newPostgresConnection returns a connection to a postres database.
+// newPostgresConnection returns a connection to a postgres database.
 // The arguments are parsed from cmd.
 func newPostgresConnection(cmd *cobra.Command) (*sqlx.DB, error) {
 	host, _ := cmd.Flags().GetString("postgres-host")
@@ -137,15 +153,11 @@ func newPostgresConnection(cmd *cobra.Command) (*sqlx.DB, error) {
 		return nil, err
 	}
 
-	// use default dbname is not provided
+	// use default dbname, if not provided
 	if dbname == "" {
 		dbname = user
 	}
 
-	conn, err := pq.NewConnection(user, psswd, dbname, host, sslMode(useSSL), port)
-	if err != nil {
-		return nil, err
-	}
-
-	return conn, nil
+	return pq.NewConnection(user, psswd, dbname, host, sslMode(useSSL), port)
 }
+

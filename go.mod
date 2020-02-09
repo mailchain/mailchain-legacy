@@ -58,12 +58,7 @@ require (
 	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
 	golang.org/x/sys v0.0.0-20191220142924-d4481acd189f // indirect
-<<<<<<< HEAD
-	golang.org/x/text v0.3.2 // indirect
-	golang.org/x/tools v0.0.0-20200125223703-d33eef8e6825 // indirect
-=======
 	golang.org/x/tools v0.0.0-20200113040837-eac381796e91 // indirect
->>>>>>> update ethereum dep
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20180810215634-df19058c872c // indirect
 	gopkg.in/olebedev/go-duktape.v3 v3.0.0-20190709231704-1e4459ed25ff // indirect
 	gopkg.in/resty.v1 v1.12.0

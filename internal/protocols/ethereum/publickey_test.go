@@ -89,6 +89,22 @@ func TestGetPublicKeyFromTransaction(t *testing.T) {
 			false,
 		},
 		{
+			"hash=0x0248c7f152207e9402bf40622f05c7eb24215153417a568c5ecfa1706d68a118",
+			args{
+				hexutil.MustDecodeBig("0xb4f369be668f83f3be9db16ddcb76baf5215e88fab0d0957913ee8bfc4cdb31a"),
+				hexutil.MustDecodeBig("0xe24b814bcf794d338112738538c32797e23395f857183ce7334a149398f5fe"),
+				hexutil.MustDecodeBig("0x26"),
+				hexutil.MustDecode("0x389f56acec762b7ab765894474d75fcf654b216b"),
+				hexutil.MustDecode("0x"),
+				hexutil.MustDecodeUint64("0x9"),
+				hexutil.MustDecodeBig("0x4a817c800"),
+				hexutil.MustDecodeUint64("0x5208"),
+				hexutil.MustDecodeBig("0xd02ab486cedc0000"),
+			},
+			hexutil.MustDecode("0x1e2fc2abffa85f913bdc41dc69f38542bbeb67a515ed88b2b7873b6690e18d4fd62d4dd81c578d0ce7a6da944807ce03ab9d1af0277e724b98a2ddaaf72fe81c"),
+			false,
+		},
+		{
 			"err-sig-to-pub",
 			args{
 				hexutil.MustDecodeBig("0x0"),
@@ -136,27 +152,46 @@ func TestDeriveChainID(t *testing.T) {
 	}
 }
 
-func TestCreateSignatureToUseInRecovery(t *testing.T) {
-	cases := []struct {
-		name     string
-		r        *big.Int
-		s        *big.Int
-		v        *big.Int
-		expected []byte
-	}{
-		{"tc1",
-			hexutil.MustDecodeBig("0x3ada323710def1e02f3586710ae3624ceefba1638e9d9894f724a5401997cd79"),
-			hexutil.MustDecodeBig("0x2933ddfd0687874e515a8ab479a38646e6db9f3d8b74d27c4e4eae5a116f9f14"),
-			hexutil.MustDecodeBig("0x29"),
-			hexutil.MustDecode("0x3ada323710def1e02f3586710ae3624ceefba1638e9d9894f724a5401997cd792933ddfd0687874e515a8ab479a38646e6db9f3d8b74d27c4e4eae5a116f9f1400"),
-		},
-		// {"0x29", hexutil.MustDecodeBig("0x29"), big.NewInt(3), nil},
+func Test_createSignatureToUseInRecovery(t *testing.T) {
+	type args struct {
+		r *big.Int
+		s *big.Int
+		v *big.Int
 	}
-
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			res := createSignatureToUseInRecovery(tc.r, tc.s, tc.v)
-			assert.EqualValues(t, tc.expected, res)
+	tests := []struct {
+		name    string
+		args    args
+		want    []byte
+		wantLen int
+	}{
+		{
+			"success",
+			args{
+				hexutil.MustDecodeBig("0x3ada323710def1e02f3586710ae3624ceefba1638e9d9894f724a5401997cd79"),
+				hexutil.MustDecodeBig("0x2933ddfd0687874e515a8ab479a38646e6db9f3d8b74d27c4e4eae5a116f9f14"),
+				hexutil.MustDecodeBig("0x29"),
+			},
+			hexutil.MustDecode("0x3ada323710def1e02f3586710ae3624ceefba1638e9d9894f724a5401997cd792933ddfd0687874e515a8ab479a38646e6db9f3d8b74d27c4e4eae5a116f9f1400"),
+			65,
+		},
+		{
+			"0x0248c7f152207e9402bf40622f05c7eb24215153417a568c5ecfa1706d68a118",
+			args{
+				hexutil.MustDecodeBig("0xb4f369be668f83f3be9db16ddcb76baf5215e88fab0d0957913ee8bfc4cdb31a"),
+				hexutil.MustDecodeBig("0xe24b814bcf794d338112738538c32797e23395f857183ce7334a149398f5fe"),
+				hexutil.MustDecodeBig("0x26"),
+			},
+			hexutil.MustDecode("0xb4f369be668f83f3be9db16ddcb76baf5215e88fab0d0957913ee8bfc4cdb31a00e24b814bcf794d338112738538c32797e23395f857183ce7334a149398f5fe01"),
+			65,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := createSignatureToUseInRecovery(tt.args.r, tt.args.s, tt.args.v)
+			if !assert.Equal(t, tt.want, got) {
+				t.Errorf("createSignatureToUseInRecovery() = %v, want %v", got, tt.want)
+			}
+			assert.Len(t, got, tt.wantLen)
 		})
 	}
 }

@@ -15,13 +15,11 @@
 package ethereum
 
 import (
-	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/mailchain/mailchain/encoding"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/sha3"
 )
@@ -53,6 +51,7 @@ func deriveChainID(v *big.Int) *big.Int {
 func prependEmptyBytes(in []byte) []byte {
 	var out [32]byte
 	copy(out[32-len(in):], in)
+
 	return out[:]
 }
 
@@ -109,12 +108,11 @@ func GetPublicKeyFromTransaction(r, s, v *big.Int, to, input []byte, nonce uint6
 	items := createItems(chainID, to, input, nonce, gasPrice, gas, value)
 	sig := createSignatureToUseInRecovery(r, s, v)
 	hash := rlpHash(items).Bytes()
-	fmt.Println("hash: " + encoding.EncodeHexZeroX(hash))
-	fmt.Println("sig: " + encoding.EncodeHexZeroX(sig))
+
 	recoveredKey, err := crypto.SigToPub(hash, sig)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert signature to public key")
 	}
-	fmt.Println("pk: " + encoding.EncodeHexZeroX(append(recoveredKey.X.Bytes(), recoveredKey.Y.Bytes()...)))
+
 	return append(recoveredKey.X.Bytes(), recoveredKey.Y.Bytes()...), nil
 }

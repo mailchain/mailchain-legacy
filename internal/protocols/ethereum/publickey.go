@@ -50,14 +50,13 @@ func deriveChainID(v *big.Int) *big.Int {
 
 func prependEmptyBytes(in []byte) []byte {
 	var out [32]byte
+
 	copy(out[32-len(in):], in)
 
 	return out[:]
 }
 
 func createSignatureToUseInRecovery(r, s, v *big.Int) []byte {
-	var s32 [32]byte
-	copy(s32[32-len(s.Bytes()):], s.Bytes())
 	sig := append(prependEmptyBytes(r.Bytes()), prependEmptyBytes(s.Bytes())...)
 	newV := v.Int64()
 	chainID := deriveChainID(v)

@@ -116,15 +116,21 @@ func TestTransaction_From(t *testing.T) {
 		want    []byte
 		wantErr bool
 	}{
-		// {
-		// 	"success-0xcd3ccc846c566fbf76f38b1184ba02261a821c6942d18146b89b9d285aa29b9c",
-		// 	args{
-		// 		big.NewInt(500000),
-		// 		getTx(t, "0xcd3ccc846c566fbf76f38b1184ba02261a821c6942d18146b89b9d285aa29b9c"),
-		// 	},
-		// 	[]byte{0x11, 0x90, 0x58, 0xdc, 0x2c, 0x57, 0x7e, 0x9c, 0x4b, 0xa6, 0x91, 0x46, 0x78, 0xaa, 0x9d, 0xb5, 0x65, 0x30, 0xf, 0xfe},
-		// 	false,
-		// },
+		{
+			"success-0xcd3ccc846c566fbf76f38b1184ba02261a821c6942d18146b89b9d285aa29b9c",
+			fields{
+				nil,
+				nil,
+				nil,
+				params.MainnetChainConfig,
+			},
+			args{
+				big.NewInt(500000),
+				getTx(t, "0xcd3ccc846c566fbf76f38b1184ba02261a821c6942d18146b89b9d285aa29b9c"),
+			},
+			[]byte{0x11, 0x90, 0x58, 0xdc, 0x2c, 0x57, 0x7e, 0x9c, 0x4b, 0xa6, 0x91, 0x46, 0x78, 0xaa, 0x9d, 0xb5, 0x65, 0x30, 0xf, 0xfe},
+			false,
+		},
 		{
 			"success-0x9220257407f78ad91f340f856fe147751a95257783c0c2c288a129d356ab05e4",
 			fields{
@@ -135,21 +141,26 @@ func TestTransaction_From(t *testing.T) {
 			},
 			args{
 				hexutil.MustDecodeBig("0x9027d9"),
-				// big.NewInt(9447385),
 				getTx(t, "0x9220257407f78ad91f340f856fe147751a95257783c0c2c288a129d356ab05e4"),
 			},
-			[]byte{0x11, 0x90, 0x58, 0xdc, 0x2c, 0x57, 0x7e, 0x9c, 0x4b, 0xa6, 0x91, 0x46, 0x78, 0xaa, 0x9d, 0xb5, 0x65, 0x30, 0xf, 0xfe},
+			[]byte{0x4c, 0x54, 0x99, 0x90, 0xa7, 0xef, 0x3f, 0xea, 0x87, 0x84, 0x40, 0x6c, 0x1e, 0xec, 0xc9, 0x8b, 0xf4, 0x21, 0x1f, 0xa5},
 			false,
 		},
-		// {
-		// 	"err-invalid",
-		// 	args{
-		// 		big.NewInt(500000),
-		// 		getTx(t, "invalid-from"),
-		// 	},
-		// 	[]byte(nil),
-		// 	true,
-		// },
+		{
+			"err-invalid",
+			fields{
+				nil,
+				nil,
+				nil,
+				params.MainnetChainConfig,
+			},
+			args{
+				big.NewInt(500000),
+				getTx(t, "invalid-from"),
+			},
+			[]byte(nil),
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

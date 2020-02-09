@@ -59,7 +59,7 @@ func (t *Transaction) Run(ctx context.Context, protocol, network string, tx inte
 		ethTx.Gas(),
 		ethTx.Value())
 	if err != nil {
-		return errors.WithStack(err)
+		return errors.Wrapf(err, "transaction hash: %s", encoding.EncodeHexZeroX(ethTx.Hash().Bytes()))
 	}
 
 	pubKey, err := secp256k1.PublicKeyFromBytes(pubKeyBytes)

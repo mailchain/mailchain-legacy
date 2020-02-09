@@ -2,7 +2,6 @@ package ethereum
 
 import (
 	"context"
-	"errors"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/core/types"
@@ -10,7 +9,9 @@ import (
 	"github.com/mailchain/mailchain/cmd/indexer/internal/actions"
 	"github.com/mailchain/mailchain/cmd/internal/datastore"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
+	"github.com/pkg/errors"
 )
 
 type Transaction struct {
@@ -59,27 +60,27 @@ func (t *Transaction) Run(ctx context.Context, protocol, network string, tx inte
 		ethTx.Gas(),
 		ethTx.Value())
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	pubKey, err := secp256k1.PublicKeyFromBytes(pubKeyBytes)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	from, err := t.From(opts.Block.Number(), ethTx)
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "failed to get sender from transaction hash: %s", encoding.EncodeHexZeroX(ethTx.Hash().Bytes()))
 	}
 
 	if err := t.pkStore.PutPublicKey(ctx, protocol, network, from,
 		&datastore.PublicKey{PublicKey: pubKey, BlockHash: opts.Block.Hash().Bytes(), TxHash: ethTx.Hash().Bytes()}); err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	storeTx, err := t.ToTransaction(opts.Block, ethTx)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return actions.StoreTransaction(ctx, t.txStore, t.rawTxStore, protocol, network, storeTx, ethTx)

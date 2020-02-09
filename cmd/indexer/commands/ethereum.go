@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ethereum/go-ethereum/params"
 	"github.com/jmoiron/sqlx"
 	eth "github.com/mailchain/mailchain/cmd/indexer/internal/ethereum"
 	"github.com/mailchain/mailchain/cmd/indexer/internal/processor"
@@ -83,6 +84,15 @@ func createEthereumProcessor(conn *sqlx.DB, blockNumber uint64, protocol, networ
 		return nil, err
 	}
 
+	chainCfg, err := chainConfig(network)
+	if err != nil {
+		return nil, err
+	}
+
+	if chainCfg.ChainID.Cmp(networkID) != 0 {
+		return nil, errors.Errorf("networkID from RPC does not match chain config network ID")
+	}
+
 	syncStore, err := pq.NewSyncStore(conn)
 	if err != nil {
 		return nil, err
@@ -107,7 +117,7 @@ func createEthereumProcessor(conn *sqlx.DB, blockNumber uint64, protocol, networ
 		transactionStore,
 		rawStore,
 		pubKeyStore,
-		networkID,
+		chainCfg,
 	)
 
 	if err := syncStore.PutBlockNumber(ctx, protocol, network, blockNumber); err != nil {
@@ -121,6 +131,19 @@ func createEthereumProcessor(conn *sqlx.DB, blockNumber uint64, protocol, networ
 		eth.NewBlockProcessor(processorTransaction),
 		ethClient,
 	), nil
+}
+
+func chainConfig(network string) (*params.ChainConfig, error) {
+	switch network {
+	case ethereum.Goerli:
+		return params.GoerliChainConfig, nil
+	case ethereum.Mainnet:
+		return params.MainnetChainConfig, nil
+	case ethereum.Rinkeby:
+		return params.RinkebyChainConfig, nil
+	default:
+		return nil, errors.Errorf("can not determine chain config from network: %s", network)
+	}
 }
 
 func sslMode(useSSL bool) string {
@@ -160,4 +183,3 @@ func newPostgresConnection(cmd *cobra.Command) (*sqlx.DB, error) {
 
 	return pq.NewConnection(user, psswd, dbname, host, sslMode(useSSL), port)
 }
-

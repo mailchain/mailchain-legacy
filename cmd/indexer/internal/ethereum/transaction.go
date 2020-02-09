@@ -15,23 +15,22 @@ import (
 )
 
 type Transaction struct {
-	txStore    datastore.TransactionStore
-	rawTxStore datastore.RawTransactionStore
-	pkStore    datastore.PublicKeyStore
-
-	networkID *big.Int
+	txStore     datastore.TransactionStore
+	rawTxStore  datastore.RawTransactionStore
+	pkStore     datastore.PublicKeyStore
+	chainConfig *params.ChainConfig
 }
 
 type TxOptions struct {
 	Block *types.Block
 }
 
-func NewTransactionProcessor(store datastore.TransactionStore, rawStore datastore.RawTransactionStore, pkStore datastore.PublicKeyStore, networkID *big.Int) *Transaction {
+func NewTransactionProcessor(store datastore.TransactionStore, rawStore datastore.RawTransactionStore, pkStore datastore.PublicKeyStore, chainConfig *params.ChainConfig) *Transaction {
 	return &Transaction{
-		txStore:    store,
-		rawTxStore: rawStore,
-		pkStore:    pkStore,
-		networkID:  networkID,
+		txStore:     store,
+		rawTxStore:  rawStore,
+		pkStore:     pkStore,
+		chainConfig: chainConfig,
 	}
 }
 
@@ -87,7 +86,7 @@ func (t *Transaction) Run(ctx context.Context, protocol, network string, tx inte
 }
 
 func (t *Transaction) From(blockNo *big.Int, tx *types.Transaction) ([]byte, error) {
-	msg, err := tx.AsMessage(types.MakeSigner(&params.ChainConfig{ChainID: t.networkID}, blockNo))
+	msg, err := tx.AsMessage(types.MakeSigner(t.chainConfig, blockNo))
 	if err != nil {
 		return nil, err
 	}

@@ -94,15 +94,13 @@ func createItems(chainID *big.Int, to, input []byte, nonce uint64, gasPrice *big
 }
 
 // GetPublicKeyFromTransaction retrieve the public key from the transaction information
-func GetPublicKeyFromTransaction(r, s, v *big.Int, to, input []byte, nonce uint64,
-	gasPrice *big.Int, gas uint64, value *big.Int) ([]byte, error) {
+func GetPublicKeyFromTransaction(r, s, v *big.Int, to, input []byte, nonce uint64, gasPrice *big.Int, gas uint64, value *big.Int) ([]byte, error) {
 	chainID := deriveChainID(v)
 	items := createItems(chainID, to, input, nonce, gasPrice, gas, value)
-
 	sig := createSignatureToUseInRecovery(r, s, v)
 	hash := rlpHash(items).Bytes()
-	recoveredKey, err := crypto.SigToPub(hash, sig)
 
+	recoveredKey, err := crypto.SigToPub(hash, sig)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not convert signature to public key")
 	}

@@ -11,7 +11,6 @@ import (
 )
 
 func TestEncryptDecrypt(t *testing.T) {
-	assert := assert.New(t)
 	cases := []struct {
 		name                string
 		recipientPublicKey  crypto.PublicKey
@@ -85,7 +84,7 @@ func TestEncryptDecrypt(t *testing.T) {
 				t.Errorf("Encrypt() error = %v, wantEncryptErr %v", err, tt.wantEncryptErr)
 				return
 			}
-			assert.NotNil(encrypted)
+			assert.NotNil(t, encrypted)
 
 			decrypter := Decrypter{tt.recipientPrivateKey}
 			decrypted, err := decrypter.Decrypt(encrypted)

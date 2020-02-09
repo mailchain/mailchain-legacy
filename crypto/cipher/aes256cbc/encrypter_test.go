@@ -27,7 +27,6 @@ import (
 )
 
 func Test_encryptCBC(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		data []byte
 		iv   []byte
@@ -87,7 +86,7 @@ func Test_encryptCBC(t *testing.T) {
 				t.Errorf("encryptCBC() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("encryptCBC() = %v, want %v", got, tt.want)
 			}
 		})
@@ -95,7 +94,6 @@ func Test_encryptCBC(t *testing.T) {
 }
 
 func Test_encrypt(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		ephemeralPrivateKey *ecies.PrivateKey
 		pub                 *ecies.PublicKey
@@ -175,7 +173,7 @@ func Test_encrypt(t *testing.T) {
 				t.Errorf("encrypt() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("encrypt() = %v, want %v", got, tt.want)
 			}
 		})

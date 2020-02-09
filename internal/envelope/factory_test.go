@@ -27,7 +27,6 @@ import (
 )
 
 func TestNewEnvelope(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	opts := func(envelopeKind byte) []CreateOptionsBuilder {
@@ -92,7 +91,7 @@ func TestNewEnvelope(t *testing.T) {
 				t.Errorf("NewEnvelope() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.IsType(tt.want, got) {
+			if !assert.IsType(t, tt.want, got) {
 				t.Errorf("NewEnvelope() = %v, want %v", got, tt.want)
 			}
 		})

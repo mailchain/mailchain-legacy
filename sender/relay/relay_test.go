@@ -44,7 +44,6 @@ func Test_createAddress(t *testing.T) {
 }
 
 func TestNewClient(t *testing.T) {
-	assert := assert.New(t)
 	server := httptest.NewServer(nil)
 	type args struct {
 		baseURL string
@@ -80,7 +79,7 @@ func TestNewClient(t *testing.T) {
 				return
 			}
 			if got != nil {
-				if !assert.Len(got.senders, tt.wantNumSenders) {
+				if !assert.Len(t, got.senders, tt.wantNumSenders) {
 					t.Errorf("NewClient().senders = %v, want %v", got, tt.wantNumSenders)
 				}
 			}

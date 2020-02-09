@@ -26,7 +26,6 @@ import (
 )
 
 func Test_prefixWithNetwork(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		network   string
 		publicKey crypto.PublicKey
@@ -144,7 +143,7 @@ func Test_prefixWithNetwork(t *testing.T) {
 				t.Errorf("prefixWithNetwork() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("prefixWithNetwork() = %v, want %v", got, tt.want)
 			}
 		})
@@ -152,7 +151,6 @@ func Test_prefixWithNetwork(t *testing.T) {
 }
 
 func Test_addSS58Prefix(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		pubKey []byte
 	}
@@ -171,7 +169,7 @@ func Test_addSS58Prefix(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := addSS58Prefix(tt.args.pubKey); !assert.Equal(tt.want, got) {
+			if got := addSS58Prefix(tt.args.pubKey); !assert.Equal(t, tt.want, got) {
 				t.Errorf("addSS58Prefix() = %v, want %v", got, tt.want)
 			}
 		})
@@ -179,7 +177,6 @@ func Test_addSS58Prefix(t *testing.T) {
 }
 
 func TestSS58AddressFormat(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		network   string
 		publicKey crypto.PublicKey
@@ -261,7 +258,7 @@ func TestSS58AddressFormat(t *testing.T) {
 				t.Errorf("SS58AddressFormat() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("SS58AddressFormat() = %v, want %v", got, tt.want)
 			}
 		})

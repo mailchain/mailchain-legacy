@@ -21,7 +21,6 @@ import (
 )
 
 func TestMarshal(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		data Data
 	}
@@ -49,7 +48,7 @@ func TestMarshal(t *testing.T) {
 				t.Errorf("Marshal() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Marshal() = %v, want %v", got, tt.want)
 			}
 		})
@@ -57,7 +56,6 @@ func TestMarshal(t *testing.T) {
 }
 
 func TestUnmarshal(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		buf []byte
 	}
@@ -113,7 +111,7 @@ func TestUnmarshal(t *testing.T) {
 				t.Errorf("Unmarshal() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Unmarshal() = %v, want %v", got, tt.want)
 			}
 		})

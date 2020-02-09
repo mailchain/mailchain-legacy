@@ -21,14 +21,12 @@ import (
 )
 
 func TestNewID(t *testing.T) {
-	assert := assert.New(t)
 	id, err := NewID()
-	assert.NoError(err)
-	assert.Len(id, 44)
+	assert.NoError(t, err)
+	assert.Len(t, id, 44)
 }
 
 func TestFromHexString(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		hex string
 	}
@@ -54,7 +52,7 @@ func TestFromHexString(t *testing.T) {
 				t.Errorf("FromHexString() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("FromHexString() = %v, want %v", got, tt.want)
 			}
 		})

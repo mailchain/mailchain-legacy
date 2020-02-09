@@ -14,7 +14,6 @@ import (
 )
 
 func Test_mailboxState(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -40,13 +39,12 @@ func Test_mailboxState(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := mailboxState(tt.args.s)
-			assert.Equal(tt.wantKind, got.Kind.Get())
+			assert.Equal(t, tt.wantKind, got.Kind.Get())
 		})
 	}
 }
 
 func TestMailboxState_Produce(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
@@ -138,7 +136,7 @@ func TestMailboxState_Produce(t *testing.T) {
 				t.Errorf("MailboxState.Produce() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.IsType(tt.wantType, got) {
+			if !assert.IsType(t, tt.wantType, got) {
 				t.Errorf("MailboxState.Produce() = %v, want %v", got, tt.wantType)
 			}
 		})

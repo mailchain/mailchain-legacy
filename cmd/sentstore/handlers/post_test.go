@@ -70,7 +70,6 @@ func Test_compHash(t *testing.T) {
 }
 
 func TestPostHandler(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -336,16 +335,16 @@ func TestPostHandler(t *testing.T) {
 			handler.ServeHTTP(rr, tt.req)
 
 			// Check the status code is what we expect.
-			if !assert.Equal(tt.wantStatus, rr.Code) {
+			if !assert.Equal(t, tt.wantStatus, rr.Code) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.wantStatus)
 			}
-			if !assert.Equal(tt.wantLocationHeader, rr.Header().Get("Location")) {
+			if !assert.Equal(t, tt.wantLocationHeader, rr.Header().Get("Location")) {
 				t.Errorf("handler returned unexpected header: got %v want %v",
 					rr.Header().Get("Location"), tt.wantLocationHeader)
 			}
 			body, _ := ioutil.ReadAll(rr.Body)
-			if !assert.EqualValues(bytes.TrimSuffix(tt.wantBody, []byte{0x2, 0x2}), bytes.TrimSuffix(body, []byte{0xa})) {
+			if !assert.EqualValues(t, bytes.TrimSuffix(tt.wantBody, []byte{0x2, 0x2}), bytes.TrimSuffix(body, []byte{0xa})) {
 				t.Errorf("handler returned unexpected body: got %v want %v",
 					string(body), string(tt.wantBody))
 			}
@@ -354,7 +353,6 @@ func TestPostHandler(t *testing.T) {
 }
 
 func Test_getContents(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		body        io.Reader
 		maxContents int
@@ -404,7 +402,7 @@ func Test_getContents(t *testing.T) {
 				t.Errorf("getContents() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("getContents() got = %v, want %v", got, tt.want)
 			}
 			if gotStatus != tt.wantStatus {

@@ -24,7 +24,6 @@ import (
 )
 
 func Test_getHTTPMessage(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		name    string
 		server  *httptest.Server
@@ -74,7 +73,7 @@ func Test_getHTTPMessage(t *testing.T) {
 				t.Errorf("getHTTPMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("getHTTPMessage() = %v, want %v", got, tt.want)
 			}
 		})
@@ -82,7 +81,6 @@ func Test_getHTTPMessage(t *testing.T) {
 }
 
 func Test_getAnyMessage(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		location string
 	}
@@ -162,7 +160,7 @@ func Test_getAnyMessage(t *testing.T) {
 				t.Errorf("getAnyMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("getAnyMessage() = %v, want %v", got, tt.want)
 			}
 		})
@@ -170,7 +168,6 @@ func Test_getAnyMessage(t *testing.T) {
 }
 
 func TestGetMessage(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		location      string
 		integrityHash []byte
@@ -231,7 +228,7 @@ func TestGetMessage(t *testing.T) {
 				t.Errorf("GetMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("GetMessage() = %v, want %v", got, tt.want)
 			}
 		})

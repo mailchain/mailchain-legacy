@@ -1,0 +1,4 @@
+{
+    "code":422,
+    "message":"failed to decode public key: \"unknown\" unsupported protocol"
+}

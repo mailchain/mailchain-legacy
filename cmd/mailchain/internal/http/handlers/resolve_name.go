@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
+	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/mailbox"

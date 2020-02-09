@@ -7,9 +7,11 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/golang/mock/gomock"
 	"github.com/jmoiron/sqlx"
 	"github.com/mailchain/mailchain/cmd/internal/datastore"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/cryptotest"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
@@ -20,21 +22,8 @@ var addressBytes = []byte{0xd5, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 
 var txHash = []byte("0x98beb27135aa0a25650557005ad962919d6a278c4b3dde7f4f6a3a1e65aa746c")
 var blockHash = []byte("0x373d339e45a701447367d7b9c7cef84aab79c2b2714271b908cda0ab3ad0849b")
 
-type unknownPublicKey struct{}
-
-func (pk unknownPublicKey) Bytes() []byte {
-	return []byte("unknown public key")
-}
-
-func (pk unknownPublicKey) Kind() string {
-	return "unknown"
-}
-
-func (pk unknownPublicKey) Verify(message, sig []byte) bool {
-	return true
-}
-
 func TestPublicKeyStore_PutPublicKey(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
 	type args struct {
 		ctx       context.Context
 		protocol  string
@@ -162,11 +151,16 @@ func TestPublicKeyStore_PutPublicKey(t *testing.T) {
 				protocols.Ethereum,
 				ethereum.Mainnet,
 				addressBytes,
-				&datastore.PublicKey{
-					PublicKey: &unknownPublicKey{},
-					BlockHash: blockHash,
-					TxHash:    txHash,
-				},
+				func() *datastore.PublicKey {
+					mockPublicKey := cryptotest.NewMockPublicKey(mockCtrl)
+					mockPublicKey.EXPECT().Bytes().Return([]byte("unknown public key")).Times(1)
+					mockPublicKey.EXPECT().Kind().Return("unknown").Times(1)
+					return &datastore.PublicKey{
+						PublicKey: mockPublicKey,
+						BlockHash: blockHash,
+						TxHash:    txHash,
+					}
+				}(),
 			},
 			func() mock {
 				db, m, err := sqlmock.New()
@@ -332,7 +326,7 @@ func TestPublicKeyStore_GetPublicKey(t *testing.T) {
 					WithArgs(uint8(1), uint8(1), addressBytes).
 					WillReturnRows(
 						sqlmock.NewRows([]string{"public_key_type", "public_key", "updated_block_hash", "updated_tx_hash"}).
-							AddRow(uint8(crypto.ByteSECP256K1), (&unknownPublicKey{}).Bytes(), blockHash, txHash))
+							AddRow(uint8(crypto.ByteSECP256K1), []byte("unknown public key"), blockHash, txHash))
 
 				return mock{db, m}
 			}(),

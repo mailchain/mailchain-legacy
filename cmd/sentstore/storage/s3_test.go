@@ -16,7 +16,6 @@ import (
 )
 
 func Test_createS3Client(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		region string
 		id     string
@@ -56,7 +55,7 @@ func Test_createS3Client(t *testing.T) {
 				t.Errorf("createSession() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.wantNil, got == nil) {
+			if !assert.Equal(t, tt.wantNil, got == nil) {
 				t.Errorf("createSession() = %v, want %v", got, tt.wantNil)
 			}
 		})
@@ -64,7 +63,6 @@ func Test_createS3Client(t *testing.T) {
 }
 
 func TestNewSentStore(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		region string
 		bucket string
@@ -118,7 +116,7 @@ func TestNewSentStore(t *testing.T) {
 				t.Errorf("NewSentStore() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.wantNil, got == nil) {
+			if !assert.Equal(t, tt.wantNil, got == nil) {
 				t.Errorf("NewSentStore() = %v, want %v", got, tt.wantNil)
 			}
 		})

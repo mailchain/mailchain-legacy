@@ -17,7 +17,6 @@ import (
 
 func TestRawTransactionStore_PutRawTransaction(t *testing.T) {
 
-	assert := assert.New(t)
 
 	var txHash = encodingtest.MustDecodeHexZeroX("0x98beb27135aa0a25650557005ad962919d6a278c4b3dde7f4f6a3a1e65aa746c")
 	var blockHash = encodingtest.MustDecodeHexZeroX("0x373d339e45a701447367d7b9c7cef84aab79c2b2714271b908cda0ab3ad0849b")
@@ -86,7 +85,7 @@ func TestRawTransactionStore_PutRawTransaction(t *testing.T) {
 			if err := s.PutRawTransaction(tt.args.ctx, tt.args.protocol, tt.args.network, tt.args.hash, tt.args.tx); (err != nil) != tt.wantErr {
 				t.Errorf("RawTransactionStore.PutRawTransaction() error = %v, wantErr %v", err, tt.wantErr)
 			} else {
-				assert.Equal(tt.wantFiles, datastoretest.ReadDir(tt.fields.fs, "/"))
+				assert.Equal(t, tt.wantFiles, datastoretest.ReadDir(tt.fields.fs, "/"))
 			}
 		})
 	}

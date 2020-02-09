@@ -32,7 +32,6 @@ import (
 var update = flag.Bool("update", false, "update .golden files")
 
 func TestEncodeNewMessage(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		message *mail.Message
 	}
@@ -132,16 +131,15 @@ func TestEncodeNewMessage(t *testing.T) {
 			}
 			want, _ := ioutil.ReadFile(golden)
 
-			if !assert.Equal(got, want) {
+			if !assert.Equal(t, got, want) {
 				t.Errorf("EncodeNewMessage() = %v, want %v", got, want)
 			}
-			assert.Equal(len(got), cap(got))
+			assert.Equal(t, len(got), cap(got))
 		})
 	}
 }
 
 func TestDecodeNewMessage(t *testing.T) {
-	assert := assert.New(t)
 	tests := []struct {
 		name    string
 		want    *mail.Message
@@ -220,7 +218,7 @@ func TestDecodeNewMessage(t *testing.T) {
 				t.Errorf("DecodeNewMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(got, tt.want) {
+			if !assert.Equal(t, got, tt.want) {
 				t.Errorf("DecodeNewMessage() = %v, want %v", got, tt.want)
 			}
 		})

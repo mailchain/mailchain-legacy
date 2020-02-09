@@ -33,6 +33,7 @@ func (e EthRPC2) Send(ctx context.Context, network string, to, from, data []byte
 	if err != nil {
 		return errors.WithMessage(err, "could not determine chain id")
 	}
+
 	gasPrice, err := e.client.SuggestGasPrice(ctx)
 	if err != nil {
 		return errors.WithMessage(err, "could not determine gas price")
@@ -51,6 +52,7 @@ func (e EthRPC2) Send(ctx context.Context, network string, to, from, data []byte
 	if err != nil {
 		return errors.WithMessage(err, "could not estimate gas")
 	}
+
 	nonce, err := e.client.NonceAt(ctx, addrFrom, nil) // from address
 	if err != nil {
 		return errors.WithStack(err)
@@ -63,6 +65,7 @@ func (e EthRPC2) Send(ctx context.Context, network string, to, from, data []byte
 	if err != nil {
 		return errors.WithMessage(err, "could not sign transaction")
 	}
+
 	signedTx, ok := rawSignedTx.(*types.Transaction)
 	if !ok {
 		return errors.Errorf("sign did not return an ethereum transaction")

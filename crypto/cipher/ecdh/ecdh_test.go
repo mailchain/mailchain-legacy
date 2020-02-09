@@ -135,41 +135,40 @@ func Test_SharedSecretEndToEnd(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert := assert.New(t)
 			ephemeralPrivKey, err := tt.args.keyExchange.EphemeralKey()
 			if err != nil {
-				assert.Fail("EphemeralKey() error = %v", err)
+				assert.Fail(t, "EphemeralKey() error = %v", err)
 				return
 			}
 
 			senderSharedSecret, err := tt.args.keyExchange.SharedSecret(ephemeralPrivKey, tt.args.RecipientPrivateKey.PublicKey())
 			if err != nil {
-				assert.Fail("SharedSecret() error = %v", err)
+				assert.Fail(t, "SharedSecret() error = %v", err)
 				return
 			}
 			recipientSharedSecret, err := tt.args.keyExchange.SharedSecret(tt.args.RecipientPrivateKey, ephemeralPrivKey.PublicKey())
 			if err != nil {
-				assert.Fail("SharedSecret() error = %v", err)
+				assert.Fail(t, "SharedSecret() error = %v", err)
 				return
 			}
 			controlPrivKey, err := tt.args.keyExchange.EphemeralKey()
 			if err != nil {
-				assert.Fail("EphemeralKey() error = %v", err)
+				assert.Fail(t, "EphemeralKey() error = %v", err)
 				return
 			}
 			controlSenderSharedSecret, err := tt.args.keyExchange.SharedSecret(ephemeralPrivKey, controlPrivKey.PublicKey())
 			if err != nil {
-				assert.Fail("SharedSecret() error = %v", err)
+				assert.Fail(t, "SharedSecret() error = %v", err)
 				return
 			}
 			controlRecipientSharedSecret, err := tt.args.keyExchange.SharedSecret(controlPrivKey, ephemeralPrivKey.PublicKey())
 			if err != nil {
-				assert.Fail("SharedSecret() error = %v", err)
+				assert.Fail(t, "SharedSecret() error = %v", err)
 				return
 			}
-			assert.Equal(senderSharedSecret, recipientSharedSecret)
-			assert.NotEqual(controlSenderSharedSecret, recipientSharedSecret)
-			assert.NotEqual(controlRecipientSharedSecret, recipientSharedSecret)
+			assert.Equal(t, senderSharedSecret, recipientSharedSecret)
+			assert.NotEqual(t, controlSenderSharedSecret, recipientSharedSecret)
+			assert.NotEqual(t, controlRecipientSharedSecret, recipientSharedSecret)
 		})
 	}
 }

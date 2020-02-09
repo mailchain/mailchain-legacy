@@ -71,7 +71,7 @@ func Test_exactAndOnlyValid(t *testing.T) {
 }
 
 func Test_formatExampleText(t *testing.T) {
-	assert := assert.New(t)
+
 	type args struct {
 		exampleText string
 		validArgs   []string
@@ -116,7 +116,7 @@ Valid arguments:
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := formatExampleText(tt.args.exampleText, tt.args.validArgs)
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("formatExampleText() = %v, want %v", got, tt.want)
 			}
 		})

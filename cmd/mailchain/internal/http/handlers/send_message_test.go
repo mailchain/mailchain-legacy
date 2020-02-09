@@ -44,10 +44,12 @@ func Test_checkForEmpties(t *testing.T) {
 			"success",
 			args{
 				PostMessage{
-					Headers:   &PostHeaders{},
-					Subject:   "subject-value",
-					Body:      "body-value",
-					PublicKey: "public-key-value",
+					Headers:           &PostHeaders{},
+					Subject:           "subject-value",
+					Body:              "body-value",
+					PublicKey:         "public-key-value",
+					PublicKeyEncoding: "public-key-Encoding",
+					PublicKeyKind:     "public-key-kind",
 				},
 			},
 			false,
@@ -56,9 +58,11 @@ func Test_checkForEmpties(t *testing.T) {
 			"empty-headers",
 			args{
 				PostMessage{
-					Subject:   "subject-value",
-					Body:      "body-value",
-					PublicKey: "public-key-value",
+					Subject:           "subject-value",
+					Body:              "body-value",
+					PublicKey:         "public-key-value",
+					PublicKeyEncoding: "public-key-Encoding",
+					PublicKeyKind:     "public-key-kind",
 				},
 			},
 			true,
@@ -67,9 +71,11 @@ func Test_checkForEmpties(t *testing.T) {
 			"empty-subject",
 			args{
 				PostMessage{
-					Headers:   &PostHeaders{},
-					Body:      "body-value",
-					PublicKey: "public-key-value",
+					Headers:           &PostHeaders{},
+					Body:              "body-value",
+					PublicKey:         "public-key-value",
+					PublicKeyEncoding: "public-key-Encoding",
+					PublicKeyKind:     "public-key-kind",
 				},
 			},
 			true,
@@ -78,9 +84,11 @@ func Test_checkForEmpties(t *testing.T) {
 			"empty-body",
 			args{
 				PostMessage{
-					Headers:   &PostHeaders{},
-					Subject:   "subject-value",
-					PublicKey: "public-key-value",
+					Headers:           &PostHeaders{},
+					Subject:           "subject-value",
+					PublicKey:         "public-key-value",
+					PublicKeyEncoding: "public-key-Encoding",
+					PublicKeyKind:     "public-key-kind",
 				},
 			},
 			true,
@@ -136,10 +144,12 @@ func Test_isValid(t *testing.T) {
 			args{
 				&PostRequestBody{
 					Message: PostMessage{
-						Headers:   &PostHeaders{},
-						Subject:   "subject-value",
-						Body:      "body-value",
-						PublicKey: "public-key-value",
+						Headers:           &PostHeaders{},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "public-key-value",
+						PublicKeyEncoding: "public-key-Encoding-value",
+						PublicKeyKind:     "public-key-kind-value",
 					},
 				},
 				"ethereum",
@@ -155,9 +165,11 @@ func Test_isValid(t *testing.T) {
 						Headers: &PostHeaders{
 							To: encoding.EncodeHex(addresstest.EthereumCharlotte),
 						},
-						Subject:   "subject-value",
-						Body:      "body-value",
-						PublicKey: "public-key-value",
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "public-key-value",
+						PublicKeyEncoding: "public-key-Encoding-value",
+						PublicKeyKind:     "public-key-kind-value",
 					},
 				},
 				"ethereum",
@@ -175,9 +187,11 @@ func Test_isValid(t *testing.T) {
 							From:    encoding.EncodeHex(addresstest.EthereumSofia),
 							ReplyTo: "<invalid",
 						},
-						Subject:   "subject-value",
-						Body:      "body-value",
-						PublicKey: "public-key-value",
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "public-key-value",
+						PublicKeyEncoding: "public-key-Encoding-value",
+						PublicKeyKind:     "public-key-kind-value",
 					},
 				},
 				"ethereum",
@@ -194,9 +208,11 @@ func Test_isValid(t *testing.T) {
 							To:   encoding.EncodeHex(addresstest.EthereumCharlotte),
 							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
-						Subject:   "subject-value",
-						Body:      "body-value",
-						PublicKey: "public-key-value",
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "public-key-value",
+						PublicKeyEncoding: "public-key-Encoding-value",
+						PublicKeyKind:     "public-key-kind-value",
 					},
 				},
 				"ethereum",
@@ -213,9 +229,11 @@ func Test_isValid(t *testing.T) {
 							To:   encoding.EncodeHex(addresstest.EthereumCharlotte),
 							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
-						Subject:   "subject-value",
-						Body:      "body-value",
-						PublicKey: encoding.EncodeHex(addresstest.EthereumSofia),
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         encoding.EncodeHex(addresstest.EthereumSofia),
+						PublicKeyEncoding: "public-key-Encoding-value",
+						PublicKeyKind:     "public-key-kind-value",
 					},
 				},
 				"ethereum",
@@ -224,46 +242,27 @@ func Test_isValid(t *testing.T) {
 			true,
 		},
 		// these tests should be brought back in some form
-		// {
-		// 	"err-decode-to",
-		// 	args{
-		// 		&PostRequestBody{
-		// 			Message: PostMessage{
-		// 				Headers: &PostHeaders{
-		// 					To:   encoding.EncodeHex(addresstest.EthereumCharlotte),
-		// 					From: encoding.EncodeHex(addresstest.EthereumSofia),
-		// 				},
-		// 				Subject:   "subject-value",
-		// 				Body:      "body-value",
-		// 				PublicKey: "0x" + encoding.EncodeHex(testutil.CharlottePublicKey.Bytes()),
-		// 			},
-		// 		},
-		// 		"ethereum",
-		// 		"mainnet",
-		// 	},
-		// 	true,
-		// },
-		// {
-		// 	"err-address-from-public-key",
-		// 	args{
-		// 		&PostRequestBody{
-		// 			Message: PostMessage{
-		// 				Headers: &PostHeaders{
-		// 					To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
-		// 					From: encoding.EncodeHex(addresstest.EthereumSofia),
-		// 				},
-		// 				Subject:   "subject-value",
-		// 				Body:      "body-value",
-		// 				PublicKey: "0x" + encoding.EncodeHex(testutil.SofiaPublicKey.Bytes()),
-		// 			},
-		// 		},
-		// 		"ethereum",
-		// 		"mainnet",
-		// 	},
-		// 	true,
-		// },
 		{
-			"success",
+			"err-decode-to",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
+						},
+						Subject:   "subject-value",
+						Body:      "body-value",
+						PublicKey: "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+					},
+				},
+				"ethereum",
+				"mainnet",
+			},
+			true,
+		},
+		{
+			"err-address-from-public-key",
 			args{
 				&PostRequestBody{
 					Message: PostMessage{
@@ -273,7 +272,143 @@ func Test_isValid(t *testing.T) {
 						},
 						Subject:   "subject-value",
 						Body:      "body-value",
-						PublicKey: "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKey: "0x" + encoding.EncodeHex(secp256k1test.SofiaPublicKey.Bytes()),
+					},
+				},
+				"ethereum",
+				"mainnet",
+			},
+			true,
+		},
+		{
+			"err-invalid-key-kind",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
+						},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKeyEncoding: "hex/0x-prefix",
+						PublicKeyKind:     "invalid",
+					},
+					Envelope:       "0x01",
+					EncryptionName: "aes256cbc",
+				},
+				"ethereum",
+				"mainnet",
+			},
+			true,
+		},
+		{
+			"err-invalid-key-bytes",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
+						},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "invalid-bytes",
+						PublicKeyEncoding: "hex/0x-prefix",
+						PublicKeyKind:     "secp256k1",
+					},
+					Envelope:       "0x01",
+					EncryptionName: "aes256cbc",
+				},
+				"ethereum",
+				"mainnet",
+			},
+			true,
+		},
+		{
+			"err-public-bytes-for-kind",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
+						},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "0x" + encoding.EncodeHex([]byte{0x01}),
+						PublicKeyEncoding: "hex/0x-prefix",
+						PublicKeyKind:     "secp256k1",
+					},
+					Envelope:       "0x01",
+					EncryptionName: "aes256cbc",
+				},
+				"ethereum",
+				"mainnet",
+			},
+			true,
+		},
+		{
+			"err-envelope",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
+						},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKeyEncoding: "hex/0x-prefix",
+						PublicKeyKind:     "secp256k1",
+					},
+					Envelope:       "",
+					EncryptionName: "aes256cbc",
+				},
+				"ethereum",
+				"mainnet",
+			},
+			true,
+		},
+		{
+			"err-encryption-name",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
+						},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKeyEncoding: "hex/0x-prefix",
+						PublicKeyKind:     "secp256k1",
+					},
+					Envelope:       "0x01",
+					EncryptionName: "",
+				},
+				"ethereum",
+				"mainnet",
+			},
+			true,
+		},
+		{
+			"success",
+			args{
+				&PostRequestBody{
+					Message: PostMessage{
+						Headers: &PostHeaders{
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
+						},
+						Subject:           "subject-value",
+						Body:              "body-value",
+						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKeyEncoding: "hex/0x-prefix",
+						PublicKeyKind:     "secp256k1",
 					},
 					Envelope:       "0x01",
 					EncryptionName: "aes256cbc",
@@ -316,10 +451,13 @@ func Test_parsePostRequest(t *testing.T) {
 								"to": "0x92d8f10248c6a3953cc3692a894655ad05d61efb"
 							},
 							"public-key": "0xbdf6fb97c97c126b492186a4d5b28f34f0671a5aacc974da3bde0be93e45a1c50f89ceff72bd04ac9e25a04a1a6cb010aedaf65f91cec8ebe75901c49b63355d",
-							"subject": "test"
+							"subject": "test",
+							"public-key-encoding":  "hex/0x-prefix",
+							"public-key-kind": "secp256k1"
 						},
 						"envelope": "0x01",
 						"encryption-method-name": "aes256cbc",
+						
 						"content-type": "text/plain; charset=\"UTF-8\""
 					}
 					`))
@@ -428,7 +566,6 @@ func Test_parsePostRequest(t *testing.T) {
 }
 
 func TestSendMessage(t *testing.T) {
-	assert := assert.New(t)
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -510,11 +647,11 @@ func TestSendMessage(t *testing.T) {
 			handler.ServeHTTP(rr, tt.req)
 
 			// Check the status code is what we expect.
-			if !assert.Equal(tt.expectedStatus, rr.Code) {
+			if !assert.Equal(t, tt.expectedStatus, rr.Code) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.expectedStatus)
 			}
-			if !assert.Equal(tt.expectedResponse, rr.Body.String()) {
+			if !assert.Equal(t, tt.expectedResponse, rr.Body.String()) {
 				t.Errorf("handler returned unexpected body: got %v want %v",
 					rr.Body.String(), tt.expectedResponse)
 			}

@@ -22,7 +22,6 @@ var (
 )
 
 func TestTransactionStore_GetTransactionsFrom(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		ctx      context.Context
 		protocol string
@@ -150,7 +149,7 @@ func TestTransactionStore_GetTransactionsFrom(t *testing.T) {
 				t.Errorf("TransactionStore.GetTransactionsFrom() err = %v, wantErr %v", err, tt.result.wantErr)
 			}
 
-			if !tt.result.wantErr && !assert.Equal(tt.result.txs, txs) {
+			if !tt.result.wantErr && !assert.Equal(t, tt.result.txs, txs) {
 				t.Errorf("TransactionStore.GetTransactionFrom() = %v, want %v", txs, tt.result.txs)
 			}
 
@@ -162,7 +161,6 @@ func TestTransactionStore_GetTransactionsFrom(t *testing.T) {
 }
 
 func TestTransactionStore_GetTransactionsTo(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		ctx      context.Context
 		protocol string
@@ -318,7 +316,7 @@ func TestTransactionStore_GetTransactionsTo(t *testing.T) {
 				t.Errorf("TransactionStore.GetTransactionsTo() err = %v, wantErr %v", err, tt.result.wantErr)
 			}
 
-			if !tt.result.wantErr && !assert.Equal(tt.result.txs, txs) {
+			if !tt.result.wantErr && !assert.Equal(t, tt.result.txs, txs) {
 				t.Errorf("TransactionStore.GetTransactionsTo() = %v, want %v", txs, tt.result.txs)
 			}
 

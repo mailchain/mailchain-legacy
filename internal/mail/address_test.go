@@ -22,7 +22,7 @@ import (
 )
 
 func TestParseAddress(t *testing.T) {
-	assert := assert.New(t)
+
 	type args struct {
 		input   string
 		chain   string
@@ -84,7 +84,7 @@ func TestParseAddress(t *testing.T) {
 				t.Errorf("ParseAddress() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(got, tt.want) {
+			if !assert.Equal(t, got, tt.want) {
 				t.Errorf("ParseAddress() = %v, want %v", got, tt.want)
 			}
 		})
@@ -149,7 +149,6 @@ func Test_tryAddChainNetwork(t *testing.T) {
 }
 
 func Test_fromAddress(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		address *nm.Address
 	}
@@ -197,7 +196,7 @@ func Test_fromAddress(t *testing.T) {
 				t.Errorf("fromAddress() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("fromAddress() = %v, want %v", got, tt.want)
 			}
 		})

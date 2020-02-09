@@ -16,6 +16,7 @@ package commands
 
 // import (
 // 	"testing"
+// 
 
 // 	"github.com/golang/mock/gomock"
 // 	"github.com/mailchain/mailchain/cmd/mailchain/commands/commandstest"
@@ -26,7 +27,6 @@ package commands
 // )
 
 // func Test_configChainEthereumNetwork(t *testing.T) {
-// 	assert := assert.New(t)
 // 	mockCtrl := gomock.NewController(t)
 // 	defer mockCtrl.Finish()
 // 	type args struct {
@@ -181,7 +181,6 @@ package commands
 // }
 
 // func Test_configChainEthereum(t *testing.T) {
-// 	assert := assert.New(t)
 // 	mockCtrl := gomock.NewController(t)
 // 	defer mockCtrl.Finish()
 // 	type args struct {
@@ -226,7 +225,7 @@ package commands
 // 	for _, tt := range tests {
 // 		t.Run(tt.name, func(t *testing.T) {
 // 			got := configChainEthereum(tt.args.receiverSelector, tt.args.senderSelector, tt.args.pubKeyFinderSelector)
-// 			if !assert.NotNil(got) {
+// 			if !assert.NotNil(t, got) {
 // 				t.Error("configChainEthereum() is nil")
 // 			}
 // 			_, out, err := commandstest.ExecuteCommandC(got, tt.cmdArgs, tt.cmdFlags)
@@ -234,7 +233,7 @@ package commands
 // 				t.Errorf("configChainEthereum().execute() error = %v, wantExecErr %v", err, tt.wantExecErr)
 // 				return
 // 			}
-// 			if !assert.Equal(tt.wantOutput+got.UsageString(), out) {
+// 			if !assert.Equal(t, tt.wantOutput+got.UsageString(), out) {
 // 				t.Errorf("configChainEthereum().Execute().out != %v", got.UsageString())
 // 			}
 // 		})

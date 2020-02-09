@@ -22,7 +22,6 @@ import (
 )
 
 func Test_parseUInt64Bytes(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		buf []byte
 	}
@@ -107,7 +106,7 @@ func Test_parseUInt64Bytes(t *testing.T) {
 			if gotInt != tt.wantInt {
 				t.Errorf("parseUInt64Bytes() gotInt = %v, wantInt %v", gotInt, tt.wantInt)
 			}
-			if !assert.Equal(tt.wantBytes, gotBytes) {
+			if !assert.Equal(t, tt.wantBytes, gotBytes) {
 				t.Errorf("parseUInt64Bytes() gotBytes = %v, wantBytes %v", gotBytes, tt.wantBytes)
 			}
 		})
@@ -115,7 +114,6 @@ func Test_parseUInt64Bytes(t *testing.T) {
 }
 
 func TestNewUInt64Bytes(t *testing.T) {
-	assert := assert.New(t)
 	type args struct {
 		i uint64
 		b []byte
@@ -161,7 +159,7 @@ func TestNewUInt64Bytes(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := NewUInt64Bytes(tt.args.i, tt.args.b)
-			if !assert.Equal(tt.want, got) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("NewUInt64Bytes() = %v, want %v", got, tt.want)
 			}
 		})

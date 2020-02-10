@@ -28,6 +28,7 @@ func NewS3Store(region, bucket, id, secret string) (*S3Store, error) {
 	if region == "" {
 		return nil, errors.Errorf("`region` must be specified")
 	}
+
 	if bucket == "" {
 		return nil, errors.Errorf("`Bucket` must be specified")
 	}
@@ -37,6 +38,7 @@ func NewS3Store(region, bucket, id, secret string) (*S3Store, error) {
 	if id != "" && secret != "" {
 		creds = credentials.NewStaticCredentials(id, secret, "")
 	}
+
 	ses := session.Must(session.NewSession(&aws.Config{
 		Region:      aws.String(region),
 		Credentials: creds,
@@ -49,9 +51,9 @@ func NewS3Store(region, bucket, id, secret string) (*S3Store, error) {
 	}, nil
 }
 
-func (s *S3Store) Upload(ctx context.Context, metadata map[string]*string, key string, msg []byte) (address, resource string, mli uint64, err error) {
+func (s *S3Store) Upload(ctx context.Context, metadata map[string]*string, key string, msg []byte) (string, error) {
 	if msg == nil {
-		return "", "", 0, errors.Errorf("'msg' must not be nil")
+		return "", errors.Errorf("'msg' must not be nil")
 	}
 
 	params := &s3manager.UploadInput{
@@ -63,7 +65,8 @@ func (s *S3Store) Upload(ctx context.Context, metadata map[string]*string, key s
 	// Perform an upload.
 	result, err := s.Uploader(ctx, params)
 	if err != nil {
-		return "", "", 0, errors.WithMessage(err, "could not put message")
+		return "", errors.WithMessage(err, "could not put message")
 	}
-	return result.Location, key, 0, nil
+
+	return result.Location, nil
 }

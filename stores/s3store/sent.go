@@ -16,7 +16,6 @@ package s3store
 
 import (
 	"context"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/internal/mail"
@@ -28,6 +27,7 @@ func NewSent(region, bucket, id, secret string) (*Sent, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &Sent{S3Store: s3Store}, nil
 }
 
@@ -52,5 +52,11 @@ func (h Sent) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers ma
 		metadata[k] = aws.String(v)
 	}
 	resource = h.Key(messageID, contentsHash, msg)
-	return h.Upload(context.Background(), metadata, resource, msg)
+
+	location, err := h.Upload(context.Background(), metadata, resource, msg)
+	if err != nil {
+		return "", "", 0, err
+	}
+
+	return location, resource, 0, nil
 }

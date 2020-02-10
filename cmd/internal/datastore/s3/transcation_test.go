@@ -160,7 +160,7 @@ func TestPutRawTransaction(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			h := S3TransactionStore{
+			h := TransactionStore{
 				S3Store: &s3store.S3Store{
 					Uploader: tt.fields.uploader,
 					Bucket:   tt.fields.bucket,
@@ -190,7 +190,7 @@ func TestKey(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			h := S3TransactionStore{}
+			h := TransactionStore{}
 			if got := h.Key(tt.contentsHash); got != tt.want {
 				t.Errorf("Sent.Key() = %v, want %v", got, tt.want)
 			}

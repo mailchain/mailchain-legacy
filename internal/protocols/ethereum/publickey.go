@@ -113,5 +113,5 @@ func GetPublicKeyFromTransaction(r, s, v *big.Int, to, input []byte, nonce uint6
 		return nil, errors.WithMessage(err, "could not convert signature to public key")
 	}
 
-	return append(recoveredKey.X.Bytes(), recoveredKey.Y.Bytes()...), nil
+	return append(prependEmptyBytes(recoveredKey.X.Bytes()), prependEmptyBytes(recoveredKey.Y.Bytes())...), nil
 }

@@ -105,6 +105,22 @@ func TestGetPublicKeyFromTransaction(t *testing.T) {
 			false,
 		},
 		{
+			"hash=0x3f5e9d09a3ff8144682748b2b218ef0cc79de02a19488b097c0d914f12a13189",
+			args{
+				r:        hexutil.MustDecodeBig("0x6cd8f09351cee443e718467cd1b0b088df6954101faa431a061b350e06e900d8"),
+				s:        hexutil.MustDecodeBig("0x1eb2c28fae56382033e2a6be7a1cff80bba6e5ef2c4fcb43ef69fe17bb3ab6c"),
+				v:        hexutil.MustDecodeBig("0x25"),
+				to:       hexutil.MustDecode("0x0d8775f648430679a709e98d2b0cb6250d2887ef"),
+				input:    hexutil.MustDecode("0xa9059cbb000000000000000000000000705d68a74d35f9d9f1d97362fa562c76f649efa000000000000000000000000000000000000000000000000a4cc799563c380000"),
+				nonce:    hexutil.MustDecodeUint64("0x0"),
+				gasPrice: hexutil.MustDecodeBig("0x165a0bc00"),
+				gas:      hexutil.MustDecodeUint64("0x30d40"),
+				value:    hexutil.MustDecodeBig("0x0"),
+			},
+			hexutil.MustDecode("0x0076e16e31760a85d17442594d2f5be77c8b3aa62952b14fbcad71eb84ae15f0d31ae6235fbed75b6530a49e26227e23a7001b977db0656356a85b83ea134871"),
+			false,
+		},
+		{
 			"err-sig-to-pub",
 			args{
 				hexutil.MustDecodeBig("0x0"),

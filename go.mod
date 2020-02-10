@@ -5,14 +5,12 @@ require (
 	github.com/Masterminds/squirrel v1.1.0
 	github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412
 	github.com/andreburgaud/crypt2go v0.0.0-20170529041511-18fdff33d8fa
-	github.com/apilayer/freegeoip v3.5.0+incompatible // indirect
 	github.com/aristanetworks/goarista v0.0.0-20190409234242-46f4bc7b73ef // indirect
 	github.com/aws/aws-sdk-go v1.25.48
 	github.com/btcsuite/btcd v0.0.0-20190410025418-9bfb2ca0346b // indirect
 	github.com/centrifuge/go-substrate-rpc-client v0.0.4-0.20200117100327-4dc63dc6b2e6
 	github.com/cespare/cp v1.1.1 // indirect
 	github.com/dgraph-io/badger/v2 v2.0.0
-	github.com/docker/docker v1.13.1 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/elastic/gosigar v0.10.5 // indirect
 	github.com/ethereum/go-ethereum v1.9.10
@@ -25,9 +23,7 @@ require (
 	github.com/gtank/merlin v0.1.1-0.20191105220539-8318aed1a79f
 	github.com/gtank/ristretto255 v0.1.2
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
-	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/huin/goupnp v1.0.0 // indirect
-	github.com/influxdata/influxdb v1.7.8 // indirect
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.2.0
 	github.com/manifoldco/promptui v0.3.2
@@ -35,11 +31,9 @@ require (
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/mr-tron/base58 v1.1.0
 	github.com/multiformats/go-multihash v0.0.1
 	github.com/nicksnyder/go-i18n v1.10.0 // indirect
-	github.com/oschwald/maxminddb-golang v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.4.0 // indirect
 	github.com/pierrec/xxHash v0.1.5 // indirect
 	github.com/pkg/errors v0.8.1

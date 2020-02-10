@@ -2,11 +2,12 @@ package ethereum
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/mailchain/mailchain/cmd/indexer/internal/actions"
+	"github.com/mailchain/mailchain/encoding"
+	"github.com/pkg/errors"
 )
 
 type Block struct {
@@ -29,7 +30,7 @@ func (b *Block) Run(ctx context.Context, protocol, network string, blk interface
 	txs := ethBlk.Transactions()
 	for i := range txs {
 		if err := b.txProcessor.Run(ctx, protocol, network, txs[i], &TxOptions{Block: ethBlk}); err != nil {
-			return err
+			return errors.Wrap(err, "fails to process transaction hash: %s", encoding.EncodeHexZeroX(txs[i].Hash().Bytes()))
 		}
 	}
 

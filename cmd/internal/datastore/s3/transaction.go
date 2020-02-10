@@ -17,6 +17,7 @@ func NewS3TransactionStore(region, bucket, id, secret string) (*TransactionStore
 	if err != nil {
 		return nil, err
 	}
+
 	return &TransactionStore{S3Store: s3Store}, nil
 }
 
@@ -47,5 +48,6 @@ func (sts *TransactionStore) PutRawTransaction(ctx context.Context, protocol, ne
 
 	key := sts.EncodeKey(hash)
 	_, err = sts.Upload(ctx, nil, key, jsonBody)
+
 	return err
 }

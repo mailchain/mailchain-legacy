@@ -16,6 +16,7 @@ package s3store
 
 import (
 	"bytes"
+	"context"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -43,7 +44,7 @@ func TestNewSent(t *testing.T) {
 			"success",
 			args{
 				"region",
-				"bucket",
+				"Bucket",
 				"id",
 				"secret",
 			},
@@ -54,7 +55,7 @@ func TestNewSent(t *testing.T) {
 			"err-region",
 			args{
 				"",
-				"bucket",
+				"Bucket",
 				"id",
 				"secret",
 			},
@@ -62,7 +63,7 @@ func TestNewSent(t *testing.T) {
 			true,
 		},
 		{
-			"err-bucket",
+			"err-Bucket",
 			args{
 				"region",
 				"",
@@ -89,7 +90,7 @@ func TestNewSent(t *testing.T) {
 
 func TestSent_PutMessage(t *testing.T) {
 	type fields struct {
-		uploader func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
+		uploader func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
 		bucket   string
 	}
 	type args struct {
@@ -110,20 +111,20 @@ func TestSent_PutMessage(t *testing.T) {
 		{
 			"success-no-headers",
 			fields{
-				func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
+				func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
 					if !assert.Equal(t, bytes.NewReader([]byte("test-data")), input.Body) {
 						t.Errorf("body incorrect")
 					}
-					if !assert.Equal(t, aws.String("bucket-id"), input.Bucket) {
+					if !assert.Equal(t, aws.String("Bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
 					if !assert.Equal(t, aws.String("636f6e74656e74732d68617368"), input.Key) {
 						t.Errorf("Bucket incorrect")
 					}
 
-					return &s3manager.UploadOutput{Location: "https://bucket-id/636f6e74656e74732d68617368"}, nil
+					return &s3manager.UploadOutput{Location: "https://Bucket-id/636f6e74656e74732d68617368"}, nil
 				},
-				"bucket-id",
+				"Bucket-id",
 			},
 			args{
 				func() mail.ID {
@@ -133,7 +134,7 @@ func TestSent_PutMessage(t *testing.T) {
 				[]byte("test-data"),
 				nil,
 			},
-			"https://bucket-id/636f6e74656e74732d68617368",
+			"https://Bucket-id/636f6e74656e74732d68617368",
 			"636f6e74656e74732d68617368",
 			0,
 			false,
@@ -141,20 +142,20 @@ func TestSent_PutMessage(t *testing.T) {
 		{
 			"success-has-headers",
 			fields{
-				func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
+				func(ctx aws.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
 					if !assert.Equal(t, bytes.NewReader([]byte("test-data")), input.Body) {
 						t.Errorf("body incorrect")
 					}
-					if !assert.Equal(t, aws.String("bucket-id"), input.Bucket) {
+					if !assert.Equal(t, aws.String("Bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
 					if !assert.Equal(t, aws.String("636f6e74656e74732d68617368"), input.Key) {
 						t.Errorf("Key incorrect")
 					}
 
-					return &s3manager.UploadOutput{Location: "https://bucket-id/636f6e74656e74732d68617368"}, nil
+					return &s3manager.UploadOutput{Location: "https://Bucket-id/636f6e74656e74732d68617368"}, nil
 				},
-				"bucket-id",
+				"Bucket-id",
 			},
 			args{
 				func() mail.ID {
@@ -163,22 +164,22 @@ func TestSent_PutMessage(t *testing.T) {
 				[]byte("contents-hash"),
 				[]byte("test-data"),
 				map[string]string{
-					"key-1": "value-1",
+					"Key-1": "value-1",
 				},
 			},
-			"https://bucket-id/636f6e74656e74732d68617368",
+			"https://Bucket-id/636f6e74656e74732d68617368",
 			"636f6e74656e74732d68617368",
 			0,
 			false,
 		},
 		{
-			"err-uploader",
+			"err-Uploader",
 			fields{
-				func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
+				func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
 					if !assert.Equal(t, bytes.NewReader([]byte("test-data")), input.Body) {
 						t.Errorf("body incorrect")
 					}
-					if !assert.Equal(t, aws.String("bucket-id"), input.Bucket) {
+					if !assert.Equal(t, aws.String("Bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
 					if !assert.Equal(t, aws.String("636f6e74656e74732d68617368"), input.Key) {
@@ -187,7 +188,7 @@ func TestSent_PutMessage(t *testing.T) {
 
 					return nil, errors.Errorf("failed to upload")
 				},
-				"bucket-id",
+				"Bucket-id",
 			},
 			args{
 				func() mail.ID {
@@ -205,11 +206,11 @@ func TestSent_PutMessage(t *testing.T) {
 		{
 			"err-nil-msg",
 			fields{
-				func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
+				func(ctx aws.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
 					if !assert.Equal(t, bytes.NewReader([]byte("test-data")), input.Body) {
 						t.Errorf("body incorrect")
 					}
-					if !assert.Equal(t, aws.String("bucket-id"), input.Bucket) {
+					if !assert.Equal(t, aws.String("Bucket-id"), input.Bucket) {
 						t.Errorf("Bucket incorrect")
 					}
 					if !assert.Equal(t, aws.String("636f6e74656e74732d68617368"), input.Key) {
@@ -218,7 +219,7 @@ func TestSent_PutMessage(t *testing.T) {
 
 					return nil, errors.Errorf("failed to upload")
 				},
-				"bucket-id",
+				"Bucket-id",
 			},
 			args{
 				func() mail.ID {
@@ -237,8 +238,10 @@ func TestSent_PutMessage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := Sent{
-				uploader: tt.fields.uploader,
-				bucket:   tt.fields.bucket,
+				S3Store: &S3Store{
+					Uploader: tt.fields.uploader,
+					Bucket:   tt.fields.bucket,
+				},
 			}
 			gotAddress, gotResource, gotMLI, err := h.PutMessage(tt.args.messageID, tt.args.contentsHash, tt.args.msg, tt.args.headers)
 			if (err != nil) != tt.wantErr {
@@ -260,7 +263,7 @@ func TestSent_PutMessage(t *testing.T) {
 
 func TestSent_Key(t *testing.T) {
 	type fields struct {
-		uploader func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
+		uploader func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
 		bucket   string
 	}
 	type args struct {
@@ -291,8 +294,10 @@ func TestSent_Key(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := Sent{
-				uploader: tt.fields.uploader,
-				bucket:   tt.fields.bucket,
+				S3Store: &S3Store{
+					Uploader: tt.fields.uploader,
+					Bucket:   tt.fields.bucket,
+				},
 			}
 			if got := h.Key(tt.args.messageID, tt.args.contentsHash, tt.args.msg); got != tt.want {
 				t.Errorf("Sent.Key() = %v, want %v", got, tt.want)

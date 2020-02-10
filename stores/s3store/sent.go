@@ -15,62 +15,35 @@
 package s3store
 
 import (
-	"bytes"
+	"context"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/mailchain/mailchain"
-	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
-	"github.com/pkg/errors"
 )
 
 // NewSent creates a new S3 store.
 func NewSent(region, bucket, id, secret string) (*Sent, error) {
-	if region == "" {
-		return nil, errors.Errorf("`region` must be specified")
+	s3Store, err := NewS3Store(region, bucket, id, secret)
+	if err != nil {
+		return nil, err
 	}
-	if bucket == "" {
-		return nil, errors.Errorf("`bucket` must be specified")
-	}
-
-	var creds *credentials.Credentials
-
-	if id != "" && secret != "" {
-		creds = credentials.NewStaticCredentials(id, secret, "")
-	}
-	ses := session.Must(session.NewSession(&aws.Config{
-		Region:      aws.String(region),
-		Credentials: creds,
-	}))
-
-	// S3 service client the Upload manager will use.
-	return &Sent{
-		uploader: s3manager.NewUploaderWithClient(s3.New(ses)).Upload, // Create an uploader with S3 client and default options
-		bucket:   bucket,
-	}, nil
+	return &Sent{S3Store: s3Store}, nil
 }
 
 // Sent handles storing messages in S3
 type Sent struct {
-	uploader func(input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
-	bucket   string
+	*S3Store
 }
 
 // Key of resource stored.
 func (h Sent) Key(messageID mail.ID, contentsHash, msg []byte) string {
-	return encoding.EncodeHex(contentsHash)
+	return h.EncodeKey(contentsHash)
 }
 
 // PutMessage stores the message in S3.
 func (h Sent) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers map[string]string) (
 	address, resource string, mli uint64, err error) {
-	if msg == nil {
-		return "", "", 0, errors.Errorf("'msg' must not be nil")
-	}
 	metadata := map[string]*string{
 		"Version": aws.String(mailchain.Version),
 	}
@@ -79,16 +52,5 @@ func (h Sent) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers ma
 		metadata[k] = aws.String(v)
 	}
 	resource = h.Key(messageID, contentsHash, msg)
-	params := &s3manager.UploadInput{
-		Bucket:   &h.bucket,
-		Key:      aws.String(resource),
-		Body:     bytes.NewReader(msg),
-		Metadata: metadata,
-	}
-	// Perform an upload.
-	result, err := h.uploader(params)
-	if err != nil {
-		return "", "", 0, errors.WithMessage(err, "could not put message")
-	}
-	return result.Location, resource, 0, nil
+	return h.Upload(context.Background(), metadata, resource, msg)
 }

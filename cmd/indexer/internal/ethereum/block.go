@@ -30,7 +30,7 @@ func (b *Block) Run(ctx context.Context, protocol, network string, blk interface
 	txs := ethBlk.Transactions()
 	for i := range txs {
 		if err := b.txProcessor.Run(ctx, protocol, network, txs[i], &TxOptions{Block: ethBlk}); err != nil {
-			return errors.Wrap(err, "fails to process transaction hash: %s", encoding.EncodeHexZeroX(txs[i].Hash().Bytes()))
+			return errors.Wrapf(err, "fails to process transaction hash: %s", encoding.EncodeHexZeroX(txs[i].Hash().Bytes()))
 		}
 	}
 

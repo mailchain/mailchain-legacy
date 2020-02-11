@@ -50,7 +50,7 @@ func TestSequential_NextBlock(t *testing.T) {
 				}(),
 				func() clients.BlockByNumber {
 					client := clientstest.NewMockBlockByNumber(mockCtrl)
-					client.EXPECT().Get(context.Background(), uint64(2)).Return("block", nil).Times(1)
+					client.EXPECT().Get(context.Background(), uint64(1)).Return("block", nil).Times(1)
 					return client
 				}(),
 			},
@@ -100,7 +100,7 @@ func TestSequential_NextBlock(t *testing.T) {
 				}(),
 				func() clients.BlockByNumber {
 					client := clientstest.NewMockBlockByNumber(mockCtrl)
-					client.EXPECT().Get(context.Background(), uint64(2)).Return(nil, errors.Errorf("error getting block")).Times(1)
+					client.EXPECT().Get(context.Background(), uint64(1)).Return(nil, errors.Errorf("error getting block")).Times(1)
 					return client
 				}(),
 			},
@@ -125,7 +125,7 @@ func TestSequential_NextBlock(t *testing.T) {
 				}(),
 				func() clients.BlockByNumber {
 					client := clientstest.NewMockBlockByNumber(mockCtrl)
-					client.EXPECT().Get(context.Background(), uint64(2)).Return("block", nil).Times(1)
+					client.EXPECT().Get(context.Background(), uint64(1)).Return("block", nil).Times(1)
 					return client
 				}(),
 			},
@@ -150,7 +150,7 @@ func TestSequential_NextBlock(t *testing.T) {
 				}(),
 				func() clients.BlockByNumber {
 					client := clientstest.NewMockBlockByNumber(mockCtrl)
-					client.EXPECT().Get(context.Background(), uint64(2)).Return("block", nil).Times(1)
+					client.EXPECT().Get(context.Background(), uint64(1)).Return("block", nil).Times(1)
 					return client
 				}(),
 			},

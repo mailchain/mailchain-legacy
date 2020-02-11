@@ -19,18 +19,42 @@ import (
 )
 
 func TestTransaction_ToTransaction(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type fields struct {
+		txStore    datastore.TransactionStore
+		rawTxStore datastore.RawTransactionStore
+		pkStore    datastore.PublicKeyStore
+		networkID  *params.ChainConfig
+	}
 	type args struct {
 		blk *types.Block
 		tx  *types.Transaction
 	}
 	tests := []struct {
 		name    string
+		fields  fields
 		args    args
 		want    *datastore.Transaction
 		wantErr bool
 	}{
 		{
 			"success",
+			fields{
+				func() datastore.TransactionStore {
+					m := datastoretest.NewMockTransactionStore(mockCtrl)
+					return m
+				}(),
+				func() datastore.RawTransactionStore {
+					m := datastoretest.NewMockRawTransactionStore(mockCtrl)
+					return m
+				}(),
+				func() datastore.PublicKeyStore {
+					m := datastoretest.NewMockPublicKeyStore(mockCtrl)
+					return m
+				}(),
+				params.MainnetChainConfig,
+			},
 			args{
 				types.NewBlock(&types.Header{}, []*types.Transaction{getTx(t, "0xcd3ccc846c566fbf76f38b1184ba02261a821c6942d18146b89b9d285aa29b9c")}, nil, nil),
 				getTx(t, "0xcd3ccc846c566fbf76f38b1184ba02261a821c6942d18146b89b9d285aa29b9c"),
@@ -49,6 +73,21 @@ func TestTransaction_ToTransaction(t *testing.T) {
 		},
 		{
 			"success-to-nil",
+			fields{
+				func() datastore.TransactionStore {
+					m := datastoretest.NewMockTransactionStore(mockCtrl)
+					return m
+				}(),
+				func() datastore.RawTransactionStore {
+					m := datastoretest.NewMockRawTransactionStore(mockCtrl)
+					return m
+				}(),
+				func() datastore.PublicKeyStore {
+					m := datastoretest.NewMockPublicKeyStore(mockCtrl)
+					return m
+				}(),
+				params.MainnetChainConfig,
+			},
 			args{
 				types.NewBlock(&types.Header{}, []*types.Transaction{getTx(t, "0x157cdd4029ce9bbf319b9d7cc27fd9989e9be63d0427a193f2297e2dee7b4a2e")}, nil, nil),
 				getTx(t, "0x157cdd4029ce9bbf319b9d7cc27fd9989e9be63d0427a193f2297e2dee7b4a2e"),
@@ -65,6 +104,21 @@ func TestTransaction_ToTransaction(t *testing.T) {
 		},
 		{
 			"err-tx-not-in-block",
+			fields{
+				func() datastore.TransactionStore {
+					m := datastoretest.NewMockTransactionStore(mockCtrl)
+					return m
+				}(),
+				func() datastore.RawTransactionStore {
+					m := datastoretest.NewMockRawTransactionStore(mockCtrl)
+					return m
+				}(),
+				func() datastore.PublicKeyStore {
+					m := datastoretest.NewMockPublicKeyStore(mockCtrl)
+					return m
+				}(),
+				params.MainnetChainConfig,
+			},
 			args{
 				types.NewBlock(&types.Header{}, []*types.Transaction{}, nil, nil),
 				getTx(t, "0xcd3ccc846c566fbf76f38b1184ba02261a821c6942d18146b89b9d285aa29b9c"),
@@ -74,6 +128,21 @@ func TestTransaction_ToTransaction(t *testing.T) {
 		},
 		{
 			"err-invalid-from",
+			fields{
+				func() datastore.TransactionStore {
+					m := datastoretest.NewMockTransactionStore(mockCtrl)
+					return m
+				}(),
+				func() datastore.RawTransactionStore {
+					m := datastoretest.NewMockRawTransactionStore(mockCtrl)
+					return m
+				}(),
+				func() datastore.PublicKeyStore {
+					m := datastoretest.NewMockPublicKeyStore(mockCtrl)
+					return m
+				}(),
+				params.MainnetChainConfig,
+			},
 			args{
 				types.NewBlock(&types.Header{}, []*types.Transaction{getTx(t, "invalid-from")}, nil, nil),
 				getTx(t, "invalid-from"),
@@ -84,7 +153,12 @@ func TestTransaction_ToTransaction(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			transaction := &ethereum.Transaction{}
+			transaction := ethereum.NewTransactionProcessor(
+				tt.fields.txStore,
+				tt.fields.rawTxStore,
+				tt.fields.pkStore,
+				tt.fields.networkID,
+			)
 
 			got, err := transaction.ToTransaction(tt.args.blk, tt.args.tx)
 			if (err != nil) != tt.wantErr {

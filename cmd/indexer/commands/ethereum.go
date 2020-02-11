@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/jmoiron/sqlx"
@@ -48,18 +47,11 @@ func ethereumCmd() *cobra.Command {
 
 			for {
 				err := seqProcessor.NextBlock(context.Background())
-				if err == processor.ErrEndOfChain {
-					break
-				}
 
 				if err != nil {
 					fmt.Fprintf(cmd.ErrOrStderr(), "%+v", err)
 				}
-
-				time.Sleep(time.Second)
 			}
-
-			return nil
 		},
 	}
 

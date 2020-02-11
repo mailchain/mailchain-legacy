@@ -46,7 +46,9 @@ func (t *Transaction) Run(ctx context.Context, protocol, network string, tx inte
 	}
 
 	v, r, s := ethTx.RawSignatureValues()
+
 	var to []byte
+
 	if ethTx.To() != nil {
 		to = ethTx.To().Bytes()
 	}
@@ -90,6 +92,7 @@ func (t *Transaction) From(blockNo *big.Int, tx *types.Transaction) ([]byte, err
 	if err != nil {
 		return nil, err
 	}
+
 	return msg.From().Bytes(), nil
 }
 

@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func rootCmd() (*cobra.Command, error) {
+func rootCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "indexer",
 		Short: "Mailchain indexer",
@@ -21,5 +21,5 @@ func rootCmd() (*cobra.Command, error) {
 
 	cmd.PersistentFlags().String("raw-store-path", "", "Path where raw transactions are stored")
 
-	return cmd, nil
+	return cmd
 }

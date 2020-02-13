@@ -59,7 +59,7 @@ func TestPublicKeyStore_PutPublicKey(t *testing.T) {
 				if err != nil {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
-				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO public_keys (protocol,network,address,public_key_type,public_key,created_block_hash,updated_block_hash,created_tx_hash,updated_tx_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT DO UPDATE SET public_key_type = $, public_key = $, updated_block_hash = $, updated_tx_hash = $`)).
+				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO public_keys (protocol,network,address,public_key_type,public_key,created_block_hash,updated_block_hash,created_tx_hash,updated_tx_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (protocol, network, address) DO UPDATE SET public_key_type = $10, public_key = $11, updated_block_hash = $12, updated_tx_hash = $13`)).
 					WithArgs(uint8(1), uint8(1), addressBytes, uint64(crypto.ByteSECP256K1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, blockHash, txHash, txHash, uint64(crypto.ByteSECP256K1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, txHash).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 
@@ -87,7 +87,7 @@ func TestPublicKeyStore_PutPublicKey(t *testing.T) {
 				}
 				m.NewRows([]string{"protocol", "network", "address", "public_key_type", "public_key", "created_block_hash", "updated_block_hash", "created_tx_hash", "updated_tx_hash"}).
 					AddRow(uint8(1), uint8(1), addressBytes, uint64(crypto.ByteSECP256K1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, blockHash, txHash, txHash)
-				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO public_keys (protocol,network,address,public_key_type,public_key,created_block_hash,updated_block_hash,created_tx_hash,updated_tx_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT DO UPDATE SET public_key_type = $, public_key = $, updated_block_hash = $, updated_tx_hash = $`)).
+				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO public_keys (protocol,network,address,public_key_type,public_key,created_block_hash,updated_block_hash,created_tx_hash,updated_tx_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (protocol, network, address) DO UPDATE SET public_key_type = $10, public_key = $11, updated_block_hash = $12, updated_tx_hash = $13`)).
 					WithArgs(uint8(1), uint8(1), addressBytes, uint64(crypto.ByteSECP256K1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, blockHash, txHash, txHash, uint64(crypto.ByteSECP256K1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, txHash).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 
@@ -113,7 +113,7 @@ func TestPublicKeyStore_PutPublicKey(t *testing.T) {
 				if err != nil {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
-				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO public_keys (protocol,network,address,public_key_type,public_key,created_block_hash,updated_block_hash,created_tx_hash,updated_tx_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT DO UPDATE SET public_key_type = $, public_key = $, updated_block_hash = $, updated_tx_hash = $`)).
+				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO public_keys (protocol,network,address,public_key_type,public_key,created_block_hash,updated_block_hash,created_tx_hash,updated_tx_hash) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (protocol, network, address) DO UPDATE SET public_key_type = $10, public_key = $11, updated_block_hash = $12, updated_tx_hash = $13`)).
 					WithArgs(uint8(1), uint8(1), addressBytes, uint64(crypto.ByteSECP256K1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, blockHash, txHash, txHash, uint64(crypto.ByteSECP256K1), secp256k1test.SofiaPublicKey.Bytes(), blockHash, txHash).
 					WillReturnError(sql.ErrNoRows)
 

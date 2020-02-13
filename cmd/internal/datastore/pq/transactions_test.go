@@ -368,7 +368,7 @@ func TestTransactionStore_PutTransaction(t *testing.T) {
 				if err != nil {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
-				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO transactions (protocol,network,hash,tx_from,tx_to,tx_data,tx_block_hash,tx_value,tx_gas_used,tx_gas_price) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT DO UPDATE SET tx_from = $, tx_to = $, tx_data = $, tx_block_hash = $, tx_value = $, tx_gas_used = $, tx_gas_price = $`)).
+				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO transactions (protocol,network,hash,tx_from,tx_to,tx_data,tx_block_hash,tx_value,tx_gas_used,tx_gas_price) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (protocol, network, hash) DO UPDATE SET tx_from = $11, tx_to = $12, tx_data = $13, tx_block_hash = $14, tx_value = $15, tx_gas_used = $16, tx_gas_price = $17`)).
 					WithArgs(uint8(1), uint8(1), []byte{0x1}, fromAddress, toAddress, []byte{0x1}, blockHash, []byte{0x1}, []byte{0x1}, []byte{0x1}, fromAddress, toAddress, []byte{0x1}, blockHash, []byte{0x1}, []byte{0x1}, []byte{0x1}).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 
@@ -402,7 +402,7 @@ func TestTransactionStore_PutTransaction(t *testing.T) {
 				m.NewRows([]string{"protocol", "network", "hash", "tx_from", "tx_to", "tx_data", "tx_block_hash", "tx_value", "tx_gas_used", "tx_gas_price"}).
 					AddRow(uint8(1), uint8(1), []byte{0x1}, fromAddress, toAddress, []byte{0x1}, blockHash, []byte{0x1}, []byte{0x1}, []byte{0x1})
 
-				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO transactions (protocol,network,hash,tx_from,tx_to,tx_data,tx_block_hash,tx_value,tx_gas_used,tx_gas_price) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT DO UPDATE SET tx_from = $, tx_to = $, tx_data = $, tx_block_hash = $, tx_value = $, tx_gas_used = $, tx_gas_price = $`)).
+				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO transactions (protocol,network,hash,tx_from,tx_to,tx_data,tx_block_hash,tx_value,tx_gas_used,tx_gas_price) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (protocol, network, hash) DO UPDATE SET tx_from = $11, tx_to = $12, tx_data = $13, tx_block_hash = $14, tx_value = $15, tx_gas_used = $16, tx_gas_price = $17`)).
 					WithArgs(uint8(1), uint8(1), []byte{0x1}, fromAddress, toAddress, []byte{0x2}, blockHash, []byte{0x1}, []byte{0x1}, []byte{0x1}, fromAddress, toAddress, []byte{0x2}, blockHash, []byte{0x1}, []byte{0x1}, []byte{0x1}).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 
@@ -433,7 +433,7 @@ func TestTransactionStore_PutTransaction(t *testing.T) {
 				if err != nil {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
-				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO transactions (protocol,network,hash,tx_from,tx_to,tx_data,tx_block_hash,tx_value,tx_gas_used,tx_gas_price) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT DO UPDATE SET tx_from = $, tx_to = $, tx_data = $, tx_block_hash = $, tx_value = $, tx_gas_used = $, tx_gas_price = $`)).
+				m.ExpectExec(regexp.QuoteMeta(`INSERT INTO transactions (protocol,network,hash,tx_from,tx_to,tx_data,tx_block_hash,tx_value,tx_gas_used,tx_gas_price) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (protocol, network, hash) DO UPDATE SET tx_from = $11, tx_to = $12, tx_data = $13, tx_block_hash = $14, tx_value = $15, tx_gas_used = $16, tx_gas_price = $17`)).
 					WithArgs(uint8(1), uint8(1), []byte{0x1}, fromAddress, toAddress, []byte{0x1}, blockHash, []byte{0x1}, []byte{0x1}, []byte{0x1}, fromAddress, toAddress, []byte{0x1}, blockHash, []byte{0x1}, []byte{0x1}, []byte{0x1}).
 					WillReturnError(sql.ErrNoRows)
 

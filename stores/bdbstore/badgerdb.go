@@ -134,6 +134,9 @@ func (db *Database) messageReadKey(messageID mail.ID) []byte {
 	return []byte(fmt.Sprintf("message.%s.read", messageID.HexString()))
 }
 
+// it implements a method Is(error) bool such that Is(target) returns true.
+func Is(err, target error) bool { return stderrors.Is(err, target) }
+
 func (db *Database) runGC() {
 	ticker := time.NewTicker(gcInterval)
 	defer ticker.Stop()
@@ -142,7 +145,7 @@ func (db *Database) runGC() {
 		select {
 		case <-ticker.C:
 			if err := db.db.RunValueLogGC(discardRatio); err != nil {
-				if stderrors.Is(err, badger.ErrNoRewrite) {
+				if Is(err, badger.ErrNoRewrite) {
 					logrus.Debugf("BadgerDB GC call ended with no rewrites: %v", err)
 				} else {
 					logrus.Errorf("BadgerDB GC call failed: %v", err)

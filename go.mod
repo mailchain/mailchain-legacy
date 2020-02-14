@@ -8,7 +8,7 @@ require (
 	github.com/aristanetworks/goarista v0.0.0-20190409234242-46f4bc7b73ef // indirect
 	github.com/aws/aws-sdk-go v1.25.48
 	github.com/btcsuite/btcd v0.0.0-20190410025418-9bfb2ca0346b // indirect
-	github.com/centrifuge/go-substrate-rpc-client v0.0.4-0.20200117100327-4dc63dc6b2e6
+	github.com/centrifuge/go-substrate-rpc-client v1.1.0
 	github.com/cespare/cp v1.1.1 // indirect
 	github.com/dgraph-io/badger/v2 v2.0.0
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
@@ -20,7 +20,7 @@ require (
 	github.com/golang/protobuf v1.3.2-0.20190517061210-b285ee9cfc6c
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.1
-	github.com/gtank/merlin v0.1.1-0.20191105220539-8318aed1a79f
+	github.com/gtank/merlin v0.1.1
 	github.com/gtank/ristretto255 v0.1.2
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/huin/goupnp v1.0.0 // indirect
@@ -30,13 +30,14 @@ require (
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1
+	github.com/minio/sha256-simd v0.1.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/mr-tron/base58 v1.1.0
-	github.com/multiformats/go-multihash v0.0.1
+	github.com/mr-tron/base58 v1.1.3
+	github.com/multiformats/go-multihash v0.0.13
 	github.com/nicksnyder/go-i18n v1.10.0 // indirect
 	github.com/pelletier/go-toml v1.4.0 // indirect
 	github.com/pierrec/xxHash v0.1.5 // indirect
-	github.com/pkg/errors v0.8.1
+	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.6.0
 	github.com/sirupsen/logrus v1.4.1
 	github.com/spf13/afero v1.1.2
@@ -49,9 +50,9 @@ require (
 	github.com/tyler-smith/go-bip39 v1.0.2 // indirect
 	github.com/urfave/negroni v1.0.0
 	github.com/wealdtech/go-ens v1.0.0
-	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
+	golang.org/x/crypto v0.0.0-20200214034016-1d94cc7ab1c6
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
-	golang.org/x/sys v0.0.0-20191220142924-d4481acd189f // indirect
+	golang.org/x/sys v0.0.0-20200212091648-12a6c2dcc1e4 // indirect
 	golang.org/x/tools v0.0.0-20200113040837-eac381796e91 // indirect
 	gopkg.in/alecthomas/kingpin.v3-unstable v3.0.0-20180810215634-df19058c872c // indirect
 	gopkg.in/olebedev/go-duktape.v3 v3.0.0-20190709231704-1e4459ed25ff // indirect

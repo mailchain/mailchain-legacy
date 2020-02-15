@@ -73,6 +73,8 @@ func (f FileStore) GetAddresses(protocol, network string) ([][]byte, error) {
 }
 
 func (f FileStore) getEncryptedKeyByAddress(searchAddress []byte, protocol, network string) (*keystore.EncryptedKey, error) {
+	var out *keystore.EncryptedKey
+
 	rawKeys, err := f.getEncryptedKeys()
 	if err != nil {
 		return nil, err
@@ -90,9 +92,14 @@ func (f FileStore) getEncryptedKeyByAddress(searchAddress []byte, protocol, netw
 		}
 
 		if bytes.Equal(pubkeyAddress, searchAddress) {
-			return &rawKeys[i], nil
+			out = &rawKeys[i]
+			break
 		}
 	}
 
-	return nil, errors.Errorf("not found")
+	if out == nil {
+		return nil, errors.Errorf("not found")
+	}
+
+	return out, nil
 }

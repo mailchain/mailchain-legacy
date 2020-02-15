@@ -14,18 +14,27 @@
 
 package substrate
 
-const (
-	// EdgewareTestnet network name.
-	EdgewareTestnet = "edgeware-testnet"
+import (
+	"testing"
 
-	// EdgewareMainnet network name.
-	EdgewareMainnet = "edgeware-mainnet"
-
-	// EdgewareBerlin network name.
-	EdgewareBerlin = "edgeware-berlin"
+	"github.com/stretchr/testify/assert"
 )
 
-// Networks supported by substrate package.
-func Networks() []string {
-	return []string{EdgewareMainnet, EdgewareBerlin}
+func TestNetworks(t *testing.T) {
+	tests := []struct {
+		name string
+		want []string
+	}{
+		{
+			"success",
+			[]string{"edgeware-mainnet", "edgeware-berlin"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Networks(); !assert.Equal(t, tt.want, got) {
+				t.Errorf("Networks() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

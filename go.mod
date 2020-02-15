@@ -59,4 +59,4 @@ require (
 	gopkg.in/resty.v1 v1.12.0
 )
 
-go 1.13
+go 1.12

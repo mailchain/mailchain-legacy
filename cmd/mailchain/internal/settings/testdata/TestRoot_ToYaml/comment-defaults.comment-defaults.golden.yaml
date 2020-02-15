@@ -85,7 +85,8 @@
 #   substrate-public-key-finder:
 #     disabled: false
 #     enabled-networks:
-#       - "substrate/edgeware-testnet"
+#       - "substrate/edgeware-mainnet"
+#       - "substrate/edgeware-berlin"
 # receivers:
 #   etherscan:
 #     api-key: ""

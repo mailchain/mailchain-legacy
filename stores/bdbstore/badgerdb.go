@@ -16,7 +16,6 @@ package bdbstore
 
 import (
 	"context"
-	stderrors "errors"
 	"fmt"
 	"time"
 
@@ -142,7 +141,7 @@ func (db *Database) runGC() {
 		select {
 		case <-ticker.C:
 			if err := db.db.RunValueLogGC(discardRatio); err != nil {
-				if stderrors.Is(err, badger.ErrNoRewrite) {
+				if errors.Cause(err) == badger.ErrNoRewrite {
 					logrus.Debugf("BadgerDB GC call ended with no rewrites: %v", err)
 				} else {
 					logrus.Errorf("BadgerDB GC call failed: %v", err)

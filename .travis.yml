@@ -2,12 +2,12 @@ language: go
 go_import_path: github.com/mailchain/mailchain
 matrix:
   include:
-    # - go: 1.12.x
-    #   env: 
-    #   - GO111MODULE=on
+    - go: 1.12.x
+      env: 
+      - GO111MODULE=on
     - go: 1.13.x
       env: 
-      - LATEST=true
+      - DEPLOY=true
       - GO111MODULE=on
 dist: xenial
 install:
@@ -28,4 +28,4 @@ deploy:
       tags: true
       repo: mailchain/mailchain
       branch: master
-      condition: $LATEST = true
+      condition: $DEPLOY = true

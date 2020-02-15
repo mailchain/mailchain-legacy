@@ -43,12 +43,7 @@ func (pkf *PublicKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, 
 
 	// Remove the 1st byte (network identifier)
 	// Remove last 2 bytes (blake2b hash)
-	newAddress := address[1:33]
+	bytes := address[1:33]
 
-	publicKey, err := ed25519.PublicKeyFromBytes(newAddress)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	return publicKey, nil
+	return ed25519.PublicKeyFromBytes(bytes)
 }

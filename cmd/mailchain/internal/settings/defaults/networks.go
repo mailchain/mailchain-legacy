@@ -17,7 +17,7 @@ func EthereumNetworkAny() *NetworkDefaults {
 		NameServiceDomainName: NameServiceDomainNameKind,
 		PublicKeyFinder:       ClientEtherscanNoAuth,
 		Receiver:              ClientEtherscanNoAuth,
-		Sender:                "ethereum-relay",
+		Sender:                EthereumRelay,
 		Disabled:              false,
 	}
 }

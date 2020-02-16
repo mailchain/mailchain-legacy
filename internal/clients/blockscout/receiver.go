@@ -1,18 +1,4 @@
-// Copyright 2019 Finobo
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-package etherscan
+package blockscout
 
 import (
 	"bytes"
@@ -28,6 +14,7 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 	if !c.isNetworkSupported(network) {
 		return nil, errors.Errorf("network not supported")
 	}
+
 	txResult, err := c.getTransactionsByAddress(network, address)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -36,7 +23,7 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 	res := []mailbox.Transaction{}
 	txHashes := map[string]bool{}
 
-	for i := range txResult.Result { //nolint TODO: paging
+	for i := range txResult.Result {
 		x := txResult.Result[i]
 
 		_, ok := txHashes[x.Hash]
@@ -61,5 +48,6 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 			Hash:    []byte(x.Hash),
 		})
 	}
+
 	return res, nil
 }

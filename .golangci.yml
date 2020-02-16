@@ -81,6 +81,7 @@ linters-settings:
       - experimental
     disabled-checks:
       - wrapperFunc
+      - whyNoLint
   gofmt:
     # simplify code: gofmt with `-s` option, true by default
     simplify: true

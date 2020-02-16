@@ -16,9 +16,11 @@ package etherscan
 
 import (
 	"encoding/json"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/pkg/errors"
 	"gopkg.in/resty.v1"
@@ -103,7 +105,7 @@ func (c APIClient) getTransactionsByAddress(network string, address []byte) (*tx
 			"endblock":   "99999999",
 			"sort":       "desc",
 			"apikey":     c.key,
-			"address":    common.BytesToAddress(address).Hex(),
+			"address":    encoding.EncodeHexZeroX(address),
 		}).Get(config.url)
 	if err != nil {
 		return nil, errors.WithStack(err)

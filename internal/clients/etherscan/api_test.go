@@ -17,6 +17,7 @@ package etherscan
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
@@ -200,9 +201,7 @@ func TestGetTransactionByHash(t *testing.T) {
 }
 
 func TestGetTransactionsByAddress(t *testing.T) {
-	networkStackError := errors.New("Get http://somethignnotvalid:1334")
 	type args struct {
-		server  *httptest.Server
 		network string
 	}
 	tests := []struct {
@@ -215,12 +214,6 @@ func TestGetTransactionsByAddress(t *testing.T) {
 		{
 			"success",
 			args{
-				httptest.NewServer(
-					http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-						txData := "{\"status\":\"1\",\"message\":\"OK\",\"result\":[{\"blockNumber\":\"65204\",\"timeStamp\":\"1439232889\",\"hash\":\"0x98beb27135aa0a25650557005ad962919d6a278c4b3dde7f4f6a3a1e65aa746c\",\"nonce\":\"0\",\"blockHash\":\"0x373d339e45a701447367d7b9c7cef84aab79c2b2714271b908cda0ab3ad0849b\",\"transactionIndex\":\"0\",\"from\":\"0x3fb1cd2cd96c6d5c0b5eb3322d807b34482481d4\",\"to\":\"0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae\",\"value\":\"0\",\"gas\":\"122261\",\"gasPrice\":\"50000000000\",\"isError\":\"0\",\"txreceipt_status\":\"\",\"input\":\"0xf00d4b5d000000000000000000000000036c8cecce8d8bbf0831d840d7f29c9e3ddefa63000000000000000000000000c5a96db085dda36ffbe390f455315d30d6d3dc52\",\"contractAddress\":\"\",\"cumulativeGasUsed\":\"122207\",\"gasUsed\":\"122207\",\"confirmations\":\"8881309\"},{\"blockNumber\":\"65342\",\"timeStamp\":\"1439235315\",\"hash\":\"0x621de9a006b56c425d21ee0e04ab25866fff4cf606dd5d03cf677c5eb2172161\",\"nonce\":\"1\",\"blockHash\":\"0x889d18b8791f43688d07e0b588e94de746a020d4337c61e5285cd97556a6416e\",\"transactionIndex\":\"0\",\"from\":\"0x3fb1cd2cd96c6d5c0b5eb3322d807b34482481d4\",\"to\":\"0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae\",\"value\":\"0\",\"gas\":\"122269\",\"gasPrice\":\"50000000000\",\"isError\":\"0\",\"txreceipt_status\":\"\",\"input\":\"0xf00d4b5d00000000000000000000000005096a47749d8bfab0a90c1bb7a95115dbe4cea60000000000000000000000005ed8cee6b63b1c6afce3ad7c92f4fd7e1b8fad9f\",\"contractAddress\":\"\",\"cumulativeGasUsed\":\"122207\",\"gasUsed\":\"122207\",\"confirmations\":\"8881171\"}]}"
-						w.Write([]byte(txData))
-					}),
-				),
 				"TestNetwork",
 			},
 			nil,
@@ -271,11 +264,8 @@ func TestGetTransactionsByAddress(t *testing.T) {
 			},
 		},
 		{
-			"unsupported-network",
+			"err-unsupported-network",
 			args{
-				httptest.NewServer(
-					http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}),
-				),
 				"UnsupportedNetwork",
 			},
 			errors.New("network not supported"),
@@ -283,27 +273,17 @@ func TestGetTransactionsByAddress(t *testing.T) {
 			nil,
 		},
 		{
-			"response-error",
+			"err-get",
 			args{
-				func() *httptest.Server {
-					s := httptest.NewServer(
-						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}),
-					)
-					s.URL = "http://somethignnotvalid:1334"
-					return s
-				}(),
 				"TestNetwork",
 			},
-			networkStackError,
+			errors.New("Invalid address format"),
 			true,
 			nil,
 		},
 		{
-			"unmarshal-error",
+			"err-unmarshal",
 			args{
-				httptest.NewServer(
-					http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}),
-				),
 				"TestNetwork",
 			},
 			errors.New("unexpected end of JSON input"),
@@ -312,18 +292,24 @@ func TestGetTransactionsByAddress(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		testName := t.Name()
 		t.Run(tt.name, func(t *testing.T) {
-			defer tt.args.server.Close()
+			golden, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/%s.json", testName, tt.name))
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			server := httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Write([]byte(golden))
+				}),
+			)
+			defer server.Close()
 			client := &APIClient{
 				key:            "api-key",
-				networkConfigs: map[string]networkConfig{"TestNetwork": {url: tt.args.server.URL}},
+				networkConfigs: map[string]networkConfig{"TestNetwork": {url: server.URL}},
 			}
 			got, err := client.getTransactionsByAddress(tt.args.network, []byte{})
-			if (err != nil) && tt.wantErr == networkStackError && !strings.HasPrefix(err.Error(), networkStackError.Error()) {
-				t.Errorf("APIClient.getTransactionsByAddress() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if (err != nil) && tt.wantErr != networkStackError && err.Error() != tt.wantErr.Error() {
+			if (err != nil) && err.Error() != tt.wantErr.Error() {
 				t.Errorf("APIClient.getTransactionsByAddress() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}

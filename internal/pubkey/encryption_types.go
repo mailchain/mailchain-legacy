@@ -28,6 +28,8 @@ func EncryptionMethods(kind string) ([]string, error) {
 		return []string{encrypter.NACLECDH, encrypter.NoOperation}, nil
 	case crypto.KindSECP256K1:
 		return []string{encrypter.AES256CBC, encrypter.NoOperation}, nil
+	case crypto.KindSR25519:
+		return []string{encrypter.AES256CBC, encrypter.NoOperation}, nil
 	default:
 		return nil, fmt.Errorf("%q unsupported public key type", kind)
 	}

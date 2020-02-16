@@ -133,7 +133,6 @@ func TestReceive(t *testing.T) {
 			)
 			defer server.Close()
 			client := &APIClient{
-				key:            "api-key",
 				networkConfigs: map[string]networkConfig{"TestNetwork": {url: server.URL}},
 			}
 			got, err := client.Receive(tt.args.ctx, tt.args.network, []byte{})

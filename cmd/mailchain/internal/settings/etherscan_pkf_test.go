@@ -1,7 +1,6 @@
 package settings
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -148,7 +147,7 @@ func TestEtherscanPublicKeyFinder_Supports(t *testing.T) {
 				EnabledProtocolNetworks: tt.fields.EnabledProtocolNetworks,
 				APIKey:                  tt.fields.APIKey,
 			}
-			if got := r.Supports(); !reflect.DeepEqual(got, tt.want) {
+			if got := r.Supports(); !assert.Equal(t, tt.want, got) {
 				t.Errorf("EtherscanPublicKeyFinder.Supports() = %v, want %v", got, tt.want)
 			}
 		})

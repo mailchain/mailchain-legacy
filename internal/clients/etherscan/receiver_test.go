@@ -51,14 +51,24 @@ func TestReceive(t *testing.T) {
 			nil,
 		},
 		{
+			"err-unmarshal",
+			args{
+				context.Background(),
+				"TestNetwork",
+			},
+			errors.New("invalid character 'i' looking for beginning of object key string"),
+			true,
+			nil,
+		},
+		{
 			"err-get",
 			args{
 				context.Background(),
 				"TestNetwork",
 			},
-			errors.New("Invalid address format"),
-			true,
 			nil,
+			false,
+			[]mailbox.Transaction{},
 		},
 		{
 			"success-remove-invalid-tx",

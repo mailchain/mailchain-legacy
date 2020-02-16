@@ -11,8 +11,9 @@ import (
 func receivers(s values.Store) *Receivers {
 	return &Receivers{
 		clients: map[string]ReceiverClient{
-			defaults.ClientEtherscanNoAuth: etherscanReceiverNoAuth(s),
-			defaults.ClientEtherscan:       etherscanReceiver(s),
+			defaults.ClientEtherscanNoAuth:  etherscanReceiverNoAuth(s),
+			defaults.ClientEtherscan:        etherscanReceiver(s),
+			defaults.ClientBlockscoutNoAuth: blockscoutReceiverNoAuth(s),
 		},
 	}
 }

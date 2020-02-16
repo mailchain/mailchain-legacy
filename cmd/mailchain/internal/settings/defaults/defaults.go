@@ -53,6 +53,8 @@ const (
 )
 
 const (
+	// ClientBlockscoutNoAuth blockscout without authentication client name.
+	ClientBlockscoutNoAuth = "blockscout-no-auth"
 	// ClientEtherscan etherscan client name.
 	ClientEtherscan = "etherscan"
 	// ClientEtherscanNoAuth etherscan without authentication client name.
@@ -61,6 +63,9 @@ const (
 	ClientEthereumRPC2 = "ethereum-rpc2"
 	// ClientRelay relay client name.
 	ClientRelay = "relay"
+
+	// EthereumRelay relay for ethereum only
+	EthereumRelay = "ethereum-relay"
 )
 
 // KeystorePath default value.

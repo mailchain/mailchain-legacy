@@ -116,9 +116,9 @@ func TestGetTransactionsByAddress(t *testing.T) {
 			args{
 				"TestNetwork",
 			},
-			errors.New("Invalid address format"),
-			true,
 			nil,
+			false,
+			&txList{Status: "0", Message: "Invalid address format", Result: []txResult(nil)},
 		},
 		{
 			"err-unmarshal",

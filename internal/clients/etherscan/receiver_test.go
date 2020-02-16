@@ -17,9 +17,10 @@ package etherscan
 import (
 	"context"
 	"errors"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto/cipher"
@@ -28,10 +29,8 @@ import (
 )
 
 func TestReceive(t *testing.T) {
-	networkStackError := errors.New("Get http://somethignnotvalid:1334")
 	type args struct {
 		ctx     context.Context
-		server  *httptest.Server
 		network string
 	}
 	tests := []struct {
@@ -42,15 +41,9 @@ func TestReceive(t *testing.T) {
 		want    []mailbox.Transaction
 	}{
 		{
-			"not-supported-network-error",
+			"err-network-not-supported",
 			args{
 				context.Background(),
-				func() *httptest.Server {
-					s := httptest.NewServer(
-						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}),
-					)
-					return s
-				}(),
 				"InvalidNetwork",
 			},
 			errors.New("network not supported"),
@@ -58,32 +51,19 @@ func TestReceive(t *testing.T) {
 			nil,
 		},
 		{
-			"network-error",
+			"err-get",
 			args{
 				context.Background(),
-				func() *httptest.Server {
-					s := httptest.NewServer(
-						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}),
-					)
-					s.URL = "http://somethignnotvalid:1334"
-					return s
-				}(),
 				"TestNetwork",
 			},
-			networkStackError,
+			errors.New("Invalid address format"),
 			true,
 			nil,
 		},
 		{
-			"success-removes-invalid-trx",
+			"success-remove-invalid-tx",
 			args{
 				context.Background(),
-				httptest.NewServer(
-					http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-						txData := "{\"status\":\"1\",\"message\":\"OK\",\"result\":[{\"blockNumber\":\"65204\",\"timeStamp\":\"1439232889\",\"hash\":\"0x98beb27135aa0a25650557005ad962919d6a278c4b3dde7f4f6a3a1e65aa746c\",\"nonce\":\"0\",\"blockHash\":\"0x373d339e45a701447367d7b9c7cef84aab79c2b2714271b908cda0ab3ad0849b\",\"transactionIndex\":\"0\",\"from\":\"0x3fb1cd2cd96c6d5c0b5eb3322d807b34482481d4\",\"to\":\"0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae\",\"value\":\"0\",\"gas\":\"122261\",\"gasPrice\":\"50000000000\",\"isError\":\"0\",\"txreceipt_status\":\"\",\"input\":\"0x6d61696c636861696e383162336636383539326431393338396439656432346664636338316331666630323835383962653535303436303532366631633961613436623864333739346337653032616565363563386631373733376361366637333564393565303965366131396636303838366638313239326535373835373133343562386531653466393238326531306433396637316238636639653731613231656336393939333637346634616261643231623831393531646565346665643565666465663334643131303264346333336538626662613330623461343730646162643434653938653262363439346136653862363963393336353864393631393639356633313561356266356262313865363265336266623237363463363335323631616366363730303862353761316262333838353164396132656635353730323861336166373839646537396234346662346130336137653637393037343030376531623237\",\"contractAddress\":\"\",\"cumulativeGasUsed\":\"122207\",\"gasUsed\":\"122207\",\"confirmations\":\"8881309\"},{\"blockNumber\":\"65342\",\"timeStamp\":\"1439235315\",\"hash\":\"0x621de9a006b56c425d21ee0e04ab25866fff4cf606dd5d03cf677c5eb2172161\",\"nonce\":\"1\",\"blockHash\":\"0x889d18b8791f43688d07e0b588e94de746a020d4337c61e5285cd97556a6416e\",\"transactionIndex\":\"0\",\"from\":\"0x3fb1cd2cd96c6d5c0b5eb3322d807b34482481d4\",\"to\":\"0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae\",\"value\":\"0\",\"gas\":\"122269\",\"gasPrice\":\"50000000000\",\"isError\":\"0\",\"txreceipt_status\":\"\",\"input\":\"0xf00d4b5d00000000000000000000000005096a47749d8bfab0a90c1bb7a95115dbe4cea60000000000000000000000005ed8cee6b63b1c6afce3ad7c92f4fd7e1b8fad9f\",\"contractAddress\":\"\",\"cumulativeGasUsed\":\"122207\",\"gasUsed\":\"122207\",\"confirmations\":\"8881171\"}]}"
-						w.Write([]byte(txData))
-					}),
-				),
 				"TestNetwork",
 			},
 			nil,
@@ -97,15 +77,9 @@ func TestReceive(t *testing.T) {
 			},
 		},
 		{
-			"success-removes-empty-input-trx",
+			"success-remove-empty-input-tx",
 			args{
 				context.Background(),
-				httptest.NewServer(
-					http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-						txData := "{\"status\":\"1\",\"message\":\"OK\",\"result\":[{\"blockNumber\":\"65204\",\"timeStamp\":\"1439232889\",\"hash\":\"0x98beb27135aa0a25650557005ad962919d6a278c4b3dde7f4f6a3a1e65aa746c\",\"nonce\":\"0\",\"blockHash\":\"0x373d339e45a701447367d7b9c7cef84aab79c2b2714271b908cda0ab3ad0849b\",\"transactionIndex\":\"0\",\"from\":\"0x3fb1cd2cd96c6d5c0b5eb3322d807b34482481d4\",\"to\":\"0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae\",\"value\":\"0\",\"gas\":\"122261\",\"gasPrice\":\"50000000000\",\"isError\":\"0\",\"txreceipt_status\":\"\",\"input\":\"0x6d61696c636861696e383162336636383539326431393338396439656432346664636338316331666630323835383962653535303436303532366631633961613436623864333739346337653032616565363563386631373733376361366637333564393565303965366131396636303838366638313239326535373835373133343562386531653466393238326531306433396637316238636639653731613231656336393939333637346634616261643231623831393531646565346665643565666465663334643131303264346333336538626662613330623461343730646162643434653938653262363439346136653862363963393336353864393631393639356633313561356266356262313865363265336266623237363463363335323631616366363730303862353761316262333838353164396132656635353730323861336166373839646537396234346662346130336137653637393037343030376531623237\",\"contractAddress\":\"\",\"cumulativeGasUsed\":\"122207\",\"gasUsed\":\"122207\",\"confirmations\":\"8881309\"},{\"blockNumber\":\"65204\",\"timeStamp\":\"1439232889\",\"hash\":\"0x98beb27135aa0a25650557005ad962919d6a278c4b3dde7f4f6a3a1e65a12345\",\"nonce\":\"0\",\"blockHash\":\"0x373d339e45a701447367d7b9c7cef84aab79c2b2714271b908cda0ab3ad0849b\",\"transactionIndex\":\"0\",\"from\":\"0x3fb1cd2cd96c6d5c0b5eb3322d807b34482481d4\",\"to\":\"0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae\",\"value\":\"0\",\"gas\":\"122261\",\"gasPrice\":\"50000000000\",\"isError\":\"0\",\"txreceipt_status\":\"\",\"input\":\"\",\"contractAddress\":\"\",\"cumulativeGasUsed\":\"122207\",\"gasUsed\":\"122207\",\"confirmations\":\"8881309\"}]}"
-						w.Write([]byte(txData))
-					}),
-				),
 				"TestNetwork",
 			},
 			nil,
@@ -119,15 +93,9 @@ func TestReceive(t *testing.T) {
 			},
 		},
 		{
-			"success-removes-duplicated-trx",
+			"success-removes-duplicated-tx",
 			args{
 				context.Background(),
-				httptest.NewServer(
-					http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-						txData := "{\"status\":\"1\",\"message\":\"OK\",\"result\":[{\"blockNumber\":\"65204\",\"timeStamp\":\"1439232889\",\"hash\":\"0x98beb27135aa0a25650557005ad962919d6a278c4b3dde7f4f6a3a1e65aa746c\",\"nonce\":\"0\",\"blockHash\":\"0x373d339e45a701447367d7b9c7cef84aab79c2b2714271b908cda0ab3ad0849b\",\"transactionIndex\":\"0\",\"from\":\"0x3fb1cd2cd96c6d5c0b5eb3322d807b34482481d4\",\"to\":\"0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae\",\"value\":\"0\",\"gas\":\"122261\",\"gasPrice\":\"50000000000\",\"isError\":\"0\",\"txreceipt_status\":\"\",\"input\":\"0x6d61696c636861696e383162336636383539326431393338396439656432346664636338316331666630323835383962653535303436303532366631633961613436623864333739346337653032616565363563386631373733376361366637333564393565303965366131396636303838366638313239326535373835373133343562386531653466393238326531306433396637316238636639653731613231656336393939333637346634616261643231623831393531646565346665643565666465663334643131303264346333336538626662613330623461343730646162643434653938653262363439346136653862363963393336353864393631393639356633313561356266356262313865363265336266623237363463363335323631616366363730303862353761316262333838353164396132656635353730323861336166373839646537396234346662346130336137653637393037343030376531623237\",\"contractAddress\":\"\",\"cumulativeGasUsed\":\"122207\",\"gasUsed\":\"122207\",\"confirmations\":\"8881309\"},{\"hash\":\"0x98beb27135aa0a25650557005ad962919d6a278c4b3dde7f4f6a3a1e65aa746c\"}]}"
-						w.Write([]byte(txData))
-					}),
-				),
 				"TestNetwork",
 			},
 			nil,
@@ -142,18 +110,24 @@ func TestReceive(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		testName := t.Name()
 		t.Run(tt.name, func(t *testing.T) {
-			defer tt.args.server.Close()
+			golden, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/%s.json", testName, tt.name))
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			server := httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Write([]byte(golden))
+				}),
+			)
+			defer server.Close()
 			client := &APIClient{
 				key:            "api-key",
-				networkConfigs: map[string]networkConfig{"TestNetwork": {url: tt.args.server.URL}},
+				networkConfigs: map[string]networkConfig{"TestNetwork": {url: server.URL}},
 			}
 			got, err := client.Receive(tt.args.ctx, tt.args.network, []byte{})
-			if (err != nil) && tt.wantErr == networkStackError && !strings.HasPrefix(err.Error(), networkStackError.Error()) {
-				t.Errorf("APIClient.getTransactionsByAddress() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if (err != nil) && tt.wantErr != networkStackError && err.Error() != tt.wantErr.Error() {
+			if (err != nil) && err.Error() != tt.wantErr.Error() {
 				t.Errorf("APIClient.Receive() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}

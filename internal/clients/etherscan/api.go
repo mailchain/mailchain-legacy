@@ -112,6 +112,9 @@ func (c APIClient) getTransactionsByAddress(network string, address []byte) (*tx
 	if err := json.Unmarshal(txListResponse.Body(), txResult); err != nil {
 		return nil, errors.WithStack(err)
 	}
+	if txResult.Status == "0" {
+		return nil, errors.Errorf(txResult.Message)
+	}
 	return txResult, nil
 }
 

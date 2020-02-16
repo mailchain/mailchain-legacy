@@ -50,7 +50,6 @@ func TestFromStore(t *testing.T) {
 }
 
 func TestRoot_ToYaml(t *testing.T) {
-
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {

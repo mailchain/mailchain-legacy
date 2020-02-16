@@ -20,7 +20,7 @@ protocols:
         disabled: false
         nameservice-address: "mailchain"
         nameservice-domain-name: "mailchain"
-        public-key-finder: "etherscan-no-auth"
+        public-key-finder: "blockscout-no-auth"
         receiver: "blockscout-no-auth"
         sender: "ethereum-relay"
       rinkeby:
@@ -66,6 +66,9 @@ nameservice-domain-name:
       - "ethereum/rinkeby"
       - "ethereum/ropsten"
 public-key-finders:
+  blockscout-no-auth:
+    enabled-networks:
+      - "mainnet"
   etherscan:
     api-key: ""
     enabled-networks:
@@ -89,7 +92,6 @@ public-key-finders:
       - "substrate/edgeware-berlin"
 receivers:
   blockscout-no-auth:
-    api-key: ""
     enabled-networks:
       - "ethereum/mainnet"
   etherscan:

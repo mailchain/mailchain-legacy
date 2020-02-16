@@ -22,7 +22,7 @@ func blockscoutPublicKeyFinderNoAuth(s values.Store) *BlockscoutPublicKeyFinder 
 	return &BlockscoutPublicKeyFinder{
 		kind: kind,
 		EnabledProtocolNetworks: values.NewDefaultStringSlice(
-			[]string{ethereum.Mainnet},
+			[]string{"ethereum/" + ethereum.Mainnet},
 			s,
 			"public-key-finders."+kind+".enabled-networks",
 		),

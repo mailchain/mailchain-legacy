@@ -68,7 +68,7 @@
 # public-key-finders:
 #   blockscout-no-auth:
 #     enabled-networks:
-#       - "mainnet"
+#       - "ethereum/mainnet"
 #   etherscan:
 #     api-key: ""
 #     enabled-networks:

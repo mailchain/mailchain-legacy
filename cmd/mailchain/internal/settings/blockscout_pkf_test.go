@@ -31,7 +31,7 @@ func Test_blockscoutPublicKeyFinderNoAuth(t *testing.T) {
 					return m
 				}(),
 			},
-			[]string{"ethereum/goerli", "ethereum/kovan", "ethereum/mainnet", "ethereum/rinkeby", "ethereum/ropsten"},
+			[]string{"ethereum/mainnet"},
 		},
 	}
 	for _, tt := range tests {

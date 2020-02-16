@@ -7,6 +7,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/cmd/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/internal/settings/values/valuestest"
+	"github.com/mailchain/mailchain/internal/clients/blockscout"
+	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -115,6 +117,57 @@ func TestBlockscoutReceiver_Supports(t *testing.T) {
 			}
 			if got := r.Supports(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("blockscoutReceiver.Supports() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBlockscoutReceiver_Produce(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type fields struct {
+		kind                    string
+		EnabledProtocolNetworks values.StringSlice
+		APIKey                  values.String
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    mailbox.Receiver
+		wantErr bool
+	}{
+		{
+			"success",
+			fields{
+				"test",
+				func() values.StringSlice {
+					m := valuestest.NewMockStringSlice(mockCtrl)
+					return m
+				}(),
+				func() values.String {
+					m := valuestest.NewMockString(mockCtrl)
+					m.EXPECT().Get().Return("apikey")
+					return m
+				}(),
+			},
+			&blockscout.APIClient{},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := BlockscoutReceiver{
+				kind:                    tt.fields.kind,
+				EnabledProtocolNetworks: tt.fields.EnabledProtocolNetworks,
+				APIKey:                  tt.fields.APIKey,
+			}
+			got, err := r.Produce()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("BlockscoutReceiver.Produce() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.IsType(t, tt.want, got) {
+				t.Errorf("BlockscoutReceiver.Produce() = %v, want %v", got, tt.want)
 			}
 		})
 	}

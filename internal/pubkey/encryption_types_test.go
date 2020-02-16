@@ -41,6 +41,14 @@ func TestEncryptionMethods(t *testing.T) {
 			false,
 		},
 		{
+			"sr25519",
+			args{
+				crypto.KindSR25519,
+			},
+			[]string{encrypter.NACLECDH, encrypter.NoOperation},
+			false,
+		},
+		{
 			"secp256k1",
 			args{
 				crypto.KindSECP256K1,

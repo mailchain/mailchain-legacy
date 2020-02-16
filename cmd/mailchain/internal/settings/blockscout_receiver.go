@@ -21,11 +21,10 @@ func blockscoutReceiverNoAuth(s values.Store) *BlockscoutReceiver {
 }
 
 func blockscoutReceiverAny(s values.Store, kind string) *BlockscoutReceiver {
-	enabledNetworks := []string{"ethereum/" + ethereum.Mainnet}
 	return &BlockscoutReceiver{
 		kind: kind,
 		EnabledProtocolNetworks: values.NewDefaultStringSlice(
-			enabledNetworks,
+			[]string{"ethereum/" + ethereum.Mainnet},
 			s,
 			"receivers."+kind+".enabled-networks",
 		),

@@ -43,7 +43,9 @@ func (c APIClient) Receive(ctx context.Context, network string, address []byte) 
 		if ok {
 			continue
 		}
+
 		txHashes[x.Hash] = true
+
 		encryptedTransactionData, err := encoding.DecodeHexZeroX(x.Input)
 		if err != nil {
 			continue // invalid data should move to next record

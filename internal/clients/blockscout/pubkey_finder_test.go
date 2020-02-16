@@ -118,9 +118,6 @@ func TestGetFromResultHash(t *testing.T) {
 }
 
 func TestAPIClient_PublicKeyFromAddress(t *testing.T) {
-	type fields struct {
-		key string
-	}
 	type args struct {
 		ctx      context.Context
 		protocol string
@@ -129,16 +126,12 @@ func TestAPIClient_PublicKeyFromAddress(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
 		want    crypto.PublicKey
 		wantErr bool
 	}{
 		{
 			"success",
-			fields{
-				"",
-			},
 			args{
 				context.Background(),
 				"ethereum",
@@ -153,9 +146,6 @@ func TestAPIClient_PublicKeyFromAddress(t *testing.T) {
 		},
 		{
 			"err-invalid-public-key",
-			fields{
-				"",
-			},
 			args{
 				context.Background(),
 				"ethereum",
@@ -167,9 +157,6 @@ func TestAPIClient_PublicKeyFromAddress(t *testing.T) {
 		},
 		{
 			"err-get-transaction-by-hash",
-			fields{
-				"",
-			},
 			args{
 				context.Background(),
 				"ethereum",
@@ -181,9 +168,6 @@ func TestAPIClient_PublicKeyFromAddress(t *testing.T) {
 		},
 		{
 			"err-get-result-from-hash",
-			fields{
-				"",
-			},
 			args{
 				context.Background(),
 				"ethereum",
@@ -195,9 +179,6 @@ func TestAPIClient_PublicKeyFromAddress(t *testing.T) {
 		},
 		{
 			"err-get-transactions-by-address",
-			fields{
-				"",
-			},
 			args{
 				context.Background(),
 				"ethereum",
@@ -209,9 +190,6 @@ func TestAPIClient_PublicKeyFromAddress(t *testing.T) {
 		},
 		{
 			"err-invalid-network",
-			fields{
-				"",
-			},
 			args{
 				context.Background(),
 				"ethereum",
@@ -247,7 +225,6 @@ func TestAPIClient_PublicKeyFromAddress(t *testing.T) {
 				}),
 			)
 			c := APIClient{
-				key: tt.fields.key,
 				networkConfigs: map[string]networkConfig{
 					"mainnet": networkConfig{
 						url:    server.URL,

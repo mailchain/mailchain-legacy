@@ -13,9 +13,8 @@ import (
 )
 
 // NewAPIClient create new API client
-func NewAPIClient(apiKey string) (*APIClient, error) {
+func NewAPIClient() (*APIClient, error) {
 	return &APIClient{
-		key: apiKey,
 		networkConfigs: map[string]networkConfig{
 			ethereum.Mainnet: {
 				url:    "https://blockscout.com/eth/mainnet/api",
@@ -27,7 +26,6 @@ func NewAPIClient(apiKey string) (*APIClient, error) {
 
 // APIClient for talking to etherscan
 type APIClient struct {
-	key            string
 	networkConfigs map[string]networkConfig
 }
 

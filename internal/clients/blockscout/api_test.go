@@ -30,9 +30,8 @@ import (
 )
 
 func TestNewAPIClient(t *testing.T) {
-	apiClient, _ := NewAPIClient("api-key")
+	apiClient, _ := NewAPIClient()
 	want := &APIClient{
-		key: "api-key",
 		networkConfigs: map[string]networkConfig{
 			ethereum.Mainnet: {
 				rpcURL: "https://relay.mailchain.xyz/json-rpc/ethereum/mainnet",
@@ -150,7 +149,6 @@ func TestGetTransactionsByAddress(t *testing.T) {
 			)
 			defer server.Close()
 			client := &APIClient{
-				key:            "api-key",
 				networkConfigs: map[string]networkConfig{"TestNetwork": {url: server.URL}},
 			}
 			got, err := client.getTransactionsByAddress(tt.args.network, []byte{})
@@ -248,7 +246,6 @@ func TestGetTransactionByHash(t *testing.T) {
 			)
 			defer server.Close()
 			client := &APIClient{
-				key:            "api-key",
 				networkConfigs: map[string]networkConfig{"TestNetwork": {rpcURL: server.URL}},
 			}
 			got, err := client.getTransactionByHash(tt.args.network, common.Hash{})

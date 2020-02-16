@@ -56,6 +56,7 @@ func (c APIClient) PublicKeyFromAddress(ctx context.Context, protocol, network s
 		tx.GasPrice(),
 		tx.Gas(),
 		tx.Value())
+
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not get public key from raw hash")
 	}
@@ -74,5 +75,6 @@ func getFromResultHash(address string, txResult *txList) (common.Hash, error) {
 			return common.HexToHash(x.Hash), nil
 		}
 	}
+
 	return common.Hash{}, errors.Errorf("No transactions from address found")
 }

@@ -48,6 +48,7 @@ func (c APIClient) PublicKeyFromAddress(ctx context.Context, protocol, network s
 	}
 
 	v, r, s := tx.RawSignatureValues()
+
 	keyBytes, err := ethereum.GetPublicKeyFromTransaction(
 		r, s, v,
 		tx.To().Bytes(),
@@ -74,5 +75,6 @@ func getFromResultHash(address string, txResult *txList) (common.Hash, error) {
 			return common.HexToHash(x.Hash), nil
 		}
 	}
+
 	return common.Hash{}, errors.Errorf("No transactions from address found")
 }

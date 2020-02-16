@@ -26,24 +26,3 @@ type txResult struct {
 	Confirmations     string
 	Value             string
 }
-
-type getTxInfo struct {
-	Status  string
-	Message string
-	Result  txInfo
-}
-
-type txInfo struct {
-	BlockHash     string
-	BlockNumber   string
-	Confirmations string
-	From          string
-	GasPrice      string
-	GasUsed       string
-	Hash          string
-	Input         string
-	Success       bool
-	TimeStamp     string
-	To            string
-	Value         string
-}

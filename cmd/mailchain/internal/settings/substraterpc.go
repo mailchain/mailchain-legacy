@@ -12,9 +12,9 @@ import (
 
 func substrateRPCSender(s values.Store, network string) *SubstrateRPC {
 	var defaultAddress = map[string]string{
-		substrate.EdgewareTestnet: "ws://testnet3.edgewa.re:9944",
-		// substrate.KusamaTestnet: "",
-		// substrate.PolkadotTestnet: "",
+		substrate.EdgewareMainnet: "wss://mainnet1.edgewa.re",
+		substrate.EdgewareBerlin:  "wss://berlin1.edgewa.re",
+		substrate.EdgewareTestnet: "wss://testnet1.edgewa.re",
 	}
 
 	return &SubstrateRPC{

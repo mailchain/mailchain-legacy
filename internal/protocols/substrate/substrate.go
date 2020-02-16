@@ -27,5 +27,5 @@ const (
 
 // Networks supported by substrate package.
 func Networks() []string {
-	return []string{EdgewareMainnet, EdgewareBerlin}
+	return []string{EdgewareMainnet, EdgewareBerlin, EdgewareTestnet}
 }

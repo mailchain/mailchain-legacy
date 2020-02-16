@@ -7,22 +7,43 @@ type txList struct {
 }
 
 type txResult struct {
-	BlockNumber      string
 	TimeStamp        string
 	Hash             string
 	Nonce            string
 	BlockHash        string
+	BlockNumber      string
 	TransactionIndex string
 	From             string
 	To               string
-	Value            string
 	Gas              string
 	GasPrice         string
+	GasUsed          string
 	IsError          string
 	// "txreceipt_status": "",
 	Input             string
 	ContractAddress   string
 	CumulativeGasUsed string
-	GasUsed           string
 	Confirmations     string
+	Value             string
+}
+
+type getTxInfo struct {
+	Status  string
+	Message string
+	Result  txInfo
+}
+
+type txInfo struct {
+	BlockHash     string
+	BlockNumber   string
+	Confirmations string
+	From          string
+	GasPrice      string
+	GasUsed       string
+	Hash          string
+	Input         string
+	Success       bool
+	TimeStamp     string
+	To            string
+	Value         string
 }

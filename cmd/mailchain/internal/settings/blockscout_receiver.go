@@ -1,4 +1,4 @@
-package settings //nolint: dupl similar to etherscan but should maintain separate implementation
+package settings //nolint: dupl
 
 import (
 	"github.com/mailchain/mailchain/cmd/internal/settings/output"

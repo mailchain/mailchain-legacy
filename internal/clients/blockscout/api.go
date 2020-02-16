@@ -84,5 +84,5 @@ func (c APIClient) getTransactionByHash(network string, hash common.Hash) (*type
 
 	tx, _, err := client.TransactionByHash(context.Background(), hash)
 
-	return tx, nil
+	return tx, err
 }

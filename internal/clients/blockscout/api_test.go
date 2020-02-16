@@ -34,7 +34,10 @@ func TestNewAPIClient(t *testing.T) {
 	want := &APIClient{
 		key: "api-key",
 		networkConfigs: map[string]networkConfig{
-			ethereum.Mainnet: {url: "https://blockscout.com/eth/mainnet/api"},
+			ethereum.Mainnet: {
+				rpcURL: "https://relay.mailchain.xyz/json-rpc/ethereum/mainnet",
+				url:    "https://blockscout.com/eth/mainnet/api",
+			},
 		},
 	}
 	if !assert.Equal(t, want, apiClient) {
@@ -208,7 +211,7 @@ func TestGetTransactionByHash(t *testing.T) {
 			args{
 				"TestNetwork",
 			},
-			errors.New("Invalid address format"),
+			errors.New("not found"),
 			true,
 			nil,
 		},
@@ -226,7 +229,7 @@ func TestGetTransactionByHash(t *testing.T) {
 			args{
 				"TestNetwork",
 			},
-			errors.New("unexpected end of JSON input"),
+			errors.New("EOF"),
 			true,
 			nil,
 		},

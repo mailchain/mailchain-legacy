@@ -28,7 +28,7 @@ func FromStore(s values.Store) *Root {
 					&defaults.NetworkDefaults{
 						NameServiceAddress:    defaults.NameServiceAddressKind,
 						NameServiceDomainName: defaults.NameServiceDomainNameKind,
-						PublicKeyFinder:       defaults.ClientEtherscanNoAuth,
+						PublicKeyFinder:       defaults.ClientBlockscoutNoAuth,
 						Receiver:              defaults.ClientBlockscoutNoAuth,
 						Sender:                defaults.EthereumRelay,
 						Disabled:              false,

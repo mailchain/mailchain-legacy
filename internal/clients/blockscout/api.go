@@ -1,32 +1,37 @@
 package blockscout
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/pkg/errors"
 	"gopkg.in/resty.v1"
 )
 
 // NewAPIClient create new API client
-func NewAPIClient(apiKey string) (*APIClient, error) {
+func NewAPIClient() (*APIClient, error) {
 	return &APIClient{
-		key: apiKey,
 		networkConfigs: map[string]networkConfig{
-			ethereum.Mainnet: {url: "https://blockscout.com/eth/mainnet/api"},
+			ethereum.Mainnet: {
+				url:    "https://blockscout.com/eth/mainnet/api",
+				rpcURL: "https://relay.mailchain.xyz/json-rpc/ethereum/mainnet",
+			},
 		},
 	}, nil
 }
 
 // APIClient for talking to etherscan
 type APIClient struct {
-	key            string
 	networkConfigs map[string]networkConfig
 }
 
 type networkConfig struct {
-	url string
+	rpcURL string
+	url    string
 }
 
 // IsNetworkSupported checks if the network is supported by etherscan API
@@ -61,4 +66,21 @@ func (c APIClient) getTransactionsByAddress(network string, address []byte) (*tx
 	}
 
 	return txResult, nil
+}
+
+// GetTransactionByHash get transaction details from transaction hash via etherscan
+func (c APIClient) getTransactionByHash(network string, hash common.Hash) (*types.Transaction, error) {
+	config, ok := c.networkConfigs[network]
+	if !ok {
+		return nil, errors.Errorf("network not supported")
+	}
+
+	client, err := ethclient.Dial(config.rpcURL)
+	if err != nil {
+		return nil, err
+	}
+
+	tx, _, err := client.TransactionByHash(context.Background(), hash)
+
+	return tx, err
 }

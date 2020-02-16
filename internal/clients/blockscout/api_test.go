@@ -18,20 +18,25 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewAPIClient(t *testing.T) {
-	apiClient, _ := NewAPIClient("api-key")
+	apiClient, _ := NewAPIClient()
 	want := &APIClient{
-		key: "api-key",
 		networkConfigs: map[string]networkConfig{
-			ethereum.Mainnet: {url: "https://blockscout.com/eth/mainnet/api"},
+			ethereum.Mainnet: {
+				rpcURL: "https://relay.mailchain.xyz/json-rpc/ethereum/mainnet",
+				url:    "https://blockscout.com/eth/mainnet/api",
+			},
 		},
 	}
 	if !assert.Equal(t, want, apiClient) {
@@ -144,7 +149,6 @@ func TestGetTransactionsByAddress(t *testing.T) {
 			)
 			defer server.Close()
 			client := &APIClient{
-				key:            "api-key",
 				networkConfigs: map[string]networkConfig{"TestNetwork": {url: server.URL}},
 			}
 			got, err := client.getTransactionsByAddress(tt.args.network, []byte{})
@@ -158,6 +162,111 @@ func TestGetTransactionsByAddress(t *testing.T) {
 			}
 			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("APIClient.getTransactionsByAddress() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetTransactionByHash(t *testing.T) {
+	type args struct {
+		network string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr error
+		wantNil bool
+		want    *types.Transaction
+	}{
+		{
+			"success",
+			args{
+				"TestNetwork",
+			},
+			nil,
+			false,
+			func() *types.Transaction {
+				return types.NewTransaction(
+					uint64(21),
+					common.HexToAddress("0xf02c1c8e6114b1dbe8937a39260b5b0a374432bb"),
+					big.NewInt(4290000000000000),
+					uint64(50000),
+					big.NewInt(int64(20000000000)),
+					[]byte("hello!"))
+			}(),
+		},
+		{
+			"err-unsupported-network",
+			args{
+				"UnsupportedNetwork",
+			},
+			errors.New("network not supported"),
+			true,
+			nil,
+		},
+		{
+			"err-get",
+			args{
+				"TestNetwork",
+			},
+			errors.New("not found"),
+			true,
+			nil,
+		},
+		{
+			"err-not-found",
+			args{
+				"TestNetwork",
+			},
+			errors.New("not found"),
+			true,
+			nil,
+		},
+		{
+			"err-unmarshal",
+			args{
+				"TestNetwork",
+			},
+			errors.New("EOF"),
+			true,
+			nil,
+		},
+	}
+	for _, tt := range tests {
+		testName := t.Name()
+		t.Run(tt.name, func(t *testing.T) {
+			golden, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/%s.json", testName, tt.name))
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			server := httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.Write([]byte(golden))
+				}),
+			)
+			defer server.Close()
+			client := &APIClient{
+				networkConfigs: map[string]networkConfig{"TestNetwork": {rpcURL: server.URL}},
+			}
+			got, err := client.getTransactionByHash(tt.args.network, common.Hash{})
+			if (err != nil) && err.Error() != tt.wantErr.Error() {
+				fmt.Print(err.Error())
+				t.Errorf("APIClient.getTransactionByHash() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if (got == nil) != tt.wantNil {
+				t.Errorf("APIClient.getTransactionByHash() nil = %v, wantNil %v", got == nil, tt.wantNil)
+				return
+			}
+
+			if got != nil &&
+				(!assert.Equal(t, tt.want.Nonce(), got.Nonce()) ||
+					!assert.Equal(t, tt.want.To(), got.To()) ||
+					!assert.Equal(t, tt.want.Value(), got.Value()) ||
+					!assert.Equal(t, tt.want.Gas(), got.Gas()) ||
+					!assert.Equal(t, tt.want.GasPrice(), got.GasPrice()) ||
+					!assert.Equal(t, tt.want.Data(), got.Data())) {
+				t.Errorf("APIClient.getTransactionByHash() = %v, want %v", got, tt.want)
 			}
 		})
 	}

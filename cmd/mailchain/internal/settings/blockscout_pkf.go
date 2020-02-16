@@ -9,27 +9,29 @@ import (
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 )
 
-// BlockscoutReceiver configuration element.
-type BlockscoutReceiver struct {
-	kind                    string
+// BlockscoutPublicKeyFinder configuration settings.
+type BlockscoutPublicKeyFinder struct {
 	EnabledProtocolNetworks values.StringSlice
+	APIKey                  values.String
+	kind                    string
 }
 
-func blockscoutReceiverNoAuth(s values.Store) *BlockscoutReceiver {
+func blockscoutPublicKeyFinderNoAuth(s values.Store) *BlockscoutPublicKeyFinder {
 	kind := defaults.ClientBlockscoutNoAuth
 
-	return &BlockscoutReceiver{
+	return &BlockscoutPublicKeyFinder{
 		kind: kind,
 		EnabledProtocolNetworks: values.NewDefaultStringSlice(
 			[]string{"ethereum/" + ethereum.Mainnet},
 			s,
-			"receivers."+kind+".enabled-networks",
+			"public-key-finders."+kind+".enabled-networks",
 		),
+		APIKey: values.NewDefaultString("", s, "public-key-finders."+kind+".api-key"),
 	}
 }
 
 // Supports a map of what protocol and network combinations are supported.
-func (r BlockscoutReceiver) Supports() map[string]bool {
+func (r BlockscoutPublicKeyFinder) Supports() map[string]bool {
 	m := map[string]bool{}
 	for _, np := range r.EnabledProtocolNetworks.Get() {
 		m[np] = true
@@ -38,15 +40,15 @@ func (r BlockscoutReceiver) Supports() map[string]bool {
 	return m
 }
 
-// Produce `mailbox.Receiver` based on configuration settings.
-func (r BlockscoutReceiver) Produce() (mailbox.Receiver, error) {
+// Produce `mailbox.PubKeyFinder` based on configuration settings.
+func (r BlockscoutPublicKeyFinder) Produce() (mailbox.PubKeyFinder, error) {
 	return blockscout.NewAPIClient()
 }
 
 // Output configuration as an `output.Element` for use in exporting configuration.
-func (r BlockscoutReceiver) Output() output.Element {
+func (r BlockscoutPublicKeyFinder) Output() output.Element {
 	return output.Element{
-		FullName: r.kind,
+		FullName: "public-key-finders." + r.kind,
 		Attributes: []output.Attribute{
 			r.EnabledProtocolNetworks.Attribute(),
 		},

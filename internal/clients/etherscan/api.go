@@ -18,7 +18,6 @@ import (
 	"encoding/json"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
@@ -76,6 +75,7 @@ func (c APIClient) getTransactionByHash(network string, hash common.Hash) (*type
 	if err := json.Unmarshal(txListResponse.Body(), res); err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	if res.Error != nil {
 		return nil, errors.Errorf(res.Error.Message)
 	}
@@ -114,12 +114,8 @@ func (c APIClient) getTransactionsByAddress(network string, address []byte) (*tx
 	if err := json.Unmarshal(txListResponse.Body(), txResult); err != nil {
 		return nil, errors.WithStack(err)
 	}
-	if txResult.Status == "0" {
+	if txResult.Status != "0" {
 		return nil, errors.Errorf(txResult.Message)
 	}
 	return txResult, nil
-}
-
-func (c APIClient) decode(input string) ([]byte, error) {
-	return hexutil.Decode(input)
 }

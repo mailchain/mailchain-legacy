@@ -2,7 +2,6 @@ package ethereum
 
 import (
 	"context"
-	"errors"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/core/types"
@@ -10,79 +9,99 @@ import (
 	"github.com/mailchain/mailchain/cmd/indexer/internal/actions"
 	"github.com/mailchain/mailchain/cmd/internal/datastore"
 	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
+	"github.com/pkg/errors"
 )
 
 type Transaction struct {
-	txStore    datastore.TransactionStore
-	rawTxStore datastore.RawTransactionStore
-	pkStore    datastore.PublicKeyStore
-
-	networkID *big.Int
+	txStore     datastore.TransactionStore
+	rawTxStore  datastore.RawTransactionStore
+	pkStore     datastore.PublicKeyStore
+	chainConfig *params.ChainConfig
 }
 
-type txOptions struct {
-	block *types.Block
+type TxOptions struct {
+	Block *types.Block
 }
 
-func NewTransactionProcessor(store datastore.TransactionStore, rawStore datastore.RawTransactionStore, pkStore datastore.PublicKeyStore, networkID *big.Int) *Transaction {
+func NewTransactionProcessor(store datastore.TransactionStore, rawStore datastore.RawTransactionStore, pkStore datastore.PublicKeyStore, chainConfig *params.ChainConfig) *Transaction {
 	return &Transaction{
-		txStore:    store,
-		rawTxStore: rawStore,
-		pkStore:    pkStore,
-		networkID:  networkID,
+		txStore:     store,
+		rawTxStore:  rawStore,
+		pkStore:     pkStore,
+		chainConfig: chainConfig,
 	}
 }
 
 func (t *Transaction) Run(ctx context.Context, protocol, network string, tx interface{}, txOpts actions.TransactionOptions) error {
-	// blk *types.Block, ethTx *types.Transaction
 	ethTx, ok := tx.(*types.Transaction)
 	if !ok {
 		return errors.New("tx must be go-ethereum/core/types.Transaction")
 	}
 
-	opts, ok := txOpts.(*txOptions)
+	opts, ok := txOpts.(*TxOptions)
 	if !ok {
 		return errors.New("tx must be ethereum.txOptions")
 	}
 
-	storeTx, err := t.toTransaction(opts.block, ethTx)
-	if err != nil {
-		return err
-	}
-
 	v, r, s := ethTx.RawSignatureValues()
 
+	var to []byte
+
+	if ethTx.To() != nil {
+		to = ethTx.To().Bytes()
+	}
+
 	pubKeyBytes, err := ethereum.GetPublicKeyFromTransaction(r, s, v,
-		ethTx.To().Bytes(),
+		to,
 		ethTx.Data(),
 		ethTx.Nonce(),
 		ethTx.GasPrice(),
 		ethTx.Gas(),
 		ethTx.Value())
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "transaction hash: %s", encoding.EncodeHexZeroX(ethTx.Hash().Bytes()))
 	}
 
 	pubKey, err := secp256k1.PublicKeyFromBytes(pubKeyBytes)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
-	if err := t.pkStore.PutPublicKey(ctx, protocol, network, storeTx.From,
-		&datastore.PublicKey{PublicKey: pubKey, BlockHash: storeTx.BlockHash, TxHash: storeTx.Hash}); err != nil {
-		return err
+	from, err := t.From(opts.Block.Number(), ethTx)
+	if err != nil {
+		return errors.Wrapf(err, "failed to get sender from transaction hash: %s", encoding.EncodeHexZeroX(ethTx.Hash().Bytes()))
+	}
+
+	if err := t.pkStore.PutPublicKey(ctx, protocol, network, from,
+		&datastore.PublicKey{PublicKey: pubKey, BlockHash: opts.Block.Hash().Bytes(), TxHash: ethTx.Hash().Bytes()}); err != nil {
+		return errors.WithStack(err)
+	}
+
+	storeTx, err := t.ToTransaction(opts.Block, ethTx)
+	if err != nil {
+		return errors.WithStack(err)
 	}
 
 	return actions.StoreTransaction(ctx, t.txStore, t.rawTxStore, protocol, network, storeTx, ethTx)
 }
 
-func (t *Transaction) toTransaction(blk *types.Block, tx *types.Transaction) (*datastore.Transaction, error) {
-	if blk.Transaction(tx.Hash()) == nil {
-		return nil, errors.New("Transaction doesn't exist in block")
+func (t *Transaction) From(blockNo *big.Int, tx *types.Transaction) ([]byte, error) {
+	msg, err := tx.AsMessage(types.MakeSigner(t.chainConfig, blockNo))
+	if err != nil {
+		return nil, err
 	}
 
-	msg, err := tx.AsMessage(types.MakeSigner(&params.ChainConfig{ChainID: t.networkID}, blk.Number()))
+	return msg.From().Bytes(), nil
+}
+
+func (t *Transaction) ToTransaction(blk *types.Block, tx *types.Transaction) (*datastore.Transaction, error) {
+	if blk.Transaction(tx.Hash()) == nil {
+		return nil, errors.New("transaction hash not in block")
+	}
+
+	from, err := t.From(blk.Number(), tx)
 	if err != nil {
 		return nil, err
 	}
@@ -91,12 +110,17 @@ func (t *Transaction) toTransaction(blk *types.Block, tx *types.Transaction) (*d
 	value := tx.Value()
 	gasUsed := big.NewInt(int64(tx.Gas()))
 
+	var to []byte
+	if tx.To() != nil {
+		to = tx.To().Bytes()
+	}
+
 	return &datastore.Transaction{
-		From:      msg.From().Bytes(),
+		From:      from,
 		BlockHash: blk.Hash().Bytes(),
 		Hash:      tx.Hash().Bytes(),
 		Data:      tx.Data(),
-		To:        tx.To().Bytes(),
+		To:        to,
 		Value:     *value,
 		GasUsed:   *gasUsed,
 		GasPrice:  *gasPrice,

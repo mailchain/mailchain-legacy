@@ -47,15 +47,14 @@ func (s PublicKeyStore) PutPublicKey(ctx context.Context, protocol, network stri
 		Columns("protocol", "network", "address", "public_key_type", "public_key", "created_block_hash", "updated_block_hash", "created_tx_hash", "updated_tx_hash").
 		Values(p, n, address, uPublicKeyType, pubKey.PublicKey.Bytes(), pubKey.BlockHash, pubKey.BlockHash, pubKey.TxHash, pubKey.TxHash).
 		PlaceholderFormat(squirrel.Dollar).
-		Suffix("ON CONFLICT DO UPDATE SET public_key_type = $, public_key = $, updated_block_hash = $, updated_tx_hash = $",
+		Suffix("ON CONFLICT (protocol, network, address) DO UPDATE SET public_key_type = $10, public_key = $11, updated_block_hash = $12, updated_tx_hash = $13",
 			uPublicKeyType, pubKey.PublicKey.Bytes(), pubKey.BlockHash, pubKey.TxHash).
 		ToSql()
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	_, err = s.db.Exec(sql, args...)
-	if err != nil {
+	if _, err = s.db.Exec(sql, args...); err != nil {
 		return errors.WithStack(err)
 	}
 

@@ -58,15 +58,9 @@ func addSS58Prefix(pubKey []byte) []byte {
 func prefixWithNetwork(network string, publicKey crypto.PublicKey) ([]byte, error) {
 	// https://github.com/paritytech/substrate/wiki/External-Address-Format-(SS58)#address-type defines different prefixes by network
 	switch network {
-	case EdgewareTestnet:
-		// 42 = 0x2a
-		return append([]byte{0x2a}, publicKey.Bytes()...), nil
-	case PolkadotTestnet:
-		// 0 = 0x00
-		return append([]byte{0x00}, publicKey.Bytes()...), nil
-	case KusamaTestnet:
-		// 2 = 0x02
-		return append([]byte{0x02}, publicKey.Bytes()...), nil
+	case EdgewareMainnet, EdgewareBerlin:
+		// 7 = 0x07
+		return append([]byte{0x07}, publicKey.Bytes()...), nil
 	default:
 		return nil, errors.Errorf("unknown address prefix for %q", network)
 	}

@@ -32,7 +32,6 @@ func TestEthereumRPC2_Produce(t *testing.T) {
 				func() values.String {
 					m := valuestest.NewMockString(mockCtrl)
 					m.EXPECT().Get().Return(server.URL)
-					// m.EXPECT().IsSet("server.cors.allowedOrigins").Return(false)
 					return m
 				}(),
 				"mainnet",

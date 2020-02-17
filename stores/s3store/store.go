@@ -9,22 +9,16 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"github.com/mailchain/mailchain/encoding"
 	"github.com/pkg/errors"
 )
 
-type S3Store struct {
+type Uploader struct {
 	Uploader func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
 	Bucket   string
 }
 
-// Key of resource stored.
-func (s *S3Store) EncodeKey(hash []byte) string {
-	return encoding.EncodeHex(hash)
-}
-
-// NewSent creates a new S3 store.
-func NewS3Store(region, bucket, id, secret string) (*S3Store, error) {
+// NewUploader creates a new Uploader store for S3.
+func NewUploader(region, bucket, id, secret string) (*Uploader, error) {
 	if region == "" {
 		return nil, errors.Errorf("`region` must be specified")
 	}
@@ -45,13 +39,13 @@ func NewS3Store(region, bucket, id, secret string) (*S3Store, error) {
 	}))
 
 	// S3 service client the Upload manager will use.
-	return &S3Store{
+	return &Uploader{
 		Uploader: s3manager.NewUploaderWithClient(s3.New(ses)).UploadWithContext, // Create an Uploader with S3 client and default options
 		Bucket:   bucket,
 	}, nil
 }
 
-func (s *S3Store) Upload(ctx context.Context, metadata map[string]*string, key string, msg []byte) (string, error) {
+func (s *Uploader) Upload(ctx context.Context, metadata map[string]*string, key string, msg []byte) (string, error) {
 	if msg == nil {
 		return "", errors.Errorf("'msg' must not be nil")
 	}

@@ -17,6 +17,8 @@ package s3store
 import (
 	"context"
 
+	"github.com/mailchain/mailchain/encoding"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/internal/mail"
@@ -24,22 +26,22 @@ import (
 
 // NewSent creates a new S3 store.
 func NewSent(region, bucket, id, secret string) (*Sent, error) {
-	s3Store, err := NewS3Store(region, bucket, id, secret)
+	s3Store, err := NewUploader(region, bucket, id, secret)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Sent{S3Store: s3Store}, nil
+	return &Sent{Uploader: s3Store}, nil
 }
 
 // Sent handles storing messages in S3
 type Sent struct {
-	*S3Store
+	*Uploader
 }
 
 // Key of resource stored.
 func (h Sent) Key(messageID mail.ID, contentsHash, msg []byte) string {
-	return h.EncodeKey(contentsHash)
+	return encoding.EncodeHex(contentsHash)
 }
 
 // PutMessage stores the message in S3.

@@ -95,7 +95,7 @@ func TestPutRawTransaction(t *testing.T) {
 			"success",
 			fields{
 				func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
-					if !assert.Equal(t, bytes.NewReader([]byte("{\"protocol\":\"tcp\",\"network\":\"mainnet\",\"hash\":\"Y29udGVudHMtaGFzaA==\",\"transaction\":{\"Txt\":\"data\"}}")), input.Body) {
+					if !assert.Equal(t, bytes.NewReader([]byte("{\"protocol\":\"tcp\",\"network\":\"mainnet\",\"hash\":\"0x636f6e74656e74732d68617368\",\"transaction\":{\"Txt\":\"data\"}}")), input.Body) {
 						t.Errorf("body incorrect")
 					}
 					if !assert.Equal(t, aws.String("Bucket-id"), input.Bucket) {
@@ -114,7 +114,7 @@ func TestPutRawTransaction(t *testing.T) {
 				rawTransaction: rawTransactionData{
 					Protocol: "tcp",
 					Network:  "mainnet",
-					Hash:     []byte("contents-hash"),
+					Hash:     encoding.EncodeHexZeroX([]byte("contents-hash")),
 					Tx: struct {
 						Txt string
 					}{
@@ -128,7 +128,7 @@ func TestPutRawTransaction(t *testing.T) {
 			"err-Uploader",
 			fields{
 				func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
-					if !assert.Equal(t, bytes.NewReader([]byte("{\"protocol\":\"tcp\",\"network\":\"mainnet\",\"hash\":\"Y29udGVudHMtaGFzaA==\",\"transaction\":{\"Txt\":\"data\"}}")), input.Body) {
+					if !assert.Equal(t, bytes.NewReader([]byte("{\"protocol\":\"tcp\",\"network\":\"mainnet\",\"hash\":\"0x636f6e74656e74732d68617368\",\"transaction\":{\"Txt\":\"data\"}}")), input.Body) {
 						t.Errorf("body incorrect")
 					}
 					if !assert.Equal(t, aws.String("Bucket-id"), input.Bucket) {
@@ -147,7 +147,7 @@ func TestPutRawTransaction(t *testing.T) {
 				rawTransaction: rawTransactionData{
 					Protocol: "tcp",
 					Network:  "mainnet",
-					Hash:     []byte("contents-hash"),
+					Hash:     encoding.EncodeHexZeroX([]byte("contents-hash")),
 					Tx: struct {
 						Txt string
 					}{
@@ -161,13 +161,14 @@ func TestPutRawTransaction(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := TransactionStore{
-				S3Store: &s3store.S3Store{
+				Uploader: &s3store.Uploader{
 					Uploader: tt.fields.uploader,
 					Bucket:   tt.fields.bucket,
 				},
 			}
+			decodeHash, _ := encoding.DecodeHexZeroX(tt.args.rawTransaction.Hash)
 			err := h.PutRawTransaction(tt.args.ctx, tt.args.rawTransaction.Protocol, tt.args.rawTransaction.Network,
-				tt.args.rawTransaction.Hash, tt.args.rawTransaction.Tx)
+				decodeHash, tt.args.rawTransaction.Tx)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Sent.PutMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return

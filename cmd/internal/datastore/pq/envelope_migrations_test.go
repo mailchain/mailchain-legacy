@@ -8,12 +8,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-type anyMatcher struct{}
-
-func (a anyMatcher) Match(expectedSQL, actualSQL string) error {
-	return nil
-}
-func TestMigratePublicKey(t *testing.T) {
+func TestMigrateEnvelope(t *testing.T) {
 	type args struct {
 		db *sql.DB
 		up bool
@@ -35,7 +30,7 @@ func TestMigratePublicKey(t *testing.T) {
 					m.ExpectExec("*").WillReturnResult(sqlmock.NewResult(1, 1))
 					m.ExpectQuery("*").WillReturnRows(
 						sqlmock.NewRows([]string{"id", "applied_at"}).
-							AddRow("1581972558643-create-public-key-table", time.Now()))
+							AddRow("1581972758197-create-transactions-table", time.Now()))
 
 					return db
 				}(),
@@ -55,7 +50,7 @@ func TestMigratePublicKey(t *testing.T) {
 					m.ExpectExec("*").WillReturnResult(sqlmock.NewResult(1, 1))
 					m.ExpectQuery("*").WillReturnRows(
 						sqlmock.NewRows([]string{"id", "applied_at"}).
-							AddRow("1581972558643-create-public-key-table", time.Now()))
+							AddRow("1581972758197-create-transactions-table", time.Now()))
 
 					return db
 				}(),
@@ -67,13 +62,13 @@ func TestMigratePublicKey(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := MigratePublicKey(tt.args.db, tt.args.up)
+			got, err := MigrateEnvelope(tt.args.db, tt.args.up)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("MigratePublicKey() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("MigrateEnvelope() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("MigratePublicKey() = %v, want %v", got, tt.want)
+				t.Errorf("MigrateEnvelope() = %v, want %v", got, tt.want)
 			}
 		})
 	}

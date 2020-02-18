@@ -16,15 +16,6 @@ func NewConnection(user, password, databaseName, host, sslmode string, port int)
 	db, err := sqlx.Connect("postgres", fmt.Sprintf(
 		"user=%s password=%s dbname=%s host=%s port=%d sslmode=%s",
 		user, password, databaseName, host, port, sslmode))
-	if err != nil {
-		return nil, errors.Wrapf(err, "could not open connection to postgres database: %s", databaseName)
-	}
 
-	// Ping verifies if the connection to the database is alive or if a
-	// new connection can be made.
-	if err = db.Ping(); err != nil {
-		return nil, errors.Wrapf(err, "could not ping postgres database: %s", databaseName)
-	}
-
-	return db, nil
+	return db, errors.Wrapf(err, "could not open connection to postgres database: %s", databaseName)
 }

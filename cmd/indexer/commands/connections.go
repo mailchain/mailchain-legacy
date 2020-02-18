@@ -31,12 +31,6 @@ func newMasterConnection(cmd *cobra.Command) (*sqlx.DB, error) {
 		return nil, errors.Wrapf(err, "could not open connection: %s", host)
 	}
 
-	// Ping verifies if the connection to the database is alive or if a
-	// new connection can be made.
-	if err = db.Ping(); err != nil {
-		return nil, errors.Wrapf(err, "could not ping postgres database: %s", host)
-	}
-
 	return db, nil
 }
 

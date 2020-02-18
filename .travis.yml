@@ -1,4 +1,7 @@
 language: go
+sudo: required
+services:
+  - docker
 go_import_path: github.com/mailchain/mailchain
 matrix:
   include:

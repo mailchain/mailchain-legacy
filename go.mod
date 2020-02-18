@@ -39,7 +39,8 @@ require (
 	github.com/pierrec/xxHash v0.1.5 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.6.0
-	github.com/sirupsen/logrus v1.4.1
+	github.com/rubenv/sql-migrate v0.0.0-20200212082348-64f95ea68aa3
+	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/afero v1.1.2
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.4.0

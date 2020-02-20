@@ -33,14 +33,26 @@ func ethereumCmd() *cobra.Command {
 
 			rawStorePath, _ := cmd.Flags().GetString("raw-store-path")
 
-			conn, err := newPostgresConnection(cmd)
+			connIndexer, err := newPostgresConnection(cmd, "indexer")
 			if err != nil {
 				return err
 			}
 
-			defer conn.Close()
+			connPublicKey, err := newPostgresConnection(cmd, "pubkey")
+			if err != nil {
+				return err
+			}
 
-			seqProcessor, err := createEthereumProcessor(conn, blockNumber, protocol, network, rawStorePath, addressRPC)
+			connEnvelope, err := newPostgresConnection(cmd, "envelope")
+			if err != nil {
+				return err
+			}
+
+			defer connIndexer.Close()
+			defer connPublicKey.Close()
+			defer connEnvelope.Close()
+
+			seqProcessor, err := createEthereumProcessor(connIndexer, connPublicKey, connEnvelope, blockNumber, protocol, network, rawStorePath, addressRPC)
 			if err != nil {
 				return err
 			}
@@ -63,7 +75,7 @@ func ethereumCmd() *cobra.Command {
 	return cmd
 }
 
-func createEthereumProcessor(conn *sqlx.DB, blockNumber uint64, protocol, network, rawStorePath, addressRPC string) (*processor.Sequential, error) {
+func createEthereumProcessor(connIndexer, connPublicKey, connEnvelope *sqlx.DB, blockNumber uint64, protocol, network, rawStorePath, addressRPC string) (*processor.Sequential, error) {
 	ctx := context.Background()
 
 	ethClient, err := eth.NewRPC(addressRPC)
@@ -85,17 +97,17 @@ func createEthereumProcessor(conn *sqlx.DB, blockNumber uint64, protocol, networ
 		return nil, errors.Errorf("networkID from RPC does not match chain config network ID")
 	}
 
-	syncStore, err := pq.NewSyncStore(conn)
+	syncStore, err := pq.NewSyncStore(connIndexer)
 	if err != nil {
 		return nil, err
 	}
 
-	pubKeyStore, err := pq.NewPublicKeyStore(conn)
+	pubKeyStore, err := pq.NewPublicKeyStore(connPublicKey)
 	if err != nil {
 		return nil, err
 	}
 
-	transactionStore, err := pq.NewTransactionStore(conn)
+	transactionStore, err := pq.NewTransactionStore(connEnvelope)
 	if err != nil {
 		return nil, err
 	}
@@ -136,42 +148,4 @@ func chainConfig(network string) (*params.ChainConfig, error) {
 	default:
 		return nil, errors.Errorf("can not determine chain config from network: %s", network)
 	}
-}
-
-func sslMode(useSSL bool) string {
-	if useSSL {
-		return "enable"
-	}
-
-	return "disable"
-}
-
-// newPostgresConnection returns a connection to a postgres database.
-// The arguments are parsed from cmd.
-func newPostgresConnection(cmd *cobra.Command) (*sqlx.DB, error) {
-	host, _ := cmd.Flags().GetString("postgres-host")
-	port, _ := cmd.Flags().GetInt("postgres-port")
-	useSSL, _ := cmd.Flags().GetBool("postgres-ssl")
-
-	user, err := cmd.Flags().GetString("postgres-user")
-	if err != nil {
-		return nil, err
-	}
-
-	psswd, err := cmd.Flags().GetString("postgres-password")
-	if err != nil {
-		return nil, err
-	}
-
-	dbname, err := cmd.Flags().GetString("postgres-name")
-	if err != nil {
-		return nil, err
-	}
-
-	// use default dbname, if not provided
-	if dbname == "" {
-		dbname = user
-	}
-
-	return pq.NewConnection(user, psswd, dbname, host, sslMode(useSSL), port)
 }

@@ -1,12 +1,8 @@
-# This is an example goreleaser.yaml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
 env:
 - GO111MODULE=on
 before:
   hooks:
     - go mod download
-    # - go install github.com/golang/mock/mockgen
-    # - go generate ./...
 builds:
 - id: mailchain-darwin-amd64
   ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
@@ -30,6 +26,16 @@ builds:
     - linux
   goarch:
     - amd64 
+- id: indexer-linux-amd64
+  ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
+  binary: indexer
+  env:
+  - CGO_ENABLED=0
+  main: ./cmd/indexer/main.go
+  goos:
+    - linux
+  goarch:
+    - amd64     
 - id: mailchain-windows-amd64
   ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
   binary: mailchain
@@ -41,29 +47,28 @@ builds:
   goos:
     - windows
   goarch:
-    - amd64
-    
+    - amd64  
 archives:
-- format: tar.gz
-  format_overrides:
-    - goos: windows
-      format: zip
-  name_template: "{{.ProjectName}}-v{{.Version}}-{{.Os}}-{{.Arch}}"
-  replacements:
-    amd64: 64bit
-    386: 32bit
-    arm: ARM
-    arm64: ARM64
-    darwin: macOS
-    linux: Linux
-    windows: Windows
-    openbsd: OpenBSD
-    netbsd: NetBSD
-    freebsd: FreeBSD
-    dragonfly: DragonFlyBSD
-  files:
-  - Readme.MD
-  - LICENSE   
+  - format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: "{{.ProjectName}}-{{.Version}}-{{.Os}}-{{.Arch}}"
+    replacements:
+      amd64: 64bit
+      386: 32bit
+      arm: ARM
+      arm64: ARM64
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+      openbsd: OpenBSD
+      netbsd: NetBSD
+      freebsd: FreeBSD
+      dragonfly: DragonFlyBSD
+    files:
+    - Readme.MD
+    - LICENSE   
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -93,4 +98,24 @@ scoop:
     name: scoop-bucket
   homepage: https://mailchain.xyz
   description: Secure, email-like messaging for blockchain addresses and accounts
-  license: MIT    
+  license: MIT
+dockers:
+  -     
+    binaries: # Name templates of the built binaries that should be used.
+    - indexer
+    goos: linux # GOOS of the built binary that should be used. 
+    goarch: amd64 # GOARCH of the built binary that should be used.
+    dockerfile: ./cmd/indexer/Dockerfile    
+    
+    image_templates:
+    - "mailchain/indexer:latest"
+    - "mailchain/indexer:{{.Version}}"
+    
+    build_flag_templates:
+    - "--pull"
+    - "--label=org.opencontainers.image.created={{.Date}}"
+    - "--label=org.opencontainers.image.name={{.ProjectName}}/indexer"
+    - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+    - "--label=org.opencontainers.image.version={{.Version}}"
+    - "--label=repository=https://github.com/mailchain/mailchain"
+    - "--label=homepage=https://mailchain.xyz"

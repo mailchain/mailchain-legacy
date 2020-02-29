@@ -13,7 +13,7 @@ func rootCmd() *cobra.Command {
 	cmd.AddCommand(ethereumCmd())
 	cmd.AddCommand(databaseCmd())
 
-	cmd.PersistentFlags().String("postgres-host", "localhost", "Postgres server host")
+	cmd.PersistentFlags().String("postgres-host", "localhost.com", "Postgres server host")
 	cmd.PersistentFlags().String("postgres-sslmode", "disable", "Use SSL when connecting to Postgres")
 	cmd.PersistentFlags().Int("postgres-port", 5432, "Postgres server port")
 

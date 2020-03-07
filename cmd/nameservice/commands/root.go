@@ -24,14 +24,14 @@ func addENS(router *mux.Router) error {
 	return nil
 }
 
-func addItem(router *mux.Router, network, protocol string, service nameservice.Lookup) {
-	router.HandleFunc(fmt.Sprintf("/%s/%s/name", protocols.Ethereum, ethereum.Mainnet), handler.Forward(service, protocols.Ethereum, ethereum.Mainnet)).Methods("GET")
-	router.HandleFunc(fmt.Sprintf("/%s/%s/address", protocols.Ethereum, ethereum.Mainnet), handler.Reverse(service, protocols.Ethereum, ethereum.Mainnet)).Methods("GET")
+func addItem(router *mux.Router, protocol, network string, service nameservice.Lookup) {
+	router.HandleFunc(fmt.Sprintf("/%s/%s/name", protocol, network), handler.Forward(service, protocol, network)).Methods("GET")
+	router.HandleFunc(fmt.Sprintf("/%s/%s/address", protocol, network), handler.Reverse(service, protocol, network)).Methods("GET")
 }
 
 // {protocol}/{network}/name/?domain-name={domain-name}
 // {protocol}/{network}/address?address={address}
-func rootCmd() (*cobra.Command, error) {
+func rootCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "nameservice",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -53,5 +53,5 @@ func rootCmd() (*cobra.Command, error) {
 	}
 	cmd.PersistentFlags().Int("port", 8080, "")
 
-	return cmd, nil
+	return cmd
 }

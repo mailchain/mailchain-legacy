@@ -5,21 +5,28 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/nameservice/handler"
+	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/nameservice/ens"
 	"github.com/spf13/cobra"
 	"github.com/urfave/negroni"
 )
 
-func config() (map[string]nameservice.Lookup, error) {
+func addENS(router *mux.Router) error {
 	ethMainnet, err := ens.NewLookupService("https://mainnet.infura.io/v3/.....")
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return map[string]nameservice.Lookup{
-		"ethereum/mainnet": ethMainnet,
-		// ...
-	}, nil
+
+	addItem(router, protocols.Ethereum, ethereum.Mainnet, ethMainnet)
+
+	return nil
+}
+
+func addItem(router *mux.Router, network, protocol string, service nameservice.Lookup) {
+	router.HandleFunc(fmt.Sprintf("/%s/%s/name", protocols.Ethereum, ethereum.Mainnet), handler.Forward(service, protocols.Ethereum, ethereum.Mainnet)).Methods("GET")
+	router.HandleFunc(fmt.Sprintf("/%s/%s/address", protocols.Ethereum, ethereum.Mainnet), handler.Reverse(service, protocols.Ethereum, ethereum.Mainnet)).Methods("GET")
 }
 
 // {protocol}/{network}/name/?domain-name={domain-name}
@@ -29,13 +36,9 @@ func rootCmd() (*cobra.Command, error) {
 		Use: "nameservice",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			r := mux.NewRouter()
-			cfg, err := config()
-			if err != nil {
+
+			if err := addENS(r); err != nil {
 				return err
-			}
-			for k, v := range cfg {
-				r.HandleFunc(fmt.Sprintf("/%s/name", k), handler.Forward(v)).Methods("GET")
-				r.HandleFunc(fmt.Sprintf("/%s/address", k), handler.Reverse(v)).Methods("GET")
 			}
 
 			n := negroni.New()

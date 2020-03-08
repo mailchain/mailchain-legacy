@@ -20,10 +20,23 @@ type Client struct {
 	client *ethclient.Client
 }
 
-func (c *Client) Get(ctx context.Context, blockNo uint64) (blk interface{}, err error) {
+func (c *Client) BlockByNumber(ctx context.Context, blockNo uint64) (blk interface{}, err error) {
 	return c.client.BlockByNumber(ctx, big.NewInt(int64(blockNo)))
 }
 
 func (c *Client) NetworkID(ctx context.Context) (*big.Int, error) {
 	return c.client.NetworkID(ctx)
+}
+
+func (c *Client) LatestBlockNumber(ctx context.Context) (blockNo uint64, err error) {
+	hdr, err := c.client.HeaderByNumber(ctx, nil)
+	if err != nil {
+		return 0, err
+	}
+
+	return hdr.Number.Uint64(), nil
+}
+
+func (c *Client) GetLatest(ctx context.Context) (blk interface{}, err error) {
+	return c.client.BlockByNumber(ctx, nil)
 }

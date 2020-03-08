@@ -24,7 +24,7 @@ func TestSequential_NextBlock(t *testing.T) {
 		network  string
 		store    datastore.SyncStore
 		proc     actions.Block
-		client   clients.BlockByNumber
+		client   clients.Block
 	}
 	tests := []struct {
 		name    string
@@ -48,9 +48,9 @@ func TestSequential_NextBlock(t *testing.T) {
 					proc.EXPECT().Run(context.Background(), protocols.Ethereum, ethereum.Mainnet, "block").Return(nil).Times(1)
 					return proc
 				}(),
-				func() clients.BlockByNumber {
-					client := clientstest.NewMockBlockByNumber(mockCtrl)
-					client.EXPECT().Get(context.Background(), uint64(1)).Return("block", nil).Times(1)
+				func() clients.Block {
+					client := clientstest.NewMockBlock(mockCtrl)
+					client.EXPECT().BlockByNumber(context.Background(), uint64(1)).Return("block", nil).Times(1)
 					return client
 				}(),
 			},
@@ -73,9 +73,9 @@ func TestSequential_NextBlock(t *testing.T) {
 					proc.EXPECT().Run(context.Background(), protocols.Ethereum, ethereum.Mainnet, "block").Return(nil).Times(0)
 					return proc
 				}(),
-				func() clients.BlockByNumber {
-					client := clientstest.NewMockBlockByNumber(mockCtrl)
-					client.EXPECT().Get(context.Background(), uint64(2)).Return("block", nil).Times(0)
+				func() clients.Block {
+					client := clientstest.NewMockBlock(mockCtrl)
+					client.EXPECT().BlockByNumber(context.Background(), uint64(2)).Return("block", nil).Times(0)
 					return client
 				}(),
 			},
@@ -98,9 +98,9 @@ func TestSequential_NextBlock(t *testing.T) {
 					proc.EXPECT().Run(context.Background(), protocols.Ethereum, ethereum.Mainnet, "block").Return(nil).Times(0)
 					return proc
 				}(),
-				func() clients.BlockByNumber {
-					client := clientstest.NewMockBlockByNumber(mockCtrl)
-					client.EXPECT().Get(context.Background(), uint64(1)).Return(nil, errors.Errorf("error getting block")).Times(1)
+				func() clients.Block {
+					client := clientstest.NewMockBlock(mockCtrl)
+					client.EXPECT().BlockByNumber(context.Background(), uint64(1)).Return(nil, errors.Errorf("error getting block")).Times(1)
 					return client
 				}(),
 			},
@@ -123,9 +123,9 @@ func TestSequential_NextBlock(t *testing.T) {
 					proc.EXPECT().Run(context.Background(), protocols.Ethereum, ethereum.Mainnet, "block").Return(errors.Errorf("error running processor")).Times(1)
 					return proc
 				}(),
-				func() clients.BlockByNumber {
-					client := clientstest.NewMockBlockByNumber(mockCtrl)
-					client.EXPECT().Get(context.Background(), uint64(1)).Return("block", nil).Times(1)
+				func() clients.Block {
+					client := clientstest.NewMockBlock(mockCtrl)
+					client.EXPECT().BlockByNumber(context.Background(), uint64(1)).Return("block", nil).Times(1)
 					return client
 				}(),
 			},
@@ -148,9 +148,9 @@ func TestSequential_NextBlock(t *testing.T) {
 					proc.EXPECT().Run(context.Background(), protocols.Ethereum, ethereum.Mainnet, "block").Return(nil).Times(1)
 					return proc
 				}(),
-				func() clients.BlockByNumber {
-					client := clientstest.NewMockBlockByNumber(mockCtrl)
-					client.EXPECT().Get(context.Background(), uint64(1)).Return("block", nil).Times(1)
+				func() clients.Block {
+					client := clientstest.NewMockBlock(mockCtrl)
+					client.EXPECT().BlockByNumber(context.Background(), uint64(1)).Return("block", nil).Times(1)
 					return client
 				}(),
 			},

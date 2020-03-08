@@ -26,6 +26,8 @@ func TestForward(t *testing.T) {
 
 	type args struct {
 		resolver nameservice.ForwardLookup
+		protocol string
+		network  string
 	}
 	tests := []struct {
 		name       string
@@ -42,6 +44,8 @@ func TestForward(t *testing.T) {
 					m.EXPECT().ResolveName(gomock.Any(), "ethereum", "mainnet", "test.eth").Return(encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"), nil)
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?domain-name=test.eth", nil)
@@ -64,6 +68,8 @@ func TestForward(t *testing.T) {
 						Return(nil, nameservice.ErrFormat)
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?domain-name=test.eth", nil)
@@ -86,6 +92,8 @@ func TestForward(t *testing.T) {
 						Return(nil, nameservice.ErrServFail)
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?domain-name=test.eth", nil)
@@ -108,6 +116,8 @@ func TestForward(t *testing.T) {
 						Return(nil, nameservice.ErrNXDomain)
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?domain-name=test.eth", nil)
@@ -130,6 +140,8 @@ func TestForward(t *testing.T) {
 						Return(nil, nameservice.ErrNotImp)
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?domain-name=test.eth", nil)
@@ -152,6 +164,8 @@ func TestForward(t *testing.T) {
 						Return(nil, nameservice.ErrRefused)
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?domain-name=test.eth", nil)
@@ -172,6 +186,8 @@ func TestForward(t *testing.T) {
 					m.EXPECT().ResolveName(gomock.Any(), "invalid", "mainnet", "test.eth").Return(encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"), nil)
 					return m
 				}(),
+				"invalid",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?domain-name=test.eth", nil)
@@ -192,6 +208,8 @@ func TestForward(t *testing.T) {
 					m.EXPECT().ResolveName(gomock.Any(), "ethereum", "mainnet", "test.eth").Return(nil, errors.Errorf("failed"))
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?domain-name=test.eth", nil)
@@ -211,6 +229,8 @@ func TestForward(t *testing.T) {
 					m := nameservicetest.NewMockForwardLookup(mockCtrl)
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?", nil)
@@ -228,7 +248,7 @@ func TestForward(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 			rr := httptest.NewRecorder()
-			handler := http.HandlerFunc(Forward(tt.args.resolver))
+			handler := http.HandlerFunc(Forward(tt.args.resolver, tt.args.protocol, tt.args.network))
 
 			// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
 			// directly and pass in our Request and ResponseRecorder.

@@ -20,7 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/mailchain/mailchain/nameservice"
-	ens "github.com/wealdtech/go-ens"
+	ens "github.com/wealdtech/go-ens/v3"
 )
 
 // NewLookupService creates a new ethereum name service (ENS) lookup service.
@@ -50,8 +50,7 @@ func (s LookupService) ResolveName(ctx context.Context, protocol, network, domai
 
 // ResolveAddress against the ethereum name service (ENS).
 func (s LookupService) ResolveAddress(ctx context.Context, protocol, network string, address []byte) (string, error) {
-	ethAddress := common.BytesToAddress(address)
-	reverse, err := ens.ReverseResolve(s.client, &ethAddress)
+	reverse, err := ens.ReverseResolve(s.client, common.BytesToAddress(address))
 	if err != nil {
 		return "", nameservice.WrapError(err)
 	}

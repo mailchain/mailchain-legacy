@@ -146,7 +146,7 @@ func TestUpload(t *testing.T) {
 			false,
 		},
 		{
-			"err-Uploader",
+			"err-UploadProvider",
 			fields{
 				func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
 					if !assert.Equal(t, bytes.NewReader([]byte("test-data")), input.Body) {
@@ -200,19 +200,19 @@ func TestUpload(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			u := &Uploader{
+			u := &UploadProvider{
 				Uploader: tt.fields.uploader,
 				Bucket:   tt.fields.bucket,
 			}
 			key := encoding.EncodeHex(tt.args.contentsHash)
 			location, err := u.Upload(context.Background(), tt.args.headers, key, tt.args.msg)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Uploader.Upload() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("UploadProvider.Upload() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
 			if location != tt.wantAddress {
-				t.Errorf("Uploader.Upload() address = %v, wantAddress %v", location, tt.wantAddress)
+				t.Errorf("UploadProvider.Upload() address = %v, wantAddress %v", location, tt.wantAddress)
 			}
 		})
 	}

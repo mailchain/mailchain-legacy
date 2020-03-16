@@ -173,7 +173,7 @@ func TestSent_PutMessage(t *testing.T) {
 			false,
 		},
 		{
-			"err-Uploader",
+			"err-UploadProvider",
 			fields{
 				func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
 					if !assert.Equal(t, bytes.NewReader([]byte("test-data")), input.Body) {
@@ -238,7 +238,7 @@ func TestSent_PutMessage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := Sent{
-				Uploader: &Uploader{
+				uploader: &UploadProvider{
 					Uploader: tt.fields.uploader,
 					Bucket:   tt.fields.bucket,
 				},
@@ -294,7 +294,7 @@ func TestSent_Key(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := Sent{
-				Uploader: &Uploader{
+				uploader: &UploadProvider{
 					Uploader: tt.fields.uploader,
 					Bucket:   tt.fields.bucket,
 				},

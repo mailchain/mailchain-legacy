@@ -12,13 +12,17 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Uploader struct {
+type Uploader interface {
+	Upload(ctx context.Context, metadata map[string]*string, key string, msg []byte) (string, error)
+}
+
+type UploadProvider struct {
 	Uploader func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
 	Bucket   string
 }
 
-// NewUploader creates a new Uploader store for S3.
-func NewUploader(region, bucket, id, secret string) (*Uploader, error) {
+// NewUploader creates a new UploadProvider store for S3.
+func NewUploader(region, bucket, id, secret string) (*UploadProvider, error) {
 	if region == "" {
 		return nil, errors.Errorf("`region` must be specified")
 	}
@@ -39,13 +43,13 @@ func NewUploader(region, bucket, id, secret string) (*Uploader, error) {
 	}))
 
 	// S3 service client the Upload manager will use.
-	return &Uploader{
-		Uploader: s3manager.NewUploaderWithClient(s3.New(ses)).UploadWithContext, // Create an Uploader with S3 client and default options
+	return &UploadProvider{
+		Uploader: s3manager.NewUploaderWithClient(s3.New(ses)).UploadWithContext, // Create an UploadProvider with S3 client and default options
 		Bucket:   bucket,
 	}, nil
 }
 
-func (s *Uploader) Upload(ctx context.Context, metadata map[string]*string, key string, msg []byte) (string, error) {
+func (s *UploadProvider) Upload(ctx context.Context, metadata map[string]*string, key string, msg []byte) (string, error) {
 	if msg == nil {
 		return "", errors.Errorf("'msg' must not be nil")
 	}

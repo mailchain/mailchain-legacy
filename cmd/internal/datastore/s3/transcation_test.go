@@ -125,7 +125,7 @@ func TestPutRawTransaction(t *testing.T) {
 			false,
 		},
 		{
-			"err-Uploader",
+			"err-UploadProvider",
 			fields{
 				func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error) {
 					if !assert.Equal(t, bytes.NewReader([]byte("{\"protocol\":\"tcp\",\"network\":\"mainnet\",\"hash\":\"0x636f6e74656e74732d68617368\",\"transaction\":{\"Txt\":\"data\"}}")), input.Body) {
@@ -161,7 +161,7 @@ func TestPutRawTransaction(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := TransactionStore{
-				Uploader: &s3store.Uploader{
+				uploader: &s3store.UploadProvider{
 					Uploader: tt.fields.uploader,
 					Bucket:   tt.fields.bucket,
 				},

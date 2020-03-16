@@ -10,7 +10,7 @@ import (
 )
 
 type TransactionStore struct {
-	*s3store.Uploader
+	uploader s3store.Uploader
 }
 
 // NewS3TransactionStore creates a new S3 store.
@@ -20,7 +20,7 @@ func NewS3TransactionStore(region, bucket, id, secret string) (*TransactionStore
 		return nil, err
 	}
 
-	return &TransactionStore{Uploader: s3Store}, nil
+	return &TransactionStore{uploader: s3Store}, nil
 }
 
 // Key value of resource stored.
@@ -49,7 +49,7 @@ func (sts *TransactionStore) PutRawTransaction(ctx context.Context, protocol, ne
 	}
 
 	key := sts.Key(hash)
-	_, err = sts.Upload(ctx, nil, key, jsonBody)
+	_, err = sts.uploader.Upload(ctx, nil, key, jsonBody)
 
 	return err
 }

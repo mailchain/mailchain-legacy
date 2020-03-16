@@ -31,12 +31,12 @@ func NewSent(region, bucket, id, secret string) (*Sent, error) {
 		return nil, err
 	}
 
-	return &Sent{Uploader: s3Store}, nil
+	return &Sent{uploader: s3Store}, nil
 }
 
 // Sent handles storing messages in S3
 type Sent struct {
-	*Uploader
+	uploader Uploader
 }
 
 // Key of resource stored.
@@ -56,7 +56,7 @@ func (h Sent) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers ma
 	}
 	resource = h.Key(messageID, contentsHash, msg)
 
-	location, err := h.Upload(context.Background(), metadata, resource, msg)
+	location, err := h.uploader.Upload(context.Background(), metadata, resource, msg)
 	if err != nil {
 		return "", "", 0, err
 	}

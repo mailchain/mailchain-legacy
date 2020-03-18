@@ -15,10 +15,10 @@ type Sequential struct {
 
 	syncStore      datastore.SyncStore
 	blockProcessor actions.Block
-	blockClient    clients.BlockByNumber
+	blockClient    clients.Block
 }
 
-func NewSequential(protocol, network string, store datastore.SyncStore, proc actions.Block, client clients.BlockByNumber) *Sequential {
+func NewSequential(protocol, network string, store datastore.SyncStore, proc actions.Block, client clients.Block) *Sequential {
 	return &Sequential{
 		protocol:       protocol,
 		network:        network,
@@ -36,7 +36,7 @@ func (s *Sequential) NextBlock(ctx context.Context) error {
 
 	fmt.Println("block number: ", blkNo)
 
-	blk, err := s.blockClient.Get(ctx, blkNo)
+	blk, err := s.blockClient.BlockByNumber(ctx, blkNo)
 	if err != nil {
 		return err
 	}

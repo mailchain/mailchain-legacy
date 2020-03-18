@@ -26,6 +26,8 @@ func TestReverse(t *testing.T) {
 
 	type args struct {
 		resolver nameservice.ReverseLookup
+		protocol string
+		network  string
 	}
 	tests := []struct {
 		name       string
@@ -42,6 +44,8 @@ func TestReverse(t *testing.T) {
 					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("test.eth", nil)
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761", nil)
@@ -62,6 +66,8 @@ func TestReverse(t *testing.T) {
 					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", errors.Errorf("failed"))
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761", nil)
@@ -82,6 +88,8 @@ func TestReverse(t *testing.T) {
 					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrNXDomain)
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761", nil)
@@ -102,6 +110,8 @@ func TestReverse(t *testing.T) {
 					m.EXPECT().ResolveAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")).Return("", nameservice.ErrFormat)
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761", nil)
@@ -121,6 +131,8 @@ func TestReverse(t *testing.T) {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?address=0x560", nil)
@@ -140,6 +152,8 @@ func TestReverse(t *testing.T) {
 					m := nameservicetest.NewMockReverseLookup(mockCtrl)
 					return m
 				}(),
+				"ethereum",
+				"mainnet",
 			},
 			func() *http.Request {
 				req := httptest.NewRequest("GET", "/?", nil)
@@ -157,7 +171,7 @@ func TestReverse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 			rr := httptest.NewRecorder()
-			handler := http.HandlerFunc(Reverse(tt.args.resolver))
+			handler := http.HandlerFunc(Reverse(tt.args.resolver, tt.args.protocol, tt.args.network))
 
 			// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
 			// directly and pass in our Request and ResponseRecorder.

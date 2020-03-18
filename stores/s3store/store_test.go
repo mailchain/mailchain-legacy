@@ -1,17 +1,3 @@
-// Copyright 2019 Finobo
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package s3store
 
 import (
@@ -22,12 +8,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/mailchain/mailchain/encoding"
-	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewSent(t *testing.T) {
+func TestNewUploader(t *testing.T) {
 	type args struct {
 		region string
 		bucket string
@@ -76,7 +61,7 @@ func TestNewSent(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewSent(tt.args.region, tt.args.bucket, tt.args.id, tt.args.secret)
+			got, err := NewUploader(tt.args.region, tt.args.bucket, tt.args.id, tt.args.secret)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewSent() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -88,25 +73,23 @@ func TestNewSent(t *testing.T) {
 	}
 }
 
-func TestSent_PutMessage(t *testing.T) {
+func TestUpload(t *testing.T) {
+
 	type fields struct {
 		uploader func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
 		bucket   string
 	}
 	type args struct {
-		messageID    mail.ID
 		contentsHash []byte
 		msg          []byte
-		headers      map[string]string
+		headers      map[string]*string
 	}
 	tests := []struct {
-		name         string
-		fields       fields
-		args         args
-		wantAddress  string
-		wantResource string
-		wantMLI      uint64
-		wantErr      bool
+		name        string
+		fields      fields
+		args        args
+		wantAddress string
+		wantErr     bool
 	}{
 		{
 			"success-no-headers",
@@ -127,16 +110,11 @@ func TestSent_PutMessage(t *testing.T) {
 				"Bucket-id",
 			},
 			args{
-				func() mail.ID {
-					return []byte("location")
-				}(),
 				[]byte("contents-hash"),
 				[]byte("test-data"),
 				nil,
 			},
 			"https://Bucket-id/636f6e74656e74732d68617368",
-			"636f6e74656e74732d68617368",
-			0,
 			false,
 		},
 		{
@@ -158,18 +136,13 @@ func TestSent_PutMessage(t *testing.T) {
 				"Bucket-id",
 			},
 			args{
-				func() mail.ID {
-					return []byte("location")
-				}(),
 				[]byte("contents-hash"),
 				[]byte("test-data"),
-				map[string]string{
-					"Key-1": "value-1",
+				map[string]*string{
+					"Key-1": aws.String("value-1"),
 				},
 			},
 			"https://Bucket-id/636f6e74656e74732d68617368",
-			"636f6e74656e74732d68617368",
-			0,
 			false,
 		},
 		{
@@ -191,16 +164,11 @@ func TestSent_PutMessage(t *testing.T) {
 				"Bucket-id",
 			},
 			args{
-				func() mail.ID {
-					return []byte("location")
-				}(),
 				[]byte("contents-hash"),
 				[]byte("test-data"),
 				nil,
 			},
 			"",
-			"",
-			0,
 			true,
 		},
 		{
@@ -222,85 +190,29 @@ func TestSent_PutMessage(t *testing.T) {
 				"Bucket-id",
 			},
 			args{
-				func() mail.ID {
-					return []byte("location")
-				}(),
 				[]byte("contents-hash"),
 				nil,
 				nil,
 			},
 			"",
-			"",
-			0,
 			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			h := Sent{
-				uploader: &UploadProvider{
-					Uploader: tt.fields.uploader,
-					Bucket:   tt.fields.bucket,
-				},
+			u := &UploadProvider{
+				Uploader: tt.fields.uploader,
+				Bucket:   tt.fields.bucket,
 			}
-			gotAddress, gotResource, gotMLI, err := h.PutMessage(tt.args.messageID, tt.args.contentsHash, tt.args.msg, tt.args.headers)
+			key := encoding.EncodeHex(tt.args.contentsHash)
+			location, err := u.Upload(context.Background(), tt.args.headers, key, tt.args.msg)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Sent.PutMessage() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("UploadProvider.Upload() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if gotAddress != tt.wantAddress {
-				t.Errorf("Sent.PutMessage() address = %v, wantAddress %v", gotAddress, tt.wantAddress)
-			}
-			if gotResource != tt.wantResource {
-				t.Errorf("Sent.PutMessage() resource = %v, wantResource %v", gotResource, tt.wantResource)
-			}
-			if gotMLI != tt.wantMLI {
-				t.Errorf("Sent.PutMessage() = %v, wantMLI %v", gotMLI, tt.wantMLI)
-			}
-		})
-	}
-}
 
-func TestSent_Key(t *testing.T) {
-	type fields struct {
-		uploader func(ctx context.Context, input *s3manager.UploadInput, options ...func(*s3manager.Uploader)) (*s3manager.UploadOutput, error)
-		bucket   string
-	}
-	type args struct {
-		messageID    mail.ID
-		contentsHash []byte
-		msg          []byte
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   string
-	}{
-		{
-			"success",
-			fields{
-				nil,
-				"",
-			},
-			args{
-				[]byte("messageID"),
-				[]byte("contents-hash"),
-				[]byte("body"),
-			},
-			encoding.EncodeHex([]byte("contents-hash")),
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			h := Sent{
-				uploader: &UploadProvider{
-					Uploader: tt.fields.uploader,
-					Bucket:   tt.fields.bucket,
-				},
-			}
-			if got := h.Key(tt.args.messageID, tt.args.contentsHash, tt.args.msg); got != tt.want {
-				t.Errorf("Sent.Key() = %v, want %v", got, tt.want)
+			if location != tt.wantAddress {
+				t.Errorf("UploadProvider.Upload() address = %v, wantAddress %v", location, tt.wantAddress)
 			}
 		})
 	}

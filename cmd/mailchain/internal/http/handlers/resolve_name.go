@@ -43,35 +43,39 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 	//   404: NotFoundError
 	//   422: ValidationError
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
 		protocol, network, domainName, err := parseGetResolveNameRequest(r)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
+
 		resolver, ok := resolvers[fmt.Sprintf("%s/%s", protocol, network)]
 		if !ok {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("nameserver not supported on \"%s/%s\"", protocol, network))
 			return
 		}
+
 		if resolver == nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no nameserver configured for \"%s/%s\"", protocol, network))
 			return
 		}
 
-		resolvedAddress, err := resolver.ResolveName(ctx, protocol, network, domainName)
+		resolvedAddress, err := resolver.ResolveName(r.Context(), protocol, network, domainName)
 		if mailbox.IsNetworkNotSupportedError(err) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("%q not supported", protocol+"/"+network))
 			return
 		}
+
 		if nameservice.ErrorToRFC1035Status(err) > 0 {
 			_ = json.NewEncoder(w).Encode(GetResolveNameResponseBody{Status: nameservice.ErrorToRFC1035Status(err)})
 			return
 		}
+
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
+
 		encAddress, _, err := address.EncodeByProtocol(resolvedAddress, protocol)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"))

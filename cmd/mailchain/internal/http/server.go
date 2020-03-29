@@ -51,7 +51,7 @@ func CreateRouter(s *settings.Root, cmd *cobra.Command) (http.Handler, error) {
 		fmt.Sprint(chalk.Yellow, "Note: To derive a storage key passphrase is required. The passphrase must be secure and not guessable."),
 		"Passphrase",
 		false,
-		true,
+		false,
 	)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not get `passphrase`")

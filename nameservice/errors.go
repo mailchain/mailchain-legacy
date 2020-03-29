@@ -15,6 +15,8 @@
 package nameservice
 
 import (
+	errs "errors"
+	"fmt"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -36,19 +38,43 @@ var (
 	ErrRefused  = errors.New("Query Refused")
 )
 
-// RFC1035StatusMap mapping of RFC1035 errors.
-var RFC1035StatusMap = map[error]int{ // nolint: gochecknoglobals
-	ErrFormat:   1,
-	ErrServFail: 2,
-	ErrNXDomain: 3,
-	ErrNotImp:   4,
-	ErrRefused:  5,
+// ErrorToRFC1035Status mapping of RFC1035 errors.
+func ErrorToRFC1035Status(err error) int {
+	switch err {
+	case ErrFormat:
+		return 1
+	case ErrServFail:
+		return 2
+	case ErrNXDomain:
+		return 3
+	case ErrNotImp:
+		return 4
+	case ErrRefused:
+		return 5
+	case nil:
+		return 0
+	default:
+		return -1
+	}
 }
 
-// IsRFC1035Error checks if the error is one of RFC1035 errors.
-func IsRFC1035Error(err error) bool {
-	_, ok := RFC1035StatusMap[err]
-	return ok
+func RFC1035StatusToError(status int) error {
+	switch status {
+	case 0:
+		return nil
+	case 1:
+		return ErrFormat
+	case 2:
+		return ErrServFail
+	case 3:
+		return ErrNXDomain
+	case 4:
+		return ErrNotImp
+	case 5:
+		return ErrRefused
+	default:
+		return errs.New("unknown RFC1035 status: " + fmt.Sprintf("%d", status))
+	}
 }
 
 // WrapError with a RFC1035 error.
@@ -63,6 +89,7 @@ func WrapError(err error) error {
 		// address related to not being able to part ens address not ethereum address
 		return ErrFormat
 	}
+
 	return err
 }
 
@@ -72,5 +99,6 @@ func isErrorOfAnyType(err error, errorStrings []string) bool {
 			return true
 		}
 	}
+
 	return false
 }

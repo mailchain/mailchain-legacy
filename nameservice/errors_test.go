@@ -15,10 +15,11 @@
 package nameservice
 
 import (
+	errs "errors"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/pkg/errors"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_WrapError(t *testing.T) {
@@ -93,62 +94,109 @@ func Test_WrapError(t *testing.T) {
 	}
 }
 
-func TestIsRFC1035Error(t *testing.T) {
+func TestErrorToRFC1035Status(t *testing.T) {
 	type args struct {
 		err error
 	}
 	tests := []struct {
 		name string
 		args args
-		want bool
+		want int
 	}{
 		{
-			"RFC1035Error-ErrFormat",
-			args{
-				ErrFormat,
-			},
-			true,
+			"err-format",
+			args{ErrFormat},
+			1,
 		},
 		{
-			"RFC1035Error-ErrServFail",
-			args{
-				ErrServFail,
-			},
-			true,
+			"err-serv-fail",
+			args{ErrServFail},
+			2,
 		},
 		{
-			"RFC1035Error-ErrNXDomain",
-			args{
-				ErrNXDomain,
-			},
-			true,
+			"err-nx-domain",
+			args{ErrNXDomain},
+			3,
 		},
 		{
-			"RFC1035Error-ErrNotImp",
-			args{
-				ErrNotImp,
-			},
-			true,
+			"err-not-imp",
+			args{ErrNotImp},
+			4,
 		},
 		{
-			"RFC1035Error-ErrRefused",
-			args{
-				ErrRefused,
-			},
-			true,
+			"err-refused",
+			args{ErrRefused},
+			5,
 		},
 		{
-			"other",
-			args{
-				errors.Errorf("other"),
-			},
-			false,
+			"nil",
+			args{nil},
+			0,
+		},
+		{
+			"err-other",
+			args{errors.Errorf("error")},
+			-1,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := IsRFC1035Error(tt.args.err); got != tt.want {
-				t.Errorf("IsInvalidAddressError() = %v, want %v", got, tt.want)
+			if got := ErrorToRFC1035Status(tt.args.err); got != tt.want {
+				t.Errorf("ErrorToRFC1035Status() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestRFC1035StatusToError(t *testing.T) {
+	type args struct {
+		status int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr error
+	}{
+		{
+			"err-format",
+			args{1},
+			ErrFormat,
+		},
+		{
+			"err-serv-fail",
+			args{2},
+			ErrServFail,
+		},
+		{
+			"err-nx-domain",
+			args{3},
+			ErrNXDomain,
+		},
+		{
+			"err-not-imp",
+			args{4},
+			ErrNotImp,
+		},
+		{
+			"err-refused",
+			args{5},
+			ErrRefused,
+		},
+		{
+			"nil",
+			args{0},
+			nil,
+		},
+		{
+			"err-other",
+			args{-1},
+			errs.New("unknown RFC1035 status: -1"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := RFC1035StatusToError(tt.args.status); !assert.Equal(t, err, tt.wantErr) {
+				t.Errorf("RFC1035StatusToError() errorMessage = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

@@ -29,6 +29,7 @@ func NewLookupService(clientURL string) (nameservice.Lookup, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &LookupService{
 		client: client,
 	}, nil
@@ -45,6 +46,7 @@ func (s LookupService) ResolveName(ctx context.Context, protocol, network, domai
 	if err != nil {
 		return nil, nameservice.WrapError(err)
 	}
+
 	return address.Bytes(), nil
 }
 
@@ -54,5 +56,6 @@ func (s LookupService) ResolveAddress(ctx context.Context, protocol, network str
 	if err != nil {
 		return "", nameservice.WrapError(err)
 	}
+
 	return reverse, nil
 }

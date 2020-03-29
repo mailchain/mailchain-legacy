@@ -64,10 +64,9 @@ func GetResolveAddress(resolvers map[string]nameservice.ReverseLookup) func(w ht
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("%q not supported", protocol+"/"+network))
 			return
 		}
-		if nameservice.IsRFC1035Error(err) {
-			_ = json.NewEncoder(w).Encode(GetResolveAddressResponseBody{
-				Status: nameservice.RFC1035StatusMap[err],
-			})
+
+		if nameservice.ErrorToRFC1035Status(err) > 0 {
+			_ = json.NewEncoder(w).Encode(GetResolveAddressResponseBody{Status: nameservice.ErrorToRFC1035Status(err)})
 			return
 		}
 		if err != nil {

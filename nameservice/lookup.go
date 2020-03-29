@@ -38,6 +38,7 @@ func NewLookupService(baseURL string) Lookup {
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
+
 	return &LookupService{
 		baseURL:    strings.TrimSuffix(baseURL, "/"),
 		newRequest: http.NewRequest,
@@ -63,17 +64,19 @@ func (s LookupService) ResolveName(ctx context.Context, protocol, network, domai
 	if err != nil {
 		return nil, err
 	}
+	defer res.Body.Close()
 
 	if res.StatusCode == http.StatusOK {
 		var okRes struct {
 			Address string `json:"address"`
+			Status  int    `json:"status"`
 		}
 
 		if err := json.NewDecoder(res.Body).Decode(&okRes); err != nil {
 			return nil, err
 		}
 
-		return common.FromHex(okRes.Address), nil
+		return common.FromHex(okRes.Address), RFC1035StatusToError(okRes.Status)
 	}
 
 	var errRes struct {
@@ -100,10 +103,12 @@ func (s LookupService) ResolveAddress(ctx context.Context, protocol, network str
 	if err != nil {
 		return "", err
 	}
+	defer res.Body.Close()
 
 	if res.StatusCode == http.StatusOK {
 		type response struct {
-			Name string `json:"name"`
+			Name   string `json:"name"`
+			Status int    `json:"status"`
 		}
 
 		var okRes response
@@ -111,7 +116,7 @@ func (s LookupService) ResolveAddress(ctx context.Context, protocol, network str
 			return "", err
 		}
 
-		return okRes.Name, nil
+		return okRes.Name, RFC1035StatusToError(okRes.Status)
 	}
 
 	type response struct {

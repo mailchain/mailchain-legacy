@@ -32,16 +32,16 @@ func Reverse(resolver nameservice.ReverseLookup, protocol, network string) func(
 		addr, err := address.DecodeByProtocol(r.URL.Query()["address"][0], protocol)
 		if err != nil {
 			_ = json.NewEncoder(w).Encode(response{
-				Status: nameservice.RFC1035StatusMap[nameservice.ErrFormat],
+				Status: nameservice.ErrorToRFC1035Status(nameservice.ErrFormat),
 			})
 
 			return
 		}
 
 		name, err := resolver.ResolveAddress(r.Context(), protocol, network, addr)
-		if nameservice.IsRFC1035Error(err) {
+		if nameservice.ErrorToRFC1035Status(err) > 0 {
 			_ = json.NewEncoder(w).Encode(response{
-				Status: nameservice.RFC1035StatusMap[err],
+				Status: nameservice.ErrorToRFC1035Status(err),
 			})
 
 			return

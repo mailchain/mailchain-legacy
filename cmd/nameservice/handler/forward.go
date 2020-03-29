@@ -30,9 +30,9 @@ func Forward(resolver nameservice.ForwardLookup, protocol, network string) func(
 		}
 
 		resolvedAddress, err := resolver.ResolveName(r.Context(), protocol, network, r.URL.Query()["domain-name"][0])
-		if nameservice.IsRFC1035Error(err) {
+		if nameservice.ErrorToRFC1035Status(err) > 0 {
 			_ = json.NewEncoder(w).Encode(response{
-				Status: nameservice.RFC1035StatusMap[err],
+				Status: nameservice.ErrorToRFC1035Status(err),
 			})
 
 			return

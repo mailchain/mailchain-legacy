@@ -16,7 +16,6 @@ package handlers
 
 import (
 	"context"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -35,6 +34,7 @@ import (
 	"github.com/mailchain/mailchain/internal/mailbox/mailboxtest"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/storestest"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 

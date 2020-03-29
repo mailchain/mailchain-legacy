@@ -42,9 +42,9 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 	//   200: GetResolveNameResponse
 	//   404: NotFoundError
 	//   422: ValidationError
-	return func(w http.ResponseWriter, hr *http.Request) {
-		ctx := hr.Context()
-		protocol, network, domainName, err := parseGetResolveNameRequest(hr)
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		protocol, network, domainName, err := parseGetResolveNameRequest(r)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
@@ -64,10 +64,8 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("%q not supported", protocol+"/"+network))
 			return
 		}
-		if nameservice.IsRFC1035Error(err) {
-			_ = json.NewEncoder(w).Encode(GetResolveNameResponseBody{
-				Status: nameservice.RFC1035StatusMap[err],
-			})
+		if nameservice.ErrorToRFC1035Status(err) > 0 {
+			_ = json.NewEncoder(w).Encode(GetResolveNameResponseBody{Status: nameservice.ErrorToRFC1035Status(err)})
 			return
 		}
 		if err != nil {
@@ -79,6 +77,7 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"))
 			return
 		}
+
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(GetResolveNameResponseBody{
 			Address: encAddress,

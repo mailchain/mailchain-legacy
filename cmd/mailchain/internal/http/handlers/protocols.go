@@ -34,6 +34,7 @@ func GetProtocols(base *settings.Root) func(w http.ResponseWriter, r *http.Reque
 		}
 
 		networks := []Network{}
+
 		for _, network := range protocol.Networks {
 			if !network.Disabled() && protocol.Kind == "ethereum" {
 				networks = append(networks, Network{Name: network.Kind(), ID: ""})

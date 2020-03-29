@@ -73,15 +73,18 @@ func GetRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
 			return
 		}
+
 		read, err := store.GetReadStatus(messageID)
 		if stores.IsNotFoundError(err) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
+
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, err)
 			return
 		}
+
 		if err := json.NewEncoder(w).Encode(getBody{Read: read}); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, err)
 			return

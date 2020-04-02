@@ -78,7 +78,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 					m.EXPECT().GetRuntimeVersion(types.Hash{}).Return(rv, nil)
 					nonce := uint32(0)
 					m.EXPECT().GetNonce(context.Background(), protocols.Substrate, substrate.EdgewareBerlin, from, metadata).Return(nonce, nil)
-					m.EXPECT().CreateSignatureOptions(types.Hash{}, types.Hash{}, false, *rv, nonce, uint32(0))
+					m.EXPECT().CreateSignatureOptions(types.Hash{}, types.Hash{}, false, true, *rv, nonce, uint32(0))
 					extrinsic := types.NewExtrinsic(types.Call{})
 					m.EXPECT().SubmitExtrinsic(&extrinsic).Return(types.Hash{}, nil)
 					return m
@@ -388,7 +388,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 					m.EXPECT().GetRuntimeVersion(types.Hash{}).Return(rv, nil)
 					nonce := uint32(0)
 					m.EXPECT().GetNonce(context.Background(), protocols.Substrate, substrate.EdgewareBerlin, from, metadata).Return(nonce, nil)
-					m.EXPECT().CreateSignatureOptions(types.Hash{}, types.Hash{}, false, *rv, nonce, uint32(0))
+					m.EXPECT().CreateSignatureOptions(types.Hash{}, types.Hash{}, false, true, *rv, nonce, uint32(0))
 					return m
 				}(),
 			},
@@ -452,7 +452,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 					m.EXPECT().GetRuntimeVersion(types.Hash{}).Return(rv, nil)
 					nonce := uint32(0)
 					m.EXPECT().GetNonce(context.Background(), protocols.Substrate, substrate.EdgewareBerlin, from, metadata).Return(nonce, nil)
-					m.EXPECT().CreateSignatureOptions(types.Hash{}, types.Hash{}, false, *rv, nonce, uint32(0))
+					m.EXPECT().CreateSignatureOptions(types.Hash{}, types.Hash{}, false, true, *rv, nonce, uint32(0))
 					newExtrinsic := types.NewExtrinsic(types.Call{})
 					m.EXPECT().SubmitExtrinsic(&newExtrinsic).Return(types.Hash{}, errors.New("error submitting transaction"))
 					return m

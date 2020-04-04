@@ -92,6 +92,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 				data:    []byte("transactionDataValue"),
 				signer: func() signer.Signer {
 					m := signertest.NewMockSigner(mockCtrl)
+					signedExt := types.NewExtrinsic(types.Call{})
 					m.EXPECT().Sign(substrate.SignerOptions{
 						Extrinsic: types.NewExtrinsic(types.Call{}),
 						SignatureOptions: types.SignatureOptions{
@@ -102,7 +103,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 							SpecVersion: types.NewU32(0),
 							Tip:         0,
 						},
-					}).Return(types.NewExtrinsic(types.Call{}), nil)
+					}).Return(&signedExt, nil)
 					return m
 				}(),
 				opts: signerOpts{"value1"},
@@ -466,6 +467,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 				data:    []byte("transactionDataValue"),
 				signer: func() signer.Signer {
 					m := signertest.NewMockSigner(mockCtrl)
+					signedExt := types.NewExtrinsic(types.Call{})
 					m.EXPECT().Sign(substrate.SignerOptions{
 						Extrinsic: types.NewExtrinsic(types.Call{}),
 						SignatureOptions: types.SignatureOptions{
@@ -476,7 +478,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 							SpecVersion: types.NewU32(0),
 							Tip:         0,
 						},
-					}).Return(types.NewExtrinsic(types.Call{}), nil)
+					}).Return(&signedExt, nil)
 					return m
 				}(),
 				opts: signerOpts{"value1"},

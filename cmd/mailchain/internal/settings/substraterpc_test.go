@@ -34,7 +34,7 @@ func Test_substrateRPCSender(t *testing.T) {
 				}(),
 				substrate.EdgewareBerlin,
 			},
-			"wss://berlin1.edgewa.re",
+			"ws://berlin1.edgewa.re:9944",
 			"edgeware-berlin",
 		},
 	}

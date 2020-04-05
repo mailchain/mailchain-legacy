@@ -15,9 +15,6 @@
 package substrate
 
 const (
-	// EdgewareTestnet network name.
-	EdgewareTestnet = "edgeware-testnet"
-
 	// EdgewareMainnet network name.
 	EdgewareMainnet = "edgeware-mainnet"
 
@@ -27,5 +24,5 @@ const (
 
 // Networks supported by substrate package.
 func Networks() []string {
-	return []string{EdgewareMainnet, EdgewareBerlin, EdgewareTestnet}
+	return []string{EdgewareMainnet, EdgewareBerlin}
 }

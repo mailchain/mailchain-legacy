@@ -39,7 +39,7 @@ func GetProtocols(base *settings.Root) func(w http.ResponseWriter, r *http.Reque
 			if !network.Disabled() && protocol.Kind == "ethereum" {
 				networks = append(networks, Network{Name: network.Kind(), ID: ""})
 			} else if !network.Disabled() && protocol.Kind == "substrate" {
-				if network.Kind() == "edgeware-testnet" {
+				if network.Kind() == "edgeware-berlin" {
 					networks = append(networks, Network{Name: network.Kind(), ID: "42"})
 				}
 			}

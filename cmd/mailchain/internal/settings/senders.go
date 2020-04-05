@@ -21,7 +21,6 @@ func senders(s values.Store) *Senders {
 			protocols.Ethereum + "-relay":                relaySender(s, protocols.Ethereum),
 			"substrate-rpc-" + substrate.EdgewareMainnet: substrateRPCSender(s, substrate.EdgewareMainnet),
 			"substrate-rpc-" + substrate.EdgewareBerlin:  substrateRPCSender(s, substrate.EdgewareBerlin),
-			"substrate-rpc-" + substrate.EdgewareTestnet: substrateRPCSender(s, substrate.EdgewareTestnet),
 		},
 	}
 }

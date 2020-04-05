@@ -2,11 +2,11 @@ package substraterpc
 
 import (
 	"context"
-	"encoding/hex"
 	"math/big"
 
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
 	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
@@ -52,7 +52,7 @@ func (s SubstrateClient) SuggestGasPrice(ctx context.Context) (*big.Int, error) 
 }
 
 func (s SubstrateClient) Call(metadata *types.Metadata, to types.Address, gas *big.Int, data []byte) (types.Call, error) {
-	return types.NewCall(metadata, "Contracts.call", to, types.UCompact(0), types.UCompact(gas.Uint64()), "0x"+hex.EncodeToString(data))
+	return types.NewCall(metadata, "Contracts.call", to, types.UCompact(0), types.UCompact(gas.Uint64()), encoding.EncodeHexZeroX(data))
 }
 
 func (s SubstrateClient) NewExtrinsic(call types.Call) types.Extrinsic {

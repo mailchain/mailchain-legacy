@@ -23,13 +23,13 @@ func EthereumNetworkAny() *NetworkDefaults {
 }
 
 // SubstrateNetworkAny default values for any Substrate network.
-func SubstrateNetworkAny() *NetworkDefaults {
+func SubstrateNetworkAny(network string) *NetworkDefaults {
 	return &NetworkDefaults{
 		// NameServiceAddress:    NameServiceAddressKind,
 		// NameServiceDomainName: NameServiceDomainNameKind,
 		PublicKeyFinder: SubstratePublicKeyFinder,
 		// Receiver:              mailchain.ClientEtherscanNoAuth,
-		// Sender:                "ethereum-relay",
+		Sender:   "substrate-rpc-" + network,
 		Disabled: false,
 	}
 }

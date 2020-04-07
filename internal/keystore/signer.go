@@ -19,6 +19,7 @@ import (
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/substrate"
 	"github.com/pkg/errors"
 )
 
@@ -27,6 +28,8 @@ func Signer(protocol string, pk crypto.PrivateKey) (signer.Signer, error) {
 	switch protocol {
 	case protocols.Ethereum:
 		return ethereum.NewSigner(pk)
+	case protocols.Substrate:
+		return substrate.NewSigner(pk), nil
 	default:
 		return nil, errors.Errorf("unsupported signer type")
 	}

@@ -6,6 +6,7 @@ import (
 
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
 	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
@@ -20,7 +21,7 @@ type Client interface {
 	GetBlockHash(blockNumber uint64) (types.Hash, error)
 	GetRuntimeVersion(blockHash types.Hash) (*types.RuntimeVersion, error)
 	GetNonce(ctx context.Context, protocol, network string, address []byte, meta *types.Metadata) (uint32, error)
-	CreateSignatureOptions(blockHash, genesisHash types.Hash, mortalEra bool, rv types.RuntimeVersion, nonce, tip uint32) types.SignatureOptions
+	CreateSignatureOptions(blockHash, genesisHash types.Hash, mortalEra, immortalEra bool, rv types.RuntimeVersion, nonce, tip uint32) types.SignatureOptions
 	SubmitExtrinsic(extrinsic *types.Extrinsic) (types.Hash, error)
 }
 
@@ -51,7 +52,7 @@ func (s SubstrateClient) SuggestGasPrice(ctx context.Context) (*big.Int, error) 
 }
 
 func (s SubstrateClient) Call(metadata *types.Metadata, to types.Address, gas *big.Int, data []byte) (types.Call, error) {
-	return types.NewCall(metadata, "Contracts.call", to, types.UCompact(0), types.UCompact(gas.Uint64()), data)
+	return types.NewCall(metadata, "Contracts.call", to, types.UCompact(0), types.UCompact(gas.Uint64()), encoding.EncodeHexZeroX(data))
 }
 
 func (s SubstrateClient) NewExtrinsic(call types.Call) types.Extrinsic {
@@ -59,10 +60,6 @@ func (s SubstrateClient) NewExtrinsic(call types.Call) types.Extrinsic {
 }
 
 func (s SubstrateClient) GetBlockHash(blockNumber uint64) (types.Hash, error) {
-	if blockNumber == 0 {
-		return s.api.RPC.Chain.GetBlockHashLatest()
-	}
-
 	return s.api.RPC.Chain.GetBlockHash(blockNumber)
 }
 
@@ -89,17 +86,17 @@ func (s SubstrateClient) GetNonce(ctx context.Context, protocol, network string,
 
 	var nonce uint32
 
-	if err := s.api.RPC.State.GetStorageLatest(key, &nonce); err != nil {
+	if _, err := s.api.RPC.State.GetStorageLatest(key, &nonce); err != nil {
 		return uint32(0), err
 	}
 
 	return nonce, nil
 }
 
-func (s SubstrateClient) CreateSignatureOptions(blockHash, genesisHash types.Hash, mortalEra bool, rv types.RuntimeVersion, nonce, tip uint32) types.SignatureOptions {
+func (s SubstrateClient) CreateSignatureOptions(blockHash, genesisHash types.Hash, mortalEra, immortalEra bool, rv types.RuntimeVersion, nonce, tip uint32) types.SignatureOptions {
 	return types.SignatureOptions{
 		BlockHash:   blockHash,
-		Era:         types.ExtrinsicEra{IsMortalEra: mortalEra},
+		Era:         types.ExtrinsicEra{IsMortalEra: mortalEra, IsImmortalEra: immortalEra},
 		GenesisHash: genesisHash,
 		Nonce:       types.UCompact(nonce),
 		SpecVersion: rv.SpecVersion,

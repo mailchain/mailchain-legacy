@@ -15,6 +15,8 @@
 package keystore
 
 import (
+	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
+	"github.com/mailchain/mailchain/internal/protocols/substrate"
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
@@ -44,6 +46,18 @@ func TestSigner(t *testing.T) {
 			},
 			func() signer.Signer {
 				m, _ := ethereum.NewSigner(secp256k1test.CharlottePrivateKey)
+				return m
+			}(),
+			false,
+		},
+		{
+			"substrate",
+			args{
+				protocols.Substrate,
+				sr25519test.CharlottePrivateKey,
+			},
+			func() signer.Signer {
+				m := substrate.NewSigner(sr25519test.CharlottePrivateKey)
 				return m
 			}(),
 			false,

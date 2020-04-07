@@ -37,9 +37,8 @@ func FromStore(s values.Store) *Root {
 				ethereum.Ropsten: network(s, protocols.Ethereum, ethereum.Ropsten, defaults.EthereumNetworkAny()),
 			}),
 			protocols.Substrate: protocol(s, protocols.Substrate, map[string]NetworkClient{
-				substrate.EdgewareTestnet: network(s, protocols.Substrate, substrate.EdgewareTestnet, defaults.SubstrateNetworkAny()),
-				// substrate.PolkadotTestnet: network(s, protocols.Substrate, substrate.PolkadotTestnet, defaults.SubstrateNetworkAny()),
-				// substrate.KusamaTestnet:   network(s, protocols.Substrate, substrate.KusamaTestnet, defaults.SubstrateNetworkAny()),
+				substrate.EdgewareMainnet: network(s, protocols.Substrate, substrate.EdgewareMainnet, defaults.SubstrateNetworkAny(substrate.EdgewareMainnet)),
+				substrate.EdgewareBerlin:  network(s, protocols.Substrate, substrate.EdgewareBerlin, defaults.SubstrateNetworkAny(substrate.EdgewareBerlin)),
 			}),
 		},
 		// other

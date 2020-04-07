@@ -40,13 +40,20 @@
 #   substrate:
 #     disabled: false
 #     networks:
-#       edgeware-testnet:
+#       edgeware-berlin:
 #         disabled: false
 #         nameservice-address: ""
 #         nameservice-domain-name: ""
 #         public-key-finder: "substrate-public-key-finder"
 #         receiver: ""
-#         sender: ""
+#         sender: "substrate-rpc-edgeware-berlin"
+#       edgeware-mainnet:
+#         disabled: false
+#         nameservice-address: ""
+#         nameservice-domain-name: ""
+#         public-key-finder: "substrate-public-key-finder"
+#         receiver: ""
+#         sender: "substrate-rpc-edgeware-mainnet"
 # nameservice-address:
 #   mailchain:
 #     base-url: "https://ns.mailchain.xyz/"
@@ -129,6 +136,10 @@
 #     address: "https://relay.mailchain.xyz/json-rpc/ethereum/rinkeby"
 #   ethereum-rpc2-ropsten:
 #     address: "https://relay.mailchain.xyz/json-rpc/ethereum/ropsten"
+#   substrate-rpc-edgeware-berlin:
+#     address: "ws://berlin1.edgewa.re:9944"
+#   substrate-rpc-edgeware-mainnet:
+#     address: "ws://mainnet1.edgewa.re:9944"
 keystore:
 #   kind: "nacl-filestore"
   nacl-filestore:

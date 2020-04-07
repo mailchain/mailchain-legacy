@@ -20,6 +20,7 @@ import (
 	"sort"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
+	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
 // GetProtocols returns a handler get spec
@@ -39,8 +40,9 @@ func GetProtocols(base *settings.Root) func(w http.ResponseWriter, r *http.Reque
 			if !network.Disabled() && protocol.Kind == "ethereum" {
 				networks = append(networks, Network{Name: network.Kind(), ID: ""})
 			} else if !network.Disabled() && protocol.Kind == "substrate" {
-				if network.Kind() == "edgeware-testnet" {
-					networks = append(networks, Network{Name: network.Kind(), ID: "42"})
+				switch network.Kind() {
+				case substrate.EdgewareBerlin, substrate.EdgewareMainnet:
+					networks = append(networks, Network{Name: network.Kind(), ID: "7"})
 				}
 			}
 		}

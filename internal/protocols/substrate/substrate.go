@@ -15,9 +15,6 @@
 package substrate
 
 const (
-	// EdgewareTestnet network name.
-	EdgewareTestnet = "edgeware-testnet"
-
 	// EdgewareMainnet network name.
 	EdgewareMainnet = "edgeware-mainnet"
 

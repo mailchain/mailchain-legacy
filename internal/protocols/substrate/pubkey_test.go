@@ -43,7 +43,7 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 			args{
 				context.Background(),
 				"substrate",
-				"testnet",
+				"berlin",
 				func() []byte {
 					num, err := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzP")
 					if err != nil {
@@ -64,7 +64,7 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 			args{
 				context.Background(),
 				"substrate",
-				"testnet",
+				"berlin",
 				func() []byte {
 					num, err := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzPD")
 					if err != nil {
@@ -82,7 +82,7 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 			args{
 				context.Background(),
 				"invalid",
-				"testnet",
+				"berlin",
 				func() []byte {
 					num, err := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzPD")
 					if err != nil {

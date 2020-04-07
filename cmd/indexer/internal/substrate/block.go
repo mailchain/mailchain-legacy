@@ -34,8 +34,7 @@ func (b *Block) Run(ctx context.Context, protocol, network string, blk interface
 	txs := sbrtBlk.Extrinsics
 	for i := range txs {
 		if err := b.txProcessor.Run(ctx, protocol, network, txs[i], &TxOptions{Block: sbrtBlk}); err != nil {
-			// TODO: fix error msg
-			return errors.Wrapf(err, "fails to process transaction hash: %s", nil)
+			return errors.Wrapf(err, "fails to process transaction: block=%s, transaction-index=%d", sbrtBlk.Header.ParentHash.Hex(), i)
 		}
 	}
 

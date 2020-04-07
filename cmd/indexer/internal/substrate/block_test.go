@@ -33,6 +33,28 @@ func TestBlock_Run(t *testing.T) {
 		wantErr bool
 	}{
 		{
+			"err-arg",
+			fields{
+				func() actions.Transaction {
+					m := actionstest.NewMockTransaction(mockCtrl)
+					return m
+				}(),
+			},
+			args{
+				context.Background(),
+				protocols.Substrate,
+				networks.EdgewareTestnet,
+				types.Block{
+					types.Header{},
+					[]types.Extrinsic{
+						types.Extrinsic{},
+						types.Extrinsic{},
+					},
+				},
+			},
+			true,
+		},
+		{
 			"err-run",
 			fields{
 				func() actions.Transaction {
@@ -49,10 +71,36 @@ func TestBlock_Run(t *testing.T) {
 				&types.Block{
 					types.Header{},
 					[]types.Extrinsic{
+						types.Extrinsic{},
+						types.Extrinsic{},
 					},
 				},
 			},
 			true,
+		},
+		{
+			"success",
+			fields{
+				func() actions.Transaction {
+					m := actionstest.NewMockTransaction(mockCtrl)
+					m.EXPECT().Run(context.Background(), protocols.Substrate, networks.EdgewareTestnet, gomock.Any(), gomock.Any()).Return(nil)
+					m.EXPECT().Run(context.Background(), protocols.Substrate, networks.EdgewareTestnet, gomock.Any(), gomock.Any()).Return(nil)
+					return m
+				}(),
+			},
+			args{
+				context.Background(),
+				protocols.Substrate,
+				networks.EdgewareTestnet,
+				&types.Block{
+					types.Header{},
+					[]types.Extrinsic{
+						types.Extrinsic{},
+						types.Extrinsic{},
+					},
+				},
+			},
+			false,
 		},
 	}
 

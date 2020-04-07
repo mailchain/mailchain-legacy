@@ -52,6 +52,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("public key finder not supported on \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
+
 		if finder == nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no public key finder configured for \"%s/%s\"", req.Protocol, req.Network))
 			return
@@ -62,10 +63,12 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("network %q not supported", req.Network))
 			return
 		}
+
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
+
 		encodedKey, encodingType, err := pubkey.EncodeByProtocol(publicKey.Bytes(), req.Protocol)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))

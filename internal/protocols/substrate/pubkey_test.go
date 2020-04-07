@@ -112,3 +112,22 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 		})
 	}
 }
+
+func TestNewPublicKeyFinder(t *testing.T) {
+	tests := []struct {
+		name string
+		want *PublicKeyFinder
+	}{
+		{
+			"success",
+			&PublicKeyFinder{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewPublicKeyFinder(); !assert.Equal(t, tt.want, got) {
+				t.Errorf("NewPublicKeyFinder() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -28,6 +28,6 @@ func DecodeBase58(src string) ([]byte, error) {
 //
 // EncodeBase58 expects that src contains only base58 byte.
 // If the input is malformed, EncodeBase58 returns an error.
-func EncodeBase58(src []byte) (string, error) {
-	return base58.Encode(src), nil
+func EncodeBase58(src []byte) string {
+	return base58.Encode(src)
 }

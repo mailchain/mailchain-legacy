@@ -48,12 +48,14 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		addresses := []string{}
+
 		rawAddresses, err := ks.GetAddresses(protocol, network)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
+
+		addresses := []string{}
 		for _, x := range rawAddresses {
 			addresses = append(addresses, encoding.EncodeHex(x))
 		}

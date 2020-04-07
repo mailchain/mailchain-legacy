@@ -21,6 +21,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
 	"github.com/mailchain/mailchain/crypto/cipher/nacl"
+	"github.com/mailchain/mailchain/crypto/cipher/noop"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/stretchr/testify/assert"
 )
@@ -56,6 +57,18 @@ func TestGetEncrypter(t *testing.T) {
 			},
 			func() cipher.Encrypter {
 				encrypter, _ := nacl.NewEncrypter(secp256k1test.SofiaPublicKey)
+				return encrypter
+			}(),
+			false,
+		},
+		{
+			"noop",
+			args{
+				"noop",
+				secp256k1test.SofiaPublicKey,
+			},
+			func() cipher.Encrypter {
+				encrypter, _ := noop.NewEncrypter(secp256k1test.SofiaPublicKey)
 				return encrypter
 			}(),
 			false,

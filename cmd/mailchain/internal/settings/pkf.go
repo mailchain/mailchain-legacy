@@ -13,6 +13,7 @@ func publicKeyFinders(s values.Store) *PublicKeyFinders {
 		clients: map[string]PublicKeyFinderClient{
 			defaults.ClientEtherscanNoAuth:    etherscanPublicKeyFinderNoAuth(s),
 			defaults.ClientEtherscan:          etherscanPublicKeyFinder(s),
+			defaults.ClientBlockscoutNoAuth:   blockscoutPublicKeyFinderNoAuth(s),
 			defaults.SubstratePublicKeyFinder: substratePublicKeyFinder(s),
 		},
 	}

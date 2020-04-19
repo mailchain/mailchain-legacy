@@ -703,7 +703,12 @@ func TestSubstrateClient_GetNonce(t *testing.T) {
 					addr, _ := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzP")
 					return addr
 				}(),
-				types.ExamplaryMetadataV4,
+				func() *types.Metadata {
+					// todo temp fix for https://github.com/centrifuge/go-substrate-rpc-client/issues/78
+					metav4 := types.ExamplaryMetadataV4
+					metav4.AsMetadataV4.Modules[0].Storage[0].Name = "Account"
+					return metav4
+				}(),
 			},
 			uint32(0xcf44490e),
 			nil,

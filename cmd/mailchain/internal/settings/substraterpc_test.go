@@ -1,11 +1,14 @@
 package settings
 
 import (
+	"fmt"
+	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/cmd/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/internal/settings/values/valuestest"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
@@ -50,7 +53,9 @@ func Test_substrateRPCSender(t *testing.T) {
 func TestSubstrateRPC_Produce(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
-	server := httptest.NewServer(nil)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+	}))
 	defer server.Close()
 	type fields struct {
 		Address values.String

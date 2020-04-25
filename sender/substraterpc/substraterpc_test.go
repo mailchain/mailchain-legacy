@@ -1,12 +1,17 @@
 package substraterpc
 
 import (
+	"fmt"
+	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestNew(t *testing.T) {
-	server := httptest.NewServer(nil)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+	}))
 	type args struct {
 		address string
 	}

@@ -79,7 +79,7 @@ func (s SubstrateClient) GetNonce(ctx context.Context, protocol, network string,
 		return uint32(0), err
 	}
 
-	key, err := types.CreateStorageKey(meta, "System", "AccountNonce", pk.Bytes(), nil)
+	key, err := types.CreateStorageKey(meta, "System", "Account", pk.Bytes(), nil)
 	if err != nil {
 		return uint32(0), err
 	}

@@ -37,7 +37,7 @@ func TestClient_GetMetadata(t *testing.T) {
 				func() *gsrpc.SubstrateAPI {
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV4String)))
+							w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV10String)))
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -47,7 +47,7 @@ func TestClient_GetMetadata(t *testing.T) {
 			args{
 				types.Hash{},
 			},
-			types.ExamplaryMetadataV4,
+			types.ExamplaryMetadataV10,
 			false,
 		},
 		{
@@ -56,7 +56,7 @@ func TestClient_GetMetadata(t *testing.T) {
 				func() *gsrpc.SubstrateAPI {
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV4String)))
+							w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV10String)))
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -66,16 +66,22 @@ func TestClient_GetMetadata(t *testing.T) {
 			args{
 				types.NewHash([]byte("test")),
 			},
-			types.ExamplaryMetadataV4,
+			types.ExamplaryMetadataV10,
 			false,
 		},
 		{
 			"error-latest",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.WriteHeader(http.StatusBadRequest)
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.WriteHeader(http.StatusBadRequest)
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -92,9 +98,15 @@ func TestClient_GetMetadata(t *testing.T) {
 			"error-specific",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.WriteHeader(http.StatusBadRequest)
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.WriteHeader(http.StatusBadRequest)
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -366,9 +378,15 @@ func TestSubstrateClient_GetBlockHash(t *testing.T) {
 			"success-latest",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.Write([]byte("{\"result\":\"0x0102030405060708090001020304050607080900010203040506070809000102\"}"))
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.Write([]byte("{\"result\":\"0x0102030405060708090001020304050607080900010203040506070809000102\"}"))
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -385,9 +403,15 @@ func TestSubstrateClient_GetBlockHash(t *testing.T) {
 			"success",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.Write([]byte("{\"result\":\"0x0102030405060708090001020304050607080900010203040506070809000102\"}"))
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.Write([]byte("{\"result\":\"0x0102030405060708090001020304050607080900010203040506070809000102\"}"))
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -404,9 +428,15 @@ func TestSubstrateClient_GetBlockHash(t *testing.T) {
 			"error-latest",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.WriteHeader(http.StatusBadRequest)
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.WriteHeader(http.StatusBadRequest)
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -423,9 +453,15 @@ func TestSubstrateClient_GetBlockHash(t *testing.T) {
 			"error",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.WriteHeader(http.StatusBadRequest)
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.WriteHeader(http.StatusBadRequest)
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -472,9 +508,15 @@ func TestSubstrateClient_GetRuntimeVersion(t *testing.T) {
 			"success-latest",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.Write([]byte("{\"jsonrpc\":\"2.0\",\"result\":{\"apis\":[[\"0xdf6acb689907609b\",2],[\"0x37e397fc7c91f5e4\",1],[\"0x40fe3ad401f8959a\",3],[\"0xd2bc9897eed08f15\",1],[\"0xf78b278be53f454c\",1],[\"0xed99c5acb25eedf5\",2],[\"0xbc9d89904f5b923f\",1],[\"0x687ad44ad37f03c2\",1],[\"0xdd718d5cc53262d4\",1],[\"0xab3c0572291feb8b\",1]],\"authoringVersion\":15,\"implName\":\"edgeware-node\",\"implVersion\":25,\"specName\":\"edgeware\",\"specVersion\":25},\"id\":3}"))
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.Write([]byte("{\"jsonrpc\":\"2.0\",\"result\":{\"apis\":[[\"0xdf6acb689907609b\",2],[\"0x37e397fc7c91f5e4\",1],[\"0x40fe3ad401f8959a\",3],[\"0xd2bc9897eed08f15\",1],[\"0xf78b278be53f454c\",1],[\"0xed99c5acb25eedf5\",2],[\"0xbc9d89904f5b923f\",1],[\"0x687ad44ad37f03c2\",1],[\"0xdd718d5cc53262d4\",1],[\"0xab3c0572291feb8b\",1]],\"authoringVersion\":15,\"implName\":\"edgeware-node\",\"implVersion\":25,\"specName\":\"edgeware\",\"specVersion\":25},\"id\":3}"))
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -509,9 +551,15 @@ func TestSubstrateClient_GetRuntimeVersion(t *testing.T) {
 			"success",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.Write([]byte("{\"jsonrpc\":\"2.0\",\"result\":{\"apis\":[[\"0xdf6acb689907609b\",2],[\"0x37e397fc7c91f5e4\",1],[\"0x40fe3ad401f8959a\",3],[\"0xd2bc9897eed08f15\",1],[\"0xf78b278be53f454c\",1],[\"0xed99c5acb25eedf5\",2],[\"0xbc9d89904f5b923f\",1],[\"0x687ad44ad37f03c2\",1],[\"0xdd718d5cc53262d4\",1],[\"0xab3c0572291feb8b\",1]],\"authoringVersion\":15,\"implName\":\"edgeware-node\",\"implVersion\":25,\"specName\":\"edgeware\",\"specVersion\":25},\"id\":3}"))
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.Write([]byte("{\"jsonrpc\":\"2.0\",\"result\":{\"apis\":[[\"0xdf6acb689907609b\",2],[\"0x37e397fc7c91f5e4\",1],[\"0x40fe3ad401f8959a\",3],[\"0xd2bc9897eed08f15\",1],[\"0xf78b278be53f454c\",1],[\"0xed99c5acb25eedf5\",2],[\"0xbc9d89904f5b923f\",1],[\"0x687ad44ad37f03c2\",1],[\"0xdd718d5cc53262d4\",1],[\"0xab3c0572291feb8b\",1]],\"authoringVersion\":15,\"implName\":\"edgeware-node\",\"implVersion\":25,\"specName\":\"edgeware\",\"specVersion\":25},\"id\":3}"))
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -546,9 +594,15 @@ func TestSubstrateClient_GetRuntimeVersion(t *testing.T) {
 			"error-latest",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.WriteHeader(http.StatusBadRequest)
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.WriteHeader(http.StatusBadRequest)
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -565,9 +619,15 @@ func TestSubstrateClient_GetRuntimeVersion(t *testing.T) {
 			"error",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.WriteHeader(http.StatusBadRequest)
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.WriteHeader(http.StatusBadRequest)
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -619,7 +679,9 @@ func TestSubstrateClient_GetNonce(t *testing.T) {
 			"error-pk",
 			fields{
 				func() *gsrpc.SubstrateAPI {
-					server := httptest.NewServer(nil)
+					server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+					}))
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
 					return api
 				}(),
@@ -638,7 +700,9 @@ func TestSubstrateClient_GetNonce(t *testing.T) {
 			"error-sk",
 			fields{
 				func() *gsrpc.SubstrateAPI {
-					server := httptest.NewServer(nil)
+					server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+					}))
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
 					return api
 				}(),
@@ -660,9 +724,15 @@ func TestSubstrateClient_GetNonce(t *testing.T) {
 			"error",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.WriteHeader(http.StatusBadRequest)
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.WriteHeader(http.StatusBadRequest)
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -677,7 +747,7 @@ func TestSubstrateClient_GetNonce(t *testing.T) {
 					addr, _ := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzP")
 					return addr
 				}(),
-				types.ExamplaryMetadataV4,
+				types.ExamplaryMetadataV11Substrate,
 			},
 			uint32(0),
 			errors.New("400 Bad Request "),
@@ -686,9 +756,15 @@ func TestSubstrateClient_GetNonce(t *testing.T) {
 			"success",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.Write([]byte("{\"result\":\"0x0e4944cfd98d6f4cc374d16f5a4e3f9c\"}"))
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.Write([]byte("{\"result\":\"0x0e4944cfd98d6f4cc374d16f5a4e3f9c\"}"))
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -703,7 +779,7 @@ func TestSubstrateClient_GetNonce(t *testing.T) {
 					addr, _ := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzP")
 					return addr
 				}(),
-				types.ExamplaryMetadataV4,
+				types.ExamplaryMetadataV11Substrate,
 			},
 			uint32(0xcf44490e),
 			nil,
@@ -803,9 +879,15 @@ func TestSubstrateClient_SubmitExtrinsic(t *testing.T) {
 			"error",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.WriteHeader(http.StatusBadRequest)
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.WriteHeader(http.StatusBadRequest)
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)
@@ -822,9 +904,15 @@ func TestSubstrateClient_SubmitExtrinsic(t *testing.T) {
 			"success",
 			fields{
 				func() *gsrpc.SubstrateAPI {
+					apiCall := true
 					server := httptest.NewServer(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-							w.Write([]byte("{\"result\":\"0x9a8ef9794ded03b4d1ae45034351210e87f970f1f9500994bca82f9cd5a1166e\"}"))
+							if apiCall {
+								apiCall = false
+								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
+							} else {
+								w.Write([]byte("{\"result\":\"0x9a8ef9794ded03b4d1ae45034351210e87f970f1f9500994bca82f9cd5a1166e\"}"))
+							}
 						}),
 					)
 					api, _ := gsrpc.NewSubstrateAPI(server.URL)

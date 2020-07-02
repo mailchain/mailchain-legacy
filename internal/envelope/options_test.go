@@ -199,3 +199,30 @@ func TestWithEncryptedHash(t *testing.T) {
 		})
 	}
 }
+
+func TestWithEncryptedContents(t *testing.T) {
+	type args struct {
+		encryptedContents []byte
+	}
+	tests := []struct {
+		name string
+		args args
+		want *CreateOpts
+	}{
+		{
+			"success",
+			args{[]byte("encrypted-contents")},
+			&CreateOpts{EncryptedContents: []byte("encrypted-contents")},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := WithEncryptedContents(tt.args.encryptedContents)
+			opts := &CreateOpts{}
+			got(opts)
+			if !assert.Equal(t, tt.want, opts) {
+				t.Errorf("WithEncryptedHash() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

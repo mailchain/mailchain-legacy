@@ -25,7 +25,7 @@ import (
 	"gopkg.in/resty.v1"
 )
 
-// NewAPIClient create new API client
+// NewAPIClient create new API client.
 func NewAPIClient(apiKey string) (*APIClient, error) {
 	return &APIClient{
 		key: apiKey,
@@ -39,7 +39,7 @@ func NewAPIClient(apiKey string) (*APIClient, error) {
 	}, nil
 }
 
-// APIClient for talking to etherscan
+// APIClient for talking to etherscan.
 type APIClient struct {
 	key            string
 	networkConfigs map[string]networkConfig
@@ -49,13 +49,13 @@ type networkConfig struct {
 	url string
 }
 
-// IsNetworkSupported checks if the network is supported by etherscan API
+// IsNetworkSupported checks if the network is supported by etherscan API.
 func (c APIClient) isNetworkSupported(network string) bool {
 	_, ok := c.networkConfigs[network]
 	return ok
 }
 
-// GetTransactionByHash get transaction details from transaction hash via etherscan
+// GetTransactionByHash get transaction details from transaction hash via etherscan.
 func (c APIClient) getTransactionByHash(network string, hash common.Hash) (*types.Transaction, error) {
 	config, ok := c.networkConfigs[network]
 	if !ok {
@@ -83,19 +83,19 @@ func (c APIClient) getTransactionByHash(network string, hash common.Hash) (*type
 	}
 
 	if res.Result == nil {
-		return nil, errors.New("not found")
+		return nil, errors.Errorf("not found")
 	}
 
 	var ts *types.Transaction
 
 	if err := json.Unmarshal(res.Result, &ts); err != nil {
-		return nil, errors.WithStack(err)
+		return nil, errors.WithMessage(err, string(txListResponse.Body()))
 	}
 
 	return ts, nil
 }
 
-// GetTransactionsByAddress get transactions from address via etherscan
+// GetTransactionsByAddress get transactions from address via etherscan.
 func (c APIClient) getTransactionsByAddress(network string, address []byte) (*txList, error) {
 	config, ok := c.networkConfigs[network]
 	if !ok {
@@ -118,7 +118,7 @@ func (c APIClient) getTransactionsByAddress(network string, address []byte) (*tx
 
 	txResult := &txList{}
 	if err := json.Unmarshal(txListResponse.Body(), txResult); err != nil {
-		return nil, errors.WithStack(err)
+		return nil, errors.WithMessage(err, string(txListResponse.Body()))
 	}
 
 	return txResult, nil

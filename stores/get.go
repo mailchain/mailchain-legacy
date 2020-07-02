@@ -15,12 +15,11 @@
 package stores
 
 import (
-	"bytes"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 
-	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/internal/hash"
 	"github.com/pkg/errors"
 	"gopkg.in/resty.v1"
 )
@@ -31,11 +30,8 @@ func GetMessage(location string, integrityHash []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	hash := crypto.CreateIntegrityHash(msg)
-
-	if len(integrityHash) != 0 && !bytes.Equal(hash, integrityHash) {
-		return nil, errors.Errorf("hash does not match contents")
+	if err := hash.CompareContentsToHash(msg, integrityHash); len(integrityHash) != 0 && err != nil {
+		return nil, err
 	}
 
 	return msg, nil

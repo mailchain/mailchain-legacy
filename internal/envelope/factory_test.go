@@ -23,6 +23,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
+	"github.com/mailchain/mailchain/internal/mli"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,7 +31,7 @@ func TestNewEnvelope(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	opts := func(envelopeKind byte) []CreateOptionsBuilder {
-		locOpt, err := WithMessageLocationIdentifier(MLIMailchain)
+		locOpt, err := WithMessageLocationIdentifier(mli.Mailchain)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()
@@ -114,6 +115,14 @@ func Test_parseEvelope(t *testing.T) {
 				KindString0x01,
 			},
 			Kind0x01,
+			false,
+		},
+		{
+			"0x02",
+			args{
+				KindString0x02,
+			},
+			Kind0x02,
 			false,
 		},
 		{

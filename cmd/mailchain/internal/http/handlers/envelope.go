@@ -17,10 +17,22 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/mailchain/mailchain/stores"
+	"github.com/mailchain/mailchain/stores/pinata"
+	"github.com/mailchain/mailchain/stores/s3store"
 )
 
-// GetEnvelope returns the available envelopes
-func GetEnvelope() func(w http.ResponseWriter, r *http.Request) {
+// GetEnvelope returns the available envelopes.
+func GetEnvelope(sent stores.Sent) func(w http.ResponseWriter, r *http.Request) {
+	zeroX01 := GetEnvelopeResponseBodyElement{
+		Type:        "0x01",
+		Description: "Private Message Stored with MLI",
+	}
+	zeroX02 := GetEnvelopeResponseBodyElement{
+		Type:        "0x02",
+		Description: "Private Message Stored on IPFS",
+	}
 	// Get swagger:route GET /envelope Envelope GetEnvelope
 	//
 	// Get Mailchain envelope
@@ -32,12 +44,18 @@ func GetEnvelope() func(w http.ResponseWriter, r *http.Request) {
 	//   200: GetEnvelopeResponseBody
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode([]GetEnvelopeResponseBody{
-			{
-				Type:        "0x01",
-				Description: "Private Message Stored with MLI",
-			},
-		})
+
+		body := []GetEnvelopeResponseBodyElement{}
+		switch sent.(type) {
+		case *s3store.Sent:
+			body = append(body, zeroX01)
+		case *stores.SentStore:
+			body = append(body, zeroX01)
+		case *pinata.Sent:
+			body = append(body, zeroX02)
+		}
+
+		_ = json.NewEncoder(w).Encode(body)
 	}
 }
 
@@ -46,13 +64,13 @@ func GetEnvelope() func(w http.ResponseWriter, r *http.Request) {
 // swagger:response GetEnvelopeResponse
 type GetEnvelopeResponse struct {
 	// in: body
-	Body []GetEnvelopeResponseBody
+	Body []GetEnvelopeResponseBodyElement
 }
 
-// GetEnvelopeResponseBody response
+// GetEnvelopeResponseBodyElement response
 //
-// swagger:model GetEnvelopeResponseBody
-type GetEnvelopeResponseBody struct {
+// swagger:model GetEnvelopeResponseBodyElement
+type GetEnvelopeResponseBodyElement struct {
 	// The envelope type
 	// Required: true
 	// example: 0x01

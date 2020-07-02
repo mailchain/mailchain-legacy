@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package envelope
+package mli
 
 import (
 	"testing"
@@ -20,20 +20,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMLIToAddress(t *testing.T) {
+func TestToAddress(t *testing.T) {
 	tests := []struct {
 		name string
 		want map[uint64]string
 	}{
 		{
 			"compatibility",
-			map[uint64]string{0x1: "https://mcx.mx"},
+			map[uint64]string{
+				0x1: "https://mcx.mx",
+				0x2: "https://ipfs.io/ipfs",
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := MLIToAddress(); !assert.Equal(t, tt.want, got) {
-				t.Errorf("MLIToAddress() = %v, want %v", got, tt.want)
+			if got := ToAddress(); !assert.Equal(t, tt.want, got) {
+				t.Errorf("ToAddress() = %v, want %v", got, tt.want)
 			}
 		})
 	}

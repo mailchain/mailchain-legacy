@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"github.com/mailchain/mailchain/cmd/sentstore/storage"
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/errs"
+	"github.com/mailchain/mailchain/internal/hash"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/pkg/errors"
 )
@@ -86,7 +86,7 @@ func getContents(body io.Reader, maxContents int) (contents []byte, status int, 
 }
 
 func compHash(contents []byte, suppliedHex string) error {
-	integrityHash := crypto.CreateIntegrityHash(contents)
+	integrityHash := hash.CreateIntegrityHash(contents)
 	suppliedHash, err := mail.FromHexString(suppliedHex)
 	if err != nil {
 		return err

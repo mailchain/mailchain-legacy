@@ -33,7 +33,8 @@ license: .FORCE
 
 proto:
 	rm -f ./internal/envelope/*.pb.go
-	protoc ./internal/envelope/data.proto -I. --go_out=:.
+	# protoc ./internal/envelope/data.proto -I. --go_out=:.
+	docker run --rm -v $(CURDIR):$(CURDIR) -w $(CURDIR) znly/protoc:0.4.0 ./internal/envelope/data.proto -I. --go_out=:.
 
 .PHONY: go-generate
 go-generate:

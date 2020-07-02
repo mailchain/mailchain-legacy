@@ -7,6 +7,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/internal/settings/values/valuestest"
 	"github.com/mailchain/mailchain/stores"
+	"github.com/mailchain/mailchain/stores/pinata"
 	"github.com/mailchain/mailchain/stores/s3store"
 	"github.com/stretchr/testify/assert"
 )
@@ -49,6 +50,7 @@ func TestSentStore_Produce(t *testing.T) {
 		Kind      values.String
 		s3        *SentStoreS3
 		mailchain *SentStoreMailchain
+		pinata    *SentStorePinata
 	}
 	tests := []struct {
 		name     string
@@ -75,8 +77,31 @@ func TestSentStore_Produce(t *testing.T) {
 					return m
 				}()),
 				nil,
+				nil,
 			},
 			&s3store.Sent{},
+			false,
+		},
+		{
+			"pinata",
+			fields{
+				func() values.String {
+					m := valuestest.NewMockString(mockCtrl)
+					m.EXPECT().Get().Return("pinata")
+					return m
+				}(),
+				nil,
+				nil,
+				sentStorePinata(func() values.Store {
+					m := valuestest.NewMockStore(mockCtrl)
+					m.EXPECT().IsSet("sentstore.pinata.api-key").Return(true)
+					m.EXPECT().GetString("sentstore.pinata.api-key").Return("api-key-value")
+					m.EXPECT().IsSet("sentstore.pinata.api-secret").Return(true)
+					m.EXPECT().GetString("sentstore.pinata.api-secret").Return("api-secret-value")
+					return m
+				}()),
+			},
+			&pinata.Sent{},
 			false,
 		},
 		{
@@ -89,6 +114,7 @@ func TestSentStore_Produce(t *testing.T) {
 				}(),
 				nil,
 				&SentStoreMailchain{},
+				nil,
 			},
 			&stores.SentStore{},
 			false,
@@ -103,6 +129,7 @@ func TestSentStore_Produce(t *testing.T) {
 				}(),
 				nil,
 				nil,
+				nil,
 			},
 			nil,
 			true,
@@ -114,6 +141,7 @@ func TestSentStore_Produce(t *testing.T) {
 				Kind:      tt.fields.Kind,
 				s3:        tt.fields.s3,
 				mailchain: tt.fields.mailchain,
+				pinata:    tt.fields.pinata,
 			}
 			got, err := ss.Produce()
 			if (err != nil) != tt.wantErr {

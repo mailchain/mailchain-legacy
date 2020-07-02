@@ -14,7 +14,10 @@
 
 package envelope
 
-import "github.com/pkg/errors"
+import (
+	"github.com/mailchain/mailchain/internal/mli"
+	"github.com/pkg/errors"
+)
 
 // CreateOptionsBuilder creates the options to derive a key from scrypt.
 type CreateOptionsBuilder func(*CreateOpts)
@@ -33,6 +36,8 @@ type CreateOpts struct {
 	Kind byte
 	// Location maps to an addressable location.
 	Location uint64
+	// EncryptedContents message after its been encrypted.
+	EncryptedContents []byte
 }
 
 // func (d CreateOpts) Kind() byte { return d.Kind }
@@ -52,14 +57,19 @@ func WithResource(resource string) CreateOptionsBuilder {
 	return func(o *CreateOpts) { o.Resource = resource }
 }
 
+// WithEncryptedContents creates options builder with a the encrypted content of the message.
+func WithEncryptedContents(encryptedContents []byte) CreateOptionsBuilder {
+	return func(o *CreateOpts) { o.EncryptedContents = encryptedContents }
+}
+
 // WithMessageLocationIdentifier creates options builder with a message location identifier.
-func WithMessageLocationIdentifier(mli uint64) (CreateOptionsBuilder, error) {
-	_, ok := MLIToAddress()[mli]
-	if !ok && mli != 0 {
-		return func(o *CreateOpts) {}, errors.Errorf("unknown mli %q", mli)
+func WithMessageLocationIdentifier(msgLocInd uint64) (CreateOptionsBuilder, error) {
+	_, ok := mli.ToAddress()[msgLocInd]
+	if !ok && msgLocInd != 0 {
+		return func(o *CreateOpts) {}, errors.Errorf("unknown mli %q", msgLocInd)
 	}
 
-	return func(o *CreateOpts) { o.Location = mli }, nil
+	return func(o *CreateOpts) { o.Location = msgLocInd }, nil
 }
 
 // WithDecryptedHash creates options builder with the decrypted hash.

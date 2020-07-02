@@ -21,14 +21,21 @@ import (
 )
 
 const (
-	// Kind0x01 envelope identifier for Message Location Identifier Envelope.
+	// Kind0x01 envelope identifier for Message Location Identifier Envelope where the resource is the decrypted hash.
+	// This is used for stores where the resource can be set regardless of the content.
 	// The first byte of the envelope is used to identify which programmable envelope is used.
 	Kind0x01 byte = 0x01
+	// Kind0x02 envelope identifier for Message Location Identifier Envelope where the resource is the encrypted hash.
+	// This is used for stores where the resource is set based on the hash of the content.
+	// The first byte of the envelope is used to identify which programmable envelope is used.
+	Kind0x02 byte = 0x02
 	// Kind0x50 envelope identifier for Alpha Envelope.
 	// The first byte of the envelope is used to identify which programmable envelope is used.
 	Kind0x50 byte = 0x50
-	// KindString0x01 envelope string identifier for Message Location Identifier Envelope.
+	// KindString0x01 envelope string identifier for Message Location Identifier Envelope decrypted hash.
 	KindString0x01 string = "0x01"
+	// KindString0x02 envelope string identifier for Message Location Identifier Envelope encrypted hash.
+	KindString0x02 string = "0x02"
 	// KindString0x50 envelope string identifier for Alpha Envelope.
 	KindString0x50 string = "0x50"
 )

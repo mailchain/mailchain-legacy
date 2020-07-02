@@ -63,7 +63,7 @@ func CreateRouter(s *settings.Root, cmd *cobra.Command) (http.Handler, error) {
 
 	api.HandleFunc("/addresses", handlers.GetAddresses(config.keystore)).Methods("GET")
 
-	api.HandleFunc("/envelope", handlers.GetEnvelope()).Methods("GET")
+	api.HandleFunc("/envelope", handlers.GetEnvelope(config.sentStore)).Methods("GET")
 
 	api.HandleFunc("/messages", handlers.GetMessages(config.mailboxStateStore, config.receivers, config.keystore, deriveKeyOptions)).Methods("GET") //nolint:lll
 	api.HandleFunc("/messages", handlers.SendMessage(config.sentStore, config.senders, config.keystore, deriveKeyOptions)).Methods("POST")

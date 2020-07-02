@@ -17,21 +17,18 @@ syntax = "proto3";
 
 package envelope;
 
-// Use hosted location where the decryptedhash is the same as the location. Location, decrypted hash are encrypted so only receipient can location and verify the message.
+// Use hosted location where the decryptedhash is the same as the location. Location and encrypted hash are encrypted so only receipient can location and verify the message.
 message ZeroX01 {
     bytes UIBEncryptedLocationHash = 1;
     bytes encryptedHash = 2;
 }
 
-// message ZeroX01 {
-//     uint64 location = 1;
-//     bytes cipherResource = 2;
-//     bytes resource = 3;
-//     bytes cipherDecryptedHash = 4;
-//     bytes decryptedHash = 5;
-//     bytes cipherEncryptedHash = 6;
-//     bytes encryptedHash = 7;
-// }
+// Use hosted location where the encrypted hash is the same as the location. Location and decrypted hash are encrypted so only receipient can location and verify the message.
+message ZeroX02 {
+    bytes UIBEncryptedLocationHash = 1;
+    bytes decryptedHash = 2;
+}
+
 
 // original message format
 message ZeroX50 {
@@ -39,12 +36,3 @@ message ZeroX50 {
     bytes encryptedURL = 2;
     bytes decryptedHash = 3;
 }
-
-// message Data {
-//   uint64 msgStoreCode = 1;
-//   uint64 kind = 2;
-//   bytes host = 3;
-//   bytes resource = 4;
-//   bytes decryptedHash = 5;
-//   bytes encryptedHash = 6;
-// }

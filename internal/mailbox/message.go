@@ -17,11 +17,11 @@ package mailbox
 import (
 	"context"
 
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/envelope"
+	"github.com/mailchain/mailchain/internal/hash"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
@@ -49,7 +49,7 @@ func SendMessage(ctx context.Context, protocol, network string, msg *mail.Messag
 		return errors.WithMessage(err, "could not encrypt mail message")
 	}
 
-	msgAddress, resource, mli, err := sent.PutMessage(msg.ID, crypto.CreateMessageHash(encodedMsg), encrypted, nil)
+	msgAddress, resource, mli, err := sent.PutMessage(msg.ID, hash.CreateMessageHash(encodedMsg), encrypted, nil)
 	if err != nil {
 		return errors.WithMessage(err, "failed to store message")
 	}
@@ -63,7 +63,9 @@ func SendMessage(ctx context.Context, protocol, network string, msg *mail.Messag
 		envelope.WithKind(envelopeKind),
 		envelope.WithURL(msgAddress),
 		envelope.WithResource(resource),
-		envelope.WithDecryptedHash(crypto.CreateMessageHash(encodedMsg)),
+		envelope.WithEncryptedContents(encrypted),
+		envelope.WithDecryptedHash(hash.CreateMessageHash(encodedMsg)),
+		envelope.WithEncryptedHash(hash.CreateIntegrityHash(encrypted)),
 		locOpt,
 	}
 

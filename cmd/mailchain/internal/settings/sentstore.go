@@ -13,6 +13,7 @@ func sentStore(s values.Store) *SentStore {
 		Kind:      values.NewDefaultString(defaults.SentStoreKind, s, "sentstore.kind"),
 		s3:        sentStoreS3(s),
 		mailchain: &SentStoreMailchain{},
+		pinata:    sentStorePinata(s),
 	}
 	return ss
 }
@@ -22,6 +23,7 @@ type SentStore struct {
 	Kind      values.String
 	s3        *SentStoreS3
 	mailchain *SentStoreMailchain
+	pinata    *SentStorePinata
 }
 
 // Produce `stores.Sent` based on configuration settings.
@@ -31,6 +33,8 @@ func (ss SentStore) Produce() (stores.Sent, error) {
 		return ss.s3.Produce()
 	case defaults.Mailchain:
 		return ss.mailchain.Produce()
+	case StorePinata:
+		return ss.pinata.Produce()
 	default:
 		return nil, errors.Errorf("%q is an unsupported sent store", ss.Kind.Get())
 	}
@@ -43,6 +47,7 @@ func (ss SentStore) Output() output.Element {
 		Attributes: []output.Attribute{ss.Kind.Attribute()},
 		Elements: []output.Element{
 			ss.s3.Output(),
+			ss.pinata.Output(),
 		},
 	}
 }

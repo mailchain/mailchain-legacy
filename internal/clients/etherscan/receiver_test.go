@@ -56,7 +56,7 @@ func TestReceive(t *testing.T) {
 				context.Background(),
 				"TestNetwork",
 			},
-			errors.New("invalid character 'i' looking for beginning of object key string"),
+			errors.New("{invalid}: invalid character 'i' looking for beginning of object key string"),
 			true,
 			nil,
 		},
@@ -137,7 +137,7 @@ func TestReceive(t *testing.T) {
 				networkConfigs: map[string]networkConfig{"TestNetwork": {url: server.URL}},
 			}
 			got, err := client.Receive(tt.args.ctx, tt.args.network, []byte{})
-			if (err != nil) && err.Error() != tt.wantErr.Error() {
+			if (err != nil) && !assert.Equal(t, tt.wantErr.Error(), err.Error()) {
 				t.Errorf("APIClient.Receive() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}

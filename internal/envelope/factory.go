@@ -27,6 +27,8 @@ func NewEnvelope(encrypter cipher.Encrypter, o []CreateOptionsBuilder) (Data, er
 	switch opts.Kind {
 	case Kind0x01:
 		return NewZeroX01(encrypter, opts)
+	case Kind0x02:
+		return NewZeroX02(encrypter, opts)
 	default:
 		return nil, errors.Errorf("unknown kind")
 	}
@@ -38,11 +40,13 @@ func apply(o *CreateOpts, opts []CreateOptionsBuilder) {
 	}
 }
 
-// ParseEnvelope parses envelope from string to byte
+// ParseEnvelope parses envelope from string to byte.
 func ParseEnvelope(envelope string) (byte, error) {
 	switch envelope {
 	case KindString0x01:
 		return Kind0x01, nil
+	case KindString0x02:
+		return Kind0x02, nil
 	case KindString0x50:
 		return Kind0x50, nil
 	default:

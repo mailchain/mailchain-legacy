@@ -17,10 +17,10 @@ package mailbox
 import (
 	"bytes"
 
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/envelope"
+	"github.com/mailchain/mailchain/internal/hash"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
 	"github.com/mailchain/mailchain/stores"
@@ -59,17 +59,16 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 		return nil, errors.WithMessage(err, "could not decrypt message")
 	}
 
-	hash, err := data.ContentsHash(decrypter)
-
+	contentsHash, err := data.ContentsHash(decrypter)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not get hash")
 	}
 
-	if len(hash) != 0 {
-		messageHash := crypto.CreateMessageHash(rawMsg)
-		if !bytes.Equal(messageHash, hash) {
+	if len(contentsHash) != 0 {
+		messageHash := hash.CreateMessageHash(rawMsg)
+		if !bytes.Equal(messageHash, contentsHash) {
 			return nil, errors.Errorf("contents-hash invalid: message-hash = %v contents-hash = %v",
-				encoding.EncodeHex(messageHash), encoding.EncodeHex(hash))
+				encoding.EncodeHex(messageHash), encoding.EncodeHex(contentsHash))
 		}
 	}
 

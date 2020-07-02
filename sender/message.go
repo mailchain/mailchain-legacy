@@ -27,5 +27,5 @@ type Message interface {
 	Send(ctx context.Context, network string, to []byte, from []byte, data []byte, signer signer.Signer, opts SendOpts) (err error)
 }
 
-// SendOpts options for sending a message
+// SendOpts options for sending a message.
 type SendOpts interface{}

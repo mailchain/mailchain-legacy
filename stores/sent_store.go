@@ -25,11 +25,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/envelope"
+	"github.com/mailchain/mailchain/internal/hash"
 	"github.com/mailchain/mailchain/internal/mail"
+	"github.com/mailchain/mailchain/internal/mli"
 	"github.com/pkg/errors"
 )
 
@@ -60,42 +60,42 @@ func (s SentStore) Key(messageID mail.ID, contentsHash, msg []byte) string {
 
 // PutMessage stores message contents.
 func (s SentStore) PutMessage(messageID mail.ID, contentsHash, msg []byte, headers map[string]string) (
-	address, resource string, mli uint64, err error) {
-	hash := crypto.CreateIntegrityHash(msg)
+	address, resource string, msgLocInd uint64, err error) {
+	hash := hash.CreateIntegrityHash(msg)
 	url := fmt.Sprintf("%s?hash=%s&contents-hash=%s", s.domain, hash.HexString(), encoding.EncodeHex(contentsHash))
 
 	req, err := s.newRequest("POST", url, bytes.NewReader(msg))
 	if err != nil {
-		return "", "", envelope.MLIMailchain, err
+		return "", "", mli.Mailchain, err
 	}
 
 	req.Header.Add("Content-Type", "application/octet-stream")
 
 	resp, err := s.doRequest(req)
 	if err != nil {
-		return "", "", envelope.MLIMailchain, err
+		return "", "", mli.Mailchain, err
 	}
 
 	if err := responseAsError(resp); err != nil {
-		return "", "", envelope.MLIMailchain, err
+		return "", "", mli.Mailchain, err
 	}
 
 	loc := resp.Header.Get("Location")
 	if loc == "" {
-		return "", "", envelope.MLIMailchain, errors.Errorf("missing `Location` header")
+		return "", "", mli.Mailchain, errors.Errorf("missing `Location` header")
 	}
 
-	mli, err = strconv.ParseUint(resp.Header.Get("Message-Location-Identifier"), 10, 0)
+	msgLocInd, err = strconv.ParseUint(resp.Header.Get("Message-Location-Identifier"), 10, 0)
 	if err != nil {
-		return "", "", envelope.MLIMailchain, errors.Errorf("%q is not valid for `Message-Location-Identifier` header must be %v",
-			resp.Header.Get("Message-Location-Identifier"), envelope.MLIMailchain)
+		return "", "", mli.Mailchain, errors.Errorf("%q is not valid for `Message-Location-Identifier` header must be %v",
+			resp.Header.Get("Message-Location-Identifier"), mli.Mailchain)
 	}
 
-	if mli != envelope.MLIMailchain {
-		return "", "", envelope.MLIMailchain, errors.Errorf("mismatch `Message-Location-Identifier` header")
+	if msgLocInd != mli.Mailchain {
+		return "", "", mli.Mailchain, errors.Errorf("mismatch `Message-Location-Identifier` header")
 	}
 
-	return loc, encoding.EncodeHex(contentsHash), envelope.MLIMailchain, nil
+	return loc, encoding.EncodeHex(contentsHash), mli.Mailchain, nil
 }
 
 func responseAsError(r *http.Response) error {

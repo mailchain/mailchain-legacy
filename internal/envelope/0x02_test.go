@@ -30,13 +30,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestZeroX01_URL(t *testing.T) {
+func TestZeroX02_URL(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	type fields struct {
 		UIBEncryptedLocationHash []byte
-		EncryptedHash            []byte
+		DecryptedHash            []byte
 	}
 	type args struct {
 		decrypter cipher.Decrypter
@@ -52,33 +52,50 @@ func TestZeroX01_URL(t *testing.T) {
 			"success",
 			fields{
 				[]byte("UIBEncryptedLocationHash"),
-				[]byte("EncryptedHash"),
+				[]byte("DecryptedHash"),
 			},
 			args{
 				func() cipher.Decrypter {
 					m := ciphertest.NewMockDecrypter(mockCtrl)
 
-					m.EXPECT().Decrypt(cipher.EncryptedContent([]byte("UIBEncryptedLocationHash"))).Return([]byte{0x1, 0x01, 0x76, 0x61, 0x6c, 0x75, 0x65}, nil)
+					m.EXPECT().Decrypt(cipher.EncryptedContent([]byte("UIBEncryptedLocationHash"))).Return(encodingtest.MustDecodeHex("010201551220497b22d4e86a3caa9f5baa24435a99ac1154094a0b9302b9bcd9d6544d6efbe9"), nil)
 					return m
 				}(),
 			},
 			func() *url.URL {
-				u, _ := url.Parse("https://mcx.mx/76616c7565")
+				u, _ := url.Parse("https://ipfs.io/ipfs/bafkreicjpmrnj2dkhsvj6w5kerbvvgnmcfkassqlsmbltpgz2zke23x35e")
 				return u
 			}(),
 			false,
 		},
 		{
-			"err-unknown-loc-code",
+			"err-cid",
 			fields{
 				[]byte("UIBEncryptedLocationHash"),
-				[]byte("EncryptedHash"),
+				[]byte("DecryptedHash"),
 			},
 			args{
 				func() cipher.Decrypter {
 					m := ciphertest.NewMockDecrypter(mockCtrl)
 
-					m.EXPECT().Decrypt(cipher.EncryptedContent([]byte("UIBEncryptedLocationHash"))).Return([]byte{0x1, 0x00, 0x76, 0x61, 0x6c, 0x75, 0x65}, nil)
+					m.EXPECT().Decrypt(cipher.EncryptedContent([]byte("UIBEncryptedLocationHash"))).Return(encodingtest.MustDecodeHex("0102f4551220497b22d4e86a3caa9f5baa24435a99ac1154094a0b9302b9bcd9d6544d6efbe9"), nil)
+					return m
+				}(),
+			},
+			nil,
+			true,
+		},
+		{
+			"err-unknown-loc-code",
+			fields{
+				[]byte("UIBEncryptedLocationHash"),
+				[]byte("DecryptedHash"),
+			},
+			args{
+				func() cipher.Decrypter {
+					m := ciphertest.NewMockDecrypter(mockCtrl)
+
+					m.EXPECT().Decrypt(cipher.EncryptedContent([]byte("UIBEncryptedLocationHash"))).Return(encodingtest.MustDecodeHex("010001551220497b22d4e86a3caa9f5baa24435a99ac1154094a0b9302b9bcd9d6544d6efbe9"), nil)
 					return m
 				}(),
 			},
@@ -89,7 +106,7 @@ func TestZeroX01_URL(t *testing.T) {
 			"err-invalid-uint64-bytes",
 			fields{
 				[]byte("UIBEncryptedLocationHash"),
-				[]byte("EncryptedHash"),
+				[]byte("DecryptedHash"),
 			},
 			args{
 				func() cipher.Decrypter {
@@ -106,7 +123,7 @@ func TestZeroX01_URL(t *testing.T) {
 			"err-decrypt",
 			fields{
 				[]byte("UIBEncryptedLocationHash"),
-				[]byte("EncryptedHash"),
+				[]byte("DecryptedHash"),
 			},
 			args{
 				func() cipher.Decrypter {
@@ -122,28 +139,28 @@ func TestZeroX01_URL(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &ZeroX01{
+			d := &ZeroX02{
 				UIBEncryptedLocationHash: tt.fields.UIBEncryptedLocationHash,
-				EncryptedHash:            tt.fields.EncryptedHash,
+				DecryptedHash:            tt.fields.DecryptedHash,
 			}
 			got, err := d.URL(tt.args.decrypter)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ZeroX01.URL() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ZeroX02.URL() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ZeroX01.URL() = %v, want %v", got, tt.want)
+				t.Errorf("ZeroX02.URL() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestZeroX01_ContentsHash(t *testing.T) {
+func TestZeroX02_ContentsHash(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type fields struct {
 		UIBEncryptedLocationHash []byte
-		EncryptedHash            []byte
+		DecryptedHash            []byte
 	}
 	type args struct {
 		decrypter cipher.Decrypter
@@ -159,7 +176,55 @@ func TestZeroX01_ContentsHash(t *testing.T) {
 			"success",
 			fields{
 				[]byte("UIBEncryptedLocationHash"),
-				[]byte("EncryptedHash"),
+				[]byte("DecryptedHash"),
+			},
+			args{
+				nil,
+			},
+			[]byte("DecryptedHash"),
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d := &ZeroX02{
+				UIBEncryptedLocationHash: tt.fields.UIBEncryptedLocationHash,
+				DecryptedHash:            tt.fields.DecryptedHash,
+			}
+			got, err := d.ContentsHash(tt.args.decrypter)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ZeroX02.ContentsHash() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !assert.Equal(t, tt.want, got) {
+				t.Errorf("ZeroX02.ContentsHash() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestZeroX02_IntegrityHash(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type fields struct {
+		UIBEncryptedLocationHash []byte
+		DecryptedHash            []byte
+	}
+	type args struct {
+		decrypter cipher.Decrypter
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    []byte
+		wantErr bool
+	}{
+		{
+			"success",
+			fields{
+				[]byte("UIBEncryptedLocationHash"),
+				[]byte("DecryptedHash"),
 			},
 			args{
 				func() cipher.Decrypter {
@@ -176,7 +241,7 @@ func TestZeroX01_ContentsHash(t *testing.T) {
 			"err-decrypt",
 			fields{
 				[]byte("UIBEncryptedLocationHash"),
-				[]byte("EncryptedHash"),
+				[]byte("DecryptedHash"),
 			},
 			args{
 				func() cipher.Decrypter {
@@ -192,77 +257,26 @@ func TestZeroX01_ContentsHash(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &ZeroX01{
+			d := &ZeroX02{
 				UIBEncryptedLocationHash: tt.fields.UIBEncryptedLocationHash,
-				EncryptedHash:            tt.fields.EncryptedHash,
-			}
-			got, err := d.ContentsHash(tt.args.decrypter)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ZeroX01.ContentsHash() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !assert.Equal(t, tt.want, got) {
-				t.Errorf("ZeroX01.ContentsHash() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestZeroX01_IntegrityHash(t *testing.T) {
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-	type fields struct {
-		UIBEncryptedLocationHash []byte
-		EncryptedHash            []byte
-	}
-	type args struct {
-		decrypter cipher.Decrypter
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    []byte
-		wantErr bool
-	}{
-		{
-			"success",
-			fields{
-				[]byte("UIBEncryptedLocationHash"),
-				[]byte("EncryptedHash"),
-			},
-			args{
-				func() cipher.Decrypter {
-					m := ciphertest.NewMockDecrypter(mockCtrl)
-					return m
-				}(),
-			},
-			[]byte("EncryptedHash"),
-			false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			d := &ZeroX01{
-				UIBEncryptedLocationHash: tt.fields.UIBEncryptedLocationHash,
-				EncryptedHash:            tt.fields.EncryptedHash,
+				DecryptedHash:            tt.fields.DecryptedHash,
 			}
 			got, err := d.IntegrityHash(tt.args.decrypter)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ZeroX01.IntegrityHash() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("ZeroX01.IntegrityHash() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestZeroX01_Valid(t *testing.T) {
+func TestZeroX02_Valid(t *testing.T) {
 	type fields struct {
 		UIBEncryptedLocationHash []byte
-		EncryptedHash            []byte
+		DecryptedHash            []byte
 	}
 	tests := []struct {
 		name    string
@@ -273,9 +287,17 @@ func TestZeroX01_Valid(t *testing.T) {
 			"success",
 			fields{
 				[]byte("UIBEncryptedLocationHash"),
-				nil,
+				[]byte("DecryptedHash"),
 			},
 			false,
+		},
+		{
+			"err-no-decrypted-hash",
+			fields{
+				[]byte("UIBEncryptedLocationHash"),
+				nil,
+			},
+			true,
 		},
 		{
 			"err-no-EncryptedLocationHash",
@@ -288,18 +310,18 @@ func TestZeroX01_Valid(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &ZeroX01{
+			d := &ZeroX02{
 				UIBEncryptedLocationHash: tt.fields.UIBEncryptedLocationHash,
-				EncryptedHash:            tt.fields.EncryptedHash,
+				DecryptedHash:            tt.fields.DecryptedHash,
 			}
 			if err := d.Valid(); (err != nil) != tt.wantErr {
-				t.Errorf("ZeroX01.Valid() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ZeroX02.Valid() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
 }
 
-func TestNewZeroX01(t *testing.T) {
+func TestNewZeroX02(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -310,7 +332,7 @@ func TestNewZeroX01(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *ZeroX01
+		want    *ZeroX02
 		wantErr bool
 	}{
 		{
@@ -318,41 +340,20 @@ func TestNewZeroX01(t *testing.T) {
 			args{
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(gomock.Any()).Return([]byte("encrypted"), nil)
+					m.EXPECT().Encrypt(gomock.Any()).Return([]byte{0x2a, 0xe1, 0x2, 0xa3, 0xaa, 0xe8, 0xec, 0xaf, 0xd5, 0xe3, 0xb6, 0xbc, 0x8c, 0xef, 0x3b, 0x6a, 0x63, 0x79, 0x27, 0x5b, 0x89, 0xed, 0x78, 0x3c, 0xba, 0x9, 0xe4, 0xa0, 0xbc, 0x43, 0xba, 0x45, 0xd6, 0x3c, 0xc1, 0x39, 0x13, 0xd3, 0x7a, 0x16, 0x15, 0x37, 0x7d, 0x92, 0x3d, 0x47, 0x3a, 0x63, 0xef, 0x7c, 0x7a, 0xea, 0x4a, 0x1, 0xe1, 0x31, 0x41, 0xbc, 0xa7, 0x6b, 0x6b, 0x5b, 0xbc, 0x66, 0xda, 0x10, 0xdc, 0xb5, 0x26, 0x19, 0x4a, 0xe7, 0x91, 0x24, 0x34, 0x76, 0x1a, 0x43, 0xa, 0x6, 0xf9, 0x4e, 0xae, 0x9e, 0x1e, 0x77, 0xcd, 0x77, 0xdf, 0x91, 0x73, 0xa2, 0xf9, 0x42, 0xb7, 0x2d, 0x67, 0xe1, 0xfd, 0xef, 0xd4, 0x36, 0x54, 0xb5, 0xb, 0xfe, 0x3a, 0xd1, 0xbd, 0x80, 0x3, 0xf3, 0xdf}, nil)
 					return m
 				}(),
 				secp256k1test.CharlottePublicKey,
 				&CreateOpts{
-					Location:      mli.Mailchain,
-					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
-					Resource:      "2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba",
+					Location:          mli.IPFS,
+					DecryptedHash:     encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					Resource:          "bafkreicjpmrnj2dkhsvj6w5kerbvvgnmcfkassqlsmbltpgz2zke23x35e",
+					EncryptedContents: []byte("test test test"),
 				},
 			},
-			&ZeroX01{
-				UIBEncryptedLocationHash: []uint8{0x65, 0x6e, 0x63, 0x72, 0x79, 0x70, 0x74, 0x65, 0x64},
-				EncryptedHash:            []uint8(nil),
-			},
-			false,
-		},
-		{
-			"success-encrypted-hash",
-			args{
-				func() cipher.Encrypter {
-					m := ciphertest.NewMockEncrypter(mockCtrl)
-					m.EXPECT().Encrypt(gomock.Any()).Return([]byte("encrypted"), nil)
-					return m
-				}(),
-				secp256k1test.CharlottePublicKey,
-				&CreateOpts{
-					EncryptedHash: encodingtest.MustDecodeHex("220455078214"),
-					Location:      mli.Mailchain,
-					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
-					Resource:      "2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba",
-				},
-			},
-			&ZeroX01{
-				UIBEncryptedLocationHash: []uint8{0x65, 0x6e, 0x63, 0x72, 0x79, 0x70, 0x74, 0x65, 0x64},
-				EncryptedHash:            []uint8{0x22, 0x4, 0x55, 0x7, 0x82, 0x14},
+			&ZeroX02{
+				UIBEncryptedLocationHash: []uint8{0x2a, 0xe1, 0x2, 0xa3, 0xaa, 0xe8, 0xec, 0xaf, 0xd5, 0xe3, 0xb6, 0xbc, 0x8c, 0xef, 0x3b, 0x6a, 0x63, 0x79, 0x27, 0x5b, 0x89, 0xed, 0x78, 0x3c, 0xba, 0x9, 0xe4, 0xa0, 0xbc, 0x43, 0xba, 0x45, 0xd6, 0x3c, 0xc1, 0x39, 0x13, 0xd3, 0x7a, 0x16, 0x15, 0x37, 0x7d, 0x92, 0x3d, 0x47, 0x3a, 0x63, 0xef, 0x7c, 0x7a, 0xea, 0x4a, 0x1, 0xe1, 0x31, 0x41, 0xbc, 0xa7, 0x6b, 0x6b, 0x5b, 0xbc, 0x66, 0xda, 0x10, 0xdc, 0xb5, 0x26, 0x19, 0x4a, 0xe7, 0x91, 0x24, 0x34, 0x76, 0x1a, 0x43, 0xa, 0x6, 0xf9, 0x4e, 0xae, 0x9e, 0x1e, 0x77, 0xcd, 0x77, 0xdf, 0x91, 0x73, 0xa2, 0xf9, 0x42, 0xb7, 0x2d, 0x67, 0xe1, 0xfd, 0xef, 0xd4, 0x36, 0x54, 0xb5, 0xb, 0xfe, 0x3a, 0xd1, 0xbd, 0x80, 0x3, 0xf3, 0xdf},
+				DecryptedHash:            []uint8{0x2c, 0x84, 0x32, 0xca, 0x28, 0xce, 0x92, 0x9b, 0x86, 0xa4, 0x7f, 0x2d, 0x40, 0x41, 0x3d, 0x16, 0x1f, 0x59, 0x1f, 0x89, 0x85, 0x22, 0x90, 0x60, 0x49, 0x15, 0x73, 0xd8, 0x3f, 0x82, 0xf2, 0x92, 0xf4, 0xdc, 0x68, 0xf9, 0x18, 0x44, 0x63, 0x32, 0x83, 0x7a, 0xa5, 0x7c, 0xd5, 0x14, 0x52, 0x35, 0xcc, 0x40, 0x70, 0x2d, 0x96, 0x2c, 0xbb, 0x53, 0xac, 0x27, 0xfb, 0x22, 0x46, 0xfb, 0x6c, 0xba},
 			},
 			false,
 		},
@@ -366,16 +367,17 @@ func TestNewZeroX01(t *testing.T) {
 				}(),
 				secp256k1test.CharlottePublicKey,
 				&CreateOpts{
-					Location:      mli.Mailchain,
-					Resource:      "2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba",
-					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					Location:          mli.Mailchain,
+					DecryptedHash:     encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					Resource:          "bafkreicjpmrnj2dkhsvj6w5kerbvvgnmcfkassqlsmbltpgz2zke23x35e",
+					EncryptedContents: []byte("test test test"),
 				},
 			},
 			nil,
 			true,
 		},
 		{
-			"err-missing-decrypted-hash",
+			"err-contents-dont-match-hash",
 			args{
 				func() cipher.Encrypter {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
@@ -383,7 +385,46 @@ func TestNewZeroX01(t *testing.T) {
 				}(),
 				secp256k1test.CharlottePublicKey,
 				&CreateOpts{
-					Location: mli.Mailchain,
+					Location:          mli.Mailchain,
+					DecryptedHash:     encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					Resource:          "bafkreicjpmrnj2dkhsvj6w5kerbvvgnmcfkassqlsmbltpgz2zke23x35e",
+					EncryptedContents: []byte("not the hash"),
+				},
+			},
+			nil,
+			true,
+		},
+		{
+			"err-decode-cod",
+			args{
+				func() cipher.Encrypter {
+					m := ciphertest.NewMockEncrypter(mockCtrl)
+					return m
+				}(),
+				secp256k1test.CharlottePublicKey,
+				&CreateOpts{
+					Location:          mli.Mailchain,
+					DecryptedHash:     encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					Resource:          "bafkreicjpmrnj2dkhsvj6w5kerbvvgnmcflsmbltpgz2zke23x35e",
+					EncryptedContents: []byte("test test test"),
+				},
+			},
+			nil,
+			true,
+		},
+		{
+			"err-missing-resource",
+			args{
+				func() cipher.Encrypter {
+					m := ciphertest.NewMockEncrypter(mockCtrl)
+					return m
+				}(),
+				secp256k1test.CharlottePublicKey,
+				&CreateOpts{
+					Location:          mli.Mailchain,
+					DecryptedHash:     encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					Resource:          "",
+					EncryptedContents: []byte("test test test"),
 				},
 			},
 			nil,
@@ -455,13 +496,13 @@ func TestNewZeroX01(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewZeroX01(tt.args.encrypter, tt.args.opts)
+			got, err := NewZeroX02(tt.args.encrypter, tt.args.opts)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("NewZeroX01() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("NewZeroX02() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !assert.Equal(t, tt.want, got) {
-				t.Errorf("NewZeroX01() = %v, want %v", got, tt.want)
+				t.Errorf("NewZeroX02() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -8,8 +8,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/mail"
+	"github.com/mailchain/mailchain/internal/mli"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/s3store"
 	"github.com/pkg/errors"
@@ -47,20 +47,23 @@ func (s S3Store) Exists(messageID mail.ID, contentsHash, integrityHash, contents
 
 // Put stores the message in S3 as an object.
 func (s S3Store) Put(messageID mail.ID, contentsHash, integrityHash, contents []byte) (
-	address, resource string, mli uint64, err error) {
+	address, resource string, msgLocInd uint64, err error) {
 	loc := s.sent.Key(messageID, contentsHash, contents)
 	address, resource, _, err = s.sent.PutMessage(messageID, contentsHash, contents, nil)
+
 	if err != nil {
-		return "", "", envelope.MLIMailchain, errors.WithMessage(err, "could not PUT message")
-	}
-	if !strings.HasSuffix(address, loc) || strings.TrimSpace(loc) == "" {
-		return "", "", envelope.MLIMailchain, errors.Errorf("message location could not be safely determined %q must contain %q", address, loc)
-	}
-	if resource != loc {
-		return "", "", envelope.MLIMailchain, errors.Errorf("resource could not be safely determined %q must equal %q", resource, loc)
+		return "", "", mli.Mailchain, errors.WithMessage(err, "could not PUT message")
 	}
 
-	return address, resource, envelope.MLIMailchain, nil
+	if !strings.HasSuffix(address, loc) || strings.TrimSpace(loc) == "" {
+		return "", "", mli.Mailchain, errors.Errorf("message location could not be safely determined %q must contain %q", address, loc)
+	}
+
+	if resource != loc {
+		return "", "", mli.Mailchain, errors.Errorf("resource could not be safely determined %q must equal %q", resource, loc)
+	}
+
+	return address, resource, mli.Mailchain, nil
 }
 
 func createS3Client(region, id, secret string) (*s3.S3, error) {
@@ -70,10 +73,13 @@ func createS3Client(region, id, secret string) (*s3.S3, error) {
 			Region:      aws.String(region),
 			Credentials: creds,
 		})
+
 		return s3.New(ses), err
 	}
 
-	return s3.New(session.New()), nil
+	ses, err := session.NewSession()
+
+	return s3.New(ses), err
 }
 
 // NewSentStore creates a new S3 store.

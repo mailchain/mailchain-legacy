@@ -153,6 +153,9 @@ mailboxState:
     path: "/home/user/.mailchain/.mailbox"
 # sentstore:
 #   kind: "mailchain"
+#   pinata:
+#     api-key: ""
+#     api-secret: ""
 #   s3:
 #     accessKeyId: ""
 #     bucket: ""

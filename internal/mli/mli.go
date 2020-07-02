@@ -12,21 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package crypto
+package mli
 
-import (
-	"github.com/multiformats/go-multihash"
+const (
+	// Empty identifier for empty Message Location Identifier
+	Empty uint64 = 0
+	// Mailchain identifier for Mailchain Message Location Identifier
+	Mailchain uint64 = 1
+	// MLIIPFS identifier for IPFS Message Location Identifier
+	IPFS uint64 = 2
 )
 
-// CreateIntegrityHash returns a hash of the encrypted `[]byte` to allow easy checking it has not been tampered with.
-func CreateIntegrityHash(encryptedData []byte) multihash.Multihash {
-	hash, _ := multihash.Sum(encryptedData, multihash.MURMUR3, -1)
-	return hash
+// ToAddress maps code to a location.
+func ToAddress() map[uint64]string {
+	return map[uint64]string{
+		Mailchain: addrMailchain,
+		IPFS:      addrIPFS,
+	}
 }
 
-// CreateMessageHash used to verify if the contents of the message match the hash.
-func CreateMessageHash(encodedData []byte) multihash.Multihash {
-	// No err: SHA3_256 does not error
-	hash, _ := multihash.Sum(encodedData, multihash.SHA3_256, -1)
-	return hash
-}
+const ( // These should not have a trailing slash
+	addrMailchain = "https://mcx.mx"
+	addrIPFS      = "https://ipfs.io/ipfs"
+)

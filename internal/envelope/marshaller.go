@@ -15,7 +15,7 @@
 package envelope
 
 import (
-	"github.com/gogo/protobuf/proto"
+	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 )
 
@@ -35,6 +35,10 @@ func Unmarshal(buf []byte) (Data, error) {
 		data := &ZeroX01{}
 		err = proto.Unmarshal(buf[1:], data)
 		envData = data
+	case Kind0x02:
+		data := &ZeroX02{}
+		err = proto.Unmarshal(buf[1:], data)
+		envData = data
 	case Kind0x50:
 		data := &ZeroX50{}
 		err = proto.Unmarshal(buf[1:], data)
@@ -42,9 +46,11 @@ func Unmarshal(buf []byte) (Data, error) {
 	default:
 		err = errors.Errorf("invalid kind")
 	}
+
 	if err != nil {
 		return nil, err
 	}
+
 	return envData, envData.Valid()
 }
 
@@ -54,6 +60,8 @@ func Marshal(data Data) ([]byte, error) {
 	switch d := data.(type) {
 	case *ZeroX01:
 		return prefixedProto(Kind0x01, d)
+	case *ZeroX02:
+		return prefixedProto(Kind0x02, d)
 	default:
 		return nil, errors.Errorf("unknown data structure, ")
 	}

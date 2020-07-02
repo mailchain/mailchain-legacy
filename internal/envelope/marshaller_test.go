@@ -40,6 +40,25 @@ func TestMarshal(t *testing.T) {
 			[]byte{0x1, 0xa, 0x3, 0x10, 0xe1, 0xd3},
 			false,
 		},
+		{
+			"ZeroX02",
+			args{
+				&ZeroX02{
+					UIBEncryptedLocationHash: []byte{0x10, 0xe1, 0xd3},
+					DecryptedHash:            []byte{0x10, 0x11, 0x12},
+				},
+			},
+			[]byte{0x2, 0xa, 0x3, 0x10, 0xe1, 0xd3, 0x12, 0x3, 0x10, 0x11, 0x12},
+			false,
+		},
+		{
+			"err-unknown",
+			args{
+				&ZeroX50{},
+			},
+			nil,
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -72,6 +91,17 @@ func TestUnmarshal(t *testing.T) {
 			},
 			&ZeroX01{
 				UIBEncryptedLocationHash: []byte{0x10, 0xe1, 0xd3},
+			},
+			false,
+		},
+		{
+			"success-0x02",
+			args{
+				[]byte{0x2, 0xa, 0x3, 0x10, 0xe1, 0xd3, 0x12, 0x3, 0x10, 0x11, 0x12},
+			},
+			&ZeroX02{
+				UIBEncryptedLocationHash: []byte{0x10, 0xe1, 0xd3},
+				DecryptedHash:            []byte{0x10, 0x11, 0x12},
 			},
 			false,
 		},

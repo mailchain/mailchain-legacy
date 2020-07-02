@@ -16,50 +16,55 @@ package envelope
 
 import (
 	"bytes"
-	"encoding/hex"
 	"net/url"
 	"strings"
 
+	"github.com/ipfs/go-cid"
 	"github.com/mailchain/mailchain/crypto/cipher"
+	"github.com/mailchain/mailchain/internal/hash"
 	"github.com/mailchain/mailchain/internal/mli"
 	"github.com/pkg/errors"
 )
 
-// NewZeroX01 creates a new envelope of type ZeroX01.
-// ZeroX01 envelope allows sending private messages with the minimal bytes by using `Uint64Bytes`.
-func NewZeroX01(encrypter cipher.Encrypter, opts *CreateOpts) (*ZeroX01, error) {
+// NewZeroX02 creates a new envelope of type ZeroX02.
+// ZeroX02 envelope allows sending private messages with the minimal bytes by using `Uint64Bytes` where encryptedHash is the location.
+func NewZeroX02(encrypter cipher.Encrypter, opts *CreateOpts) (*ZeroX02, error) {
 	if opts.Location == 0 {
 		return nil, errors.Errorf("location must be set")
 	}
 
-	if len(opts.DecryptedHash) == 0 {
-		return nil, errors.Errorf("decryptedHash must not be empty")
+	if len(opts.EncryptedContents) == 0 {
+		return nil, errors.Errorf("EncryptedContents must not be empty")
 	}
 
 	if opts.Resource == "" {
 		return nil, errors.Errorf("resource must not be empty")
 	}
 
-	resource, err := hex.DecodeString(opts.Resource)
+	dec, err := cid.Decode(opts.Resource)
 	if err != nil {
-		return nil, errors.Errorf("resource could not be decoded")
+		return nil, errors.WithMessage(err, "0x02: cid decode failed")
 	}
 
-	if !bytes.Equal(resource, opts.DecryptedHash) {
-		return nil, errors.Errorf("resource %q and decrypted hash %q must match",
-			hex.EncodeToString(resource), hex.EncodeToString(opts.DecryptedHash))
+	cidHash, err := hash.Create(hash.CIVv1SHA2256Raw, opts.EncryptedContents)
+	if err != nil {
+		return nil, errors.WithMessage(err, "0x02: cid hash could not be created")
 	}
 
-	locHash := NewUInt64Bytes(opts.Location, opts.DecryptedHash)
+	if !bytes.Equal(cidHash, dec.Bytes()) {
+		return nil, errors.Errorf("encrypted contents and resource hash must match")
+	}
+
+	locHash := NewUInt64Bytes(opts.Location, dec.Bytes())
 
 	enc, err := encrypter.Encrypt(cipher.PlainContent(locHash))
 	if err != nil {
 		return nil, err
 	}
 
-	env := &ZeroX01{
+	env := &ZeroX02{
 		UIBEncryptedLocationHash: enc,
-		EncryptedHash:            opts.EncryptedHash,
+		DecryptedHash:            opts.DecryptedHash,
 	}
 
 	return env, nil
@@ -69,7 +74,7 @@ func NewZeroX01(encrypter cipher.Encrypter, opts *CreateOpts) (*ZeroX01, error) 
 // URL is contained in the UIBEncryptedLocationHash which must first be decrypted.
 // The decrypted data is converted to `UInt64Bytes`. The extracted identified is used to look up the Message Location Indicator (MLI).
 // MLI address and hash are combined to make an addressable URL.
-func (x *ZeroX01) URL(decrypter cipher.Decrypter) (*url.URL, error) {
+func (x *ZeroX02) URL(decrypter cipher.Decrypter) (*url.URL, error) {
 	decrypted, err := decrypter.Decrypt(x.UIBEncryptedLocationHash)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -77,7 +82,7 @@ func (x *ZeroX01) URL(decrypter cipher.Decrypter) (*url.URL, error) {
 
 	locationHash := UInt64Bytes(decrypted)
 
-	code, hash, err := locationHash.Values()
+	code, locHash, err := locationHash.Values()
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -87,37 +92,44 @@ func (x *ZeroX01) URL(decrypter cipher.Decrypter) (*url.URL, error) {
 		return nil, errors.Errorf("unknown location code %q", code)
 	}
 
+	decoded, err := cid.Cast(locHash)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
 	return url.Parse(strings.Join(
-		[]string{
-			loc,
-			hex.EncodeToString(hash),
-		},
+		[]string{loc, decoded.String()},
 		"/"))
 }
 
 // ContentsHash returns a hash of the decrypted content.
 // This can be used to verify the contents of the message have not been tampered with.
-// UIBEncryptedLocationHash is decrypted to get a location hash. This is a UInt64Bytes and the data portion is the value for ContentsHash.
-func (x *ZeroX01) ContentsHash(decrypter cipher.Decrypter) ([]byte, error) {
+// Returns the value stored in DecryptedHash.
+func (x *ZeroX02) ContentsHash(decrypter cipher.Decrypter) ([]byte, error) {
+	return x.DecryptedHash, nil
+}
+
+// IntegrityHash returns a hash of the encrypted content. This can be used to validate the integrity of the contents before decrypting.
+// UIBEncryptedLocationHash is decrypted to get a location hash. This is a UInt64Bytes and the data portion is the value for IntegrityHash.
+func (x *ZeroX02) IntegrityHash(decrypter cipher.Decrypter) ([]byte, error) {
 	decrypted, err := decrypter.Decrypt(x.UIBEncryptedLocationHash)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
 	locationHash := UInt64Bytes(decrypted)
 
 	return locationHash.Bytes()
 }
 
-// IntegrityHash returns a hash of the encrypted content. This can be used to validate the integrity of the contents before decrypting.
-// Returns the value stored in EncryptedHash.
-func (x *ZeroX01) IntegrityHash(decrypter cipher.Decrypter) ([]byte, error) {
-	return x.EncryptedHash, nil
-}
-
 // Valid checks the envelopes contents for no integrity issues which would prevent the envelope from being read.
-func (x *ZeroX01) Valid() error {
+func (x *ZeroX02) Valid() error {
 	if len(x.UIBEncryptedLocationHash) == 0 {
 		return errors.Errorf("`EncryptedLocationHash` must not be empty")
+	}
+
+	if len(x.DecryptedHash) == 0 {
+		return errors.Errorf("`DecryptedHash` must not be empty")
 	}
 
 	return nil

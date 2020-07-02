@@ -23,7 +23,7 @@ func (c Client) Send(ctx context.Context, network string, to, from, data []byte,
 	return s.Send(ctx, network, to, from, data, txSigner, opts)
 }
 
-// NewClient create new API client
+// NewClient create new API client.
 func NewClient(baseURL string) (*Client, error) {
 	senders := map[string]sender.Message{}
 
@@ -32,6 +32,7 @@ func NewClient(baseURL string) (*Client, error) {
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}
+
 		senders[network] = client
 	}
 
@@ -42,7 +43,7 @@ func createAddress(baseURL, chain, network string) string {
 	return fmt.Sprintf("%s/json-rpc/%s/%s", strings.TrimSuffix(baseURL, "/"), strings.ToLower(chain), strings.ToLower(network))
 }
 
-// Client for talking to relay service
+// Client for talking to relay service.
 type Client struct {
 	senders map[string]sender.Message
 }

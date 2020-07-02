@@ -15,7 +15,6 @@
 package etherscan
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"math/big"
@@ -26,6 +25,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -237,7 +237,7 @@ func TestGetTransactionsByAddress(t *testing.T) {
 			args{
 				"TestNetwork",
 			},
-			errors.New("unexpected end of JSON input"),
+			errors.Errorf(": unexpected end of JSON input"),
 			true,
 			nil,
 		},
@@ -260,7 +260,7 @@ func TestGetTransactionsByAddress(t *testing.T) {
 				networkConfigs: map[string]networkConfig{"TestNetwork": {url: server.URL}},
 			}
 			got, err := client.getTransactionsByAddress(tt.args.network, []byte{})
-			if (err != nil) && err.Error() != tt.wantErr.Error() {
+			if (err != nil) && !assert.Equal(t, tt.wantErr.Error(), err.Error()) {
 				t.Errorf("APIClient.getTransactionsByAddress() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}

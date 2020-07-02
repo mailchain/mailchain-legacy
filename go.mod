@@ -37,6 +37,7 @@ require (
 	github.com/urfave/negroni v1.0.0
 	github.com/wealdtech/go-ens/v3 v3.4.0
 	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9
+	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
 	gopkg.in/resty.v1 v1.12.0
 )
 

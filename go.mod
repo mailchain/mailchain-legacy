@@ -10,7 +10,6 @@ require (
 	github.com/aws/aws-sdk-go v1.25.48
 	github.com/btcsuite/btcd v0.20.1-beta // indirect
 	github.com/centrifuge/go-substrate-rpc-client v0.0.0-20200416153336-03ce7c572bf0
-	github.com/davecgh/go-spew v1.1.1
 	github.com/dgraph-io/badger/v2 v2.0.0
 	github.com/elastic/gosigar v0.10.5 // indirect
 	github.com/ethereum/go-ethereum v1.9.11

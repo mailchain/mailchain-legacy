@@ -11,6 +11,7 @@ func rootCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(ethereumCmd())
+	cmd.AddCommand(substrateCmd())
 	cmd.AddCommand(databaseCmd())
 
 	cmd.PersistentFlags().String("postgres-host", "localhost", "Postgres server host")

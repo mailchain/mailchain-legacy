@@ -1,0 +1,26 @@
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "block": {
+            "extrinsics": [
+                "0x280402000ba0fa77987101",
+                "0x1c040b007ab03f00",
+                "0xd10384fff49a6b6deb3cdb00d86e735ced8f48b649273fc6ff6a3bbba021a6b4a1c5d06701b6f94ea763c250533409727e26eda6f67661c8da4190dbf0988c4e0c4ee14465efe0f64267e836aeee21a7d44aec1c82a2013c8dd064aebe27559db0cece9b83007c000e02ff2a9aff809089623c64ccd7ca79b8fffb114cef2c251b2b3e4f2d5144eee962fb0002f40100910130783664363136393663363336383631363936653031306132353230303130313136323065666639663438333061373038653364373938333635363861306161346136343063353034643034383938343139363738333361306439633965353162366533"
+            ],
+            "header": {
+                "digest": {
+                    "logs": [
+                        "0x06617572612026f8c40f00000000",
+                        "0x0561757261010135748ca2ac77a329c7053b38bff94a18a504df23aea9a9c8e03e06f479b334b384996a0021447b5a4afebd32f2ee6ceb8cc832b107f7cd35400e5a17854d0407"
+                    ]
+                },
+                "extrinsicsRoot": "0x8765cd86b8d08b63fb315855894f5c357c4b25670c131f96b5bbad5aab6971a5",
+                "number": "0xfec21",
+                "parentHash": "0xf145d056d93bc8e1661cf334763b475f32ab3ee0155e3d6a33c825904509023d",
+                "stateRoot": "0x0a2164eece05fab911adfd891ea1e02e9e11a0a1f18e05f61ffefecc99b5dabf"
+            }
+        },
+        "justification": null
+    },
+    "id": 23
+}

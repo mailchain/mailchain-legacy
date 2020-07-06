@@ -26,7 +26,7 @@ func NewBlockProcessor(tx actions.Transaction) *Block {
 func (b *Block) Run(ctx context.Context, protocol, network string, blk interface{}) error {
 	sbrtBlk, ok := blk.(*types.Block)
 	if !ok {
-		return errors.New("tx must be go-substrate-rpc-client/types.Block")
+		return errors.Errorf("tx must be go-substrate-rpc-client/types.Block")
 	}
 
 	fmt.Println("block hash: ", sbrtBlk.Header.Digest)

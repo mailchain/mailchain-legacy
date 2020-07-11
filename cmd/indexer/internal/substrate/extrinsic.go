@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 
-	"github.com/centrifuge/go-substrate-rpc-client/scale"
-	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/mailchain/go-substrate-rpc-client/scale"
+	"github.com/mailchain/go-substrate-rpc-client/types"
 	"github.com/mailchain/mailchain/cmd/indexer/internal/actions"
 	"github.com/mailchain/mailchain/cmd/internal/datastore"
 	"github.com/mailchain/mailchain/crypto"
@@ -36,7 +36,7 @@ func NewExtrinsicProcessor(store datastore.TransactionStore, rawStore datastore.
 func (t *Extrinsic) Run(ctx context.Context, protocol, network string, tx interface{}, txOpts actions.TransactionOptions) error {
 	subEx, ok := tx.(*types.Extrinsic)
 	if !ok {
-		return errors.Errorf("tx must be github.com/centrifuge/go-substrate-rpc-client/types.Extrinsic")
+		return errors.Errorf("tx must be github.com/mailchain/go-substrate-rpc-client/types.Extrinsic")
 	}
 
 	opts, ok := txOpts.(*TxOptions)

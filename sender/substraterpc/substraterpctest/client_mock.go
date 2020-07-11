@@ -6,8 +6,8 @@ package substraterpctest
 
 import (
 	context "context"
-	types "github.com/centrifuge/go-substrate-rpc-client/types"
 	gomock "github.com/golang/mock/gomock"
+	types "github.com/mailchain/go-substrate-rpc-client/types"
 	big "math/big"
 	reflect "reflect"
 )

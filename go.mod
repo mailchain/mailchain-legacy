@@ -8,7 +8,8 @@ require (
 	github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412
 	github.com/andreburgaud/crypt2go v0.11.0
 	github.com/aws/aws-sdk-go v1.33.1
-	github.com/centrifuge/go-substrate-rpc-client v0.0.0-20200416153336-03ce7c572bf0
+	github.com/centrifuge/go-substrate-rpc-client v1.1.0 // indirect
+
 	github.com/dgraph-io/badger/v2 v2.0.3
 	github.com/ethereum/go-ethereum v1.9.15
 	github.com/golang/mock v1.4.3
@@ -20,6 +21,7 @@ require (
 	github.com/ipfs/go-cid v0.0.6
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.7.0
+	github.com/mailchain/go-substrate-rpc-client v1.1.1-0.20200711220547-b44a964b0cd8
 	github.com/manifoldco/promptui v0.7.0
 	github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1
 	github.com/mitchellh/go-homedir v1.1.0

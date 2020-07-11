@@ -3,8 +3,11 @@ package substraterpc
 import (
 	"context"
 
-	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"math/big"
+	"testing"
+
 	"github.com/golang/mock/gomock"
+	"github.com/mailchain/go-substrate-rpc-client/types"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/mailbox/signer/signertest"
@@ -13,8 +16,6 @@ import (
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/sender/substraterpc/substraterpctest"
 	"github.com/pkg/errors"
-	"math/big"
-	"testing"
 )
 
 func TestSubstrateRPC_Send(t *testing.T) {

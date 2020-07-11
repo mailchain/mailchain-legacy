@@ -2,10 +2,11 @@ package substraterpc
 
 import (
 	"fmt"
-	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/mailchain/go-substrate-rpc-client/types"
 )
 
 func TestNew(t *testing.T) {

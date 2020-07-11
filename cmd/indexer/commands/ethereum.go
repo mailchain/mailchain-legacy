@@ -56,7 +56,9 @@ func ethereumCmd() *cobra.Command {
 				return err
 			}
 
-			doSequential(seqProcessor)
+			doSequential(cmd, seqProcessor)
+
+			return nil
 		},
 	}
 

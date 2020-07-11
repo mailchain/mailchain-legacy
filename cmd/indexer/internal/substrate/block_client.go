@@ -2,12 +2,11 @@ package substrate
 
 import (
 	"context"
-	"math/big"
 
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
 )
 
-func NewRPC(address string) (*SubstrateClient, error) {
+func NewRPC(address string) (*BlockClient, error) {
 	api, err := gsrpc.NewSubstrateAPI(address)
 	if err != nil {
 		return nil, err
@@ -25,11 +24,13 @@ func (c *BlockClient) BlockByNumber(ctx context.Context, blockNo uint64) (blk in
 	if err != nil {
 		return nil, err
 	}
-	return c.api.RPC.Chain.GetBlock(blkHash)
-}
 
-func (c *BlockClient) NetworkID(ctx context.Context) (*big.Int, error) {
-	return c.client.NetworkID(ctx)
+	sb, err := c.api.RPC.Chain.GetBlock(blkHash)
+	if err != nil {
+		return nil, err
+	}
+
+	return &sb.Block, nil
 }
 
 func (c *BlockClient) LatestBlockNumber(ctx context.Context) (blockNo uint64, err error) {
@@ -37,5 +38,6 @@ func (c *BlockClient) LatestBlockNumber(ctx context.Context) (blockNo uint64, er
 	if err != nil {
 		return 0, err
 	}
+
 	return uint64(signedBlock.Block.Header.Number), nil
 }

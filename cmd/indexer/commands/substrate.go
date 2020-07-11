@@ -26,7 +26,7 @@ func substrateCmd() *cobra.Command {
 
 			addressRPC, _ := cmd.Flags().GetString("rpc-address")
 			if addressRPC == "" {
-				return errors.New("rpc-address must not be empty")
+				return errors.Errorf("rpc-address must not be empty")
 			}
 
 			rawStorePath, _ := cmd.Flags().GetString("raw-store-path")
@@ -55,7 +55,9 @@ func substrateCmd() *cobra.Command {
 				return err
 			}
 
-			doSequential(seqProcessor)
+			doSequential(cmd, seqProcessor)
+
+			return nil
 		},
 	}
 
@@ -95,7 +97,7 @@ func createSubstrateProcessor(connIndexer, connPublicKey, connEnvelope *sqlx.DB,
 		return nil, err
 	}
 
-	processorTransaction := sub.NewTransactionProcessor(
+	processorTransaction := sub.NewExtrinsicProcessor(
 		transactionStore,
 		rawStore,
 		pubKeyStore,

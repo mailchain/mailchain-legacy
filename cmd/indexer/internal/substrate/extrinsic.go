@@ -36,12 +36,12 @@ func NewExtrinsicProcessor(store datastore.TransactionStore, rawStore datastore.
 func (t *Extrinsic) Run(ctx context.Context, protocol, network string, tx interface{}, txOpts actions.TransactionOptions) error {
 	subEx, ok := tx.(*types.Extrinsic)
 	if !ok {
-		return errors.New("tx must be github.com/centrifuge/go-substrate-rpc-client/types.Extrinsic")
+		return errors.Errorf("tx must be github.com/centrifuge/go-substrate-rpc-client/types.Extrinsic")
 	}
 
 	opts, ok := txOpts.(*TxOptions)
 	if !ok {
-		return errors.New("tx must be substrate.ExOptions")
+		return errors.Errorf("tx must be substrate.ExOptions")
 	}
 
 	storeTx, err := t.ToTransaction(network, opts.Block, subEx)
@@ -103,14 +103,9 @@ func (t *Extrinsic) ToTransaction(network string, blk *types.Block, tx *types.Ex
 		return nil, err
 	}
 
-	// mailchain hex encoded -> 0x6d61696c636861696e
-	// 0x6d61696c636861696e hex encoded -> 3078366436313639366336333638363136393665
-	pieces := bytes.Split(w.Bytes(), []byte{0x30, 0x78, 0x36, 0x64, 0x36, 0x31, 0x36, 0x39, 0x36, 0x63, 0x36, 0x33, 0x36, 0x38, 0x36, 0x31, 0x36, 0x39, 0x36, 0x65})
-	if len(pieces) != 2 {
-		return nil, errors.Errorf("invalid data field")
-	}
+	txInfo, data := getParts(w.Bytes())
 
-	decodedData, err := encoding.DecodeHex(string(pieces[1]))
+	decodedData, err := encoding.DecodeHex(string(data))
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +115,7 @@ func (t *Extrinsic) ToTransaction(network string, blk *types.Block, tx *types.Ex
 		return nil, err
 	}
 
-	to, err := getToAddress(network, pieces[0])
+	to, err := getToAddress(network, txInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -135,4 +130,21 @@ func (t *Extrinsic) ToTransaction(network string, blk *types.Block, tx *types.Ex
 		// GasUsed:  *gasUsed,
 		// GasPrice: *gasPrice,
 	}, nil
+}
+
+func getParts(data []byte) (txInfo, dataField []byte) {
+	// mailchain hex encoded -> 0x6d61696c636861696e
+	// 0x6d61696c636861696e hex encoded -> 3078366436313639366336333638363136393665
+	pieces := bytes.Split(data, []byte{0x30, 0x78, 0x36, 0x64, 0x36, 0x31, 0x36, 0x39, 0x36, 0x63, 0x36, 0x33, 0x36, 0x38, 0x36, 0x31, 0x36, 0x39, 0x36, 0x65})
+	txInfo = pieces[0]
+
+	if len(pieces) == 2 {
+		dataField = append(
+			// 0x30, 0x78 -> 0x
+			[]byte{0x36, 0x64, 0x36, 0x31, 0x36, 0x39, 0x36, 0x63, 0x36, 0x33, 0x36, 0x38, 0x36, 0x31, 0x36, 0x39, 0x36, 0x65},
+			pieces[1]...,
+		)
+	}
+
+	return
 }

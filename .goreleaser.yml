@@ -26,6 +26,16 @@ builds:
     - linux
   goarch:
     - amd64 
+- id: receiver-linux-amd64
+  ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
+  binary: receiver
+  env:
+  - CGO_ENABLED=0
+  main: ./cmd/receiver/main.go
+  goos:
+    - linux
+  goarch:
+    - amd64 
 - id: indexer-linux-amd64
   ldflags: -s -w -X github.com/mailchain/mailchain.Version={{.Version}} -X github.com/mailchain/mailchain.BuildDate={{.Date}} -X github.com/mailchain/mailchain.CommitHash={{ .ShortCommit }}
   binary: indexer
@@ -116,6 +126,25 @@ dockers:
     - "--pull"
     - "--label=org.opencontainers.image.created={{.Date}}"
     - "--label=org.opencontainers.image.name={{.ProjectName}}/indexer"
+    - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+    - "--label=org.opencontainers.image.version={{.Version}}"
+    - "--label=repository=https://github.com/mailchain/mailchain"
+    - "--label=homepage=https://mailchain.xyz"
+  -     
+    binaries: # Name templates of the built binaries that should be used.
+    - receiver
+    goos: linux # GOOS of the built binary that should be used. 
+    goarch: amd64 # GOARCH of the built binary that should be used.
+    dockerfile: ./cmd/receiver/Dockerfile    
+    
+    image_templates:
+    - "mailchain/receiver:latest"
+    - "mailchain/receiver:{{.Version}}"
+    
+    build_flag_templates:
+    - "--pull"
+    - "--label=org.opencontainers.image.created={{.Date}}"
+    - "--label=org.opencontainers.image.name={{.ProjectName}}/receiver"
     - "--label=org.opencontainers.image.revision={{.FullCommit}}"
     - "--label=org.opencontainers.image.version={{.Version}}"
     - "--label=repository=https://github.com/mailchain/mailchain"

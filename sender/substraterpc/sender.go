@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/centrifuge/go-substrate-rpc-client/types"
+	"github.com/mailchain/go-substrate-rpc-client/types"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"

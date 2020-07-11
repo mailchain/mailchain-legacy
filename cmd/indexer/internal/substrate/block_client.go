@@ -3,7 +3,7 @@ package substrate
 import (
 	"context"
 
-	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
+	gsrpc "github.com/mailchain/go-substrate-rpc-client"
 )
 
 func NewRPC(address string) (*BlockClient, error) {

@@ -10,6 +10,8 @@ import (
 	"github.com/mailchain/mailchain/cmd/indexer/internal/substrate"
 	"github.com/mailchain/mailchain/cmd/internal/datastore"
 	"github.com/mailchain/mailchain/cmd/internal/datastore/datastoretest"
+	"github.com/mailchain/mailchain/internal/protocols"
+	networks "github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
 func TestExtrinsic_Run(t *testing.T) {
@@ -39,10 +41,12 @@ func TestExtrinsic_Run(t *testing.T) {
 			fields{
 				func() datastore.TransactionStore {
 					m := datastoretest.NewMockTransactionStore(mockCtrl)
+					m.EXPECT().PutTransaction(context.Background(), protocols.Substrate, networks.EdgewareBerlin, gomock.Any(), gomock.Any())
 					return m
 				}(),
 				func() datastore.RawTransactionStore {
 					m := datastoretest.NewMockRawTransactionStore(mockCtrl)
+					m.EXPECT().PutRawTransaction(context.Background(), protocols.Substrate, networks.EdgewareBerlin, gomock.Any(), gomock.Any())
 					return m
 				}(),
 				func() datastore.PublicKeyStore {
@@ -52,7 +56,7 @@ func TestExtrinsic_Run(t *testing.T) {
 			},
 			args{
 				context.Background(),
-				"subsrate",
+				"substrate",
 				"edgeware-berlin",
 				func() *types.Extrinsic {
 					b := getBlock(t, "0x7ce3d93396dac53f1ae5fba268afcaa623e224e359507d581439dea791bab971")

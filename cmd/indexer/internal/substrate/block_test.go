@@ -44,13 +44,7 @@ func TestBlock_Run(t *testing.T) {
 				context.Background(),
 				protocols.Substrate,
 				networks.EdgewareBerlin,
-				types.Block{
-					Header: types.Header{},
-					Extrinsics: []types.Extrinsic{
-						types.Extrinsic{},
-						types.Extrinsic{},
-					},
-				},
+				&types.Extrinsic{},
 			},
 			true,
 		},
@@ -59,7 +53,6 @@ func TestBlock_Run(t *testing.T) {
 			fields{
 				func() actions.Transaction {
 					m := actionstest.NewMockTransaction(mockCtrl)
-					m.EXPECT().Run(context.Background(), protocols.Substrate, networks.EdgewareBerlin, gomock.Any(), gomock.Any()).Return(nil)
 					m.EXPECT().Run(context.Background(), protocols.Substrate, networks.EdgewareBerlin, gomock.Any(), gomock.Any()).Return(errors.New("error"))
 					return m
 				}(),
@@ -72,7 +65,13 @@ func TestBlock_Run(t *testing.T) {
 					Header: types.Header{},
 					Extrinsics: []types.Extrinsic{
 						types.Extrinsic{},
-						types.Extrinsic{},
+						types.Extrinsic{
+							Signature: types.ExtrinsicSignatureV4{
+								Signer: types.Address{
+									IsAccountID: true,
+								},
+							},
+						},
 					},
 				},
 			},
@@ -83,7 +82,6 @@ func TestBlock_Run(t *testing.T) {
 			fields{
 				func() actions.Transaction {
 					m := actionstest.NewMockTransaction(mockCtrl)
-					m.EXPECT().Run(context.Background(), protocols.Substrate, networks.EdgewareBerlin, gomock.Any(), gomock.Any()).Return(nil)
 					m.EXPECT().Run(context.Background(), protocols.Substrate, networks.EdgewareBerlin, gomock.Any(), gomock.Any()).Return(nil)
 					return m
 				}(),
@@ -96,7 +94,13 @@ func TestBlock_Run(t *testing.T) {
 					Header: types.Header{},
 					Extrinsics: []types.Extrinsic{
 						types.Extrinsic{},
-						types.Extrinsic{},
+						types.Extrinsic{
+							Signature: types.ExtrinsicSignatureV4{
+								Signer: types.Address{
+									IsAccountID: true,
+								},
+							},
+						},
 					},
 				},
 			},

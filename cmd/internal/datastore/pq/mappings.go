@@ -4,6 +4,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/substrate"
 	"github.com/pkg/errors"
 )
 
@@ -40,7 +41,8 @@ func getPublicKeyTypeString(pubKeyType uint8) (string, error) {
 }
 
 var protocolUint8 = map[string]uint8{ //nolint:gochecknoglobals
-	protocols.Ethereum: 1,
+	protocols.Ethereum:  1,
+	protocols.Substrate: 2,
 }
 
 var protocolNetworkUint8 = map[string]map[string]uint8{ //nolint:gochecknoglobals
@@ -51,14 +53,20 @@ var protocolNetworkUint8 = map[string]map[string]uint8{ //nolint:gochecknoglobal
 		ethereum.Rinkeby: 4,
 		ethereum.Ropsten: 5,
 	},
+	protocols.Substrate: {
+		substrate.EdgewareBerlin:  1,
+		substrate.EdgewareMainnet: 2,
+	},
 }
 
 var publicKeyTypeUint8 = map[string]uint8{ //nolint:gochecknoglobals
 	crypto.KindSECP256K1: crypto.ByteSECP256K1,
 	crypto.KindED25519:   crypto.ByteED25519,
+	crypto.KindSR25519:   crypto.ByteSR25519,
 }
 
 var publicKeyTypeString = map[uint8]string{ //nolint:gochecknoglobals
 	crypto.ByteSECP256K1: crypto.KindSECP256K1,
 	crypto.ByteED25519:   crypto.KindED25519,
+	crypto.ByteSR25519:   crypto.KindSR25519,
 }

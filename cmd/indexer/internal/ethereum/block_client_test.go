@@ -88,7 +88,7 @@ func TestClient_BlockByNumber(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &BlockClient{
 				client: tt.fields.client,
 			}
 			gotBlk, err := c.BlockByNumber(tt.args.ctx, tt.args.blockNo)
@@ -136,7 +136,7 @@ func TestClient_NetworkID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &BlockClient{
 				client: tt.fields.client,
 			}
 			got, err := c.NetworkID(tt.args.ctx)
@@ -184,7 +184,7 @@ func TestClient_LatestBlockNumber(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &BlockClient{
 				client: tt.fields.client,
 			}
 			gotNo, err := c.LatestBlockNumber(tt.args.ctx)
@@ -232,7 +232,7 @@ func TestClient_GetLatest(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &BlockClient{
 				client: tt.fields.client,
 			}
 			gotBlk, err := c.GetLatest(tt.args.ctx)

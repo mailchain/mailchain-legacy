@@ -6,7 +6,7 @@ package ethrpc2test
 
 import (
 	context "context"
-	go_ethereum "github.com/ethereum/go-ethereum"
+	ethereum "github.com/ethereum/go-ethereum"
 	common "github.com/ethereum/go-ethereum/common"
 	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
@@ -38,7 +38,7 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 }
 
 // EstimateGas mocks base method
-func (m *MockClient) EstimateGas(ctx context.Context, msg go_ethereum.CallMsg) (uint64, error) {
+func (m *MockClient) EstimateGas(ctx context.Context, msg ethereum.CallMsg) (uint64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "EstimateGas", ctx, msg)
 	ret0, _ := ret[0].(uint64)

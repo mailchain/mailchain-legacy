@@ -30,8 +30,9 @@ import (
 
 func TestReceive(t *testing.T) {
 	type args struct {
-		ctx     context.Context
-		network string
+		ctx      context.Context
+		protocol string
+		network  string
 	}
 	tests := []struct {
 		name    string
@@ -44,6 +45,7 @@ func TestReceive(t *testing.T) {
 			"err-network-not-supported",
 			args{
 				context.Background(),
+				"ethereum",
 				"InvalidNetwork",
 			},
 			errors.New("network not supported"),
@@ -54,6 +56,7 @@ func TestReceive(t *testing.T) {
 			"err-unmarshal",
 			args{
 				context.Background(),
+				"ethereum",
 				"TestNetwork",
 			},
 			errors.New("{invalid}: invalid character 'i' looking for beginning of object key string"),
@@ -64,6 +67,7 @@ func TestReceive(t *testing.T) {
 			"err-get",
 			args{
 				context.Background(),
+				"ethereum",
 				"TestNetwork",
 			},
 			nil,
@@ -74,6 +78,7 @@ func TestReceive(t *testing.T) {
 			"success-remove-invalid-tx",
 			args{
 				context.Background(),
+				"ethereum",
 				"TestNetwork",
 			},
 			nil,
@@ -90,6 +95,7 @@ func TestReceive(t *testing.T) {
 			"success-remove-empty-input-tx",
 			args{
 				context.Background(),
+				"ethereum",
 				"TestNetwork",
 			},
 			nil,
@@ -106,6 +112,7 @@ func TestReceive(t *testing.T) {
 			"success-removes-duplicated-tx",
 			args{
 				context.Background(),
+				"ethereum",
 				"TestNetwork",
 			},
 			nil,
@@ -136,7 +143,7 @@ func TestReceive(t *testing.T) {
 				key:            "api-key",
 				networkConfigs: map[string]networkConfig{"TestNetwork": {url: server.URL}},
 			}
-			got, err := client.Receive(tt.args.ctx, tt.args.network, []byte{})
+			got, err := client.Receive(tt.args.ctx, tt.args.protocol, tt.args.network, []byte{})
 			if (err != nil) && !assert.Equal(t, tt.wantErr.Error(), err.Error()) {
 				t.Errorf("APIClient.Receive() error = %v, wantErr %v", err, tt.wantErr)
 				return

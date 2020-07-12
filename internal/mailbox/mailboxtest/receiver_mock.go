@@ -49,16 +49,16 @@ func (m *MockReceiver) EXPECT() *MockReceiverMockRecorder {
 }
 
 // Receive mocks base method
-func (m *MockReceiver) Receive(ctx context.Context, network string, address []byte) ([]mailbox.Transaction, error) {
+func (m *MockReceiver) Receive(ctx context.Context, protocol, network string, address []byte) ([]mailbox.Transaction, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Receive", ctx, network, address)
+	ret := m.ctrl.Call(m, "Receive", ctx, protocol, network, address)
 	ret0, _ := ret[0].([]mailbox.Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Receive indicates an expected call of Receive
-func (mr *MockReceiverMockRecorder) Receive(ctx, network, address interface{}) *gomock.Call {
+func (mr *MockReceiverMockRecorder) Receive(ctx, protocol, network, address interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Receive", reflect.TypeOf((*MockReceiver)(nil).Receive), ctx, network, address)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Receive", reflect.TypeOf((*MockReceiver)(nil).Receive), ctx, protocol, network, address)
 }

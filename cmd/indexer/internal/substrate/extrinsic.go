@@ -14,6 +14,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/sr25519"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
+	"github.com/minio/blake2b-simd"
 	"github.com/pkg/errors"
 )
 
@@ -95,11 +96,24 @@ func getToAddress(network string, dataPart []byte) ([]byte, error) {
 	return substrate.SS58AddressFormat(network, toPubKey)
 }
 
-func (t *Extrinsic) ToTransaction(network string, blk *types.Block, tx *types.Extrinsic) (*datastore.Transaction, error) {
+func ExtrinsicHash(ex *types.Extrinsic) ([]byte, error) {
 	w := bytes.NewBuffer([]byte{})
 	encoder := scale.NewEncoder(w)
 
-	if err := tx.Method.Args.Encode(*encoder); err != nil {
+	if err := ex.Encode(*encoder); err != nil {
+		return nil, err
+	}
+
+	h := blake2b.Sum256(w.Bytes())
+
+	return h[:], nil
+}
+
+func (t *Extrinsic) ToTransaction(network string, blk *types.Block, ex *types.Extrinsic) (*datastore.Transaction, error) {
+	w := bytes.NewBuffer([]byte{})
+	encoder := scale.NewEncoder(w)
+
+	if err := ex.Method.Args.Encode(*encoder); err != nil {
 		return nil, err
 	}
 
@@ -110,7 +124,7 @@ func (t *Extrinsic) ToTransaction(network string, blk *types.Block, tx *types.Ex
 		return nil, err
 	}
 
-	from, err := getFromAddress(network, &tx.Signature)
+	from, err := getFromAddress(network, &ex.Signature)
 	if err != nil {
 		return nil, err
 	}
@@ -120,10 +134,15 @@ func (t *Extrinsic) ToTransaction(network string, blk *types.Block, tx *types.Ex
 		return nil, err
 	}
 
+	hash, err := ExtrinsicHash(ex)
+	if err != nil {
+		return nil, err
+	}
+
 	return &datastore.Transaction{
 		From: from,
 		// BlockHash: blk.Hash().Bytes(),
-		// Hash:      tx.Hash().Bytes(),
+		Hash: hash,
 		Data: decodedData,
 		To:   to,
 		// Value:    *value,

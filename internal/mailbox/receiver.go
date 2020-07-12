@@ -29,7 +29,7 @@ type Transaction struct {
 //go:generate mockgen -source=receiver.go -package=mailboxtest -destination=./mailboxtest/receiver_mock.go
 // Receiver gets encrypted data from blockchain.
 type Receiver interface {
-	Receive(ctx context.Context, network string, address []byte) ([]Transaction, error)
+	Receive(ctx context.Context, protocol, network string, address []byte) ([]Transaction, error)
 }
 
 // type ReceiverOpts interface{}

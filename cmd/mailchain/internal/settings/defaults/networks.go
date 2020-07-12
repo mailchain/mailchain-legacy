@@ -28,8 +28,8 @@ func SubstrateNetworkAny(network string) *NetworkDefaults {
 		// NameServiceAddress:    NameServiceAddressKind,
 		// NameServiceDomainName: NameServiceDomainNameKind,
 		PublicKeyFinder: SubstratePublicKeyFinder,
-		// Receiver:              mailchain.ClientEtherscanNoAuth,
-		Sender:   "substrate-rpc-" + network,
-		Disabled: false,
+		Receiver:        Mailchain,
+		Sender:          "substrate-rpc-" + network,
+		Disabled:        false,
 	}
 }

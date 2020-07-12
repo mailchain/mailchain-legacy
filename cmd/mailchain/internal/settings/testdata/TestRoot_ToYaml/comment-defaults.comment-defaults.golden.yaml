@@ -45,14 +45,14 @@
 #         nameservice-address: ""
 #         nameservice-domain-name: ""
 #         public-key-finder: "substrate-public-key-finder"
-#         receiver: ""
+#         receiver: "mailchain"
 #         sender: "substrate-rpc-edgeware-berlin"
 #       edgeware-mainnet:
 #         disabled: false
 #         nameservice-address: ""
 #         nameservice-domain-name: ""
 #         public-key-finder: "substrate-public-key-finder"
-#         receiver: ""
+#         receiver: "mailchain"
 #         sender: "substrate-rpc-edgeware-mainnet"
 # nameservice-address:
 #   mailchain:
@@ -117,6 +117,11 @@
 #       - "ethereum/mainnet"
 #       - "ethereum/rinkeby"
 #       - "ethereum/ropsten"
+#   mailchain:
+#     address: "http://localhost:8081"
+#     enabled-networks:
+#       - "substrate/edgeware-berlin"
+#       - "substrate/edgeware-mainnet"
 # senders:
 #   ethereum-relay:
 #     base-url: "https://relay.mailchain.xyz/"

@@ -24,7 +24,7 @@ import (
 )
 
 // Receive check ethereum transactions for mailchain messages
-func (c APIClient) Receive(ctx context.Context, network string, address []byte) ([]mailbox.Transaction, error) {
+func (c APIClient) Receive(ctx context.Context, protocol, network string, address []byte) ([]mailbox.Transaction, error) {
 	if !c.isNetworkSupported(network) {
 		return nil, errors.Errorf("network not supported")
 	}

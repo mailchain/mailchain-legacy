@@ -33,7 +33,7 @@ import (
 
 func Test_checkForEmpties(t *testing.T) {
 	type args struct {
-		msg PostMessage
+		msg *PostMessage
 	}
 	tests := []struct {
 		name    string
@@ -43,7 +43,7 @@ func Test_checkForEmpties(t *testing.T) {
 		{
 			"success",
 			args{
-				PostMessage{
+				&PostMessage{
 					Headers:           &PostHeaders{},
 					Subject:           "subject-value",
 					Body:              "body-value",
@@ -57,7 +57,7 @@ func Test_checkForEmpties(t *testing.T) {
 		{
 			"empty-headers",
 			args{
-				PostMessage{
+				&PostMessage{
 					Subject:           "subject-value",
 					Body:              "body-value",
 					PublicKey:         "public-key-value",
@@ -70,7 +70,7 @@ func Test_checkForEmpties(t *testing.T) {
 		{
 			"empty-subject",
 			args{
-				PostMessage{
+				&PostMessage{
 					Headers:           &PostHeaders{},
 					Body:              "body-value",
 					PublicKey:         "public-key-value",
@@ -83,7 +83,7 @@ func Test_checkForEmpties(t *testing.T) {
 		{
 			"empty-body",
 			args{
-				PostMessage{
+				&PostMessage{
 					Headers:           &PostHeaders{},
 					Subject:           "subject-value",
 					PublicKey:         "public-key-value",
@@ -96,7 +96,7 @@ func Test_checkForEmpties(t *testing.T) {
 		{
 			"empty-public-key",
 			args{
-				PostMessage{
+				&PostMessage{
 					Headers: &PostHeaders{},
 					Subject: "subject-value",
 					Body:    "body-value",

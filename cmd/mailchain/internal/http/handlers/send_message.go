@@ -81,6 +81,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"))
 			return
 		}
+
 		if !ks.HasAddress(from, req.Protocol, req.Network) {
 			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Body.Message.Headers.From))
 			return
@@ -241,7 +242,7 @@ type PostRequestBody struct {
 	ContentType string `json:"content-type"`
 }
 
-func checkForEmpties(msg PostMessage) error {
+func checkForEmpties(msg *PostMessage) error {
 	if msg.Headers == nil {
 		return errors.Errorf("headers must not be nil")
 	}
@@ -270,7 +271,7 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		return errors.New("PostRequestBody must not be nil")
 	}
 
-	if err := checkForEmpties(p.Message); err != nil {
+	if err := checkForEmpties(&p.Message); err != nil {
 		return err
 	}
 

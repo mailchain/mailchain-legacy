@@ -53,15 +53,6 @@ func (t *Extrinsic) Run(ctx context.Context, protocol, network string, tx interf
 	return actions.StoreTransaction(ctx, t.txStore, t.rawTxStore, protocol, network, storeTx, subEx)
 }
 
-// func (t *Transaction) From(blockNo *big.Int, tx *types.Transaction) ([]byte, error) {
-// 	msg, err := tx.AsMessage(types.MakeSigner(t.chainConfig, blockNo))
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return msg.From().Bytes(), nil
-// }
-
 func getFromPublicKey(sig *types.ExtrinsicSignatureV4) (crypto.PublicKey, error) {
 	if !sig.Signer.IsAccountID {
 		return nil, errors.Errorf("must be signed by account ID")
@@ -119,11 +110,6 @@ func (t *Extrinsic) ToTransaction(network string, blk *types.Block, ex *types.Ex
 
 	txInfo, data := getParts(w.Bytes())
 
-	decodedData, err := encoding.DecodeHex(string(data))
-	if err != nil {
-		return nil, err
-	}
-
 	from, err := getFromAddress(network, &ex.Signature)
 	if err != nil {
 		return nil, err
@@ -143,7 +129,7 @@ func (t *Extrinsic) ToTransaction(network string, blk *types.Block, ex *types.Ex
 		From: from,
 		// BlockHash: blk.Hash().Bytes(),
 		Hash: hash,
-		Data: decodedData,
+		Data: data,
 		To:   to,
 		// Value:    *value,
 		// GasUsed:  *gasUsed,
@@ -154,13 +140,13 @@ func (t *Extrinsic) ToTransaction(network string, blk *types.Block, ex *types.Ex
 func getParts(data []byte) (txInfo, dataField []byte) {
 	// mailchain hex encoded -> 0x6d61696c636861696e
 	// 0x6d61696c636861696e hex encoded -> 3078366436313639366336333638363136393665
-	pieces := bytes.Split(data, []byte{0x30, 0x78, 0x36, 0x64, 0x36, 0x31, 0x36, 0x39, 0x36, 0x63, 0x36, 0x33, 0x36, 0x38, 0x36, 0x31, 0x36, 0x39, 0x36, 0x65})
+	pieces := bytes.Split(data, encoding.DataPrefix())
 	txInfo = pieces[0]
 
 	if len(pieces) == 2 {
 		dataField = append(
 			// 0x30, 0x78 -> 0x
-			[]byte{0x36, 0x64, 0x36, 0x31, 0x36, 0x39, 0x36, 0x63, 0x36, 0x33, 0x36, 0x38, 0x36, 0x31, 0x36, 0x39, 0x36, 0x65},
+			encoding.DataPrefix(),
 			pieces[1]...,
 		)
 	}

@@ -339,3 +339,47 @@ func TestZeroX50_Valid(t *testing.T) {
 		})
 	}
 }
+
+func TestZeroX50_DecrypterKind(t *testing.T) {
+	type fields struct {
+		EncryptedURL []byte
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    byte
+		wantErr bool
+	}{
+		{
+			"success",
+			fields{
+				encodingtest.MustDecodeHexZeroX("0x2ee10c59024c836d7ca12470b5ac74673002127ddedadbc6fc4375a8c086b650060ede199f603a158bc7884a903eadf97a2dd0fbe69ac81c216830f94e56b847d924b51a7d8227c80714219e6821a51bc7cba922f291a47bdffe29e7c3f67ad908ff377bfcc0b603007ead4bfd87ff0acc272528ca03d6381e6d0e1e2c5dfd24d521"),
+			},
+			cipher.AES256CBC,
+			false,
+		},
+		{
+			"err-empty",
+			fields{
+				[]byte{},
+			},
+			0x0,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			x := &ZeroX50{
+				EncryptedURL: tt.fields.EncryptedURL,
+			}
+			got, err := x.DecrypterKind()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ZeroX50.DecrypterKind() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ZeroX50.DecrypterKind() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

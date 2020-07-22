@@ -25,7 +25,7 @@ func (s SubstrateRPC) Send(ctx context.Context, network string, to, from, data [
 		return errors.WithMessage(err, "could not get gas price")
 	}
 
-	addressTo := client.GetAddress(to)
+	addressTo := client.GetAddress(to[1:])
 
 	c, err := client.Call(meta, addressTo, gasPrice, data)
 	if err != nil {

@@ -71,7 +71,7 @@ func (s *TransactionStore) getTransactions(ctx context.Context, protocol, networ
 		return nil, errors.WithStack(err)
 	}
 
-	sql, args, err := squirrel.Select("tx_from", "tx_to", "tx_data", "tx_block_hash", "tx_value", "tx_gas_used", "tx_gas_price").
+	sql, args, err := squirrel.Select("hash", "tx_from", "tx_to", "tx_data", "tx_block_hash", "tx_value", "tx_gas_used", "tx_gas_price").
 		From("transactions").
 		PlaceholderFormat(squirrel.Dollar).
 		Where(squirrel.Eq{"protocol": p}).

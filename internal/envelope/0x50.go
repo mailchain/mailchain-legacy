@@ -69,3 +69,11 @@ func (d *ZeroX50) Valid() error {
 
 	return nil
 }
+
+func (x *ZeroX50) DecrypterKind() (byte, error) {
+	if len(x.EncryptedURL) == 0 {
+		return 0x0, errors.Errorf("`EncryptedURL` must not be empty")
+	}
+
+	return x.EncryptedURL[0], nil
+}

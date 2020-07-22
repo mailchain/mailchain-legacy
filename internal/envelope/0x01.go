@@ -103,9 +103,8 @@ func (x *ZeroX01) ContentsHash(decrypter cipher.Decrypter) ([]byte, error) {
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	locationHash := UInt64Bytes(decrypted)
 
-	return locationHash.Bytes()
+	return UInt64Bytes(decrypted).Bytes()
 }
 
 // IntegrityHash returns a hash of the encrypted content. This can be used to validate the integrity of the contents before decrypting.
@@ -121,4 +120,12 @@ func (x *ZeroX01) Valid() error {
 	}
 
 	return nil
+}
+
+func (x *ZeroX01) DecrypterKind() (byte, error) {
+	if len(x.UIBEncryptedLocationHash) == 0 {
+		return 0x0, errors.Errorf("`EncryptedLocationHash` must not be empty")
+	}
+
+	return x.UIBEncryptedLocationHash[0], nil
 }

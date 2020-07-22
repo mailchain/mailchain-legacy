@@ -26,6 +26,9 @@ func EncodeByProtocol(in []byte, protocol string) (encoded, encodingKind string,
 	case protocols.Ethereum:
 		encodingKind = encoding.KindHex0XPrefix
 		encoded = encoding.EncodeHexZeroX(in)
+	case protocols.Substrate:
+		encodingKind = encoding.KindBase58
+		encoded = encoding.EncodeBase58(in)
 	default:
 		err = errors.Errorf("%q unsupported protocol", protocol)
 	}

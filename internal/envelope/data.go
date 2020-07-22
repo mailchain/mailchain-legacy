@@ -52,4 +52,6 @@ type Data interface {
 	// Valid will verify the contents of the envelope.
 	// Checks the envelopes contents for no integrity issues which would prevent the envelope from being read.
 	Valid() error
+	// DecrypterKind returns the byte ID for the decrypter needed for the envelope
+	DecrypterKind() (byte, error)
 }

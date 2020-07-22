@@ -23,7 +23,7 @@ func ethereumCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			network, _ := cmd.Flags().GetString("network")
 			protocol, _ := cmd.Flags().GetString("protocol")
-			blockNumber, _ := cmd.Flags().GetUint64("start-block")
+			blockNumber, _ := cmd.Flags().GetString("start-block")
 
 			addressRPC, _ := cmd.Flags().GetString("rpc-address")
 			if addressRPC == "" {
@@ -62,7 +62,7 @@ func ethereumCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Uint64("start-block", 0, "Block number from which the indexer will start")
+	cmd.Flags().String("start-block", "latest", "Block number from which the indexer will start, e.g. 10000, or 'latest'")
 	cmd.Flags().String("protocol", protocols.Ethereum, "Protocol to run against")
 	cmd.Flags().String("network", ethereum.Mainnet, "Network to run against")
 	cmd.Flags().String("rpc-address", "", "Ethereum RPC-JSON address")
@@ -70,10 +70,15 @@ func ethereumCmd() *cobra.Command {
 	return cmd
 }
 
-func createEthereumProcessor(connIndexer, connPublicKey, connEnvelope *sqlx.DB, blockNumber uint64, protocol, network, rawStorePath, addressRPC string) (*processor.Sequential, error) {
+func createEthereumProcessor(connIndexer, connPublicKey, connEnvelope *sqlx.DB, blockNumber, protocol, network, rawStorePath, addressRPC string) (*processor.Sequential, error) {
 	ctx := context.Background()
 
 	ethClient, err := eth.NewRPC(addressRPC)
+	if err != nil {
+		return nil, err
+	}
+
+	blockNo, err := getBlockNumber(blockNumber, ethClient)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +124,7 @@ func createEthereumProcessor(connIndexer, connPublicKey, connEnvelope *sqlx.DB, 
 		chainCfg,
 	)
 
-	if err := syncStore.PutBlockNumber(ctx, protocol, network, blockNumber); err != nil {
+	if err := syncStore.PutBlockNumber(ctx, protocol, network, blockNo); err != nil {
 		return nil, err
 	}
 

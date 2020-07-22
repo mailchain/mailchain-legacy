@@ -6,7 +6,6 @@ import (
 
 	gsrpc "github.com/mailchain/go-substrate-rpc-client"
 	"github.com/mailchain/go-substrate-rpc-client/types"
-	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
@@ -52,7 +51,8 @@ func (s SubstrateClient) SuggestGasPrice(ctx context.Context) (*big.Int, error) 
 }
 
 func (s SubstrateClient) Call(metadata *types.Metadata, to types.Address, gas *big.Int, data []byte) (types.Call, error) {
-	return types.NewCall(metadata, "Contracts.call", to, types.UCompact(0), types.UCompact(gas.Uint64()), encoding.EncodeHexZeroX(data))
+	// return types.NewCall(metadata, "Contracts.call", to, types.UCompact(0), types.UCompact(gas.Uint64()), encoding.EncodeHexZeroX(data))
+	return types.NewCall(metadata, "Contracts.call", to, types.UCompact(0), types.UCompact(gas.Uint64()), data) // TODO: decide
 }
 
 func (s SubstrateClient) NewExtrinsic(call types.Call) types.Extrinsic {

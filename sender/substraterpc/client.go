@@ -51,7 +51,6 @@ func (s SubstrateClient) SuggestGasPrice(ctx context.Context) (*big.Int, error) 
 }
 
 func (s SubstrateClient) Call(metadata *types.Metadata, to types.Address, gas *big.Int, data []byte) (types.Call, error) {
-	// return types.NewCall(metadata, "Contracts.call", to, types.UCompact(0), types.UCompact(gas.Uint64()), encoding.EncodeHexZeroX(data))
 	return types.NewCall(metadata, "Contracts.call", to, types.UCompact(0), types.UCompact(gas.Uint64()), data) // TODO: decide
 }
 

@@ -32,7 +32,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// GetMessages returns a handler get spec
+// GetMessages returns a handler get spec.
 func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { //nolint: funlen, gocyclo
 	// Get swagger:route GET /messages Messages GetMessages
@@ -109,6 +109,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			}
 
 			readStatus, _ := inbox.GetReadStatus(message.ID)
+
 			messages = append(messages, getMessage{
 				Body: string(message.Body),
 				Headers: &getHeaders{

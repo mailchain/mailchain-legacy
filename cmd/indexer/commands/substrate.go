@@ -6,7 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/mailchain/mailchain/cmd/indexer/internal/processor"
 	sub "github.com/mailchain/mailchain/cmd/indexer/internal/substrate"
-	"github.com/mailchain/mailchain/cmd/internal/datastore/os"
+	"github.com/mailchain/mailchain/cmd/internal/datastore/noop"
 	"github.com/mailchain/mailchain/cmd/internal/datastore/pq"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
@@ -22,14 +22,12 @@ func substrateCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			network, _ := cmd.Flags().GetString("network")
 			protocol, _ := cmd.Flags().GetString("protocol")
-			blockNumber, _ := cmd.Flags().GetUint64("start-block")
+			blockNumber, _ := cmd.Flags().GetString("start-block")
 
 			addressRPC, _ := cmd.Flags().GetString("rpc-address")
 			if addressRPC == "" {
 				return errors.Errorf("rpc-address must not be empty")
 			}
-
-			rawStorePath, _ := cmd.Flags().GetString("raw-store-path")
 
 			connIndexer, err := newPostgresConnection(cmd, "indexer")
 			if err != nil {
@@ -50,7 +48,7 @@ func substrateCmd() *cobra.Command {
 			defer connPublicKey.Close()
 			defer connEnvelope.Close()
 
-			seqProcessor, err := createSubstrateProcessor(connIndexer, connPublicKey, connEnvelope, blockNumber, protocol, network, rawStorePath, addressRPC)
+			seqProcessor, err := createSubstrateProcessor(connIndexer, connPublicKey, connEnvelope, blockNumber, protocol, network, addressRPC)
 			if err != nil {
 				return err
 			}
@@ -61,7 +59,7 @@ func substrateCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Uint64("start-block", 0, "Block number from which the indexer will start")
+	cmd.Flags().String("start-block", "latest", "Block number from which the indexer will start, e.g. 10000, or 'latest'")
 	cmd.Flags().String("protocol", protocols.Substrate, "Protocol to run against")
 	cmd.Flags().String("network", substrate.EdgewareMainnet, "Network to run against")
 	cmd.Flags().String("rpc-address", "", "Substrate RPC-JSON address")
@@ -69,10 +67,15 @@ func substrateCmd() *cobra.Command {
 	return cmd
 }
 
-func createSubstrateProcessor(connIndexer, connPublicKey, connEnvelope *sqlx.DB, blockNumber uint64, protocol, network, rawStorePath, addressRPC string) (*processor.Sequential, error) {
+func createSubstrateProcessor(connIndexer, connPublicKey, connEnvelope *sqlx.DB, blockNumber, protocol, network, addressRPC string) (*processor.Sequential, error) {
 	ctx := context.Background()
 
 	subClient, err := sub.NewRPC(addressRPC)
+	if err != nil {
+		return nil, err
+	}
+
+	blockNo, err := getBlockNumber(blockNumber, subClient)
 	if err != nil {
 		return nil, err
 	}
@@ -92,18 +95,14 @@ func createSubstrateProcessor(connIndexer, connPublicKey, connEnvelope *sqlx.DB,
 		return nil, err
 	}
 
-	rawStore, err := os.NewRawTransactionStore(rawStorePath)
+	rawStore, err := noop.NewRawTransactionStore()
 	if err != nil {
 		return nil, err
 	}
 
-	processorTransaction := sub.NewExtrinsicProcessor(
-		transactionStore,
-		rawStore,
-		pubKeyStore,
-	)
+	processorTransaction := sub.NewExtrinsicProcessor(transactionStore, rawStore, pubKeyStore)
 
-	if err := syncStore.PutBlockNumber(ctx, protocol, network, blockNumber); err != nil {
+	if err := syncStore.PutBlockNumber(ctx, protocol, network, blockNo); err != nil {
 		return nil, err
 	}
 

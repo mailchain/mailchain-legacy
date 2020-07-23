@@ -21,10 +21,10 @@ import (
 	"time"
 
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
-	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/address"
+	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/mailbox"
@@ -32,7 +32,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// GetMessages returns a handler get spec
+// GetMessages returns a handler get spec.
 func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { //nolint: funlen, gocyclo
 	// Get swagger:route GET /messages Messages GetMessages
@@ -79,14 +79,26 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			return
 		}
 
-		decrypter, err := ks.GetDecrypter(req.addressBytes, req.Protocol, req.Network, cipher.AES256CBC, deriveKeyOptions)
-		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not get `decrypter`"))
-			return
-		}
-
 		messages := make([]getMessage, 0)
 		for _, transactionData := range transactions { //nolint TODO: thats an arbitrary limit
+			env, err := envelope.Unmarshal(transactionData.Data)
+			if err != nil {
+				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to unmarshal envelope"))
+				return
+			}
+
+			decrypterKind, err := env.DecrypterKind()
+			if err != nil {
+				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to find decrypter type"))
+				return
+			}
+
+			decrypter, err := ks.GetDecrypter(req.addressBytes, req.Protocol, req.Network, decrypterKind, deriveKeyOptions)
+			if err != nil {
+				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not get `decrypter`"))
+				return
+			}
+
 			message, err := mailbox.ReadMessage(transactionData.Data, decrypter)
 			if err != nil {
 				messages = append(messages, getMessage{
@@ -97,6 +109,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 			}
 
 			readStatus, _ := inbox.GetReadStatus(message.ID)
+
 			messages = append(messages, getMessage{
 				Body: string(message.Body),
 				Headers: &getHeaders{

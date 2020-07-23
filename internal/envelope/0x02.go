@@ -134,3 +134,11 @@ func (x *ZeroX02) Valid() error {
 
 	return nil
 }
+
+func (x *ZeroX02) DecrypterKind() (byte, error) {
+	if len(x.UIBEncryptedLocationHash) == 0 {
+		return 0x0, errors.Errorf("`EncryptedLocationHash` must not be empty")
+	}
+
+	return x.UIBEncryptedLocationHash[0], nil
+}

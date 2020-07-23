@@ -2,6 +2,7 @@ package substraterpc
 
 import (
 	"context"
+	"errors"
 
 	"math/big"
 	"testing"
@@ -15,7 +16,6 @@ import (
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/sender/substraterpc/substraterpctest"
-	"github.com/pkg/errors"
 )
 
 func TestSubstrateRPC_Send(t *testing.T) {
@@ -68,7 +68,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 						IsAccountIndex: false,
 						AsAccountIndex: 0,
 					}
-					m.EXPECT().GetAddress(to).Return(addressTo)
+					m.EXPECT().GetAddress(to[1:]).Return(addressTo)
 					m.EXPECT().SuggestGasPrice(context.Background()).Return(big.NewInt(SuggestedGas), nil)
 					call := types.Call{}
 					m.EXPECT().Call(metadata, addressTo, big.NewInt(SuggestedGas), []byte("transactionDataValue")).Return(call, nil)
@@ -192,7 +192,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 						IsAccountIndex: false,
 						AsAccountIndex: 0,
 					}
-					m.EXPECT().GetAddress(to).Return(addressTo)
+					m.EXPECT().GetAddress(to[1:]).Return(addressTo)
 					m.EXPECT().SuggestGasPrice(context.Background()).Return(big.NewInt(SuggestedGas), nil)
 					m.EXPECT().Call(metadata, addressTo, big.NewInt(SuggestedGas), []byte("transactionDataValue")).Return(types.Call{}, errors.New("Call error"))
 					return m
@@ -235,7 +235,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 						IsAccountIndex: false,
 						AsAccountIndex: 0,
 					}
-					m.EXPECT().GetAddress(to).Return(addressTo)
+					m.EXPECT().GetAddress(to[1:]).Return(addressTo)
 					m.EXPECT().SuggestGasPrice(context.Background()).Return(big.NewInt(SuggestedGas), nil)
 					call := types.Call{}
 					m.EXPECT().Call(metadata, addressTo, big.NewInt(SuggestedGas), []byte("transactionDataValue")).Return(call, nil)
@@ -282,7 +282,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 						IsAccountIndex: false,
 						AsAccountIndex: 0,
 					}
-					m.EXPECT().GetAddress(to).Return(addressTo)
+					m.EXPECT().GetAddress(to[1:]).Return(addressTo)
 					m.EXPECT().SuggestGasPrice(context.Background()).Return(big.NewInt(SuggestedGas), nil)
 					call := types.Call{}
 					m.EXPECT().Call(metadata, addressTo, big.NewInt(SuggestedGas), []byte("transactionDataValue")).Return(call, nil)
@@ -330,7 +330,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 						IsAccountIndex: false,
 						AsAccountIndex: 0,
 					}
-					m.EXPECT().GetAddress(to).Return(addressTo)
+					m.EXPECT().GetAddress(to[1:]).Return(addressTo)
 					m.EXPECT().SuggestGasPrice(context.Background()).Return(big.NewInt(SuggestedGas), nil)
 					call := types.Call{}
 					m.EXPECT().Call(metadata, addressTo, big.NewInt(SuggestedGas), []byte("transactionDataValue")).Return(call, nil)
@@ -379,7 +379,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 						IsAccountIndex: false,
 						AsAccountIndex: 0,
 					}
-					m.EXPECT().GetAddress(to).Return(addressTo)
+					m.EXPECT().GetAddress(to[1:]).Return(addressTo)
 					m.EXPECT().SuggestGasPrice(context.Background()).Return(big.NewInt(SuggestedGas), nil)
 					call := types.Call{}
 					m.EXPECT().Call(metadata, addressTo, big.NewInt(SuggestedGas), []byte("transactionDataValue")).Return(call, nil)
@@ -443,7 +443,7 @@ func TestSubstrateRPC_Send(t *testing.T) {
 						IsAccountIndex: false,
 						AsAccountIndex: 0,
 					}
-					m.EXPECT().GetAddress(to).Return(addressTo)
+					m.EXPECT().GetAddress(to[1:]).Return(addressTo)
 					m.EXPECT().SuggestGasPrice(context.Background()).Return(big.NewInt(SuggestedGas), nil)
 					call := types.Call{}
 					m.EXPECT().Call(metadata, addressTo, big.NewInt(SuggestedGas), []byte("transactionDataValue")).Return(call, nil)

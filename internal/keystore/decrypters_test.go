@@ -22,6 +22,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/aes256cbc"
 	"github.com/mailchain/mailchain/crypto/cipher/nacl"
+	"github.com/mailchain/mailchain/crypto/cipher/noop"
 	"github.com/mailchain/mailchain/crypto/cryptotest"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
@@ -62,6 +63,18 @@ func TestDecrypter(t *testing.T) {
 			},
 			func() cipher.Decrypter {
 				m, _ := nacl.NewDecrypter(ed25519test.CharlottePrivateKey)
+				return m
+			}(),
+			false,
+		},
+		{
+			"noop",
+			args{
+				cipher.NoOperation,
+				ed25519test.CharlottePrivateKey,
+			},
+			func() cipher.Decrypter {
+				m := noop.NewDecrypter()
 				return m
 			}(),
 			false,

@@ -76,3 +76,6 @@ lint:
 	golangci-lint run --fix
 
 .FORCE:
+
+indexer-database-up:
+	go run cmd/indexer/main.go database up --master-postgres-password=mailchain --master-postgres-user=mailchain --indexer-postgres-password=indexer --envelope-postgres-password=envelope --pubkey-postgres-password=pubkey

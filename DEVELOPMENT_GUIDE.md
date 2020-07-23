@@ -19,6 +19,10 @@ To compile and run the package locally, you need to run the following command in
 1. Navigate into the directory of the repository
 2. Run: `go run cmd/mailchain/main.go account add --protocol=ethereum --key-type="secp256k1" --private-key=YOUR_PRIVATE_KEY`
 
+**To run substrate**
+
+1. Run: `docker-compose -f docker-compose.substrate.yml up --build`
+
 ### Inbox vs Inbox Staging
 
 From time to time, there may be pending breaking changes that have not been released. This means that if you use the web inbox, it may not work as desired.

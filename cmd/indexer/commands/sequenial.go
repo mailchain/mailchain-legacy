@@ -4,16 +4,24 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cenkalti/backoff"
 	"github.com/mailchain/mailchain/cmd/indexer/internal/processor"
 	"github.com/spf13/cobra"
 )
 
 func doSequential(cmd *cobra.Command, p *processor.Sequential) {
 	for {
-		err := p.NextBlock(context.Background())
+		operation := func() error {
+			err := p.NextBlock(context.Background())
+			if err != nil {
+				fmt.Fprintf(cmd.ErrOrStderr(), "%+v\n", err)
+			}
 
-		if err != nil {
-			fmt.Fprintf(cmd.ErrOrStderr(), "%+v", err)
+			return err
+		}
+
+		if err := backoff.Retry(operation, backoff.NewExponentialBackOff()); err != nil {
+			fmt.Fprintf(cmd.ErrOrStderr(), "%+v\n", err)
 		}
 	}
 }

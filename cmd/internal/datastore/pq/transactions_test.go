@@ -16,6 +16,8 @@ import (
 )
 
 var (
+	hash1       = []byte{0x01, 0x90, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xab, 0x4c, 0xe3, 0xdb, 0x60, 0x9b, 0x60, 0x5c, 0xd5, 0xef, 0x7f, 0xe6}
+	hash2       = []byte{0x02, 0xab, 0x9b, 0xe3, 0x60, 0x5c, 0x6b, 0x5c, 0x4c, 0xd5, 0x90, 0xdb, 0x60, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6}
 	fromAddress = []byte{0x54, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6}
 	toAddress   = []byte{0x55, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6}
 	toAddress2  = []byte{0x57, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6}
@@ -56,7 +58,7 @@ func TestTransactionStore_GetTransactionsFrom(t *testing.T) {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
 
-				m.ExpectQuery(regexp.QuoteMeta(`SELECT tx_from, tx_to, tx_data, tx_block_hash, tx_value, tx_gas_used, tx_gas_price FROM transactions WHERE protocol = $1 AND network = $2 AND tx_from = $3`)).
+				m.ExpectQuery(regexp.QuoteMeta(`SELECT hash, tx_from, tx_to, tx_data, tx_block_hash, tx_value, tx_gas_used, tx_gas_price FROM transactions WHERE protocol = $1 AND network = $2 AND tx_from = $3`)).
 					WithArgs(uint8(1), uint8(1), fromAddress).
 					WillReturnError(sql.ErrNoRows)
 
@@ -81,12 +83,12 @@ func TestTransactionStore_GetTransactionsFrom(t *testing.T) {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
 
-				m.ExpectQuery(regexp.QuoteMeta(`SELECT tx_from, tx_to, tx_data, tx_block_hash, tx_value, tx_gas_used, tx_gas_price FROM transactions WHERE protocol = $1 AND network = $2 AND tx_from = $3`)).
+				m.ExpectQuery(regexp.QuoteMeta(`SELECT hash, tx_from, tx_to, tx_data, tx_block_hash, tx_value, tx_gas_used, tx_gas_price FROM transactions WHERE protocol = $1 AND network = $2 AND tx_from = $3`)).
 					WithArgs(uint8(1), uint8(1), fromAddress).
 					WillReturnRows(
-						sqlmock.NewRows([]string{"tx_from", "tx_to", "tx_data", "tx_block_hash", "tx_value", "tx_gas_used", "tx_gas_price"}).
-							AddRow(fromAddress, toAddress, []byte{0x1}, []byte{0x1}, []byte{0x1}, []byte{0x1}, []byte{0x1}).
-							AddRow(fromAddress, toAddress2, []byte{0x2}, []byte{0x2}, []byte{0x2}, []byte{0x2}, []byte{0x2}),
+						sqlmock.NewRows([]string{"hash", "tx_from", "tx_to", "tx_data", "tx_block_hash", "tx_value", "tx_gas_used", "tx_gas_price"}).
+							AddRow(hash1, fromAddress, toAddress, []byte{0x1}, []byte{0x1}, []byte{0x1}, []byte{0x1}, []byte{0x1}).
+							AddRow(hash2, fromAddress, toAddress2, []byte{0x2}, []byte{0x2}, []byte{0x2}, []byte{0x2}, []byte{0x2}),
 					)
 
 				return mock{db, m}
@@ -101,6 +103,7 @@ func TestTransactionStore_GetTransactionsFrom(t *testing.T) {
 						Value:     *big.NewInt(1),
 						GasUsed:   *big.NewInt(1),
 						GasPrice:  *big.NewInt(1),
+						Hash:      hash1,
 					},
 					datastore.Transaction{
 						From:      fromAddress,
@@ -110,6 +113,7 @@ func TestTransactionStore_GetTransactionsFrom(t *testing.T) {
 						Value:     *big.NewInt(2),
 						GasUsed:   *big.NewInt(2),
 						GasPrice:  *big.NewInt(2),
+						Hash:      hash2,
 					},
 				},
 				false,
@@ -195,7 +199,7 @@ func TestTransactionStore_GetTransactionsTo(t *testing.T) {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
 
-				m.ExpectQuery(regexp.QuoteMeta(`SELECT tx_from, tx_to, tx_data, tx_block_hash, tx_value, tx_gas_used, tx_gas_price FROM transactions WHERE protocol = $1 AND network = $2 AND tx_to = $3`)).
+				m.ExpectQuery(regexp.QuoteMeta(`SELECT hash, tx_from, tx_to, tx_data, tx_block_hash, tx_value, tx_gas_used, tx_gas_price FROM transactions WHERE protocol = $1 AND network = $2 AND tx_to = $3`)).
 					WithArgs(uint8(1), uint8(1), toAddress).
 					WillReturnError(sql.ErrNoRows)
 
@@ -220,11 +224,11 @@ func TestTransactionStore_GetTransactionsTo(t *testing.T) {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
 
-				m.ExpectQuery(regexp.QuoteMeta(`SELECT tx_from, tx_to, tx_data, tx_block_hash, tx_value, tx_gas_used, tx_gas_price FROM transactions WHERE protocol = $1 AND network = $2 AND tx_to = $3`)).
+				m.ExpectQuery(regexp.QuoteMeta(`SELECT hash, tx_from, tx_to, tx_data, tx_block_hash, tx_value, tx_gas_used, tx_gas_price FROM transactions WHERE protocol = $1 AND network = $2 AND tx_to = $3`)).
 					WithArgs(uint8(1), uint8(1), toAddress).
 					WillReturnRows(
-						sqlmock.NewRows([]string{"tx_from", "tx_to", "tx_data", "tx_block_hash", "tx_value", "tx_gas_used", "tx_gas_price"}).
-							AddRow(fromAddress, toAddress, []byte{0x1}, []byte{0x1}, []byte{0x1}, []byte{0x1}, []byte{0x1}),
+						sqlmock.NewRows([]string{"hash", "tx_from", "tx_to", "tx_data", "tx_block_hash", "tx_value", "tx_gas_used", "tx_gas_price"}).
+							AddRow(hash1, fromAddress, toAddress, []byte{0x1}, []byte{0x1}, []byte{0x1}, []byte{0x1}, []byte{0x1}),
 					)
 
 				return mock{db, m}
@@ -239,6 +243,7 @@ func TestTransactionStore_GetTransactionsTo(t *testing.T) {
 						Value:     *big.NewInt(1),
 						GasUsed:   *big.NewInt(1),
 						GasPrice:  *big.NewInt(1),
+						Hash:      hash1,
 					},
 				},
 				false,
@@ -258,11 +263,11 @@ func TestTransactionStore_GetTransactionsTo(t *testing.T) {
 					t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 				}
 
-				m.ExpectQuery(regexp.QuoteMeta(`SELECT tx_from, tx_to, tx_data, tx_block_hash, tx_value, tx_gas_used, tx_gas_price FROM transactions WHERE protocol = $1 AND network = $2 AND tx_to = $3`)).
+				m.ExpectQuery(regexp.QuoteMeta(`SELECT hash, tx_from, tx_to, tx_data, tx_block_hash, tx_value, tx_gas_used, tx_gas_price FROM transactions WHERE protocol = $1 AND network = $2 AND tx_to = $3`)).
 					WithArgs(uint8(1), uint8(1), toAddress2).
 					WillReturnRows(
-						sqlmock.NewRows([]string{"tx_from", "tx_to", "tx_data", "tx_block_hash", "tx_value", "tx_gas_used", "tx_gas_price"}).
-							AddRow(fromAddress, toAddress2, []byte{0x2}, []byte{0x2}, []byte{0x2}, []byte{0x2}, []byte{0x2}),
+						sqlmock.NewRows([]string{"hash", "tx_from", "tx_to", "tx_data", "tx_block_hash", "tx_value", "tx_gas_used", "tx_gas_price"}).
+							AddRow(hash2, fromAddress, toAddress2, []byte{0x2}, []byte{0x2}, []byte{0x2}, []byte{0x2}, []byte{0x2}),
 					)
 
 				return mock{db, m}
@@ -277,6 +282,7 @@ func TestTransactionStore_GetTransactionsTo(t *testing.T) {
 						Value:     *big.NewInt(2),
 						GasUsed:   *big.NewInt(2),
 						GasPrice:  *big.NewInt(2),
+						Hash:      hash2,
 					},
 				},
 				false,

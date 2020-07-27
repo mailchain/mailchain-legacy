@@ -19,13 +19,13 @@ import (
 	"net/http"
 
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
-	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
 )
 
-// GetAddresses returns a handler get spec
+// GetAddresses returns a handler get spec.
 func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request) {
 	// Get swagger:route GET /addresses Addresses GetAddresses
 	//
@@ -48,16 +48,19 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-
+		addresses := []string{}
 		rawAddresses, err := ks.GetAddresses(protocol, network)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
-
-		addresses := []string{}
 		for _, x := range rawAddresses {
-			addresses = append(addresses, encoding.EncodeHex(x))
+			enc, _, err := address.EncodeByProtocol(x, protocol)
+			if err != nil {
+				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+				return
+			}
+			addresses = append(addresses, enc)
 		}
 
 		_ = json.NewEncoder(w).Encode(GetAddressesResponse{Addresses: addresses})

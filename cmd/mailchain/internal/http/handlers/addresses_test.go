@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,7 +29,7 @@ func TestGetAddresses(t *testing.T) {
 		wantStatus int
 	}{
 		{
-			"err-missing-protocol",
+			"422-missing-protocol",
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
@@ -39,7 +41,7 @@ func TestGetAddresses(t *testing.T) {
 			http.StatusUnprocessableEntity,
 		},
 		{
-			"err-missing-network",
+			"422-missing-network",
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
@@ -51,7 +53,7 @@ func TestGetAddresses(t *testing.T) {
 			http.StatusUnprocessableEntity,
 		},
 		{
-			"err-GetAddresses",
+			"500-keystore-error",
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
@@ -68,7 +70,7 @@ func TestGetAddresses(t *testing.T) {
 			http.StatusInternalServerError,
 		},
 		{
-			"empty-address",
+			"200-empty-address",
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
@@ -85,7 +87,27 @@ func TestGetAddresses(t *testing.T) {
 			http.StatusOK,
 		},
 		{
-			"single-address",
+			"200-substrate-address",
+			args{
+				func() keystore.Store {
+					store := keystoretest.NewMockStore(mockCtrl)
+					store.EXPECT().GetAddresses("substrate", "edgeware-berlin").Return(
+						[][]byte{
+							encodingtest.MustDecodeHex("2a169a11721851f5dff3541dd5c4b0b478ac1cd092c9d5976e83daa0d03f26620c464b"),
+							encodingtest.MustDecodeHex("2a84623e7252e41138af6904e1b02304c941625f39e5762589125dc1a2f2cf2e30e02a"),
+						},
+						nil,
+					).Times(1)
+
+					return store
+				}(),
+			},
+			httptest.NewRequest("GET", "/?network=edgeware-berlin&protocol=substrate", nil),
+			"{\"addresses\":[\"5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\"]}\n",
+			http.StatusOK,
+		},
+		{
+			"200-ethereum-single-address",
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
@@ -102,7 +124,7 @@ func TestGetAddresses(t *testing.T) {
 			http.StatusOK,
 		},
 		{
-			"multi-address",
+			"200-ethereum-multi-address",
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
@@ -123,6 +145,7 @@ func TestGetAddresses(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		testName := t.Name()
 		t.Run(tt.name, func(t *testing.T) {
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 			rr := httptest.NewRecorder()
@@ -137,11 +160,15 @@ func TestGetAddresses(t *testing.T) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.wantStatus)
 			}
-			if !assert.Equal(t, tt.wantBody, rr.Body.String()) {
-				t.Errorf("handler returned unexpected body: got %v want %v",
-					rr.Body.String(), tt.wantBody)
+			goldenResponse, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/response-%s.json", testName, tt.name))
+			if err != nil {
+				assert.FailNow(t, err.Error())
 			}
 
+			if !assert.JSONEq(t, string(goldenResponse), rr.Body.String()) {
+				t.Errorf("handler returned unexpected body: got %v want %v",
+					rr.Body.String(), goldenResponse)
+			}
 		})
 	}
 }

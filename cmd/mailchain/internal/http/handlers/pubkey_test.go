@@ -23,6 +23,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
+	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/internal/mailbox/mailboxtest"
@@ -237,6 +238,22 @@ func TestGetPublicKey(t *testing.T) {
 			},
 			http.StatusOK,
 		},
+		{
+			"200-charlotte-sr25519",
+			args{
+				func() map[string]mailbox.PubKeyFinder {
+					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
+					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "substrate", "edgeware-berlin", encodingtest.MustDecodeBase58("5CaLgJUDdDRxw6KQXJY2f5hFkMEEGHvtUPQYDWdSbku42Dv2")).Return(sr25519test.CharlottePublicKey, nil).Times(1)
+					return map[string]mailbox.PubKeyFinder{"substrate/edgeware-berlin": finder}
+				}(),
+			},
+			map[string]string{
+				"address":  "5CaLgJUDdDRxw6KQXJY2f5hFkMEEGHvtUPQYDWdSbku42Dv2",
+				"network":  "edgeware-berlin",
+				"protocol": "substrate",
+			},
+			http.StatusOK,
+		},
 	}
 
 	for _, tt := range tests {
@@ -262,11 +279,14 @@ func TestGetPublicKey(t *testing.T) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.wantStatus)
 			}
-			golden, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/request-%s.json", testName, tt.name))
+			golden, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/response-%s.json", testName, tt.name))
 			if err != nil {
 				assert.FailNow(t, err.Error())
 			}
-			assert.JSONEq(t, string(golden), rr.Body.String())
+			if !assert.JSONEq(t, string(golden), rr.Body.String()) {
+				t.Errorf("handler returned unexpected body: got %v want %v",
+					rr.Body.String(), golden)
+			}
 		})
 	}
 }

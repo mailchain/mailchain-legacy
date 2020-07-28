@@ -1,6 +1,12 @@
 {
     "addresses": [
-        "5CaLgJUDdDRxw6KQXJY2f5hFkMEEGHvtUPQYDWdSbku42Dv2",
-        "5F4HMyes8GNWzpSDjTPSh61Aw6RTaWmZKwKvszocwqbsdn4h"
+        {
+            "value": "5CaLgJUDdDRxw6KQXJY2f5hFkMEEGHvtUPQYDWdSbku42Dv2",
+            "encoding": "base58/plain"
+        },
+        {
+            "value": "5F4HMyes8GNWzpSDjTPSh61Aw6RTaWmZKwKvszocwqbsdn4h",
+            "encoding": "base58/plain"
+        }
     ]
 }

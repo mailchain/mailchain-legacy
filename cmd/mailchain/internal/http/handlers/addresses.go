@@ -48,19 +48,25 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		addresses := []string{}
+
 		rawAddresses, err := ks.GetAddresses(protocol, network)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
+
+		addresses := []GetAddressesItem{}
 		for _, x := range rawAddresses {
-			enc, _, err := address.EncodeByProtocol(x, protocol)
+			value, encoding, err := address.EncodeByProtocol(x, protocol)
 			if err != nil {
 				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 				return
 			}
-			addresses = append(addresses, enc)
+
+			addresses = append(addresses, GetAddressesItem{
+				Value:    value,
+				Encoding: encoding,
+			})
 		}
 
 		_ = json.NewEncoder(w).Encode(GetAddressesResponse{Addresses: addresses})
@@ -73,7 +79,15 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 // swagger:response GetAddressesResponse
 type GetAddressesResponse struct {
 	// in: body
-	Addresses []string `json:"addresses"`
+	Addresses []GetAddressesItem `json:"addresses"`
+}
+
+// swagger:response // in: body
+type GetAddressesItem struct {
+	// in: body
+	Value string `json:"value"`
+	// in: body
+	Encoding string `json:"encoding"`
 }
 
 // GetAddressesRequest body

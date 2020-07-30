@@ -84,9 +84,15 @@ type GetAddressesResponse struct {
 
 // swagger:response // in: body
 type GetAddressesItem struct {
-	// in: body
+	// Address value
+	//
+	// Required: true
+	// example: 0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761
 	Value string `json:"value"`
-	// in: body
+	// Encoding method used for encoding the `address`
+	//
+	// Required: true
+	// example: hex/0x-prefix
 	Encoding string `json:"encoding"`
 }
 

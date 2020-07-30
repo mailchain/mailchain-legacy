@@ -1,9 +1,8 @@
 package commands
 
 import (
-	"fmt"
-
 	"github.com/jmoiron/sqlx"
+	"github.com/mailchain/mailchain/cmd/internal/datastore/pq"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -23,9 +22,7 @@ func newDatabaseConnection(cmd *cobra.Command) (*sqlx.DB, error) {
 		return nil, err
 	}
 
-	db, err := sqlx.Connect("postgres", fmt.Sprintf(
-		"user=%s password=%s host=%s port=%d sslmode=%s",
-		user, password, host, port, sslmode))
+	db, err := pq.NewConnection(user, password, "envelope", host, sslmode, port)
 	if err != nil {
 		return nil, errors.Wrapf(err, "could not open connection: %s", host)
 	}

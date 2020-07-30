@@ -78,10 +78,7 @@
         "operationId": "GetEnvelope",
         "responses": {
           "200": {
-            "description": "GetEnvelopeResponseBody",
-            "schema": {
-              "$ref": "#/definitions/GetEnvelopeResponseBody"
-            }
+            "$ref": "#/responses/GetEnvelopeResponseBody"
           }
         }
       }
@@ -502,8 +499,30 @@
     }
   },
   "definitions": {
-    "GetEnvelopeResponseBody": {
-      "description": "GetEnvelopeResponseBody response",
+    "GetAddressesItem": {
+      "type": "object",
+      "required": [
+        "value",
+        "encoding"
+      ],
+      "properties": {
+        "encoding": {
+          "description": "Encoding method used for encoding the `address`",
+          "type": "string",
+          "x-go-name": "Encoding",
+          "example": "hex/0x-prefix"
+        },
+        "value": {
+          "description": "Address value",
+          "type": "string",
+          "x-go-name": "Value",
+          "example": "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"
+        }
+      },
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+    },
+    "GetEnvelopeResponseBodyElement": {
+      "description": "GetEnvelopeResponseBodyElement response",
       "type": "object",
       "required": [
         "type",
@@ -663,20 +682,27 @@
       "required": [
         "public-key",
         "public-key-encoding",
+        "public-key-kind",
         "supported-encryption-types"
       ],
       "properties": {
         "public-key": {
-          "description": "The public key encoded as per `public_key_encoding`",
+          "description": "The public key encoded as per `public-key-encoding`",
           "type": "string",
           "x-go-name": "PublicKey",
           "example": "0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463"
         },
         "public-key-encoding": {
-          "description": "Encoding method used for encoding the `public_key`",
+          "description": "Encoding method used for encoding the `public-key`",
           "type": "string",
           "x-go-name": "PublicKeyEncoding",
           "example": "hex/0x-prefix"
+        },
+        "public-key-kind": {
+          "description": "Encoding method used for encoding the `public-key`",
+          "type": "string",
+          "x-go-name": "PublicKeyKind",
+          "example": "[\"secp256k1\", \"sr25519\", \"ed25519\"]"
         },
         "supported-encryption-types": {
           "description": "Supported encryption methods for public keys.",
@@ -687,7 +713,7 @@
           "x-go-name": "SupportedEncryptionTypes",
           "example": [
             "aes256cbc",
-            "nacl",
+            "nacl-ecdh",
             "noop"
           ]
         }
@@ -834,7 +860,8 @@
         "headers",
         "body",
         "subject",
-        "public-key"
+        "public-key",
+        "public-key-encoding"
       ],
       "properties": {
         "body": {
@@ -850,6 +877,16 @@
           "description": "Public key of the recipient to encrypt with",
           "type": "string",
           "x-go-name": "PublicKey"
+        },
+        "public-key-encoding": {
+          "description": "Public key Encoding",
+          "type": "string",
+          "x-go-name": "PublicKeyEncoding"
+        },
+        "public-key-kind": {
+          "description": "Public key kind\nrequire: true",
+          "type": "string",
+          "x-go-name": "PublicKeyKind"
         },
         "subject": {
           "description": "Subject of the mail message",
@@ -912,7 +949,7 @@
       "schema": {
         "type": "array",
         "items": {
-          "type": "string"
+          "$ref": "#/definitions/GetAddressesItem"
         }
       }
     },
@@ -921,7 +958,7 @@
       "schema": {
         "type": "array",
         "items": {
-          "$ref": "#/definitions/GetEnvelopeResponseBody"
+          "$ref": "#/definitions/GetEnvelopeResponseBodyElement"
         }
       }
     },

@@ -23,6 +23,7 @@ func substrateCmd() *cobra.Command {
 			network, _ := cmd.Flags().GetString("network")
 			protocol, _ := cmd.Flags().GetString("protocol")
 			blockNumber, _ := cmd.Flags().GetString("start-block")
+			numRetry, _ := cmd.Flags().GetInt("num-retry")
 
 			addressRPC, _ := cmd.Flags().GetString("rpc-address")
 			if addressRPC == "" {
@@ -53,7 +54,7 @@ func substrateCmd() *cobra.Command {
 				return err
 			}
 
-			doSequential(cmd, seqProcessor)
+			doSequential(cmd, seqProcessor, numRetry)
 
 			return nil
 		},

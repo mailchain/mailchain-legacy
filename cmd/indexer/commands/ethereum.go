@@ -32,6 +32,8 @@ func ethereumCmd() *cobra.Command {
 
 			rawStorePath, _ := cmd.Flags().GetString("raw-store-path")
 
+			numRetry, _ := cmd.Flags().GetInt("num-retry")
+
 			connIndexer, err := newPostgresConnection(cmd, "indexer")
 			if err != nil {
 				return err
@@ -56,7 +58,7 @@ func ethereumCmd() *cobra.Command {
 				return err
 			}
 
-			doSequential(cmd, seqProcessor)
+			doSequential(cmd, seqProcessor, numRetry)
 
 			return nil
 		},

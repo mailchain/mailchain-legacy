@@ -9,8 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func doSequential(cmd *cobra.Command, p *processor.Sequential, numRetry int) {
-	failureCounter := 0
+func doSequential(cmd *cobra.Command, p *processor.Sequential, maxRetry uint64) {
 	for {
 		operation := func() error {
 			err := p.NextBlock(context.Background())
@@ -21,13 +20,8 @@ func doSequential(cmd *cobra.Command, p *processor.Sequential, numRetry int) {
 			return err
 		}
 
-		if err := backoff.Retry(operation, backoff.NewExponentialBackOff()); err != nil {
-			failureCounter++
-			fmt.Fprintf(cmd.ErrOrStderr(), "%+v\n", err)
-		}
-
-		if failureCounter == numRetry {
-			fmt.Fprintf(cmd.ErrOrStderr(), "Number of retries has reached to %d. Exiting.\n", numRetry)
+		if err := backoff.Retry(operation, backoff.WithMaxRetries(backoff.NewExponentialBackOff(), maxRetry)); err != nil {
+			fmt.Fprintf(cmd.ErrOrStderr(), "Number of retries has reached to %d. Exiting.\\n", maxRetry)
 			return
 		}
 	}

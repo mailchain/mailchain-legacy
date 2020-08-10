@@ -17,6 +17,7 @@ func rootCmd() *cobra.Command {
 	cmd.PersistentFlags().String("postgres-host", "localhost", "Postgres server host")
 	cmd.PersistentFlags().String("postgres-sslmode", "disable", "Use SSL when connecting to Postgres")
 	cmd.PersistentFlags().Int("postgres-port", 5432, "Postgres server port")
+	cmd.PersistentFlags().Uint64("max-retries", 10, "Maximum number of retry for failures")
 
 	cmd.PersistentFlags().String("indexer-postgres-user", "indexer", "Indexer postgres database user")
 	cmd.PersistentFlags().String("indexer-postgres-password", "", "Indexer postgres database password")

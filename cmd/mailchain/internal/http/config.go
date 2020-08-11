@@ -1,17 +1,22 @@
 package http
 
 import (
+	"time"
+
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/stores"
+	"github.com/mailchain/mailchain/stores/cachestore"
+
 	"github.com/pkg/errors"
 )
 
 type config struct {
 	mailboxStateStore stores.State
+	cache             stores.Cache
 	keystore          keystore.Store
 	addressResolvers  map[string]nameservice.ReverseLookup
 	domainResolvers   map[string]nameservice.ForwardLookup
@@ -35,6 +40,7 @@ func produceConfig(s *settings.Root) (*config, error) { //nolint: funlen
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config sent store")
 	}
+	cacheStore := cachestore.NewCacheStore(1 * time.Hour)
 
 	nsAddressResolvers := map[string]nameservice.ReverseLookup{}
 	nsDomainResolvers := map[string]nameservice.ForwardLookup{}
@@ -94,6 +100,7 @@ func produceConfig(s *settings.Root) (*config, error) { //nolint: funlen
 		addressResolvers:  nsAddressResolvers,
 		domainResolvers:   nsDomainResolvers,
 		mailboxStateStore: mailboxStore,
+		cache:             cacheStore,
 		keystore:          keystorage,
 		publicKeyFinders:  publicKeyFinders,
 		receivers:         receivers,

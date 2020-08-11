@@ -33,7 +33,7 @@ import (
 // - Get message
 // - Decrypt message
 // - Check hash
-func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, error) {
+func ReadMessage(txData []byte, decrypter cipher.Decrypter, cache stores.Cache) (*mail.Message, error) {
 	data, err := envelope.Unmarshal(txData)
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to unmarshal")
@@ -49,7 +49,7 @@ func ReadMessage(txData []byte, decrypter cipher.Decrypter) (*mail.Message, erro
 		return nil, errors.WithMessage(err, "failed to get integrityHash")
 	}
 
-	toDecrypt, err := stores.GetMessage(url.String(), integrityHash)
+	toDecrypt, err := stores.GetMessage(url.String(), integrityHash, cache)
 	if err != nil {
 		return nil, errors.WithMessagef(err, "could not get message from %q", url.String())
 	}

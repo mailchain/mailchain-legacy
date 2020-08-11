@@ -21,15 +21,28 @@ import (
 
 	"github.com/mailchain/mailchain/internal/hash"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/resty.v1"
 )
 
 // GetMessage get the message contents from the location and perform location hash check
-func GetMessage(location string, integrityHash []byte) ([]byte, error) {
-	msg, err := getAnyMessage(location)
+func GetMessage(location string, integrityHash []byte, cache Cache) ([]byte, error) {
+	cacheMiss := false
+	msg, err := cache.GetMessage(location)
 	if err != nil {
-		return nil, err
+		cacheMiss = true
+		msg, err = getAnyMessage(location)
+		if err != nil {
+			return nil, err
+		}
 	}
+
+	if cacheMiss {
+		if err := cache.SetMessage(location, msg); err != nil {
+			log.Errorf("Could not able to store Key:%s to cache %v", location, err)
+		}
+	}
+
 	if err := hash.CompareContentsToHash(msg, integrityHash); len(integrityHash) != 0 && err != nil {
 		return nil, err
 	}

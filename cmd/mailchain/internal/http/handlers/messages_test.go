@@ -21,8 +21,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
-	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
@@ -34,7 +34,10 @@ import (
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/internal/mailbox/mailboxtest"
 	"github.com/mailchain/mailchain/stores"
+	"github.com/mailchain/mailchain/stores/cachestore"
 	"github.com/mailchain/mailchain/stores/storestest"
+
+	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -237,7 +240,7 @@ func Test_GetMessages(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 			rr := httptest.NewRecorder()
-			handler := http.HandlerFunc(GetMessages(tt.args.inbox, tt.args.receivers, tt.args.ks, tt.args.deriveKeyOptions))
+			handler := http.HandlerFunc(GetMessages(tt.args.inbox, cachestore.NewCacheStore(10*time.Second), tt.args.receivers, tt.args.ks, tt.args.deriveKeyOptions))
 
 			// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
 			// directly and pass in our Request and ResponseRecorder.

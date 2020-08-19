@@ -18,7 +18,7 @@ import (
 	"context"
 
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/ed25519"
+	"github.com/mailchain/mailchain/crypto/sr25519"
 	"github.com/pkg/errors"
 )
 
@@ -34,16 +34,16 @@ type PublicKeyFinder struct {
 // PublicKeyFromAddress returns the public key from the address.
 func (pkf *PublicKeyFinder) PublicKeyFromAddress(ctx context.Context, protocol, network string, address []byte) (crypto.PublicKey, error) {
 	if protocol != "substrate" {
-		return nil, errors.New("protocol must be 'substrate'")
+		return nil, errors.Errorf("protocol must be 'substrate'")
 	}
 
 	if len(address) != 35 {
-		return nil, errors.New("address must be 35 bytes in length")
+		return nil, errors.Errorf("address must be 35 bytes in length")
 	}
 
 	// Remove the 1st byte (network identifier)
 	// Remove last 2 bytes (blake2b hash)
 	bytes := address[1:33]
 
-	return ed25519.PublicKeyFromBytes(bytes)
+	return sr25519.PublicKeyFromBytes(bytes)
 }

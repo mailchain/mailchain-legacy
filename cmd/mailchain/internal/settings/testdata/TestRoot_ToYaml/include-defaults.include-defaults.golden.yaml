@@ -40,13 +40,13 @@ protocols:
   substrate:
     disabled: false
     networks:
-      edgeware-berlin:
+      edgeware-beresheet:
         disabled: false
         nameservice-address: ""
         nameservice-domain-name: ""
         public-key-finder: "substrate-public-key-finder"
         receiver: "mailchain"
-        sender: "substrate-rpc-edgeware-berlin"
+        sender: "substrate-rpc-edgeware-beresheet"
       edgeware-mainnet:
         disabled: false
         nameservice-address: ""
@@ -96,7 +96,7 @@ public-key-finders:
     disabled: false
     enabled-networks:
       - "substrate/edgeware-mainnet"
-      - "substrate/edgeware-berlin"
+      - "substrate/edgeware-beresheet"
 receivers:
   blockscout-no-auth:
     enabled-networks:
@@ -120,7 +120,7 @@ receivers:
   mailchain:
     address: "http://localhost:8081"
     enabled-networks:
-      - "substrate/edgeware-berlin"
+      - "substrate/edgeware-beresheet"
       - "substrate/edgeware-mainnet"
 senders:
   ethereum-relay:
@@ -141,8 +141,8 @@ senders:
     address: "https://relay.mailchain.xyz/json-rpc/ethereum/rinkeby"
   ethereum-rpc2-ropsten:
     address: "https://relay.mailchain.xyz/json-rpc/ethereum/ropsten"
-  substrate-rpc-edgeware-berlin:
-    address: "ws://berlin1.edgewa.re:9944"
+  substrate-rpc-edgeware-beresheet:
+    address: "ws://beresheet1.edgewa.re:9944"
   substrate-rpc-edgeware-mainnet:
     address: "ws://mainnet1.edgewa.re:9944"
 keystore:

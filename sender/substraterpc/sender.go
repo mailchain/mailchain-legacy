@@ -13,43 +13,45 @@ import (
 )
 
 func (s SubstrateRPC) Send(ctx context.Context, network string, to, from, data []byte, txSigner signer.Signer, opts sender.SendOpts) error {
-	client := s.client
+	if err := s.Connect(); err != nil {
+		return errors.WithMessage(err, "could not connect")
+	}
 
-	meta, err := client.GetMetadata(types.Hash{})
+	meta, err := s.client.GetMetadata(types.Hash{})
 	if err != nil {
 		return errors.WithMessage(err, "could not get latest metadata")
 	}
 
-	gasPrice, err := client.SuggestGasPrice(ctx)
+	gasPrice, err := s.client.SuggestGasPrice(ctx)
 	if err != nil {
 		return errors.WithMessage(err, "could not get gas price")
 	}
 
-	addressTo := client.GetAddress(to[1:])
+	addressTo := s.client.GetAddress(to[1:])
 
-	c, err := client.Call(meta, addressTo, gasPrice, data)
+	c, err := s.client.Call(meta, addressTo, gasPrice, data)
 	if err != nil {
 		return errors.WithMessage(err, "could not create call")
 	}
 
-	ext := client.NewExtrinsic(c)
+	ext := s.client.NewExtrinsic(c)
 
-	genesisHash, err := client.GetBlockHash(0)
+	genesisHash, err := s.client.GetBlockHash(0)
 	if err != nil {
 		return errors.WithMessage(err, "could not get block hash")
 	}
 
-	rv, err := client.GetRuntimeVersion(types.Hash{})
+	rv, err := s.client.GetRuntimeVersion(types.Hash{})
 	if err != nil {
 		return errors.WithMessage(err, "could not get runtime version")
 	}
 
-	nonce, err := client.GetNonce(ctx, protocols.Substrate, network, from, meta)
+	nonce, err := s.client.GetNonce(ctx, protocols.Substrate, network, from)
 	if err != nil {
 		return errors.WithMessage(err, "could not get nonce")
 	}
 
-	o := client.CreateSignatureOptions(genesisHash, genesisHash, false, true, *rv, nonce, 0)
+	o := s.client.CreateSignatureOptions(genesisHash, genesisHash, false, true, *rv, nonce, 0)
 
 	signedExt, err := txSigner.Sign(substrate.SignerOptions{
 		Extrinsic:        ext,
@@ -61,7 +63,7 @@ func (s SubstrateRPC) Send(ctx context.Context, network string, to, from, data [
 
 	signedExtTyped := signedExt.(*types.Extrinsic)
 
-	hash, err := client.SubmitExtrinsic(signedExtTyped)
+	hash, err := s.client.SubmitExtrinsic(signedExtTyped)
 	if err != nil {
 		return errors.WithMessage(err, "could not submit the transaction")
 	}

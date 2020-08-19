@@ -14,8 +14,8 @@ type CacheStore struct {
 	cache afero.Fs
 }
 
-func NewCacheStore(cacheTimeout time.Duration) *CacheStore {
-	base := afero.NewOsFs()
+func NewCacheStore(cacheTimeout time.Duration, basePath string) *CacheStore {
+	base := afero.NewBasePathFs(afero.NewOsFs(), basePath)
 	layer := afero.NewMemMapFs()
 	cache := afero.NewCacheOnReadFs(base, layer, cacheTimeout)
 	return &CacheStore{cache: cache}

@@ -1,15 +1,12 @@
 package http
 
 import (
-	"time"
-
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/stores"
-	"github.com/mailchain/mailchain/stores/cachestore"
 
 	"github.com/pkg/errors"
 )
@@ -40,7 +37,10 @@ func produceConfig(s *settings.Root) (*config, error) { //nolint: funlen
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config sent store")
 	}
-	cacheStore := cachestore.NewCacheStore(1 * time.Hour)
+	cacheStore, err := s.CacheStore.Produce()
+	if err != nil {
+		return nil, errors.WithMessage(err, "Could not configure cache")
+	}
 
 	nsAddressResolvers := map[string]nameservice.ReverseLookup{}
 	nsDomainResolvers := map[string]nameservice.ForwardLookup{}

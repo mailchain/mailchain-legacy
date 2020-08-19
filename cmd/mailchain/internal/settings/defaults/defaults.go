@@ -78,6 +78,11 @@ func MailboxStatePath() string {
 	return filepath.Join(MailchainHome(), ".mailbox")
 }
 
+// MessageCachePath default value path for message caching.
+func MessageCachePath() string {
+	return filepath.Join(MailchainHome(), ".message-cache")
+}
+
 // MailchainHome directory default value.
 func MailchainHome() string {
 	d, err := homedir.Dir()

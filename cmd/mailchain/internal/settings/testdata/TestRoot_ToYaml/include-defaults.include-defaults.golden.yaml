@@ -166,6 +166,8 @@ sentstore:
     bucket: ""
     region: ""
     secretAccessKey: ""
+cache:
+  path: "/home/user/.mailchain/.cache"
 server:
   port: 12345
   cors:

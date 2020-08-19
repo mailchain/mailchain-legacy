@@ -166,6 +166,8 @@ mailboxState:
 #     bucket: ""
 #     region: ""
 #     secretAccessKey: ""
+cache:
+  path: "/home/user/.mailchain/.message-cache"
 # server:
 #   port: 8080
 #   cors:

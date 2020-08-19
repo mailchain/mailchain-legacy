@@ -45,6 +45,7 @@ func FromStore(s values.Store) *Root {
 		Keystore:     keystore(s),
 		MailboxState: mailboxState(s),
 		SentStore:    sentStore(s),
+		CacheStore:   cacheStore(s),
 		Server:       server(s),
 	}
 }
@@ -64,6 +65,7 @@ type Root struct {
 	MailboxState *MailboxState
 	SentStore    *SentStore
 	Server       *Server
+	CacheStore   *CacheStore
 }
 
 // ToYaml converts settings to yaml
@@ -90,6 +92,7 @@ func (o *Root) ToYaml(out io.Writer, tabsize int, commentDefaults, excludeDefaul
 			o.Keystore.Output(),
 			o.MailboxState.Output(),
 			o.SentStore.Output(),
+			o.CacheStore.Output(),
 			o.Server.Output(),
 		},
 	}, out, 2, commentDefaults, excludeDefaults)

@@ -7,14 +7,15 @@ import (
 func New(address string) (*SubstrateRPC, error) {
 	api, err := gsrpc.NewSubstrateAPI(address)
 	if err != nil {
-		return nil, err
+		return &SubstrateRPC{address: address}, nil
 	}
 
 	client := SubstrateClient{api: api}
 
-	return &SubstrateRPC{client: client}, nil
+	return &SubstrateRPC{client: client, address: address}, nil
 }
 
 type SubstrateRPC struct {
-	client Client
+	client  Client
+	address string
 }

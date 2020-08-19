@@ -36,7 +36,7 @@ func TestNew(t *testing.T) {
 				"host:23425",
 			},
 			true,
-			true,
+			false,
 		},
 	}
 	for _, tt := range tests {
@@ -46,7 +46,7 @@ func TestNew(t *testing.T) {
 				t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if (got == nil) != tt.wantNil {
+			if (got.client == nil) != tt.wantNil {
 				t.Errorf("New() got = %v, wantNil %v", err, tt.wantErr)
 				return
 			}

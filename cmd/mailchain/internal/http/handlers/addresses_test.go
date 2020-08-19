@@ -91,7 +91,7 @@ func TestGetAddresses(t *testing.T) {
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().GetAddresses("substrate", "edgeware-berlin").Return(
+					store.EXPECT().GetAddresses("substrate", "edgeware-beresheet").Return(
 						[][]byte{
 							encodingtest.MustDecodeHex("2a169a11721851f5dff3541dd5c4b0b478ac1cd092c9d5976e83daa0d03f26620c464b"),
 							encodingtest.MustDecodeHex("2a84623e7252e41138af6904e1b02304c941625f39e5762589125dc1a2f2cf2e30e02a"),
@@ -102,7 +102,7 @@ func TestGetAddresses(t *testing.T) {
 					return store
 				}(),
 			},
-			httptest.NewRequest("GET", "/?network=edgeware-berlin&protocol=substrate", nil),
+			httptest.NewRequest("GET", "/?network=edgeware-beresheet&protocol=substrate", nil),
 			"{\"addresses\":[\"5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\"]}\n",
 			http.StatusOK,
 		},

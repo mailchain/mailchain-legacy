@@ -43,7 +43,7 @@ func TestBlock_Run(t *testing.T) {
 			args{
 				context.Background(),
 				protocols.Substrate,
-				networks.EdgewareBerlin,
+				networks.EdgewareBeresheet,
 				&types.Extrinsic{},
 			},
 			true,
@@ -53,14 +53,14 @@ func TestBlock_Run(t *testing.T) {
 			fields{
 				func() actions.Transaction {
 					m := actionstest.NewMockTransaction(mockCtrl)
-					m.EXPECT().Run(context.Background(), protocols.Substrate, networks.EdgewareBerlin, gomock.Any(), gomock.Any()).Return(errors.New("error"))
+					m.EXPECT().Run(context.Background(), protocols.Substrate, networks.EdgewareBeresheet, gomock.Any(), gomock.Any()).Return(errors.New("error"))
 					return m
 				}(),
 			},
 			args{
 				context.Background(),
 				protocols.Substrate,
-				networks.EdgewareBerlin,
+				networks.EdgewareBeresheet,
 				&types.Block{
 					Header: types.Header{},
 					Extrinsics: []types.Extrinsic{
@@ -82,14 +82,14 @@ func TestBlock_Run(t *testing.T) {
 			fields{
 				func() actions.Transaction {
 					m := actionstest.NewMockTransaction(mockCtrl)
-					m.EXPECT().Run(context.Background(), protocols.Substrate, networks.EdgewareBerlin, gomock.Any(), gomock.Any()).Return(nil)
+					m.EXPECT().Run(context.Background(), protocols.Substrate, networks.EdgewareBeresheet, gomock.Any(), gomock.Any()).Return(nil)
 					return m
 				}(),
 			},
 			args{
 				context.Background(),
 				protocols.Substrate,
-				networks.EdgewareBerlin,
+				networks.EdgewareBeresheet,
 				&types.Block{
 					Header: types.Header{},
 					Extrinsics: []types.Extrinsic{

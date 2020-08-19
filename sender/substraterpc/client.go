@@ -6,7 +6,7 @@ import (
 
 	gsrpc "github.com/mailchain/go-substrate-rpc-client"
 	"github.com/mailchain/go-substrate-rpc-client/types"
-	"github.com/mailchain/mailchain/internal/protocols/substrate"
+	"github.com/mailchain/mailchain/internal/address"
 )
 
 //go:generate mockgen -source=client.go -package=substraterpctest -destination=./substraterpctest/client_mock.go
@@ -19,7 +19,7 @@ type Client interface {
 	NewExtrinsic(call types.Call) types.Extrinsic
 	GetBlockHash(blockNumber uint64) (types.Hash, error)
 	GetRuntimeVersion(blockHash types.Hash) (*types.RuntimeVersion, error)
-	GetNonce(ctx context.Context, protocol, network string, address []byte, meta *types.Metadata) (uint32, error)
+	GetNonce(ctx context.Context, protocol, network string, addr []byte) (uint32, error)
 	CreateSignatureOptions(blockHash, genesisHash types.Hash, mortalEra, immortalEra bool, rv types.RuntimeVersion, nonce, tip uint32) types.SignatureOptions
 	SubmitExtrinsic(extrinsic *types.Extrinsic) (types.Hash, error)
 }
@@ -70,26 +70,15 @@ func (s SubstrateClient) GetRuntimeVersion(blockHash types.Hash) (*types.Runtime
 	return s.api.RPC.State.GetRuntimeVersion(blockHash)
 }
 
-func (s SubstrateClient) GetNonce(ctx context.Context, protocol, network string, address []byte, meta *types.Metadata) (uint32, error) {
-	pkf := &substrate.PublicKeyFinder{}
-
-	pk, err := pkf.PublicKeyFromAddress(ctx, protocol, network, address)
+func (s SubstrateClient) GetNonce(ctx context.Context, protocol, network string, addr []byte) (uint32, error) {
+	encodedAddress, _, err := address.EncodeByProtocol(addr, protocol)
 	if err != nil {
 		return uint32(0), err
 	}
 
-	key, err := types.CreateStorageKey(meta, "System", "Account", pk.Bytes(), nil)
-	if err != nil {
-		return uint32(0), err
-	}
+	idx, err := s.api.RPC.System.AccountNextIndex(encodedAddress)
 
-	var nonce uint32
-
-	if _, err := s.api.RPC.State.GetStorageLatest(key, &nonce); err != nil {
-		return uint32(0), err
-	}
-
-	return nonce, nil
+	return uint32(idx), err
 }
 
 func (s SubstrateClient) CreateSignatureOptions(blockHash, genesisHash types.Hash, mortalEra, immortalEra bool, rv types.RuntimeVersion, nonce, tip uint32) types.SignatureOptions {

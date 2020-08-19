@@ -664,7 +664,6 @@ func TestSubstrateClient_GetNonce(t *testing.T) {
 		protocol string
 		network  string
 		address  []byte
-		meta     *types.Metadata
 	}
 	type fields struct {
 		api *gsrpc.SubstrateAPI
@@ -692,34 +691,9 @@ func TestSubstrateClient_GetNonce(t *testing.T) {
 				"invalid",
 				"edgeware",
 				nil,
-				nil,
 			},
 			uint32(0),
-			errors.New("protocol must be 'substrate'"),
-		},
-		{
-			"error-sk",
-			fields{
-				func() *gsrpc.SubstrateAPI {
-					server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-						w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
-					}))
-					api, _ := gsrpc.NewSubstrateAPI(server.URL)
-					return api
-				}(),
-			},
-			args{
-				context.Background(),
-				"substrate",
-				"edgeware",
-				func() []byte {
-					addr, _ := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzP")
-					return addr
-				}(),
-				&types.Metadata{},
-			},
-			uint32(0),
-			errors.New("unsupported metadata version"),
+			errors.New(`"invalid" unsupported protocol`),
 		},
 		{
 			"error",
@@ -748,7 +722,6 @@ func TestSubstrateClient_GetNonce(t *testing.T) {
 					addr, _ := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzP")
 					return addr
 				}(),
-				types.ExamplaryMetadataV11Substrate,
 			},
 			uint32(0),
 			errors.New("400 Bad Request "),
@@ -764,7 +737,7 @@ func TestSubstrateClient_GetNonce(t *testing.T) {
 								apiCall = false
 								w.Write([]byte(fmt.Sprintf("{\"result\":\"%v\"}", types.ExamplaryMetadataV11SubstrateString)))
 							} else {
-								w.Write([]byte("{\"result\":\"0x0e4944cfd98d6f4cc374d16f5a4e3f9c\"}"))
+								w.Write([]byte("{\"result\":5}"))
 							}
 						}),
 					)
@@ -780,16 +753,15 @@ func TestSubstrateClient_GetNonce(t *testing.T) {
 					addr, _ := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzP")
 					return addr
 				}(),
-				types.ExamplaryMetadataV11Substrate,
 			},
-			uint32(0xcf44490e),
+			uint32(5),
 			nil,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client := NewClient(tt.fields.api)
-			got, err := client.GetNonce(tt.args.ctx, tt.args.protocol, tt.args.network, tt.args.address, tt.args.meta)
+			got, err := client.GetNonce(tt.args.ctx, tt.args.protocol, tt.args.network, tt.args.address)
 			if (err != nil) && err.Error() != tt.wantErr.Error() {
 				t.Errorf("SubstrateClient.GetBlockHash() error = %v, wantErr %v", err, tt.wantErr)
 				return

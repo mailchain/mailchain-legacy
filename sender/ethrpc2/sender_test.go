@@ -91,10 +91,11 @@ func TestEthRPC2_Send(t *testing.T) {
 				[]byte("transactionDataValue"),
 				func() signer.Signer {
 					m := signertest.NewMockSigner(mockCtrl)
-					m.EXPECT().Sign(ethereum.SignerOptions{
-						Tx:      types.NewTransaction(nonce, common.BytesToAddress(to), value, gas, gasPrice, []byte("transactionDataValue")),
+					signTx := types.NewTransaction(nonce, common.BytesToAddress(to), value, gas, gasPrice, []byte("transactionDataValue"))
+					m.EXPECT().Sign(gomock.AssignableToTypeOf(ethereum.SignerOptions{
+						Tx:      signTx,
 						ChainID: networkID,
-					}).Return(&types.Transaction{}, nil)
+					})).Return(&types.Transaction{}, nil)
 					return m
 				}(),
 				signerOpts{"value1"},
@@ -129,10 +130,10 @@ func TestEthRPC2_Send(t *testing.T) {
 				[]byte("transactionDataValue"),
 				func() signer.Signer {
 					m := signertest.NewMockSigner(mockCtrl)
-					m.EXPECT().Sign(ethereum.SignerOptions{
+					m.EXPECT().Sign(gomock.AssignableToTypeOf(ethereum.SignerOptions{
 						Tx:      types.NewTransaction(nonce, common.BytesToAddress(to), value, gas, gasPrice, []byte("transactionDataValue")),
 						ChainID: networkID,
-					}).Return(&types.Transaction{}, nil)
+					})).Return(&types.Transaction{}, nil)
 					return m
 				}(),
 				signerOpts{"value1"},
@@ -166,10 +167,10 @@ func TestEthRPC2_Send(t *testing.T) {
 				[]byte("transactionDataValue"),
 				func() signer.Signer {
 					m := signertest.NewMockSigner(mockCtrl)
-					m.EXPECT().Sign(ethereum.SignerOptions{
+					m.EXPECT().Sign(gomock.AssignableToTypeOf(ethereum.SignerOptions{
 						Tx:      types.NewTransaction(nonce, common.BytesToAddress(to), value, gas, gasPrice, []byte("transactionDataValue")),
 						ChainID: networkID,
-					}).Return(&types.Block{}, nil)
+					})).Return(&types.Block{}, nil)
 					return m
 				}(),
 				signerOpts{"value1"},
@@ -203,10 +204,10 @@ func TestEthRPC2_Send(t *testing.T) {
 				[]byte("transactionDataValue"),
 				func() signer.Signer {
 					m := signertest.NewMockSigner(mockCtrl)
-					m.EXPECT().Sign(ethereum.SignerOptions{
+					m.EXPECT().Sign(gomock.AssignableToTypeOf(ethereum.SignerOptions{
 						Tx:      types.NewTransaction(nonce, common.BytesToAddress(to), value, gas, gasPrice, []byte("transactionDataValue")),
 						ChainID: networkID,
-					}).Return(nil, errors.Errorf("failed"))
+					})).Return(nil, errors.Errorf("failed"))
 					return m
 				}(),
 				signerOpts{"value1"},

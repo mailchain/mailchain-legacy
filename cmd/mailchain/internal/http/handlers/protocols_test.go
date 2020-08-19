@@ -94,7 +94,7 @@ func TestGetProtocols(t *testing.T) {
 					return settings.FromStore(m)
 				}(),
 			},
-			"{\"protocols\":[{\"name\":\"substrate\",\"networks\":[{\"name\":\"edgeware-berlin\",\"id\":\"7\"},{\"name\":\"edgeware-mainnet\",\"id\":\"7\"}]}]}\n",
+			"{\"protocols\":[{\"name\":\"substrate\",\"networks\":[{\"name\":\"edgeware-beresheet\",\"id\":\"7\"},{\"name\":\"edgeware-mainnet\",\"id\":\"7\"}]}]}\n",
 			http.StatusOK,
 		},
 	}

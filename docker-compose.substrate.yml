@@ -15,9 +15,9 @@ services:
         entrypoint: ["/indexer", "database", "up", "--postgres-host=database", "--master-postgres-password=mailchain", "--master-postgres-user=mailchain", "--indexer-postgres-password=indexer", "--envelope-postgres-password=envelope", "--pubkey-postgres-password=pubkey"]
         depends_on:
             - database
-    indexer-substrate-berlin:
+    indexer-substrate-mainnet:
         image: mailchain/indexer
-        entrypoint: ["/indexer", "substrate", "--start-block=latest", "--network=edgeware-berlin", "--rpc-address=ws://berlin1.edgewa.re:9944", "--postgres-host=database", "--envelope-postgres-password=envelope", "--indexer-postgres-password=indexer", "--indexer-postgres-password=indexer", "--envelope-postgres-password=envelope", "--pubkey-postgres-password=pubkey", "--raw-store-path=./tmp/tx"]
+        entrypoint: ["/indexer", "substrate", "--start-block=latest", "--network=edgeware-mainnet", "--rpc-address=ws://mainnet1.edgewa.re:9944", "--postgres-host=database", "--envelope-postgres-password=envelope", "--indexer-postgres-password=indexer", "--indexer-postgres-password=indexer", "--envelope-postgres-password=envelope", "--pubkey-postgres-password=pubkey", "--raw-store-path=./tmp/tx"]
         depends_on:
             - database
     receiver:

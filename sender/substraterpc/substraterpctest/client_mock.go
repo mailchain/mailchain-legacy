@@ -139,18 +139,18 @@ func (mr *MockClientMockRecorder) GetRuntimeVersion(blockHash interface{}) *gomo
 }
 
 // GetNonce mocks base method
-func (m *MockClient) GetNonce(ctx context.Context, protocol, network string, address []byte, meta *types.Metadata) (uint32, error) {
+func (m *MockClient) GetNonce(ctx context.Context, protocol, network string, addr []byte) (uint32, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNonce", ctx, protocol, network, address, meta)
+	ret := m.ctrl.Call(m, "GetNonce", ctx, protocol, network, addr)
 	ret0, _ := ret[0].(uint32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetNonce indicates an expected call of GetNonce
-func (mr *MockClientMockRecorder) GetNonce(ctx, protocol, network, address, meta interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) GetNonce(ctx, protocol, network, addr interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNonce", reflect.TypeOf((*MockClient)(nil).GetNonce), ctx, protocol, network, address, meta)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNonce", reflect.TypeOf((*MockClient)(nil).GetNonce), ctx, protocol, network, addr)
 }
 
 // CreateSignatureOptions mocks base method

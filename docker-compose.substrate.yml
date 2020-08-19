@@ -1,32 +1,61 @@
-version: '3.7'
+version: "3.7"
 
-services: 
+services:
     database:
         image: postgres
-        environment: 
+        environment:
             - POSTGRES_USER=mailchain
             - POSTGRES_PASSWORD=mailchain
-        ports: 
+        ports:
             - 5432:5432
-        volumes: 
+        volumes:
             - db_data:/var/lib/postgresql/data
     indexer-migration:
         image: mailchain/indexer
-        entrypoint: ["/indexer", "database", "up", "--postgres-host=database", "--master-postgres-password=mailchain", "--master-postgres-user=mailchain", "--indexer-postgres-password=indexer", "--envelope-postgres-password=envelope", "--pubkey-postgres-password=pubkey"]
+        entrypoint:
+            [
+                "/indexer",
+                "database",
+                "up",
+                "--postgres-host=database",
+                "--master-postgres-password=mailchain",
+                "--master-postgres-user=mailchain",
+                "--indexer-postgres-password=indexer",
+                "--envelope-postgres-password=envelope",
+                "--pubkey-postgres-password=pubkey",
+            ]
         depends_on:
             - database
     indexer-substrate-mainnet:
         image: mailchain/indexer
-        entrypoint: ["/indexer", "substrate", "--start-block=latest", "--network=edgeware-mainnet", "--rpc-address=ws://mainnet1.edgewa.re:9944", "--postgres-host=database", "--envelope-postgres-password=envelope", "--indexer-postgres-password=indexer", "--indexer-postgres-password=indexer", "--envelope-postgres-password=envelope", "--pubkey-postgres-password=pubkey", "--raw-store-path=./tmp/tx"]
+        entrypoint:
+            [
+                "/indexer",
+                "substrate",
+                "--start-block=latest",
+                "--network=edgeware-mainnet",
+                "--rpc-address=ws://mainnet1.edgewa.re:9944",
+                "--postgres-host=database",
+                "--indexer-postgres-password=indexer",
+                "--envelope-postgres-password=envelope",
+                "--pubkey-postgres-password=pubkey",
+                "--raw-store-path=./tmp/tx",
+            ]
         depends_on:
             - database
     receiver:
         image: mailchain/receiver
-        entrypoint: ["/receiver", "--postgres-password=receiver", "--postgres-host=database", "--postgres-password=envelope"]
+        entrypoint:
+            [
+                "/receiver",
+                "--postgres-password=receiver",
+                "--postgres-host=database",
+                "--postgres-password=envelope",
+            ]
         depends_on:
             - database
-        ports: 
+        ports:
             - 8081:8080
 
-volumes: 
+volumes:
     db_data:

@@ -41,7 +41,7 @@ func GetEnvelope(sent stores.Sent) func(w http.ResponseWriter, r *http.Request) 
 	// This method returns the available envelope types
 	//
 	// Responses:
-	//   200: GetEnvelopeResponseBody
+	//   200: GetEnvelopeResponse
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 

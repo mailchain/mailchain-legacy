@@ -12,19 +12,24 @@ import (
 
 func cacheStore(s values.Store) *CacheStore {
 	k := &CacheStore{
-		Path: values.NewDefaultString(defaults.MessageCachePath(), s, "cache.path"),
+		Path:    values.NewDefaultString(defaults.MessageCachePath(), s, "cache.path"),
+		Timeout: values.NewDefaultString(defaults.CacheTimeout, s, "cache.timeout"),
 	}
 	return k
 }
 
 type CacheStore struct {
-	Path values.String
-	//TODO: add duration
+	Path    values.String
+	Timeout values.String
 }
 
 // Produce `stores.State` based on configuration settings.
 func (s CacheStore) Produce() (stores.Cache, error) {
-	return cachestore.NewCacheStore(1*time.Hour, s.Path.Get()), nil
+	timeout, err := time.ParseDuration(s.Timeout.Get())
+	if err != nil {
+		return nil, err
+	}
+	return cachestore.NewCacheStore(timeout, s.Path.Get()), nil
 }
 
 // Output configuration as an `output.Element` for use in exporting configuration.
@@ -33,6 +38,7 @@ func (s CacheStore) Output() output.Element {
 		FullName: "cache",
 		Attributes: []output.Attribute{
 			s.Path.Attribute(),
+			s.Timeout.Attribute(),
 		},
 	}
 }

@@ -240,7 +240,7 @@ func Test_GetMessages(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 			rr := httptest.NewRecorder()
-			handler := http.HandlerFunc(GetMessages(tt.args.inbox, cachestore.NewCacheStore(10*time.Second), tt.args.receivers, tt.args.ks, tt.args.deriveKeyOptions))
+			handler := http.HandlerFunc(GetMessages(tt.args.inbox, cachestore.NewCacheStore(10*time.Second, "./testdata"), tt.args.receivers, tt.args.ks, tt.args.deriveKeyOptions))
 
 			// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
 			// directly and pass in our Request and ResponseRecorder.

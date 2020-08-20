@@ -70,6 +70,8 @@ func TestRoot_ToYaml(t *testing.T) {
 					v.Set("keystore.nacl-filestore.path", "/home/user/.mailchain/.keystore")
 					v.Set("mailboxState.badgerdb.path", "/home/user/.mailchain/.mailbox")
 					v.Set("mailboxState.leveldb.path", "/home/user/.mailchain/.mailbox")
+					v.Set("cache.path", "/home/user/.mailchain/.message-cache")
+					v.Set("cache.timeout", "1h")
 					return v
 				}(),
 				2,
@@ -98,6 +100,8 @@ func TestRoot_ToYaml(t *testing.T) {
 					v.Set("keystore.nacl-filestore.path", "/home/user/.mailchain/.keystore")
 					v.Set("mailboxState.badgerdb.path", "/home/user/.mailchain/.mailbox")
 					v.Set("mailboxState.leveldb.path", "/home/user/.mailchain/.mailbox")
+					v.Set("cache.path", "/home/user/.mailchain/.cache")
+					v.Set("cache.timeout", "10s")
 					v.Set("server.port", 12345)
 					return v
 				}(),

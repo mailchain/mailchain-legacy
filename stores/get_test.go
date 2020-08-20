@@ -15,10 +15,14 @@
 package stores
 
 import (
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/mailchain/mailchain/stores/storestest"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -168,9 +172,13 @@ func Test_getAnyMessage(t *testing.T) {
 }
 
 func TestGetMessage(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
 	type args struct {
 		location      string
 		integrityHash []byte
+		cache         func() Cache
 	}
 	tests := []struct {
 		name    string
@@ -183,6 +191,13 @@ func TestGetMessage(t *testing.T) {
 			args{
 				"file://./testdata/simple.golden.eml-2204ec872b32",
 				[]byte{0x22, 0x04, 0xec, 0x87, 0x2b, 0x32},
+				func() Cache {
+					cache := storestest.NewMockCache(mockCtrl)
+					cache.EXPECT().GetMessage("file://./testdata/simple.golden.eml-2204ec872b32").Return(nil, errors.New("not found"))
+					values, _ := ioutil.ReadFile("./testdata/simple.golden.eml-2204ec872b32")
+					cache.EXPECT().SetMessage("file://./testdata/simple.golden.eml-2204ec872b32", values)
+					return cache
+				},
 			},
 			func() []byte {
 				contents, _ := ioutil.ReadFile("./testdata/simple.golden.eml-2204ec872b32")
@@ -195,6 +210,31 @@ func TestGetMessage(t *testing.T) {
 			args{
 				"file://./testdata/simple.golden.eml-2204ec872b32",
 				nil,
+				func() Cache {
+					cache := storestest.NewMockCache(mockCtrl)
+					cache.EXPECT().GetMessage("file://./testdata/simple.golden.eml-2204ec872b32").Return(nil, errors.New("not found"))
+					values, _ := ioutil.ReadFile("./testdata/simple.golden.eml-2204ec872b32")
+					cache.EXPECT().SetMessage("file://./testdata/simple.golden.eml-2204ec872b32", values)
+					return cache
+				},
+			},
+			func() []byte {
+				contents, _ := ioutil.ReadFile("./testdata/simple.golden.eml-2204ec872b32")
+				return contents
+			}(),
+			false,
+		},
+		{
+			"success-cache-hit",
+			args{
+				"file://./testdata/simple.golden.eml-2204ec872b32",
+				[]byte{0x22, 0x04, 0xec, 0x87, 0x2b, 0x32},
+				func() Cache {
+					cache := storestest.NewMockCache(mockCtrl)
+					values, _ := ioutil.ReadFile("./testdata/simple.golden.eml-2204ec872b32")
+					cache.EXPECT().GetMessage("file://./testdata/simple.golden.eml-2204ec872b32").Return(values, nil)
+					return cache
+				},
 			},
 			func() []byte {
 				contents, _ := ioutil.ReadFile("./testdata/simple.golden.eml-2204ec872b32")
@@ -207,6 +247,11 @@ func TestGetMessage(t *testing.T) {
 			args{
 				"invalid://./testdata/simple.golden.eml-2204ec872b32",
 				nil,
+				func() Cache {
+					cache := storestest.NewMockCache(mockCtrl)
+					cache.EXPECT().GetMessage("invalid://./testdata/simple.golden.eml-2204ec872b32").Return(nil, errors.New("not found"))
+					return cache
+				},
 			},
 			nil,
 			true,
@@ -216,6 +261,12 @@ func TestGetMessage(t *testing.T) {
 			args{
 				"test://hash.does.not.match-2204f3d89e5a",
 				[]byte{0x22, 0x04, 0xf3, 0xd8, 0x9e, 0x5a},
+				func() Cache {
+					cache := storestest.NewMockCache(mockCtrl)
+					cache.EXPECT().GetMessage("test://hash.does.not.match-2204f3d89e5a").Return(nil, errors.New("not found"))
+					cache.EXPECT().SetMessage("test://hash.does.not.match-2204f3d89e5a", []byte("hash.does.not.match-2204f3d89e5a"))
+					return cache
+				},
 			},
 			nil,
 			true,
@@ -223,7 +274,8 @@ func TestGetMessage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetMessage(tt.args.location, tt.args.integrityHash)
+
+			got, err := GetMessage(tt.args.location, tt.args.integrityHash, tt.args.cache())
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return

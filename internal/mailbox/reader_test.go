@@ -19,13 +19,16 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/internal/mail/rfc2822"
 	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/stores"
+	"github.com/mailchain/mailchain/stores/storestest"
+
+	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -34,10 +37,10 @@ func TestReadMessage(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	
 	type args struct {
 		txData    []byte
 		decrypter cipher.Decrypter
+		cacheFunc func() stores.Cache
 	}
 	tests := []struct {
 		name    string
@@ -60,6 +63,12 @@ func TestReadMessage(t *testing.T) {
 					)
 					return m
 				}(),
+				func() stores.Cache {
+					cache := storestest.NewMockCache(mockCtrl)
+					cache.EXPECT().GetMessage(gomock.Any()).Return(nil, errors.New("cache empty"))
+					cache.EXPECT().SetMessage(gomock.Any(), gomock.Any())
+					return cache
+				},
 			},
 			func() *mail.Message {
 				rawMsg, _ := ioutil.ReadFile("./testdata/simple.golden.eml")
@@ -80,6 +89,12 @@ func TestReadMessage(t *testing.T) {
 					m.EXPECT().Decrypt(gomock.Any()).Return(decrypted, nil)
 					return m
 				}(),
+				func() stores.Cache {
+					cache := storestest.NewMockCache(mockCtrl)
+					cache.EXPECT().GetMessage(gomock.Any()).Return(nil, errors.New("cache empty"))
+					cache.EXPECT().SetMessage(gomock.Any(), gomock.Any())
+					return cache
+				},
 			},
 			nil,
 			true,
@@ -95,6 +110,12 @@ func TestReadMessage(t *testing.T) {
 					m.EXPECT().Decrypt(gomock.Any()).Return(nil, errors.Errorf("failed"))
 					return m
 				}(),
+				func() stores.Cache {
+					cache := storestest.NewMockCache(mockCtrl)
+					cache.EXPECT().GetMessage(gomock.Any()).Return(nil, errors.New("cache empty"))
+					cache.EXPECT().SetMessage(gomock.Any(), gomock.Any())
+					return cache
+				},
 			},
 			nil,
 			true,
@@ -109,6 +130,11 @@ func TestReadMessage(t *testing.T) {
 					m.EXPECT().Decrypt(gomock.Any()).Return([]byte("file://TestReadMessage/no_message_at_location-2204f3d89e5a"), nil)
 					return m
 				}(),
+				func() stores.Cache {
+					cache := storestest.NewMockCache(mockCtrl)
+					cache.EXPECT().GetMessage(gomock.Any()).Return(nil, errors.New("cache empty"))
+					return cache
+				},
 			},
 			nil,
 			true,
@@ -123,6 +149,9 @@ func TestReadMessage(t *testing.T) {
 					m.EXPECT().Decrypt(gomock.Any()).Return(nil, errors.Errorf("failed"))
 					return m
 				}(),
+				func() stores.Cache {
+					return storestest.NewMockCache(mockCtrl)
+				},
 			},
 			nil,
 			true,
@@ -136,6 +165,9 @@ func TestReadMessage(t *testing.T) {
 					m.EXPECT().Decrypt(gomock.Any()).Return(nil, errors.Errorf("failed"))
 					return m
 				}(),
+				func() stores.Cache {
+					return storestest.NewMockCache(mockCtrl)
+				},
 			},
 			nil,
 			true,
@@ -148,6 +180,9 @@ func TestReadMessage(t *testing.T) {
 					m := ciphertest.NewMockDecrypter(mockCtrl)
 					return m
 				}(),
+				func() stores.Cache {
+					return storestest.NewMockCache(mockCtrl)
+				},
 			},
 			nil,
 			true,
@@ -155,7 +190,7 @@ func TestReadMessage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := mailbox.ReadMessage(tt.args.txData, tt.args.decrypter)
+			got, err := mailbox.ReadMessage(tt.args.txData, tt.args.decrypter, tt.args.cacheFunc())
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ReadMessage() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -7,11 +7,13 @@ import (
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/stores"
+
 	"github.com/pkg/errors"
 )
 
 type config struct {
 	mailboxStateStore stores.State
+	cache             stores.Cache
 	keystore          keystore.Store
 	addressResolvers  map[string]nameservice.ReverseLookup
 	domainResolvers   map[string]nameservice.ForwardLookup
@@ -34,6 +36,10 @@ func produceConfig(s *settings.Root) (*config, error) { //nolint: funlen
 	sentStore, err := s.SentStore.Produce()
 	if err != nil {
 		return nil, errors.WithMessage(err, "Could not config sent store")
+	}
+	cacheStore, err := s.CacheStore.Produce()
+	if err != nil {
+		return nil, errors.WithMessage(err, "Could not configure cache")
 	}
 
 	nsAddressResolvers := map[string]nameservice.ReverseLookup{}
@@ -94,6 +100,7 @@ func produceConfig(s *settings.Root) (*config, error) { //nolint: funlen
 		addressResolvers:  nsAddressResolvers,
 		domainResolvers:   nsDomainResolvers,
 		mailboxStateStore: mailboxStore,
+		cache:             cacheStore,
 		keystore:          keystorage,
 		publicKeyFinders:  publicKeyFinders,
 		receivers:         receivers,

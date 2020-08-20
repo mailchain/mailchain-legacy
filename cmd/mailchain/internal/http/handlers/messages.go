@@ -33,7 +33,7 @@ import (
 )
 
 // GetMessages returns a handler get spec.
-func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks keystore.Store,
+func GetMessages(inbox stores.State, cache stores.Cache, receivers map[string]mailbox.Receiver, ks keystore.Store,
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { //nolint: funlen, gocyclo
 	// Get swagger:route GET /messages Messages GetMessages
 	//
@@ -99,7 +99,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 				return
 			}
 
-			message, err := mailbox.ReadMessage(transactionData.Data, decrypter)
+			message, err := mailbox.ReadMessage(transactionData.Data, decrypter, cache)
 			if err != nil {
 				messages = append(messages, getMessage{
 					Status: err.Error(),

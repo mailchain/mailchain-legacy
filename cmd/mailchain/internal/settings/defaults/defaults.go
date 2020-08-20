@@ -50,6 +50,8 @@ const (
 	Port = 8080
 	// SubstratePublicKeyFinder default value.
 	SubstratePublicKeyFinder = "substrate-public-key-finder"
+	// CacheTimeout default value for caching interval in memory
+	CacheTimeout = "1h"
 )
 
 const (
@@ -76,6 +78,11 @@ func KeystorePath() string {
 // MailboxStatePath default value.
 func MailboxStatePath() string {
 	return filepath.Join(MailchainHome(), ".mailbox")
+}
+
+// MessageCachePath default value path for message caching.
+func MessageCachePath() string {
+	return filepath.Join(MailchainHome(), ".message-cache")
 }
 
 // MailchainHome directory default value.

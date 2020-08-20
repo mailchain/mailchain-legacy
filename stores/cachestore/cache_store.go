@@ -14,11 +14,15 @@ type CacheStore struct {
 	cache afero.Fs
 }
 
-func NewCacheStore(cacheTimeout time.Duration, basePath string) *CacheStore {
-	base := afero.NewBasePathFs(afero.NewOsFs(), basePath)
+func NewCacheStore(cacheTimeout time.Duration, basePath string) (*CacheStore, error) {
+	fs := afero.NewOsFs()
+	if err := fs.MkdirAll(basePath, os.ModePerm); err != nil && !os.IsExist(err) {
+		return nil, err
+	}
+	base := afero.NewBasePathFs(fs, basePath)
 	layer := afero.NewMemMapFs()
 	cache := afero.NewCacheOnReadFs(base, layer, cacheTimeout)
-	return &CacheStore{cache: cache}
+	return &CacheStore{cache: cache}, nil
 }
 
 func (f *CacheStore) GetMessage(location string) ([]byte, error) {

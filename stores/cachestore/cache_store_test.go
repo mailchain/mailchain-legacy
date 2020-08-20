@@ -25,7 +25,7 @@ func TestGetMessage(t *testing.T) {
 			args: args{
 				location: "location/location",
 				cache: func() *CacheStore {
-					cacheStore := NewCacheStore(10*time.Second, "../testdata")
+					cacheStore, _ := NewCacheStore(10*time.Second, "../testdata")
 					err := cacheStore.SetMessage("location/location", []byte("input file is small"))
 					if err != nil {
 						t.Fatal(err)
@@ -40,7 +40,8 @@ func TestGetMessage(t *testing.T) {
 			args: args{
 				location: "location/location",
 				cache: func() *CacheStore {
-					return NewCacheStore(10*time.Second, "../testdata")
+					cacheStore, _ := NewCacheStore(10*time.Second, "../testdata")
+					return cacheStore
 				},
 			},
 			wantErr: true,

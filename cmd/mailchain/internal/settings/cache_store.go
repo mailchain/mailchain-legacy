@@ -29,7 +29,7 @@ func (s CacheStore) Produce() (stores.Cache, error) {
 	if err != nil {
 		return nil, err
 	}
-	return cachestore.NewCacheStore(timeout, s.Path.Get()), nil
+	return cachestore.NewCacheStore(timeout, s.Path.Get())
 }
 
 // Output configuration as an `output.Element` for use in exporting configuration.

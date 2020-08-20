@@ -42,12 +42,12 @@ func TestExtrinsic_Run(t *testing.T) {
 			fields{
 				func() datastore.TransactionStore {
 					m := datastoretest.NewMockTransactionStore(mockCtrl)
-					m.EXPECT().PutTransaction(context.Background(), protocols.Substrate, networks.EdgewareBerlin, gomock.Any(), gomock.Any())
+					m.EXPECT().PutTransaction(context.Background(), protocols.Substrate, networks.EdgewareBeresheet, gomock.Any(), gomock.Any())
 					return m
 				}(),
 				func() datastore.RawTransactionStore {
 					m := datastoretest.NewMockRawTransactionStore(mockCtrl)
-					m.EXPECT().PutRawTransaction(context.Background(), protocols.Substrate, networks.EdgewareBerlin, gomock.Any(), gomock.Any())
+					m.EXPECT().PutRawTransaction(context.Background(), protocols.Substrate, networks.EdgewareBeresheet, gomock.Any(), gomock.Any())
 					return m
 				}(),
 				func() datastore.PublicKeyStore {
@@ -58,7 +58,7 @@ func TestExtrinsic_Run(t *testing.T) {
 			args{
 				context.Background(),
 				"substrate",
-				"edgeware-berlin",
+				"edgeware-beresheet",
 				func() *types.Extrinsic {
 					b := getBlock(t, "0x61c83ac28eec9ac530df6f117edc761e3c3a0861f73dc8534f2e0682f1d9ef75")
 					e := b.Extrinsics[2]

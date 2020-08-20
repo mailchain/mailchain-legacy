@@ -7,6 +7,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/encoding"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
@@ -124,7 +125,12 @@ func accountListCmd(ks keystore.Store) *cobra.Command {
 				return errors.WithMessage(err, "could not get addresses")
 			}
 			for _, x := range addresses {
-				cmd.Println(encoding.EncodeHex(x))
+				encoded, encoding, err := address.EncodeByProtocol(x, protocol)
+				if err != nil {
+					return errors.WithMessage(err, "could not encode address")
+				}
+
+				cmd.Printf("Encoding: %s, address: %s\n", encoding, encoded)
 			}
 			return nil
 		},

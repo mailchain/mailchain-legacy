@@ -33,13 +33,13 @@ func Test_substrateRPCSender(t *testing.T) {
 			args{
 				func() values.Store {
 					m := valuestest.NewMockStore(mockCtrl)
-					m.EXPECT().IsSet("senders.substrate-rpc-edgeware-berlin.address").Return(false)
+					m.EXPECT().IsSet("senders.substrate-rpc-edgeware-beresheet.address").Return(false)
 					return m
 				}(),
-				substrate.EdgewareBerlin,
+				substrate.EdgewareBeresheet,
 			},
-			"ws://berlin1.edgewa.re:9944",
-			"edgeware-berlin",
+			"ws://beresheet1.edgewa.re:9944",
+			"edgeware-beresheet",
 		},
 	}
 	for _, tt := range tests {
@@ -76,7 +76,7 @@ func TestSubstrateRPC_Produce(t *testing.T) {
 					m.EXPECT().Get().Return(server.URL)
 					return m
 				}(),
-				substrate.EdgewareBerlin,
+				substrate.EdgewareBeresheet,
 			},
 			false,
 			false,
@@ -119,9 +119,9 @@ func TestSubstrateRPC_Supports(t *testing.T) {
 					m := valuestest.NewMockString(mockCtrl)
 					return m
 				}(),
-				substrate.EdgewareBerlin,
+				substrate.EdgewareBeresheet,
 			},
-			map[string]bool{"substrate/edgeware-berlin": true},
+			map[string]bool{"substrate/edgeware-beresheet": true},
 		},
 	}
 	for _, tt := range tests {

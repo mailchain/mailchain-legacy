@@ -27,7 +27,7 @@ func TestNetworks(t *testing.T) {
 	}{
 		{
 			"success",
-			[]string{"edgeware-mainnet", "edgeware-berlin"},
+			[]string{"edgeware-mainnet", "edgeware-beresheet"},
 		},
 	}
 	for _, tt := range tests {

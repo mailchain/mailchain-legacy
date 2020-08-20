@@ -19,7 +19,7 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/ed25519"
+	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mr-tron/base58"
 	"github.com/stretchr/testify/assert"
@@ -43,20 +43,10 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 			args{
 				context.Background(),
 				"substrate",
-				"berlin",
-				func() []byte {
-					num, err := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzP")
-					if err != nil {
-						t.Errorf("got error %s\n", err)
-						t.FailNow()
-					}
-					return num
-				}(),
+				"edgeware-mainnet",
+				encodingtest.MustDecodeBase58("kWCKFhkg5m5XmGz2pbcUYhJK7RAf6jLj1wLM5J5junonVTH"),
 			},
-			func() crypto.PublicKey {
-				k, _ := ed25519.PublicKeyFromBytes(encodingtest.MustDecodeHex("0c3fbef5c06307444e8078036c217b2907f2459e906ff0f1a670986743f2494f"))
-				return k
-			}(),
+			sr25519test.CharlottePublicKey,
 			false,
 		},
 		{
@@ -64,7 +54,7 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 			args{
 				context.Background(),
 				"substrate",
-				"berlin",
+				"beresheet",
 				func() []byte {
 					num, err := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzPD")
 					if err != nil {
@@ -82,7 +72,7 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 			args{
 				context.Background(),
 				"invalid",
-				"berlin",
+				"beresheet",
 				func() []byte {
 					num, err := base58.Decode("5CLmNK8f16nagFeF2h3iNeeChaxPiAsJu7piNYJgdPpmaRzPD")
 					if err != nil {

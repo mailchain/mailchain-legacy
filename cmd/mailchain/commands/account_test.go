@@ -64,7 +64,7 @@ func Test_accountListCmd(t *testing.T) {
 				"protocol": "ethereum",
 				"network":  "mainnet",
 			},
-			"5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\n4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2\n",
+			"Encoding: hex/0x-prefix, address: 0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\nEncoding: hex/0x-prefix, address: 0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2\n",
 			false,
 		},
 		{

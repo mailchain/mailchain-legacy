@@ -13,14 +13,14 @@ import (
 func senders(s values.Store) *Senders {
 	return &Senders{
 		clients: map[string]SenderClient{
-			"ethereum-rpc2-" + ethereum.Goerli:           ethereumRPC2Sender(s, ethereum.Goerli),
-			"ethereum-rpc2-" + ethereum.Kovan:            ethereumRPC2Sender(s, ethereum.Kovan),
-			"ethereum-rpc2-" + ethereum.Mainnet:          ethereumRPC2Sender(s, ethereum.Mainnet),
-			"ethereum-rpc2-" + ethereum.Rinkeby:          ethereumRPC2Sender(s, ethereum.Rinkeby),
-			"ethereum-rpc2-" + ethereum.Ropsten:          ethereumRPC2Sender(s, ethereum.Ropsten),
-			protocols.Ethereum + "-relay":                relaySender(s, protocols.Ethereum),
-			"substrate-rpc-" + substrate.EdgewareMainnet: substrateRPCSender(s, substrate.EdgewareMainnet),
-			"substrate-rpc-" + substrate.EdgewareBerlin:  substrateRPCSender(s, substrate.EdgewareBerlin),
+			"ethereum-rpc2-" + ethereum.Goerli:             ethereumRPC2Sender(s, ethereum.Goerli),
+			"ethereum-rpc2-" + ethereum.Kovan:              ethereumRPC2Sender(s, ethereum.Kovan),
+			"ethereum-rpc2-" + ethereum.Mainnet:            ethereumRPC2Sender(s, ethereum.Mainnet),
+			"ethereum-rpc2-" + ethereum.Rinkeby:            ethereumRPC2Sender(s, ethereum.Rinkeby),
+			"ethereum-rpc2-" + ethereum.Ropsten:            ethereumRPC2Sender(s, ethereum.Ropsten),
+			protocols.Ethereum + "-relay":                  relaySender(s, protocols.Ethereum),
+			"substrate-rpc-" + substrate.EdgewareMainnet:   substrateRPCSender(s, substrate.EdgewareMainnet),
+			"substrate-rpc-" + substrate.EdgewareBeresheet: substrateRPCSender(s, substrate.EdgewareBeresheet),
 		},
 	}
 }

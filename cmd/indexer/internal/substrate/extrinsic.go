@@ -79,6 +79,10 @@ func getFromAddress(network string, sig *types.ExtrinsicSignatureV4) ([]byte, er
 }
 
 func getToAddress(network string, dataPart []byte) ([]byte, error) {
+	if len(dataPart) < 33 {
+		return []byte{}, nil
+	}
+
 	toPubKey, err := sr25519.PublicKeyFromBytes(dataPart[1:33])
 	if err != nil {
 		return nil, err

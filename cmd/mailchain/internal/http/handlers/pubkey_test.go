@@ -243,13 +243,13 @@ func TestGetPublicKey(t *testing.T) {
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
-					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "substrate", "edgeware-berlin", encodingtest.MustDecodeBase58("5CaLgJUDdDRxw6KQXJY2f5hFkMEEGHvtUPQYDWdSbku42Dv2")).Return(sr25519test.CharlottePublicKey, nil).Times(1)
-					return map[string]mailbox.PubKeyFinder{"substrate/edgeware-berlin": finder}
+					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "substrate", "edgeware-beresheet", encodingtest.MustDecodeBase58("5CaLgJUDdDRxw6KQXJY2f5hFkMEEGHvtUPQYDWdSbku42Dv2")).Return(sr25519test.CharlottePublicKey, nil).Times(1)
+					return map[string]mailbox.PubKeyFinder{"substrate/edgeware-beresheet": finder}
 				}(),
 			},
 			map[string]string{
 				"address":  "5CaLgJUDdDRxw6KQXJY2f5hFkMEEGHvtUPQYDWdSbku42Dv2",
-				"network":  "edgeware-berlin",
+				"network":  "edgeware-beresheet",
 				"protocol": "substrate",
 			},
 			http.StatusOK,

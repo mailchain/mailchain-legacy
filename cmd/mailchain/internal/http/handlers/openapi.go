@@ -99,7 +99,7 @@ func spec() string {
         "operationId": "GetEnvelope",
         "responses": {
           "200": {
-            "$ref": "#/responses/GetEnvelopeResponseBody"
+            "$ref": "#/responses/GetEnvelopeResponse"
           }
         }
       }

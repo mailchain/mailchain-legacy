@@ -61,7 +61,7 @@ func getFromPublicKey(sig *types.ExtrinsicSignatureV4) (crypto.PublicKey, error)
 	if sig.Signature.IsEcdsa { //nolint: gocritic
 		return secp256k1.PublicKeyFromBytes(sig.Signature.AsEcdsa)
 	} else if sig.Signature.IsEd25519 {
-		return ed25519.PublicKeyFromBytes(sig.Signature.AsEd25519[:])
+		return ed25519.PublicKeyFromBytes(sig.Signer.AsAccountID[:])
 	} else if sig.Signature.IsSr25519 {
 		return sr25519.PublicKeyFromBytes(sig.Signer.AsAccountID[:])
 	} else {

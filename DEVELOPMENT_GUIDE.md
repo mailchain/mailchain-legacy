@@ -2,6 +2,8 @@
 
 ## Running a development version
 
+Mailchain is developed and tested against golang 1.13.x you can confirm this by checking the go version in `.travis.yml`. Use the same go minor version when developing or testing Mailchain from source code.
+
 Fork the repository and clone it to your local environment (see [contributing guidelines](https://github.com/mailchain/mailchain/blob/master/CONTRIBUTING.md#we-use-github-flow)).
 
 To compile and run the package locally, you need to run the following command in place of mailchain command found in the docs:

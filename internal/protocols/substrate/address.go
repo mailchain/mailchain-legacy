@@ -64,6 +64,9 @@ func prefixWithNetwork(network string, publicKey crypto.PublicKey) ([]byte, erro
 	case EdgewareBeresheet:
 		// 42 = 0x2A https://raw.githubusercontent.com/hicommonwealth/edgeware-node/master/chains/beresheet.chainspec.json
 		return append([]byte{0x2A}, publicKey.Bytes()...), nil
+	case EdgewareDev:
+		// 42 = 0x2A https://raw.githubusercontent.com/hicommonwealth/edgeware-node/master/chains/beresheet.chainspec.json
+		return append([]byte{0x2A}, publicKey.Bytes()...), nil
 	default:
 		return nil, errors.Errorf("unknown address prefix for %q", network)
 	}

@@ -39,6 +39,7 @@ func FromStore(s values.Store) *Root {
 			protocols.Substrate: protocol(s, protocols.Substrate, map[string]NetworkClient{
 				substrate.EdgewareMainnet:   network(s, protocols.Substrate, substrate.EdgewareMainnet, defaults.SubstrateNetworkAny(substrate.EdgewareMainnet)),
 				substrate.EdgewareBeresheet: network(s, protocols.Substrate, substrate.EdgewareBeresheet, defaults.SubstrateNetworkAny(substrate.EdgewareBeresheet)),
+				substrate.EdgewareDev:       network(s, protocols.Substrate, substrate.EdgewareDev, defaults.SubstrateNetworkAny(substrate.EdgewareDev)),
 			}),
 		},
 		// other

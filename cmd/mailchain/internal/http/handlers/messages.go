@@ -72,7 +72,7 @@ func GetMessages(inbox stores.State, cache stores.Cache, receivers map[string]ma
 			return
 		}
 
-		messages := make([]getMessage, 0)
+		messages := make([]getMessage, 0, len(storedMessages))
 		for _, message := range storedMessages {
 			messages = append(messages, getMessage{
 				Body: string(message.Body),

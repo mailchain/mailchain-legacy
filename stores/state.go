@@ -23,4 +23,7 @@ type State interface {
 	DeleteMessageRead(messageID mail.ID) error
 	PutMessageRead(messageID mail.ID) error
 	GetReadStatus(messageID mail.ID) (bool, error)
+
+	PutMessage(prefixKey string, message Message) error
+	GetMessages(prefixKey string) ([]Message, error)
 }

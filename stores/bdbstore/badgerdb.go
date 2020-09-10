@@ -16,7 +16,9 @@ package bdbstore
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/mailchain/mailchain/stores"
 	"time"
 
 	"github.com/dgraph-io/badger/v2"
@@ -127,6 +129,58 @@ func (db *Database) GetReadStatus(messageID mail.ID) (bool, error) {
 	}
 
 	return val[0] == 1, nil
+}
+
+func (db *Database) PutMessage(prefixKey string, message stores.Message) error {
+	mByte, err := json.Marshal(message)
+	if err != nil {
+		return err
+	}
+	return db.db.Update(func(txn *badger.Txn) error {
+		return txn.Set(db.messageKey(prefixKey, message.Headers.MessageID), mByte)
+	})
+}
+
+func (db *Database) GetMessages(prefixKey string) ([]stores.Message, error) {
+	var (
+		val []byte
+		err error
+	)
+
+	var messages []stores.Message
+
+	err = db.db.View(func(txn *badger.Txn) error {
+		iterator := txn.NewKeyIterator(db.messagePrefix(prefixKey), badger.DefaultIteratorOptions)
+		defer iterator.Close()
+		for {
+			item := iterator.Item()
+			if item == nil {
+				break
+			}
+
+			val, err = item.ValueCopy(nil)
+			if err != nil {
+				return err
+			}
+			var message stores.Message
+			err := json.Unmarshal(val, &message)
+			if err != nil {
+				return err
+			}
+			messages = append(messages, message)
+		}
+		return nil
+	})
+
+	return messages, nil
+}
+
+func (db *Database) messageKey(prefixKey string, ID string) []byte {
+	return []byte(fmt.Sprintf("%s.%s", prefixKey, ID))
+}
+
+func (db *Database) messagePrefix(prefixKey string) []byte {
+	return []byte(fmt.Sprintf("%s", prefixKey))
 }
 
 func (db *Database) messageReadKey(messageID mail.ID) []byte {

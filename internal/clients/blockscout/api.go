@@ -74,6 +74,10 @@ func (c APIClient) getTransactionsByAddress(network string, address []byte) (*tx
 		return nil, errors.WithStack(err)
 	}
 
+	if txListResponse.StatusCode() >= 500 {
+		return nil, errors.Errorf("URL: %s is having problems try again later", config.url)
+	}
+
 	txResult := &txList{}
 	if err := json.Unmarshal(txListResponse.Body(), txResult); err != nil {
 		return nil, errors.WithStack(err)
@@ -86,7 +90,7 @@ func (c APIClient) getTransactionsByAddress(network string, address []byte) (*tx
 func (c APIClient) getTransactionByHash(network string, hash common.Hash) (*types.Transaction, error) {
 	config, ok := c.networkConfigs[network]
 	if !ok {
-		return nil, errors.Errorf("network not supported")
+		return nil, errors.New("network not supported")
 	}
 
 	client, err := ethclient.Dial(config.rpcURL)

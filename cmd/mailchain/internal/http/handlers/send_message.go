@@ -38,7 +38,7 @@ import (
 )
 
 // SendMessage handler http
-func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystore.Store, // nolint: funlen
+func SendMessage(inbox stores.State, cache stores.Cache, receivers map[string]mailbox.Receiver, sent stores.Sent, senders map[string]sender.Message, ks keystore.Store, // nolint: funlen
 	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { // nolint: funlen
 	// Post swagger:route POST /messages Send SendMessage
 	//
@@ -114,6 +114,83 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			encrypter, messageSender, sent, signer, env); err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
+		}
+
+		receiver, ok := receivers[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
+		if !ok {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("receiver not supported on \"%s/%s\"", req.Protocol, req.Network))
+			return
+		}
+
+		if receiver == nil {
+			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no receiver configured for \"%s/%s\"", req.Protocol, req.Network))
+			return
+		}
+
+		if !ks.HasAddress(from, req.Protocol, req.Network) {
+			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for address"))
+			return
+		}
+
+		transactions, err := receiver.Receive(ctx, req.Protocol, req.Network, from)
+		if mailbox.IsNetworkNotSupportedError(err) {
+			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("network `%s` does not have etherscan client configured", req.Network))
+			return
+		}
+
+		if err != nil {
+			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+			return
+		}
+
+		prefix := fmt.Sprintf("%s/%s/%s", req.Protocol, req.Network, from)
+
+		for _, transactionData := range transactions { //nolint TODO: thats an arbitrary limit
+			env, err := envelope.Unmarshal(transactionData.Data)
+			if err != nil {
+				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to unmarshal envelope"))
+				return
+			}
+
+			decrypterKind, err := env.DecrypterKind()
+			if err != nil {
+				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to find decrypter type"))
+				return
+			}
+
+			decrypter, err := ks.GetDecrypter(from, req.Protocol, req.Network, decrypterKind, deriveKeyOptions)
+			if err != nil {
+				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not get `decrypter`"))
+				return
+			}
+
+			message, err := mailbox.ReadMessage(transactionData.Data, decrypter, cache)
+			if err != nil {
+				continue
+			}
+
+			readStatus, _ := inbox.GetReadStatus(message.ID)
+
+			if err := inbox.PutMessage(prefix, stores.Message{
+				Body: string(message.Body),
+				Headers: stores.Header{
+					To:          message.Headers.To.String(),
+					From:        message.Headers.From.String(),
+					Date:        message.Headers.Date,
+					MessageID:   message.ID.HexString(),
+					ContentType: message.Headers.ContentType,
+				},
+				Read:                    readStatus,
+				Subject:                 message.Headers.Subject,
+				Status:                  "ok",
+				BlockID:                 string(transactionData.BlockID),
+				BlockIDEncoding:         encoding.KindHex0XPrefix,
+				TransactionHash:         string(transactionData.Hash),
+				TransactionHashEncoding: encoding.KindHex0XPrefix,
+			}); err != nil {
+				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+				return
+			}
 		}
 
 		w.WriteHeader(http.StatusOK)

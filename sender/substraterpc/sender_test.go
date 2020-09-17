@@ -7,8 +7,8 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/go-substrate-rpc-client/types"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/mailbox/signer/signertest"

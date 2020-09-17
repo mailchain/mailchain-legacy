@@ -11,8 +11,8 @@ import (
 
 	"github.com/mr-tron/base58/base58"
 
-	gsrpc "github.com/mailchain/go-substrate-rpc-client"
-	"github.com/mailchain/go-substrate-rpc-client/types"
+	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
+	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
 	"github.com/stretchr/testify/assert"
 )

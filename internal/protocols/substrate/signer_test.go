@@ -18,8 +18,8 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/go-substrate-rpc-client/types"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cryptotest"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"

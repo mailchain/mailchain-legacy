@@ -388,12 +388,8 @@ github.com/lyft/protoc-gen-validate v0.0.13/go.mod h1:XbGvPuh87YZc5TdIa2/I4pLk0Q
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.1 h1:ZC2Vc7/ZFkGmsVC9KvOjumD+G5lXy2RtTKyzRKO2BQ4=
 github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
-github.com/mailchain/go-substrate-rpc-client v1.1.0 h1:TdCYinK1dkyTjyfXiQamOh0U4aomJ4cND3pHrHm/YiA=
-github.com/mailchain/go-substrate-rpc-client v1.1.0/go.mod h1:zG3jhxnu6XMKMc2BlulU8WJ2rO6HEXFM8x4iD5iDngE=
 github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5+incompatible h1:dfjjpUe96sgVIfGKH81KY0aVSLdoxx9T8ApBCrpGcmI=
 github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5+incompatible/go.mod h1:zG3jhxnu6XMKMc2BlulU8WJ2rO6HEXFM8x4iD5iDngE=
-github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5-mc0.1+incompatible h1:jr88pvbTBBQhNyvWWvWc4I8VoYQzuz53Ob4/Gvke/t4=
-github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5-mc0.1+incompatible/go.mod h1:zG3jhxnu6XMKMc2BlulU8WJ2rO6HEXFM8x4iD5iDngE=
 github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5-mc0.2+incompatible h1:+Zahj3vdc39TRUI0cFwZir2BY+b2DBNUwRU9ilticQY=
 github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5-mc0.2+incompatible/go.mod h1:zG3jhxnu6XMKMc2BlulU8WJ2rO6HEXFM8x4iD5iDngE=
 github.com/manifoldco/promptui v0.7.0 h1:3l11YT8tm9MnwGFQ4kETwkzpAwY2Jt9lCrumCUW4+z4=

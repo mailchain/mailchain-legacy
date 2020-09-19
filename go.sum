@@ -394,6 +394,8 @@ github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5+incompatible h1:dfjj
 github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5+incompatible/go.mod h1:zG3jhxnu6XMKMc2BlulU8WJ2rO6HEXFM8x4iD5iDngE=
 github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5-mc0.1+incompatible h1:jr88pvbTBBQhNyvWWvWc4I8VoYQzuz53Ob4/Gvke/t4=
 github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5-mc0.1+incompatible/go.mod h1:zG3jhxnu6XMKMc2BlulU8WJ2rO6HEXFM8x4iD5iDngE=
+github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5-mc0.2+incompatible h1:+Zahj3vdc39TRUI0cFwZir2BY+b2DBNUwRU9ilticQY=
+github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5-mc0.2+incompatible/go.mod h1:zG3jhxnu6XMKMc2BlulU8WJ2rO6HEXFM8x4iD5iDngE=
 github.com/manifoldco/promptui v0.7.0 h1:3l11YT8tm9MnwGFQ4kETwkzpAwY2Jt9lCrumCUW4+z4=
 github.com/manifoldco/promptui v0.7.0/go.mod h1:n4zTdgP0vr0S3w7/O/g98U+e0gwLScEXGwov2nIKuGQ=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=

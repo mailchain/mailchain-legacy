@@ -4,8 +4,8 @@ import (
 	"context"
 	"math/big"
 
-	gsrpc "github.com/mailchain/go-substrate-rpc-client"
-	"github.com/mailchain/go-substrate-rpc-client/types"
+	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
+	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/mailchain/mailchain/internal/address"
 )
 
@@ -51,7 +51,7 @@ func (s SubstrateClient) SuggestGasPrice(ctx context.Context) (*big.Int, error) 
 }
 
 func (s SubstrateClient) Call(metadata *types.Metadata, to types.Address, gas *big.Int, data []byte) (types.Call, error) {
-	return types.NewCall(metadata, "Contracts.call", to, types.UCompact(0), types.UCompact(gas.Uint64()), data)
+	return types.NewCall(metadata, "Contracts.call", to, types.NewUCompactFromUInt(0), types.NewUCompactFromUInt(gas.Uint64()), data)
 }
 
 func (s SubstrateClient) NewExtrinsic(call types.Call) types.Extrinsic {
@@ -86,9 +86,9 @@ func (s SubstrateClient) CreateSignatureOptions(blockHash, genesisHash types.Has
 		BlockHash:   blockHash,
 		Era:         types.ExtrinsicEra{IsMortalEra: mortalEra, IsImmortalEra: immortalEra},
 		GenesisHash: genesisHash,
-		Nonce:       types.UCompact(nonce),
+		Nonce:       types.NewUCompactFromUInt(uint64(nonce)),
 		SpecVersion: rv.SpecVersion,
-		Tip:         types.UCompact(tip),
+		Tip:         types.NewUCompactFromUInt(uint64(tip)),
 	}
 }
 

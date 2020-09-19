@@ -7,8 +7,8 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/go-substrate-rpc-client/types"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/mailbox/signer/signertest"
@@ -100,9 +100,9 @@ func TestSubstrateRPC_Send(t *testing.T) {
 							BlockHash:   types.Hash{},
 							Era:         types.ExtrinsicEra{IsMortalEra: false},
 							GenesisHash: types.Hash{},
-							Nonce:       types.UCompact(uint32(0)),
+							Nonce:       types.NewUCompactFromUInt(0),
 							SpecVersion: types.NewU32(0),
-							Tip:         0,
+							Tip:         types.NewUCompactFromUInt(0),
 						},
 					}).Return(&signedExt, nil)
 					return m
@@ -408,9 +408,9 @@ func TestSubstrateRPC_Send(t *testing.T) {
 							BlockHash:   types.Hash{},
 							Era:         types.ExtrinsicEra{IsMortalEra: false},
 							GenesisHash: types.Hash{},
-							Nonce:       types.UCompact(uint32(0)),
+							Nonce:       types.NewUCompactFromUInt(0),
 							SpecVersion: types.NewU32(0),
-							Tip:         0,
+							Tip:         types.NewUCompactFromUInt(0),
 						},
 					}).Return(nil, errors.New("error signing transaction"))
 					return m
@@ -475,9 +475,9 @@ func TestSubstrateRPC_Send(t *testing.T) {
 							BlockHash:   types.Hash{},
 							Era:         types.ExtrinsicEra{IsMortalEra: false},
 							GenesisHash: types.Hash{},
-							Nonce:       types.UCompact(uint32(0)),
+							Nonce:       types.NewUCompactFromUInt(0),
 							SpecVersion: types.NewU32(0),
-							Tip:         0,
+							Tip:         types.NewUCompactFromUInt(0),
 						},
 					}).Return(&signedExt, nil)
 					return m

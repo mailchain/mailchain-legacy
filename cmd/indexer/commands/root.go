@@ -1,10 +1,17 @@
 package commands
 
 import (
+	"strings"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func rootCmd() *cobra.Command {
+	viper.SetEnvPrefix("INDEXER")
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", ""))
+
 	cmd := &cobra.Command{
 		Use:   "indexer",
 		Short: "Mailchain indexer",

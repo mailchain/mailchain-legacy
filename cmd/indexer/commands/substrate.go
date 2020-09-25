@@ -12,6 +12,7 @@ import (
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func substrateCmd() *cobra.Command {
@@ -20,12 +21,12 @@ func substrateCmd() *cobra.Command {
 		Short:            "run substrate sequential processor",
 		TraverseChildren: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			network, _ := cmd.Flags().GetString("network")
-			protocol, _ := cmd.Flags().GetString("protocol")
-			blockNumber, _ := cmd.Flags().GetString("start-block")
-			maxRetries, _ := cmd.Flags().GetUint64("max-retries")
+			network := viper.GetString("network")
+			protocol := viper.GetString("protocol")
+			blockNumber := viper.GetString("start_block")
+			maxRetries := viper.GetUint64("max_retries")
 
-			addressRPC, _ := cmd.Flags().GetString("rpc-address")
+			addressRPC := viper.GetString("rpc_address")
 			if addressRPC == "" {
 				return errors.Errorf("rpc-address must not be empty")
 			}

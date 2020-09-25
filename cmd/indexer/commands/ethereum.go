@@ -13,6 +13,7 @@ import (
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func ethereumCmd() *cobra.Command {
@@ -21,13 +22,13 @@ func ethereumCmd() *cobra.Command {
 		Short:            "run ethereum sequential processor",
 		TraverseChildren: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			network, _ := cmd.Flags().GetString("network")
-			protocol, _ := cmd.Flags().GetString("protocol")
-			blockNumber, _ := cmd.Flags().GetString("start-block")
+			network := viper.GetString("network")
+			protocol := viper.GetString("protocol")
+			blockNumber := viper.GetString("start_block")
 
-			addressRPC, _ := cmd.Flags().GetString("rpc-address")
+			addressRPC := viper.GetString("rpc_address")
 			if addressRPC == "" {
-				return errors.New("rpc-address must not be empty")
+				return errors.Errorf("rpc-address must not be empty")
 			}
 
 			rawStorePath, _ := cmd.Flags().GetString("raw-store-path")

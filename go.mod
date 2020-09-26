@@ -44,4 +44,4 @@ require (
 	gopkg.in/resty.v1 v1.12.0
 )
 
-replace github.com/centrifuge/go-substrate-rpc-client v2.0.0-alpha.5+incompatible => github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5-mc0.2+incompatible
+replace github.com/centrifuge/go-substrate-rpc-client v2.0.0-alpha.5+incompatible => github.com/mailchain/go-substrate-rpc-client v2.0.0-RC6-mc0.1+incompatible

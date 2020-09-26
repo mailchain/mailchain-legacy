@@ -83,12 +83,13 @@ func (s SubstrateClient) GetNonce(ctx context.Context, protocol, network string,
 
 func (s SubstrateClient) CreateSignatureOptions(blockHash, genesisHash types.Hash, mortalEra, immortalEra bool, rv types.RuntimeVersion, nonce, tip uint32) types.SignatureOptions {
 	return types.SignatureOptions{
-		BlockHash:   blockHash,
-		Era:         types.ExtrinsicEra{IsMortalEra: mortalEra, IsImmortalEra: immortalEra},
-		GenesisHash: genesisHash,
-		Nonce:       types.NewUCompactFromUInt(uint64(nonce)),
-		SpecVersion: rv.SpecVersion,
-		Tip:         types.NewUCompactFromUInt(uint64(tip)),
+		BlockHash:          blockHash,
+		Era:                types.ExtrinsicEra{IsMortalEra: mortalEra, IsImmortalEra: immortalEra},
+		GenesisHash:        genesisHash,
+		Nonce:              types.NewUCompactFromUInt(uint64(nonce)),
+		SpecVersion:        rv.SpecVersion,
+		Tip:                types.NewUCompactFromUInt(uint64(tip)),
+		TransactionVersion: 1,
 	}
 }
 

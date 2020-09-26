@@ -23,7 +23,9 @@ To compile and run the package locally, you need to run the following command in
 
 **To run substrate**
 
-1. Run: `docker-compose -f docker-compose.substrate.yml up --build`
+Docker containers exists for mainnet and beresheet networks.
+
+1. Run the command corresponding to the network you want to send message on `make substrate-mainnet` or `make substrate-beresheet`.
 
 ### Inbox vs Inbox Staging
 

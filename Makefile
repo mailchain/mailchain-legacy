@@ -1,4 +1,5 @@
 GO := go
+VER := latest
 
 all : build
 .PHONY: clean test all
@@ -36,7 +37,7 @@ proto:
 	# protoc ./internal/envelope/data.proto -I. --go_out=:.
 	docker run --rm -v $(CURDIR):$(CURDIR) -w $(CURDIR) znly/protoc:0.4.0 ./internal/envelope/data.proto -I. --go_out=:.
 
-.PHONY: go-generate
+.PHONY: go-generate clear-docker-images
 go-generate:
 	go generate ./...
 
@@ -79,3 +80,21 @@ lint:
 
 indexer-database-up:
 	go run cmd/indexer/main.go database up --master-postgres-password=mailchain --master-postgres-user=mailchain --indexer-postgres-password=indexer --envelope-postgres-password=envelope --pubkey-postgres-password=pubkey
+
+clear-docker-images:
+	docker images -a | grep mailchain | grep latest | awk '{print $$3}'
+	- docker rmi -f $$(docker images -a | grep mailchain | grep latest | awk '{print $$3}')
+
+docker-common: clear-docker-images
+	docker-compose -f docker-compose.common.yml up --remove-orphans --force-recreate
+
+docker-recreate-database: 
+	docker-compose -f docker-compose.common.yml down -v
+
+substrate-mainnet: clear-docker-images
+	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.mainnet.yml pull 
+	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.mainnet.yml up --remove-orphans --force-recreate
+
+substrate-beresheet: clear-docker-images
+	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.beresheet.yml pull 
+	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.beresheet.yml up --remove-orphans --force-recreate	

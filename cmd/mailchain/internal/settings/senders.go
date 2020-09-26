@@ -19,7 +19,7 @@ func senders(s values.Store) *Senders {
 			"ethereum-rpc2-" + ethereum.Rinkeby:            ethereumRPC2Sender(s, ethereum.Rinkeby),
 			"ethereum-rpc2-" + ethereum.Ropsten:            ethereumRPC2Sender(s, ethereum.Ropsten),
 			protocols.Ethereum + "-relay":                  relaySender(s, protocols.Ethereum),
-			"substrate-rpc-" + substrate.EdgewareDev:       substrateRPCSender(s, substrate.EdgewareDev),
+			"substrate-rpc-" + substrate.EdgewareLocal:     substrateRPCSender(s, substrate.EdgewareLocal),
 			"substrate-rpc-" + substrate.EdgewareMainnet:   substrateRPCSender(s, substrate.EdgewareMainnet),
 			"substrate-rpc-" + substrate.EdgewareBeresheet: substrateRPCSender(s, substrate.EdgewareBeresheet),
 		},

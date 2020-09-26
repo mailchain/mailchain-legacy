@@ -20,7 +20,7 @@ func mailchainReceiverNoAuth(s values.Store) *MailchainReceiver {
 		Address: values.NewDefaultString("http://localhost:8081", s, "receivers.mailchain.address"),
 		EnabledProtocolNetworks: values.NewDefaultStringSlice(
 			[]string{
-				protocols.Substrate + "/" + substrate.EdgewareDev,
+				protocols.Substrate + "/" + substrate.EdgewareLocal,
 				protocols.Substrate + "/" + substrate.EdgewareBeresheet,
 				protocols.Substrate + "/" + substrate.EdgewareMainnet,
 			},

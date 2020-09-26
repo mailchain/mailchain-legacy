@@ -41,7 +41,7 @@ func GetProtocols(base *settings.Root) func(w http.ResponseWriter, r *http.Reque
 				networks = append(networks, Network{Name: network.Kind(), ID: ""})
 			} else if !network.Disabled() && protocol.Kind == "substrate" {
 				switch network.Kind() {
-				case substrate.EdgewareBeresheet, substrate.EdgewareMainnet, substrate.EdgewareDev:
+				case substrate.EdgewareBeresheet, substrate.EdgewareMainnet, substrate.EdgewareLocal:
 					networks = append(networks, Network{Name: network.Kind(), ID: "7"})
 				}
 			}

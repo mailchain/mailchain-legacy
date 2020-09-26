@@ -38,13 +38,14 @@ type Signer struct {
 
 func (e Signer) createSignature(signedData []byte) (*types.MultiSignature, error) {
 	sig := types.NewSignature(signedData)
+
 	switch e.privateKey.(type) {
 	case *sr25519.PrivateKey:
 		return &types.MultiSignature{IsSr25519: true, AsSr25519: sig}, nil
 	case *ed25519.PrivateKey:
 		return &types.MultiSignature{IsEd25519: true, AsEd25519: sig}, nil
 	default:
-		return nil, errors.New("unsupported private key type")
+		return nil, errors.Errorf("unsupported private key type")
 	}
 }
 
@@ -59,14 +60,17 @@ func (e Signer) prepareData(ext *types.Extrinsic, opts *types.SignatureOptions) 
 		era = types.ExtrinsicEra{IsImmortalEra: true}
 	}
 
-	payload := types.ExtrinsicPayloadV3{
-		Method:      mb,
-		Era:         era,
-		Nonce:       opts.Nonce,
-		Tip:         opts.Tip,
-		SpecVersion: opts.SpecVersion,
-		GenesisHash: opts.GenesisHash,
-		BlockHash:   opts.BlockHash,
+	payload := types.ExtrinsicPayloadV4{
+		ExtrinsicPayloadV3: types.ExtrinsicPayloadV3{
+			Method:      mb,
+			Era:         era,
+			Nonce:       opts.Nonce,
+			Tip:         opts.Tip,
+			SpecVersion: opts.SpecVersion,
+			GenesisHash: opts.GenesisHash,
+			BlockHash:   opts.BlockHash,
+		},
+		TransactionVersion: opts.TransactionVersion,
 	}
 
 	return types.EncodeToBytes(payload)
@@ -84,10 +88,12 @@ func (e Signer) Sign(opts signer.Options) (signedTransaction interface{}, err er
 		if err != nil {
 			return nil, err
 		}
+
 		signature, err := e.createSignature(signedData)
 		if err != nil {
 			return nil, err
 		}
+
 		extSig := types.ExtrinsicSignatureV4{
 			Signer:    types.NewAddressFromAccountID(e.privateKey.PublicKey().Bytes()),
 			Signature: *signature,
@@ -95,11 +101,13 @@ func (e Signer) Sign(opts signer.Options) (signedTransaction interface{}, err er
 			Nonce:     opts.SignatureOptions.Nonce,
 			Tip:       opts.SignatureOptions.Tip,
 		}
+
 		ext := &opts.Extrinsic
 		ext.Signature = extSig
 		ext.Version |= types.ExtrinsicBitSigned
+
 		return ext, nil
 	default:
-		return nil, errors.New("invalid options for substrate signing")
+		return nil, errors.Errorf("invalid options for substrate signing")
 	}
 }

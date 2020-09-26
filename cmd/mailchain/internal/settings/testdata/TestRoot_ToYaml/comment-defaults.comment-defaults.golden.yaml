@@ -47,6 +47,13 @@
 #         public-key-finder: "substrate-public-key-finder"
 #         receiver: "mailchain"
 #         sender: "substrate-rpc-edgeware-beresheet"
+#       edgeware-local:
+#         disabled: false
+#         nameservice-address: ""
+#         nameservice-domain-name: ""
+#         public-key-finder: "substrate-public-key-finder"
+#         receiver: "mailchain"
+#         sender: "substrate-rpc-edgeware-local"
 #       edgeware-mainnet:
 #         disabled: false
 #         nameservice-address: ""
@@ -97,6 +104,7 @@
 #     enabled-networks:
 #       - "substrate/edgeware-mainnet"
 #       - "substrate/edgeware-beresheet"
+#       - "substrate/edgeware-local"
 # receivers:
 #   blockscout-no-auth:
 #     enabled-networks:
@@ -120,6 +128,7 @@
 #   mailchain:
 #     address: "http://localhost:8081"
 #     enabled-networks:
+#       - "substrate/edgeware-local"
 #       - "substrate/edgeware-beresheet"
 #       - "substrate/edgeware-mainnet"
 # senders:
@@ -143,6 +152,8 @@
 #     address: "https://relay.mailchain.xyz/json-rpc/ethereum/ropsten"
 #   substrate-rpc-edgeware-beresheet:
 #     address: "ws://beresheet1.edgewa.re:9944"
+#   substrate-rpc-edgeware-local:
+#     address: "ws://localhost:9944"
 #   substrate-rpc-edgeware-mainnet:
 #     address: "ws://mainnet1.edgewa.re:9944"
 keystore:

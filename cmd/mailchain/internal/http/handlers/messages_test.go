@@ -21,7 +21,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
@@ -34,7 +33,6 @@ import (
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/internal/mailbox/mailboxtest"
 	"github.com/mailchain/mailchain/stores"
-	"github.com/mailchain/mailchain/stores/cachestore"
 	"github.com/mailchain/mailchain/stores/storestest"
 
 	"github.com/golang/mock/gomock"
@@ -47,6 +45,7 @@ func Test_GetMessages(t *testing.T) {
 	defer mockCtrl.Finish()
 	type args struct {
 		inbox            stores.State
+		cache            stores.Cache
 		receivers        map[string]mailbox.Receiver
 		ks               keystore.Store
 		deriveKeyOptions multi.OptionsBuilders
@@ -170,6 +169,12 @@ func Test_GetMessages(t *testing.T) {
 		{
 			"200-message",
 			args{
+				cache: func() stores.Cache {
+					m := storestest.NewMockCache(mockCtrl)
+					m.EXPECT().GetMessage("test://TestReadMessage/success-2204f3d89e5a").Return([]byte{}, errors.Errorf("message not found"))
+					m.EXPECT().SetMessage("test://TestReadMessage/success-2204f3d89e5a", gomock.Any()).Return(nil)
+					return m
+				}(),
 				inbox: func() stores.State {
 					inbox := storestest.NewMockState(mockCtrl)
 					inbox.EXPECT().GetReadStatus(mail.ID{71, 236, 160, 17, 227, 43, 82, 199, 16, 5, 173, 138, 143, 117, 225, 180, 76, 146, 201, 159, 209, 46, 67, 188, 207, 229, 113, 227, 194, 209, 61, 46, 154, 130, 106, 85, 15, 95, 246, 59, 36, 122, 244, 113}).Return(false, nil).Times(1)
@@ -240,8 +245,7 @@ func Test_GetMessages(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 			rr := httptest.NewRecorder()
-			cache, _ := cachestore.NewCacheStore(10*time.Second, "./testdata")
-			handler := http.HandlerFunc(GetMessages(tt.args.inbox, cache, tt.args.receivers, tt.args.ks, tt.args.deriveKeyOptions))
+			handler := http.HandlerFunc(GetMessages(tt.args.inbox, tt.args.cache, tt.args.receivers, tt.args.ks, tt.args.deriveKeyOptions))
 
 			// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
 			// directly and pass in our Request and ResponseRecorder.

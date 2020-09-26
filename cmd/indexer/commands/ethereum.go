@@ -13,6 +13,7 @@ import (
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func ethereumCmd() *cobra.Command {
@@ -21,18 +22,18 @@ func ethereumCmd() *cobra.Command {
 		Short:            "run ethereum sequential processor",
 		TraverseChildren: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			network, _ := cmd.Flags().GetString("network")
-			protocol, _ := cmd.Flags().GetString("protocol")
-			blockNumber, _ := cmd.Flags().GetString("start-block")
+			network := viper.GetString("network")
+			protocol := viper.GetString("protocol")
+			blockNumber := viper.GetString("start_block")
 
-			addressRPC, _ := cmd.Flags().GetString("rpc-address")
+			addressRPC := viper.GetString("rpc_address")
 			if addressRPC == "" {
-				return errors.New("rpc-address must not be empty")
+				return errors.Errorf("rpc-address must not be empty")
 			}
 
 			rawStorePath, _ := cmd.Flags().GetString("raw-store-path")
 
-			maxRetries, _ := cmd.Flags().GetUint64("max-retries")
+			maxRetries, _ := cmd.PersistentFlags().GetUint64("max-retries")
 
 			connIndexer, err := newPostgresConnection(cmd, "indexer")
 			if err != nil {
@@ -65,9 +66,13 @@ func ethereumCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String("start-block", "latest", "Block number from which the indexer will start, e.g. 10000, or 'latest'")
+	_ = viper.BindPFlag("start_block", cmd.Flags().Lookup("start-block"))
 	cmd.Flags().String("protocol", protocols.Ethereum, "Protocol to run against")
+	_ = viper.BindPFlag("protocol", cmd.Flags().Lookup("protocol"))
 	cmd.Flags().String("network", ethereum.Mainnet, "Network to run against")
+	_ = viper.BindPFlag("network", cmd.Flags().Lookup("network"))
 	cmd.Flags().String("rpc-address", "", "Ethereum RPC-JSON address")
+	_ = viper.BindPFlag("rpc_address", cmd.Flags().Lookup("rpc-address"))
 
 	return cmd
 }

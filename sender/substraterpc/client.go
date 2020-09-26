@@ -4,8 +4,8 @@ import (
 	"context"
 	"math/big"
 
-	gsrpc "github.com/mailchain/go-substrate-rpc-client"
-	"github.com/mailchain/go-substrate-rpc-client/types"
+	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
+	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/mailchain/mailchain/internal/address"
 )
 
@@ -51,7 +51,7 @@ func (s SubstrateClient) SuggestGasPrice(ctx context.Context) (*big.Int, error) 
 }
 
 func (s SubstrateClient) Call(metadata *types.Metadata, to types.Address, gas *big.Int, data []byte) (types.Call, error) {
-	return types.NewCall(metadata, "Contracts.call", to, types.UCompact(0), types.UCompact(gas.Uint64()), data)
+	return types.NewCall(metadata, "Contracts.call", to, types.NewUCompactFromUInt(0), types.NewUCompactFromUInt(gas.Uint64()), data)
 }
 
 func (s SubstrateClient) NewExtrinsic(call types.Call) types.Extrinsic {
@@ -83,12 +83,13 @@ func (s SubstrateClient) GetNonce(ctx context.Context, protocol, network string,
 
 func (s SubstrateClient) CreateSignatureOptions(blockHash, genesisHash types.Hash, mortalEra, immortalEra bool, rv types.RuntimeVersion, nonce, tip uint32) types.SignatureOptions {
 	return types.SignatureOptions{
-		BlockHash:   blockHash,
-		Era:         types.ExtrinsicEra{IsMortalEra: mortalEra, IsImmortalEra: immortalEra},
-		GenesisHash: genesisHash,
-		Nonce:       types.UCompact(nonce),
-		SpecVersion: rv.SpecVersion,
-		Tip:         types.UCompact(tip),
+		BlockHash:          blockHash,
+		Era:                types.ExtrinsicEra{IsMortalEra: mortalEra, IsImmortalEra: immortalEra},
+		GenesisHash:        genesisHash,
+		Nonce:              types.NewUCompactFromUInt(uint64(nonce)),
+		SpecVersion:        rv.SpecVersion,
+		Tip:                types.NewUCompactFromUInt(uint64(tip)),
+		TransactionVersion: 1,
 	}
 }
 

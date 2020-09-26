@@ -22,10 +22,10 @@ func substrateCmd() *cobra.Command {
 		TraverseChildren: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			network := viper.GetString("network")
+			println(network)
 			protocol := viper.GetString("protocol")
 			blockNumber := viper.GetString("start_block")
 			maxRetries := viper.GetUint64("max_retries")
-
 			addressRPC := viper.GetString("rpc_address")
 			if addressRPC == "" {
 				return errors.Errorf("rpc-address must not be empty")
@@ -62,9 +62,13 @@ func substrateCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String("start-block", "latest", "Block number from which the indexer will start, e.g. 10000, or 'latest'")
+	_ = viper.BindPFlag("start_block", cmd.Flags().Lookup("start-block"))
 	cmd.Flags().String("protocol", protocols.Substrate, "Protocol to run against")
+	_ = viper.BindPFlag("protocol", cmd.Flags().Lookup("protocol"))
 	cmd.Flags().String("network", substrate.EdgewareMainnet, "Network to run against")
+	_ = viper.BindPFlag("network", cmd.Flags().Lookup("network"))
 	cmd.Flags().String("rpc-address", "", "Substrate RPC-JSON address")
+	_ = viper.BindPFlag("rpc_address", cmd.Flags().Lookup("rpc-address"))
 
 	return cmd
 }

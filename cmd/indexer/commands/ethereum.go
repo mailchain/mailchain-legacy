@@ -33,7 +33,7 @@ func ethereumCmd() *cobra.Command {
 
 			rawStorePath, _ := cmd.Flags().GetString("raw-store-path")
 
-			maxRetries, _ := cmd.Flags().GetUint64("max-retries")
+			maxRetries, _ := cmd.PersistentFlags().GetUint64("max-retries")
 
 			connIndexer, err := newPostgresConnection(cmd, "indexer")
 			if err != nil {
@@ -66,9 +66,13 @@ func ethereumCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String("start-block", "latest", "Block number from which the indexer will start, e.g. 10000, or 'latest'")
+	_ = viper.BindPFlag("start_block", cmd.Flags().Lookup("start-block"))
 	cmd.Flags().String("protocol", protocols.Ethereum, "Protocol to run against")
+	_ = viper.BindPFlag("protocol", cmd.Flags().Lookup("protocol"))
 	cmd.Flags().String("network", ethereum.Mainnet, "Network to run against")
+	_ = viper.BindPFlag("network", cmd.Flags().Lookup("network"))
 	cmd.Flags().String("rpc-address", "", "Ethereum RPC-JSON address")
+	_ = viper.BindPFlag("rpc_address", cmd.Flags().Lookup("rpc-address"))
 
 	return cmd
 }

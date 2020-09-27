@@ -20,8 +20,8 @@ protocols:
         disabled: false
         nameservice-address: "mailchain"
         nameservice-domain-name: "mailchain"
-        public-key-finder: "blockscout-no-auth"
-        receiver: "blockscout-no-auth"
+        public-key-finder: "etherscan-no-auth"
+        receiver: "etherscan-no-auth"
         sender: "ethereum-relay"
       rinkeby:
         disabled: false

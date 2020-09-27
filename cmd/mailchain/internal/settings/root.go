@@ -22,17 +22,9 @@ func FromStore(s values.Store) *Root {
 		// Protocols these contain the networks
 		Protocols: map[string]*Protocol{
 			protocols.Ethereum: protocol(s, protocols.Ethereum, map[string]NetworkClient{
-				ethereum.Goerli: network(s, protocols.Ethereum, ethereum.Goerli, defaults.EthereumNetworkAny()),
-				ethereum.Kovan:  network(s, protocols.Ethereum, ethereum.Kovan, defaults.EthereumNetworkAny()),
-				ethereum.Mainnet: network(s, protocols.Ethereum, ethereum.Mainnet,
-					&defaults.NetworkDefaults{
-						NameServiceAddress:    defaults.NameServiceAddressKind,
-						NameServiceDomainName: defaults.NameServiceDomainNameKind,
-						PublicKeyFinder:       defaults.ClientBlockscoutNoAuth,
-						Receiver:              defaults.ClientBlockscoutNoAuth,
-						Sender:                defaults.EthereumRelay,
-						Disabled:              false,
-					}),
+				ethereum.Goerli:  network(s, protocols.Ethereum, ethereum.Goerli, defaults.EthereumNetworkAny()),
+				ethereum.Kovan:   network(s, protocols.Ethereum, ethereum.Kovan, defaults.EthereumNetworkAny()),
+				ethereum.Mainnet: network(s, protocols.Ethereum, ethereum.Mainnet, defaults.EthereumNetworkAny()),
 				ethereum.Rinkeby: network(s, protocols.Ethereum, ethereum.Rinkeby, defaults.EthereumNetworkAny()),
 				ethereum.Ropsten: network(s, protocols.Ethereum, ethereum.Ropsten, defaults.EthereumNetworkAny()),
 			}),

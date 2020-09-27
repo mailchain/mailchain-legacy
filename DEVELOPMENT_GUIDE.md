@@ -11,21 +11,29 @@ To compile and run the package locally, you need to run the following command in
 
 ### Examples
 
-**To `serve` your development version**
+#### Add account
 
-1. Navigate into the directory of the repository
-1. Run: `go run cmd/mailchain/main.go serve`
-
-**To `add account` to your development version**
+To `add account` to your development version
 
 1. Navigate into the directory of the repository
 2. Run: `go run cmd/mailchain/main.go account add --protocol=ethereum --key-type="secp256k1" --private-key=YOUR_PRIVATE_KEY`
 
-**To run substrate**
+#### Serve
 
-Docker containers exists for mainnet and beresheet networks.
+To `serve` your development version
 
-1. Run the command corresponding to the network you want to send message on `make substrate-mainnet` or `make substrate-beresheet`.
+1. Navigate into the directory of the repository
+1. Run: `go run cmd/mailchain/main.go serve`
+
+### To run substrate
+
+For mainnet and beresheet networks:
+
+1. Run the command corresponding to the network you want to send message on `make substrate-mainnet`, `make substrate-beresheet`, or `make substrate-local`. *Note: pull lastest version, if there has been a release it will ask you to continue with new image. Confirm with "y"*
+1. [Add keys](#add-account) and [start Mailchain client](#serve).
+1. Set protocol to `substrate` and network to the desired option in [Mailchain settings](https://inbox.mailchain.xyz/#/settings).
+1. Open [Mailchain inbox](https://inbox.mailchain.xyz/).
+1. Send from an SR25519 address to any SR25519 address.
 
 ### Inbox vs Inbox Staging
 

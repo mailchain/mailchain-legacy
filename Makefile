@@ -91,14 +91,14 @@ docker-common: clear-docker-images
 docker-recreate-database: 
 	docker-compose -f docker-compose.common.yml down -v
 
-substrate-mainnet: clear-docker-images
-	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.mainnet.yml pull 
-	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.mainnet.yml up --remove-orphans --force-recreate
+edgeware-mainnet: clear-docker-images
+	docker-compose -f docker-compose.common.yml -f docker-compose.edgeware.yml -f docker-compose.edgeware.mainnet.yml pull 
+	docker-compose -f docker-compose.common.yml -f docker-compose.edgeware.yml -f docker-compose.edgeware.mainnet.yml up --remove-orphans --force-recreate
 
-substrate-beresheet: clear-docker-images
-	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.beresheet.yml pull 
-	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.beresheet.yml up --remove-orphans --force-recreate
+edgeware-beresheet: clear-docker-images
+	docker-compose -f docker-compose.common.yml -f docker-compose.edgeware.yml -f docker-compose.edgeware.beresheet.yml pull 
+	docker-compose -f docker-compose.common.yml -f docker-compose.edgeware.yml -f docker-compose.edgeware.beresheet.yml up --remove-orphans --force-recreate
 
-substrate-local: clear-docker-images
-	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.local.yml pull 
-	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.local.yml up --remove-orphans --force-recreate
+edgeware-local: clear-docker-images
+	docker-compose -f docker-compose.common.yml -f docker-compose.edgeware.yml -f docker-compose.edgeware.local.yml pull 
+	docker-compose -f docker-compose.common.yml -f docker-compose.edgeware.yml -f docker-compose.edgeware.local.yml up --remove-orphans --force-recreate

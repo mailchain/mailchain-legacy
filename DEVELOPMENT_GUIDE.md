@@ -27,13 +27,13 @@ To `serve` your development version
 
 ### To run substrate
 
-For mainnet and beresheet networks:
+Mailchain requires contracts module installed to run. Edgeware has this module installed by default. Mailchain runs against mainnet, beresheet and local networks:
 
-1. Run the command corresponding to the network you want to send message on `make substrate-mainnet`, `make substrate-beresheet`, or `make substrate-local`. *Note: pull lastest version, if there has been a release it will ask you to continue with new image. Confirm with "y"*
-1. [Add keys](#add-account) and [start Mailchain client](#serve).
-1. Set protocol to `substrate` and network to the desired option in [Mailchain settings](https://inbox.mailchain.xyz/#/settings).
-1. Open [Mailchain inbox](https://inbox.mailchain.xyz/).
-1. Send from an SR25519 address to any SR25519 address.
+1. Run the command corresponding to the network you want to send message on `make edgeware-mainnet`, `make edgeware-beresheet`, or `make edgeware-local`. *Note: pull lastest version, if there has been a release it will ask you to continue with new image. Confirm with "y"*
+2. [Add keys](#add-account) and [start Mailchain client](#serve).
+3. Set protocol to `substrate` and network to the desired option in [Mailchain settings](https://inbox.mailchain.xyz/#/settings).
+4. Open [Mailchain inbox](https://inbox.mailchain.xyz/).
+5. Send from an SR25519 address to any SR25519 address.
 
 ### Inbox vs Inbox Staging
 

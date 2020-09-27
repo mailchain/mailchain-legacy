@@ -62,8 +62,8 @@ func substrateCmd() *cobra.Command {
 				return err
 			}
 
-			if err := backoff.Retry(operation, backoff.WithMaxRetries(backoff.NewExponentialBackOff(), 3)); err != nil {
-				fmt.Fprintf(cmd.ErrOrStderr(), "Number of retries has reached to %d. Exiting.\\n", 3)
+			if err := backoff.Retry(operation, backoff.WithMaxRetries(backoff.NewExponentialBackOff(), 5)); err != nil {
+				fmt.Fprintf(cmd.ErrOrStderr(), "Number of retries has reached to %d. Exiting.\\n", 5)
 				return err
 			}
 

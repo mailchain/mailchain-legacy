@@ -7,7 +7,7 @@ services:
             - POSTGRES_USER=mailchain
             - POSTGRES_PASSWORD=mailchain
         ports:
-            - 5432:5432
+            - "5432:5432"
         volumes:
             - db_data:/var/lib/postgresql/data
     indexer-migration:

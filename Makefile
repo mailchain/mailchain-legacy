@@ -86,7 +86,7 @@ clear-docker-images:
 	- docker rmi -f $$(docker images -a | grep mailchain | grep latest | awk '{print $$3}')
 
 docker-common: clear-docker-images
-	docker-compose -f docker-compose.common.yml up --remove-orphans --force-recreate
+	docker-compose -f docker-compose.common.yml up --remove-orphans --force-recreate --build
 
 docker-recreate-database: 
 	docker-compose -f docker-compose.common.yml down -v
@@ -97,4 +97,8 @@ substrate-mainnet: clear-docker-images
 
 substrate-beresheet: clear-docker-images
 	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.beresheet.yml pull 
-	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.beresheet.yml up --remove-orphans --force-recreate	
+	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.beresheet.yml up --remove-orphans --force-recreate
+
+substrate-local: clear-docker-images
+	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.local.yml pull 
+	docker-compose -f docker-compose.common.yml -f docker-compose.substrate.yml -f docker-compose.substrate.local.yml up --remove-orphans --force-recreate

@@ -1,0 +1,39 @@
+{
+    "protocols": [
+        {
+            "name": "ethereum",
+            "networks": [
+                {
+                    "name": "goerli",
+                    "id": "",
+                    "nameservice-domain-enabled": true,
+                    "nameservice-address-enabled": false
+                },
+                {
+                    "name": "kovan",
+                    "id": "",
+                    "nameservice-domain-enabled": true,
+                    "nameservice-address-enabled": true
+                },
+                {
+                    "name": "mainnet",
+                    "id": "",
+                    "nameservice-domain-enabled": true,
+                    "nameservice-address-enabled": true
+                },
+                {
+                    "name": "rinkeby",
+                    "id": "",
+                    "nameservice-domain-enabled": true,
+                    "nameservice-address-enabled": true
+                },
+                {
+                    "name": "ropsten",
+                    "id": "",
+                    "nameservice-domain-enabled": true,
+                    "nameservice-address-enabled": true
+                }
+            ]
+        }
+    ]
+}

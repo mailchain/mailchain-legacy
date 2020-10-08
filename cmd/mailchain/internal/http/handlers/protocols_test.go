@@ -15,6 +15,8 @@
 package handlers
 
 import (
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -34,11 +36,10 @@ func TestGetProtocols(t *testing.T) {
 	tests := []struct {
 		name       string
 		args       args
-		wantBody   string
 		wantStatus int
 	}{
 		{
-			"disabled-ethereum",
+			"200-disabled-ethereum",
 			args{
 				func() *settings.Root {
 					m := valuestest.NewMockStore(mockCtrl)
@@ -50,11 +51,10 @@ func TestGetProtocols(t *testing.T) {
 					return settings.FromStore(m)
 				}(),
 			},
-			"{\"protocols\":[]}\n",
 			http.StatusOK,
 		},
 		{
-			"disabled-goreli",
+			"200-disabled-goreli",
 			args{
 				func() *settings.Root {
 					m := valuestest.NewMockStore(mockCtrl)
@@ -66,11 +66,25 @@ func TestGetProtocols(t *testing.T) {
 					return settings.FromStore(m)
 				}(),
 			},
-			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[{\"name\":\"kovan\",\"id\":\"\"},{\"name\":\"mainnet\",\"id\":\"\"},{\"name\":\"rinkeby\",\"id\":\"\"},{\"name\":\"ropsten\",\"id\":\"\"}]}]}\n",
 			http.StatusOK,
 		},
 		{
-			"default-ethereum",
+			"200-disabled-goreli-name-service-domain",
+			args{
+				func() *settings.Root {
+					m := valuestest.NewMockStore(mockCtrl)
+					m.EXPECT().IsSet("protocols.ethereum.networks.goerli.nameservice-address").Return(true)
+					m.EXPECT().GetString("protocols.ethereum.networks.goerli.nameservice-address").Return("")
+					m.EXPECT().IsSet("protocols.substrate.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.substrate.disabled").Return(true)
+					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
+					return settings.FromStore(m)
+				}(),
+			},
+			http.StatusOK,
+		},
+		{
+			"200-default-ethereum",
 			args{
 				func() *settings.Root {
 					m := valuestest.NewMockStore(mockCtrl)
@@ -80,11 +94,10 @@ func TestGetProtocols(t *testing.T) {
 					return settings.FromStore(m)
 				}(),
 			},
-			"{\"protocols\":[{\"name\":\"ethereum\",\"networks\":[{\"name\":\"goerli\",\"id\":\"\"},{\"name\":\"kovan\",\"id\":\"\"},{\"name\":\"mainnet\",\"id\":\"\"},{\"name\":\"rinkeby\",\"id\":\"\"},{\"name\":\"ropsten\",\"id\":\"\"}]}]}\n",
 			http.StatusOK,
 		},
 		{
-			"default-substrate",
+			"200-default-substrate",
 			args{
 				func() *settings.Root {
 					m := valuestest.NewMockStore(mockCtrl)
@@ -94,11 +107,11 @@ func TestGetProtocols(t *testing.T) {
 					return settings.FromStore(m)
 				}(),
 			},
-			"{\"protocols\":[{\"name\":\"substrate\",\"networks\":[{\"name\":\"edgeware-beresheet\",\"id\":\"7\"},{\"name\":\"edgeware-local\",\"id\":\"7\"},{\"name\":\"edgeware-mainnet\",\"id\":\"7\"}]}]}\n",
 			http.StatusOK,
 		},
 	}
 	for _, tt := range tests {
+		testName := t.Name()
 		t.Run(tt.name, func(t *testing.T) {
 			req, err := http.NewRequest("GET", "/", nil)
 			if err != nil {
@@ -117,9 +130,13 @@ func TestGetProtocols(t *testing.T) {
 				t.Errorf("handler returned wrong status code: got %v want %v",
 					rr.Code, tt.wantStatus)
 			}
-			if !assert.Equal(t, tt.wantBody, rr.Body.String()) {
+			golden, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/response-%s.json", testName, tt.name))
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+			if !assert.JSONEq(t, string(golden), rr.Body.String()) {
 				t.Errorf("handler returned unexpected body: got %v want %v",
-					rr.Body.String(), tt.wantBody)
+					rr.Body.String(), golden)
 			}
 		})
 	}

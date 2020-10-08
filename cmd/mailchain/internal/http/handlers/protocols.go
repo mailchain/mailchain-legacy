@@ -20,6 +20,7 @@ import (
 	"sort"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
+	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
@@ -37,14 +38,30 @@ func GetProtocols(base *settings.Root) func(w http.ResponseWriter, r *http.Reque
 		networks := []Network{}
 
 		for _, network := range protocol.Networks {
-			if !network.Disabled() && protocol.Kind == "ethereum" {
-				networks = append(networks, Network{Name: network.Kind(), ID: ""})
-			} else if !network.Disabled() && protocol.Kind == "substrate" {
+			if network.Disabled() {
+				continue
+			}
+
+			n := Network{Name: network.Kind()}
+			if ns, _ := network.ProduceNameServiceDomain(base.DomainNameServices); ns != nil {
+				n.NameServiceDomainEnabled = true
+			}
+
+			if ns, _ := network.ProduceNameServiceAddress(base.AddressNameServices); ns != nil {
+				n.NameServiceAddressEnabled = true
+			}
+
+			switch protocol.Kind {
+			case protocols.Ethereum:
+
+			case protocols.Substrate:
 				switch network.Kind() {
 				case substrate.EdgewareBeresheet, substrate.EdgewareMainnet, substrate.EdgewareLocal:
-					networks = append(networks, Network{Name: network.Kind(), ID: "7"})
+					n.ID = "7"
 				}
 			}
+
+			networks = append(networks, n)
 		}
 
 		sort.Slice(networks, func(i, j int) bool { return networks[i].Name < networks[j].Name })
@@ -55,7 +72,7 @@ func GetProtocols(base *settings.Root) func(w http.ResponseWriter, r *http.Reque
 		res.Protocols = append(res.Protocols, resP)
 	}
 
-	// Get swagger:route GET /protocols protocols GetProtocols
+	// Get swagger:route GET /protocols Protocols GetProtocols
 	//
 	// Get protocols and the networks.
 	//
@@ -79,8 +96,10 @@ type GetProtocolsResponse struct {
 }
 
 type Network struct {
-	Name string `json:"name"`
-	ID   string `json:"id"`
+	Name                      string `json:"name"`
+	ID                        string `json:"id"`
+	NameServiceDomainEnabled  bool   `json:"nameservice-domain-enabled"`
+	NameServiceAddressEnabled bool   `json:"nameservice-address-enabled"`
 }
 
 type GetProtocolsProtocol struct {

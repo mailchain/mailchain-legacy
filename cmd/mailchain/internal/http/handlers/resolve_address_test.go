@@ -17,7 +17,6 @@ package handlers
 import (
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -42,7 +41,7 @@ func Test_parseGetResolveAddressRequest(t *testing.T) {
 		wantErr      bool
 	}{
 		{
-			"success",
+			"success-ethereum",
 			args{
 				func() *http.Request {
 					req := httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil)
@@ -55,6 +54,22 @@ func Test_parseGetResolveAddressRequest(t *testing.T) {
 			"ethereum",
 			"mainnet",
 			encodingtest.MustDecodeHex("4ad2b251246aafc2f3bdf3b690de3bf906622c51"),
+			false,
+		},
+		{
+			"success-substrate",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("GET", "/?network=beresheet&protocol=substrate", nil)
+					req = mux.SetURLVars(req, map[string]string{
+						"address": "5CaLgJUDdDRxw6KQXJY2f5hFkMEEGHvtUPQYDWdSbku42Dv2",
+					})
+					return req
+				}(),
+			},
+			"substrate",
+			"beresheet",
+			[]byte{0x2a, 0x16, 0x9a, 0x11, 0x72, 0x18, 0x51, 0xf5, 0xdf, 0xf3, 0x54, 0x1d, 0xd5, 0xc4, 0xb0, 0xb4, 0x78, 0xac, 0x1c, 0xd0, 0x92, 0xc9, 0xd5, 0x97, 0x6e, 0x83, 0xda, 0xa0, 0xd0, 0x3f, 0x26, 0x62, 0xc, 0x46, 0x4b},
 			false,
 		},
 		{
@@ -119,7 +134,7 @@ func Test_parseGetResolveAddressRequest(t *testing.T) {
 			if gotNetwork != tt.wantNetwork {
 				t.Errorf("parseGetResolveAddressRequest() gotNetwork = %v, want %v", gotNetwork, tt.wantNetwork)
 			}
-			if !reflect.DeepEqual(gotAddress, tt.wantAddress) {
+			if !assert.Equal(t, tt.wantAddress, gotAddress) {
 				t.Errorf("parseGetResolveAddressRequest() gotAddress = %v, want %v", gotAddress, tt.wantAddress)
 			}
 		})

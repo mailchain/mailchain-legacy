@@ -15,15 +15,14 @@
 package handlers
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
@@ -111,7 +110,7 @@ type GetResolveAddressRequest struct {
 }
 
 // parseGetResolveAddressRequest get all the details for the get request
-func parseGetResolveAddressRequest(r *http.Request) (protocol, network string, address []byte, err error) {
+func parseGetResolveAddressRequest(r *http.Request) (protocol, network string, addr []byte, err error) {
 	protocol, err = params.QueryRequireProtocol(r)
 	if err != nil {
 		return "", "", nil, err
@@ -121,12 +120,12 @@ func parseGetResolveAddressRequest(r *http.Request) (protocol, network string, a
 		return "", "", nil, err
 	}
 
-	address, err = hex.DecodeString(strings.TrimPrefix(strings.ToLower(mux.Vars(r)["address"]), "0x"))
+	addr, err = address.DecodeByProtocol(mux.Vars(r)["address"], protocol)
 	if err != nil {
 		return "", "", nil, err
 	}
 
-	return protocol, network, address, nil
+	return protocol, network, addr, nil
 }
 
 // GetResolveAddressResponse address of resolved name

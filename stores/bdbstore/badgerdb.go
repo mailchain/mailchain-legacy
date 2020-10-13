@@ -131,7 +131,8 @@ func (db *Database) GetReadStatus(messageID mail.ID) (bool, error) {
 	return val[0] == 1, nil
 }
 
-func (db *Database) PutMessage(prefixKey string, message stores.Message) error {
+func (db *Database) PutMessage(protocol, network, address string, message stores.Message) error {
+	prefixKey := getMessageKey(protocol, network, address)
 	mByte, err := json.Marshal(message)
 	if err != nil {
 		return err
@@ -141,12 +142,17 @@ func (db *Database) PutMessage(prefixKey string, message stores.Message) error {
 	})
 }
 
-func (db *Database) GetMessages(prefixKey string) ([]stores.Message, error) {
+func getMessageKey(protocol, network, address string) string {
+	return fmt.Sprintf("%s/%s/%s", protocol, network, address)
+}
+
+func (db *Database) GetMessages(protocol, network, address string) ([]stores.Message, error) {
 	var (
 		val []byte
 		err error
 	)
 
+	prefixKey := getMessageKey(protocol, network, address)
 	var messages []stores.Message
 
 	err = db.db.View(func(txn *badger.Txn) error {

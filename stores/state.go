@@ -24,6 +24,6 @@ type State interface {
 	PutMessageRead(messageID mail.ID) error
 	GetReadStatus(messageID mail.ID) (bool, error)
 
-	PutMessage(prefixKey string, message Message) error
-	GetMessages(prefixKey string) ([]Message, error)
+	PutMessage(protocol, network, address string, message Message) error
+	GetMessages(protocol, network, address string) ([]Message, error)
 }

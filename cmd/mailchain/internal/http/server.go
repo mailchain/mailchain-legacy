@@ -65,9 +65,9 @@ func CreateRouter(s *settings.Root, cmd *cobra.Command) (http.Handler, error) {
 
 	api.HandleFunc("/envelope", handlers.GetEnvelope(config.sentStore)).Methods("GET")
 
-	api.HandleFunc("/messages", handlers.GetMessages(config.mailboxStateStore, config.cache, config.receivers, config.keystore, deriveKeyOptions)).Methods("GET") //nolint:lll
-	api.HandleFunc("/messages", handlers.SendMessage(config.mailboxStateStore, config.cache, config.receivers, config.sentStore, config.senders, config.keystore, deriveKeyOptions)).Methods("POST")
-
+	api.HandleFunc("/messages", handlers.GetMessages(config.mailboxStateStore, config.receivers, config.keystore, deriveKeyOptions)).Methods("GET") //nolint:lll
+	api.HandleFunc("/messages", handlers.SendMessage(config.sentStore, config.senders, config.keystore, deriveKeyOptions)).Methods("POST")
+	api.HandleFunc("/messages/fetch", handlers.FetchMessages(config.mailboxStateStore, config.cache, config.receivers, config.keystore, deriveKeyOptions)).Methods("POST")
 	api.HandleFunc("/messages/{message_id}/read", handlers.GetRead(config.mailboxStateStore)).Methods("GET")
 	api.HandleFunc("/messages/{message_id}/read", handlers.PutRead(config.mailboxStateStore)).Methods("PUT")
 	api.HandleFunc("/messages/{message_id}/read", handlers.DeleteRead(config.mailboxStateStore)).Methods("DELETE")

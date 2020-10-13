@@ -56,6 +56,7 @@ var protocolNetworkUint8 = map[string]map[string]uint8{ //nolint:gochecknoglobal
 	protocols.Substrate: {
 		substrate.EdgewareBeresheet: 1,
 		substrate.EdgewareMainnet:   2,
+		substrate.EdgewareLocal:     3,
 	},
 }
 

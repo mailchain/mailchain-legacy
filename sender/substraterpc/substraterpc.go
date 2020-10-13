@@ -1,7 +1,7 @@
 package substraterpc
 
 import (
-	gsrpc "github.com/mailchain/go-substrate-rpc-client"
+	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
 )
 
 func New(address string) (*SubstrateRPC, error) {

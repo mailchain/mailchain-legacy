@@ -9,7 +9,7 @@ require (
 	github.com/andreburgaud/crypt2go v0.11.0
 	github.com/aws/aws-sdk-go v1.34.6
 	github.com/cenkalti/backoff v2.2.1+incompatible
-
+	github.com/centrifuge/go-substrate-rpc-client v2.0.0-alpha.5+incompatible
 	github.com/dgraph-io/badger/v2 v2.0.3
 	github.com/ethereum/go-ethereum v1.9.19
 	github.com/golang/mock v1.4.4
@@ -21,12 +21,13 @@ require (
 	github.com/ipfs/go-cid v0.0.6
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.7.0
-	github.com/mailchain/go-substrate-rpc-client v1.1.1-0.20200817221053-ff085ba46ae9
+	github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5+incompatible // indirect
 	github.com/manifoldco/promptui v0.7.0
 	github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mr-tron/base58 v1.2.0
 	github.com/multiformats/go-multihash v0.0.14
+	github.com/pierrec/xxHash v0.1.5 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.7.0
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
@@ -42,3 +43,5 @@ require (
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
 	gopkg.in/resty.v1 v1.12.0
 )
+
+replace github.com/centrifuge/go-substrate-rpc-client v2.0.0-alpha.5+incompatible => github.com/mailchain/go-substrate-rpc-client v2.0.0-RC6-mc0.1+incompatible

@@ -12,6 +12,7 @@ import (
 
 func substrateRPCSender(s values.Store, network string) *SubstrateRPC {
 	var defaultAddress = map[string]string{
+		substrate.EdgewareLocal:     "ws://localhost:9944",
 		substrate.EdgewareMainnet:   "ws://mainnet1.edgewa.re:9944",
 		substrate.EdgewareBeresheet: "ws://beresheet1.edgewa.re:9944",
 	}

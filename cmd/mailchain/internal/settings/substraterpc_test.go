@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/centrifuge/go-substrate-rpc-client/types"
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/go-substrate-rpc-client/types"
 	"github.com/mailchain/mailchain/cmd/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/internal/settings/values/valuestest"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"

@@ -20,9 +20,12 @@ const (
 
 	// EdgewareBeresheet network name.
 	EdgewareBeresheet = "edgeware-beresheet"
+
+	// EdgewareLocal network name.
+	EdgewareLocal = "edgeware-local"
 )
 
 // Networks supported by substrate package.
 func Networks() []string {
-	return []string{EdgewareMainnet, EdgewareBeresheet}
+	return []string{EdgewareMainnet, EdgewareBeresheet, EdgewareLocal}
 }

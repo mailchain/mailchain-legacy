@@ -1,6 +1,6 @@
 package substraterpc
 
-import gsrpc "github.com/mailchain/go-substrate-rpc-client"
+import gsrpc "github.com/centrifuge/go-substrate-rpc-client"
 
 func (s SubstrateRPC) Connect() error {
 	if s.client != nil {

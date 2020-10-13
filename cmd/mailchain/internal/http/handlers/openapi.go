@@ -422,7 +422,7 @@ func spec() string {
       "get": {
         "description": "Get all networks for each protocol that is enabled.",
         "tags": [
-          "protocols"
+          "Protocols"
         ],
         "summary": "Get protocols and the networks.",
         "operationId": "GetProtocols",
@@ -842,6 +842,14 @@ func spec() string {
         "name": {
           "type": "string",
           "x-go-name": "Name"
+        },
+        "nameservice-address-enabled": {
+          "type": "boolean",
+          "x-go-name": "NameServiceAddressEnabled"
+        },
+        "nameservice-domain-enabled": {
+          "type": "boolean",
+          "x-go-name": "NameServiceDomainEnabled"
         }
       },
       "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"

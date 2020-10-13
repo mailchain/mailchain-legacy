@@ -11,19 +11,29 @@ To compile and run the package locally, you need to run the following command in
 
 ### Examples
 
-**To `serve` your development version**
+#### Add account
 
-1. Navigate into the directory of the repository
-1. Run: `go run cmd/mailchain/main.go serve`
-
-**To `add account` to your development version**
+To `add account` to your development version
 
 1. Navigate into the directory of the repository
 2. Run: `go run cmd/mailchain/main.go account add --protocol=ethereum --key-type="secp256k1" --private-key=YOUR_PRIVATE_KEY`
 
-**To run substrate**
+#### Serve
 
-1. Run: `docker-compose -f docker-compose.substrate.yml up --build`
+To `serve` your development version
+
+1. Navigate into the directory of the repository
+1. Run: `go run cmd/mailchain/main.go serve`
+
+### To run substrate
+
+Mailchain requires contracts module installed to run. Edgeware has this module installed by default. Mailchain runs against mainnet, beresheet and local networks:
+
+1. Run the command corresponding to the network you want to send message on `make edgeware-mainnet`, `make edgeware-beresheet`, or `make edgeware-local`. *Note: pull lastest version, if there has been a release it will ask you to continue with new image. Confirm with "y"*
+2. [Add keys](#add-account) and [start Mailchain client](#serve).
+3. Set protocol to `substrate` and network to the desired option in [Mailchain settings](https://inbox.mailchain.xyz/#/settings).
+4. Open [Mailchain inbox](https://inbox.mailchain.xyz/).
+5. Send from an SR25519 address to any SR25519 address.
 
 ### Inbox vs Inbox Staging
 

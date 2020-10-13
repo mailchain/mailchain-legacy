@@ -2,12 +2,12 @@ version: "3.7"
 
 services:
     database:
-        image: postgres
+        image: postgres:13.0
         environment:
             - POSTGRES_USER=mailchain
             - POSTGRES_PASSWORD=mailchain
         ports:
-            - 5432:5432
+            - "5432:5432"
         volumes:
             - db_data:/var/lib/postgresql/data
     indexer-migration:
@@ -23,23 +23,6 @@ services:
                 "--indexer-postgres-password=indexer",
                 "--envelope-postgres-password=envelope",
                 "--pubkey-postgres-password=pubkey",
-            ]
-        depends_on:
-            - database
-    indexer-substrate-mainnet:
-        image: mailchain/indexer
-        entrypoint:
-            [
-                "/indexer",
-                "substrate",
-                "--start-block=latest",
-                "--network=edgeware-mainnet",
-                "--rpc-address=ws://mainnet1.edgewa.re:9944",
-                "--postgres-host=database",
-                "--envelope-postgres-password=envelope",
-                "--indexer-postgres-password=indexer",
-                "--pubkey-postgres-password=pubkey",
-                "--raw-store-path=./tmp/tx",
             ]
         depends_on:
             - database

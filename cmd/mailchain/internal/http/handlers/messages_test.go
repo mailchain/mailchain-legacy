@@ -40,7 +40,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_GetMessages(t *testing.T) {
+func Test_FetchMessages(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
@@ -245,7 +245,7 @@ func Test_GetMessages(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 			rr := httptest.NewRecorder()
-			handler := http.HandlerFunc(GetMessages(tt.args.inbox, tt.args.cache, tt.args.receivers, tt.args.ks, tt.args.deriveKeyOptions))
+			handler := http.HandlerFunc(FetchMessages(tt.args.inbox, tt.args.cache, tt.args.receivers, tt.args.ks, tt.args.deriveKeyOptions))
 
 			// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
 			// directly and pass in our Request and ResponseRecorder.
@@ -269,6 +269,10 @@ func Test_GetMessages(t *testing.T) {
 
 		})
 	}
+}
+
+func Test_GetMessages(t *testing.T) {
+
 }
 
 func Test_parseGetMessagesRequest(t *testing.T) {

@@ -255,6 +255,14 @@ func TestDatabase_PutMessageRead(t *testing.T) {
 	}
 }
 
+func TestGetMessages(t *testing.T) {
+
+}
+
+func TestPutMessage(t *testing.T) {
+
+}
+
 func TestNew(t *testing.T) {
 	tests := []struct {
 		name    string

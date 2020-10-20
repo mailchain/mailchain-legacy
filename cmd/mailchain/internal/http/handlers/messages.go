@@ -75,23 +75,7 @@ func GetMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks k
 
 		messages := make([]getMessage, 0, len(storedMessages))
 		for _, message := range storedMessages {
-			messages = append(messages, getMessage{
-				Body: string(message.Body),
-				Headers: &getHeaders{
-					To:          message.Headers.To,
-					From:        message.Headers.From,
-					Date:        message.Headers.Date,
-					MessageID:   message.Headers.MessageID,
-					ContentType: message.Headers.ContentType,
-				},
-				Read:                    message.Read,
-				Subject:                 message.Subject,
-				Status:                  message.Status,
-				BlockID:                 message.BlockID,
-				BlockIDEncoding:         message.BlockIDEncoding,
-				TransactionHash:         message.TransactionHash,
-				TransactionHashEncoding: message.TransactionHashEncoding,
-			})
+			messages = append(messages, convertStoreMessageToGetMessage(message))
 		}
 
 		if err := json.NewEncoder(w).Encode(getResponse{Messages: messages}); err != nil {
@@ -139,6 +123,7 @@ func FetchMessages(inbox stores.State, cache stores.Cache, receivers map[string]
 			return
 		}
 
+		messages := make([]getMessage, 0, len(transactions))
 		for _, transactionData := range transactions { //nolint TODO: thats an arbitrary limit
 			env, err := envelope.Unmarshal(transactionData.Data)
 			if err != nil {
@@ -164,8 +149,7 @@ func FetchMessages(inbox stores.State, cache stores.Cache, receivers map[string]
 			}
 
 			readStatus, _ := inbox.GetReadStatus(message.ID)
-
-			if err := inbox.PutMessage(req.Protocol, req.Network, req.Address, stores.Message{
+			mailStore := stores.Message{
 				Body: string(message.Body),
 				Headers: stores.Header{
 					To:          message.Headers.To.String(),
@@ -181,11 +165,20 @@ func FetchMessages(inbox stores.State, cache stores.Cache, receivers map[string]
 				BlockIDEncoding:         encoding.KindHex0XPrefix,
 				TransactionHash:         string(transactionData.Hash),
 				TransactionHashEncoding: encoding.KindHex0XPrefix,
-			}); err != nil {
+			}
+			if err := inbox.PutMessage(req.Protocol, req.Network, req.Address, mailStore); err != nil {
 				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 				return
 			}
+			messages = append(messages, convertStoreMessageToGetMessage(mailStore))
 		}
+
+		if err := json.NewEncoder(w).Encode(getResponse{Messages: messages}); err != nil {
+			errs.JSONWriter(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
 	}
 }
 
@@ -247,6 +240,26 @@ func parseGetMessagesRequest(r *http.Request) (*GetMessagesRequest, error) {
 		Network:      network,
 		Protocol:     protocol,
 	}, nil
+}
+
+func convertStoreMessageToGetMessage(message stores.Message) getMessage {
+	return getMessage{
+		Body: string(message.Body),
+		Headers: &getHeaders{
+			To:          message.Headers.To,
+			From:        message.Headers.From,
+			Date:        message.Headers.Date,
+			MessageID:   message.Headers.MessageID,
+			ContentType: message.Headers.ContentType,
+		},
+		Read:                    message.Read,
+		Subject:                 message.Subject,
+		Status:                  message.Status,
+		BlockID:                 message.BlockID,
+		BlockIDEncoding:         message.BlockIDEncoding,
+		TransactionHash:         message.TransactionHash,
+		TransactionHashEncoding: message.TransactionHashEncoding,
+	}
 }
 
 // GetResponse Holds the response messages

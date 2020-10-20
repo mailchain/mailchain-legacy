@@ -16,7 +16,7 @@ package stores
 
 import "github.com/mailchain/mailchain/internal/mail"
 
-//go:generate mockgen -source=state.go -package=storestest -destination=./storestest/state_mock.go
+//go:generate mockgen -source=state.go -package=statemock -destination=./statemock/state_mock.go
 
 // State stores all the actions that support mailbox functionality
 type State interface {

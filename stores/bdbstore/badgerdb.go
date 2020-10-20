@@ -18,11 +18,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/mailchain/mailchain/stores"
 	"time"
 
-	"github.com/dgraph-io/badger/v2"
 	"github.com/mailchain/mailchain/internal/mail"
+	"github.com/mailchain/mailchain/stores"
+
+	"github.com/dgraph-io/badger/v2"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus" //nolint:depguard
 )

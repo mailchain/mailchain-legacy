@@ -14,7 +14,7 @@ import (
 )
 
 func addENS(router *mux.Router) error {
-	ethMainnet, err := ens.NewLookupService("https://eth-mainnet.alchemyapi.io/jsonrpc/jjeXif1lwcfY_J_fpvbds55mZWuoXkFD")
+	ethMainnet, err := ens.NewLookupService("http://localhost:8545")
 	if err != nil {
 		return err
 	}

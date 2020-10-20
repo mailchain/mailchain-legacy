@@ -163,10 +163,6 @@ keystore:
 mailboxState:
   badgerdb:
     path: "/home/user/.mailchain/.mailbox"
-  leveldb:
-#     cache: 256
-#     handles: 0
-    path: "/home/user/.mailchain/.mailbox"
 # sentstore:
 #   kind: "mailchain"
 #   pinata:

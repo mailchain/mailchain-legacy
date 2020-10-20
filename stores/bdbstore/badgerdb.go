@@ -132,17 +132,17 @@ func (db *Database) GetReadStatus(messageID mail.ID) (bool, error) {
 }
 
 func (db *Database) PutMessage(protocol, network, address string, message stores.Message) error {
-	prefixKey := getMessageKey(protocol, network, address)
+	prefixKey := getMessagePrefixKey(protocol, network, address)
 	mByte, err := json.Marshal(message)
 	if err != nil {
 		return err
 	}
 	return db.db.Update(func(txn *badger.Txn) error {
-		return txn.Set(db.messageKey(prefixKey, message.Headers.MessageID), mByte)
+		return txn.Set(db.messageKey(prefixKey, message.Headers.Date, message.Headers.MessageID), mByte)
 	})
 }
 
-func getMessageKey(protocol, network, address string) string {
+func getMessagePrefixKey(protocol, network, address string) string {
 	return fmt.Sprintf("%s/%s/%s", protocol, network, address)
 }
 
@@ -152,7 +152,7 @@ func (db *Database) GetMessages(protocol, network, address string) ([]stores.Mes
 		err error
 	)
 
-	prefixKey := getMessageKey(protocol, network, address)
+	prefixKey := getMessagePrefixKey(protocol, network, address)
 	var messages []stores.Message
 
 	err = db.db.View(func(txn *badger.Txn) error {
@@ -181,8 +181,8 @@ func (db *Database) GetMessages(protocol, network, address string) ([]stores.Mes
 	return messages, nil
 }
 
-func (db *Database) messageKey(prefixKey string, ID string) []byte {
-	return []byte(fmt.Sprintf("%s.%s", prefixKey, ID))
+func (db *Database) messageKey(prefixKey string, date time.Time, ID string) []byte {
+	return []byte(fmt.Sprintf("%s.%s.%s", prefixKey, date, ID))
 }
 
 func (db *Database) messagePrefix(prefixKey string) []byte {

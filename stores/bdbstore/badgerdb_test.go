@@ -23,8 +23,12 @@ import (
 	"path"
 	"runtime"
 	"testing"
+	"time"
 
 	"github.com/mailchain/mailchain/internal/mail"
+	"github.com/mailchain/mailchain/stores"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type kv struct {
@@ -212,7 +216,7 @@ func TestDatabase_DeleteMessageRead(t *testing.T) {
 }
 
 func TestDatabase_PutMessageRead(t *testing.T) {
-	db, teardown, _ := setupDB(path.Join(getTempDir(), "bdb_test_put_message"))
+	db, teardown, _ := setupDB(path.Join(getTempDir(), "bdb_test_put_message_read"))
 	defer teardown()
 
 	type args struct {
@@ -256,11 +260,198 @@ func TestDatabase_PutMessageRead(t *testing.T) {
 }
 
 func TestGetMessages(t *testing.T) {
+	db, teardown, _ := setupDB(path.Join(getTempDir(), "bdb_test_get_messages"))
+	defer teardown()
 
+	type args struct {
+		protocol string
+		network  string
+		address  string
+		message  stores.Message
+	}
+
+	tests := []struct {
+		name            string
+		args            []args
+		expectedIDOrder []string
+		queryProtocol   string
+		queryNetwork    string
+		queryAddress    string
+		wantErr         bool
+	}{
+		{
+			name: "successfully get messages",
+			args: []args{
+				{
+					protocol: "test",
+					network:  "test",
+					address:  "test",
+					message: stores.Message{
+						Headers: stores.Header{
+							Date:        time.Now().Add(-1 * time.Hour),
+							From:        "",
+							To:          "",
+							ReplyTo:     "",
+							MessageID:   "0xc0302c62ced73abdf1d034553fe059bb596f2ef2",
+							ContentType: "",
+						},
+						Body: "test1234",
+					},
+				},
+				{
+					protocol: "test",
+					network:  "test",
+					address:  "test",
+					message: stores.Message{
+						Headers: stores.Header{
+							Date:        time.Now().Add(1 * time.Hour),
+							From:        "",
+							To:          "",
+							ReplyTo:     "",
+							MessageID:   "0x92d8f10248c6a3953cc3692a894655ad05d61efb",
+							ContentType: "",
+						},
+						Body: "test1234",
+					},
+				},
+				{
+					protocol: "test",
+					network:  "test",
+					address:  "test",
+					message: stores.Message{
+						Headers: stores.Header{
+							Date:        time.Now(),
+							From:        "",
+							To:          "",
+							ReplyTo:     "",
+							MessageID:   "0x5602ea95540bee46d03ba335eed6f49d117eab95c",
+							ContentType: "",
+						},
+						Body: "test1234",
+					},
+				},
+				{
+					protocol: "test",
+					network:  "test",
+					address:  "test",
+					message: stores.Message{
+						Headers: stores.Header{
+							Date:        time.Now().Add(-2 * time.Hour),
+							From:        "",
+							To:          "",
+							ReplyTo:     "",
+							MessageID:   "0xd2c574543459bf6704174fa869df4974220b71f673",
+							ContentType: "",
+						},
+						Body: "test1234",
+					},
+				},
+				{
+					protocol: "test1",
+					network:  "test2",
+					address:  "test",
+					message: stores.Message{
+						Headers: stores.Header{
+							Date:        time.Now().Add(-2 * time.Hour),
+							From:        "",
+							To:          "",
+							ReplyTo:     "",
+							MessageID:   "0x134574543459bf6704174fa869df4974220b123",
+							ContentType: "",
+						},
+						Body: "test1234",
+					},
+				},
+			},
+			queryAddress:  "test",
+			queryNetwork:  "test",
+			queryProtocol: "test",
+			// Higher to lower
+			expectedIDOrder: []string{"0x92d8f10248c6a3953cc3692a894655ad05d61efb", "0x5602ea95540bee46d03ba335eed6f49d117eab95c", "0xc0302c62ced73abdf1d034553fe059bb596f2ef2", "0xd2c574543459bf6704174fa869df4974220b71f673"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for _, args := range tt.args {
+				if err := db.PutMessage(args.protocol, args.network, args.address, args.message); err != nil {
+					t.Errorf("PutMessage() returned an error %v", err)
+				}
+			}
+
+			messages, err := db.GetMessages(tt.queryProtocol, tt.queryNetwork, tt.queryAddress)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetMessages() err = %v, want err %v", err, tt.wantErr)
+				return
+			}
+
+			var IDOrder []string
+			for _, message := range messages {
+				IDOrder = append(IDOrder, message.Headers.MessageID)
+			}
+
+			assert.Equal(t, tt.expectedIDOrder, IDOrder, "expected ID order %v, but got %v", tt.expectedIDOrder, IDOrder)
+		})
+	}
 }
 
 func TestPutMessage(t *testing.T) {
+	db, teardown, _ := setupDB(path.Join(getTempDir(), "bdb_test_put_message"))
+	defer teardown()
 
+	type args struct {
+		protocol string
+		network  string
+		address  string
+		message  stores.Message
+	}
+
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "successful insert 1",
+			args: args{
+				protocol: "test",
+				network:  "test",
+				address:  "test",
+				message: stores.Message{Headers: stores.Header{
+					Date:        time.Now(),
+					From:        "",
+					To:          "",
+					ReplyTo:     "",
+					MessageID:   "0xc0302c62ced73abdf1d034553fe059bb596f2ef2",
+					ContentType: "",
+				},
+					Body: "test1234",
+				},
+			},
+		},
+		{
+			name: "successful insert 1",
+			args: args{
+				protocol: "test",
+				network:  "test",
+				address:  "test",
+				message: stores.Message{Headers: stores.Header{
+					Date:      time.Now(),
+					MessageID: "0x92d8f10248c6a3953cc3692a894655ad05d61efb",
+				},
+					Body: "test1234",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := db.PutMessage(tt.args.protocol, tt.args.network, tt.args.address, tt.args.message); (err != nil) != tt.wantErr {
+				t.Errorf("PutMessage() err = %v, want err %v", err, tt.wantErr)
+			}
+		})
+	}
 }
 
 func TestNew(t *testing.T) {

@@ -139,7 +139,8 @@ func (db *Database) PutMessage(protocol, network, address string, message stores
 		return err
 	}
 	return db.db.Update(func(txn *badger.Txn) error {
-		return txn.Set(db.messageKey(prefixKey, message.Headers.Date, message.Headers.MessageID), mByte)
+		key := db.messageKey(prefixKey, message.Headers.Date, message.Headers.MessageID)
+		return txn.Set(key, mByte)
 	})
 }
 
@@ -157,13 +158,12 @@ func (db *Database) GetMessages(protocol, network, address string) ([]stores.Mes
 	var messages []stores.Message
 
 	err = db.db.View(func(txn *badger.Txn) error {
-		iterator := txn.NewKeyIterator(db.messagePrefix(prefixKey), badger.DefaultIteratorOptions)
+		opt := badger.DefaultIteratorOptions
+		opt.Prefix = []byte(prefixKey)
+		iterator := txn.NewIterator(opt)
 		defer iterator.Close()
-		for {
+		for iterator.Rewind(); iterator.Valid(); iterator.Next() {
 			item := iterator.Item()
-			if item == nil {
-				break
-			}
 
 			val, err = item.ValueCopy(nil)
 			if err != nil {
@@ -178,12 +178,18 @@ func (db *Database) GetMessages(protocol, network, address string) ([]stores.Mes
 		}
 		return nil
 	})
-
+	reverseMessagesOrder(messages)
 	return messages, nil
 }
 
+func reverseMessagesOrder(messages []stores.Message) {
+	for i, j := 0, len(messages)-1; i < j; i, j = i+1, j-1 {
+		messages[i], messages[j] = messages[j], messages[i]
+	}
+}
+
 func (db *Database) messageKey(prefixKey string, date time.Time, ID string) []byte {
-	return []byte(fmt.Sprintf("%s.%s.%s", prefixKey, date, ID))
+	return []byte(fmt.Sprintf("%s/%s/%s", prefixKey, date, ID))
 }
 
 func (db *Database) messagePrefix(prefixKey string) []byte {

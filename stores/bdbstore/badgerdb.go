@@ -192,10 +192,6 @@ func (db *Database) messageKey(prefixKey string, date time.Time, ID string) []by
 	return []byte(fmt.Sprintf("%s/%s/%s", prefixKey, date, ID))
 }
 
-func (db *Database) messagePrefix(prefixKey string) []byte {
-	return []byte(fmt.Sprintf("%s", prefixKey))
-}
-
 func (db *Database) messageReadKey(messageID mail.ID) []byte {
 	return []byte(fmt.Sprintf("message.%s.read", messageID.HexString()))
 }

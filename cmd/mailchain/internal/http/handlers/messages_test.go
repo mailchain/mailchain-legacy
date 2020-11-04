@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/crypto/cipher/ciphertest"
@@ -242,8 +243,9 @@ func Test_FetchMessages(t *testing.T) {
 			http.StatusOK,
 		},
 	}
+
+	testName := t.Name()
 	for _, tt := range tests {
-		testName := t.Name()
 		t.Run(tt.name, func(t *testing.T) {
 			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 			rr := httptest.NewRecorder()
@@ -273,8 +275,182 @@ func Test_FetchMessages(t *testing.T) {
 	}
 }
 
-func Test_GetMessagesX(t *testing.T) {
+func Test_GetMessages(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	type args struct {
+		inbox     stores.State
+		receivers map[string]mailbox.Receiver
+		ks        keystore.Store
+	}
+	tests := []struct {
+		name       string
+		args       args
+		req        *http.Request
+		wantStatus int
+	}{
+		{
+			"200-message",
+			args{
+				inbox: func() stores.State {
+					stateMock := statemock.NewMockState(mockCtrl)
+					timeValue, err := time.Parse(time.RFC3339, "2019-03-12T20:23:13Z")
+					if err != nil {
+						t.Fatal(err)
+					}
+					stateMock.EXPECT().GetMessages("ethereum", "mainnet", "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761").Times(1).Return([]stores.Message{
+						{
+							Headers: stores.Header{
+								Date:        timeValue,
+								From:        "\u003c5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum\u003e",
+								To:          "\u003c4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum\u003e",
+								MessageID:   "47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471",
+								ContentType: "text/plain; charset=\"UTF-8\"",
+							},
+							Body:                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur maximus metus ante, sit amet ullamcorper dui hendrerit ac. Sed vestibulum dui lectus, quis eleifend urna mollis eu. Integer dictum metus ut sem rutrum aliquet. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus eget euismod nibh. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer bibendum venenatis sem sed auctor. Ut aliquam eu diam nec fermentum. Sed turpis nulla, viverra ac efficitur ac, fermentum vel sapien. Curabitur vehicula risus id odio congue tempor. Mauris tincidunt feugiat risus, eget auctor magna blandit sit amet. Curabitur consectetur, dolor eu imperdiet varius, dui neque mattis neque, vel fringilla magna tortor ut risus. Cras cursus sem et nisl interdum molestie. Aliquam auctor sodales blandit.\r\n",
+							Subject:                 "Hello world",
+							Status:                  "ok",
+							StatusCode:              "",
+							Read:                    false,
+							BlockID:                 "YS1ibG9jay1udW1iZXI=",
+							BlockIDEncoding:         "hex/0x-prefix",
+							TransactionHash:         "YS1oYXNo",
+							TransactionHashEncoding: "hex/0x-prefix",
+						},
+					}, nil)
+					return stateMock
+				}(),
+				receivers: func() map[string]mailbox.Receiver {
+					return map[string]mailbox.Receiver{
+						"ethereum/mainnet": func() mailbox.Receiver {
+							return mailboxtest.NewMockReceiver(mockCtrl)
+						}(),
+					}
+				}(),
+				ks: func() keystore.Store {
+					store := keystoretest.NewMockStore(mockCtrl)
+					store.EXPECT().HasAddress([]byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}, "ethereum", "mainnet").Return(true).Times(1)
+					return store
+				}(),
+			},
+			httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761&network=mainnet&protocol=ethereum", nil),
+			http.StatusOK,
+		},
+		{
+			"200-zero-messages",
+			args{
+				inbox: func() stores.State {
+					stateMock := statemock.NewMockState(mockCtrl)
+					stateMock.EXPECT().GetMessages("ethereum", "mainnet", "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761").Times(1)
+					return stateMock
+				}(),
+				receivers: func() map[string]mailbox.Receiver {
+					return map[string]mailbox.Receiver{
+						"ethereum/mainnet": func() mailbox.Receiver {
+							return mailboxtest.NewMockReceiver(mockCtrl)
+						}(),
+					}
+				}(),
+				ks: func() keystore.Store {
+					store := keystoretest.NewMockStore(mockCtrl)
+					store.EXPECT().HasAddress([]byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}, "ethereum", "mainnet").Return(true).Times(1)
+					return store
+				}(),
+			},
+			httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761&network=mainnet&protocol=ethereum", nil),
+			http.StatusOK,
+		},
+		{
+			"406-no-private-key-found",
+			args{
+				receivers: map[string]mailbox.Receiver{
+					"ethereum/mainnet": etherscan.APIClient{},
+				},
+				ks: func() keystore.Store {
+					store := keystoretest.NewMockStore(mockCtrl)
+					store.EXPECT().HasAddress([]byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}, "ethereum", "mainnet").Return(false).Times(1)
+					return store
+				}(),
+			},
+			httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761&network=mainnet&protocol=ethereum", nil).WithContext(context.Background()),
+			http.StatusNotAcceptable,
+		},
+		{
+			"422-empty-address",
+			args{},
+			httptest.NewRequest("GET", "/?address=&network=mainnet&protocol=ethereum", nil),
+			http.StatusUnprocessableEntity,
+		},
+		{
+			"422-receiver-not-supported",
+			args{},
+			httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761&network=mainnet&protocol=ethereum", nil),
+			http.StatusUnprocessableEntity,
+		},
+		{
+			"422-receiver-no-configured",
+			args{
+				receivers: map[string]mailbox.Receiver{
+					"ethereum/mainnet": nil,
+				},
+			},
+			httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761&network=mainnet&protocol=ethereum", nil),
+			http.StatusUnprocessableEntity,
+		},
+		{
+			"500-receiver-internal-error",
+			args{
+				inbox: func() stores.State {
+					stateMock := statemock.NewMockState(mockCtrl)
+					stateMock.EXPECT().GetMessages("ethereum", "mainnet", "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761").Times(1).Return(nil, errors.New("internal error"))
+					return stateMock
+				}(),
+				receivers: func() map[string]mailbox.Receiver {
+					return map[string]mailbox.Receiver{
+						"ethereum/mainnet": func() mailbox.Receiver {
+							return mailboxtest.NewMockReceiver(mockCtrl)
+						}(),
+					}
+				}(),
+				ks: func() keystore.Store {
+					store := keystoretest.NewMockStore(mockCtrl)
+					store.EXPECT().HasAddress([]byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61}, "ethereum", "mainnet").Return(true).Times(1)
+					return store
+				}(),
+			},
+			httptest.NewRequest("GET", "/?address=0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761&network=mainnet&protocol=ethereum", nil),
+			http.StatusInternalServerError,
+		},
+	}
 
+	testName := t.Name()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+			rr := httptest.NewRecorder()
+			handler := http.HandlerFunc(GetMessages(tt.args.inbox, tt.args.receivers, tt.args.ks))
+
+			// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
+			// directly and pass in our Request and ResponseRecorder.
+			handler.ServeHTTP(rr, tt.req)
+
+			// Check the status code is what we expect.
+			if !assert.Equal(t, tt.wantStatus, rr.Code) {
+				t.Errorf("handler returned wrong status code: got %v want %v",
+					rr.Code, tt.wantStatus)
+			}
+
+			goldenResponse, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s/response-%s.json", testName, tt.name))
+			if err != nil {
+				assert.FailNow(t, err.Error())
+			}
+
+			if !assert.JSONEq(t, string(goldenResponse), rr.Body.String()) {
+				t.Errorf("handler returned unexpected body: got %v want %v",
+					rr.Body.String(), goldenResponse)
+			}
+		})
+	}
 }
 
 func Test_parseGetMessagesRequest(t *testing.T) {

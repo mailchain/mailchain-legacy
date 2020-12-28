@@ -74,6 +74,10 @@ func (c APIClient) getTransactionsByAddress(network string, address []byte) (*tx
 		return nil, errors.WithStack(err)
 	}
 
+	if txListResponse.StatusCode() >= 500 {
+		return nil, errors.Errorf("Received server side error from URL: %s. statusCode %d, body:%s", config.url, txListResponse.StatusCode(), string(txListResponse.Body()))
+	}
+
 	txResult := &txList{}
 	if err := json.Unmarshal(txListResponse.Body(), txResult); err != nil {
 		return nil, errors.WithStack(err)

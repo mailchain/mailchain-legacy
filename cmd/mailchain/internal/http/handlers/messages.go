@@ -122,12 +122,14 @@ func FetchMessages(inbox stores.State, cache stores.Cache, receivers map[string]
 			return
 		}
 
-		messages := make([]getMessage, 0, len(transactions))
-		for _, transactionData := range transactions { //nolint TODO: thats an arbitrary limit
-			env, err := envelope.Unmarshal(transactionData.Data)
+		messages := make([]getMessage, 0)
+		for i := range transactions { //nolint TODO: thats an arbitrary limit
+			env, err := envelope.Unmarshal(transactions[i].Data)
 			if err != nil {
-				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to unmarshal envelope"))
-				return
+				messages = append(messages, getMessage{
+					Status: errors.WithMessagef(err, "failed to unmarshal envelope, %s", encoding.EncodeHexZeroX(transactions[i].Data)).Error(),
+				})
+				continue
 			}
 
 			decrypterKind, err := env.DecrypterKind()
@@ -142,7 +144,7 @@ func FetchMessages(inbox stores.State, cache stores.Cache, receivers map[string]
 				return
 			}
 
-			message, err := mailbox.ReadMessage(transactionData.Data, decrypter, cache)
+			message, err := mailbox.ReadMessage(transactions[i].Data, decrypter, cache)
 			if err != nil {
 				continue
 			}
@@ -160,9 +162,9 @@ func FetchMessages(inbox stores.State, cache stores.Cache, receivers map[string]
 				Read:                    readStatus,
 				Subject:                 message.Headers.Subject,
 				Status:                  "ok",
-				BlockID:                 string(transactionData.BlockID),
+				BlockID:                 string(transactions[i].BlockID),
 				BlockIDEncoding:         encoding.KindHex0XPrefix,
-				TransactionHash:         string(transactionData.Hash),
+				TransactionHash:         string(transactions[i].Hash),
 				TransactionHashEncoding: encoding.KindHex0XPrefix,
 			}
 			if err := inbox.PutMessage(req.Protocol, req.Network, req.Address, mailStore); err != nil {

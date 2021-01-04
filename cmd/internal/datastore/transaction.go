@@ -8,14 +8,15 @@ import (
 //go:generate mockgen -source=transaction.go -package=datastoretest -destination=./datastoretest/transaction_mock.go
 
 type Transaction struct {
-	From      []byte
-	To        []byte
-	Data      []byte
-	BlockHash []byte
-	Hash      []byte
-	Value     big.Int
-	GasUsed   big.Int
-	GasPrice  big.Int
+	From        []byte
+	To          []byte
+	Data        []byte
+	BlockNumber int64
+	BlockHash   []byte
+	Hash        []byte
+	Value       big.Int
+	GasUsed     big.Int
+	GasPrice    big.Int
 }
 
 type TransactionStore interface {

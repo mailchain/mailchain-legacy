@@ -43,33 +43,6 @@ func (s MailboxState) Output() output.Element {
 	}
 }
 
-func mailboxStateLevelDB(s values.Store) MailboxStateLevelDB {
-	return MailboxStateLevelDB{
-		Path:    values.NewDefaultString(defaults.MailboxStatePath(), s, "mailboxState.leveldb.path"),
-		Handles: values.NewDefaultInt(0, s, "mailboxState.leveldb.handles"),
-		Cache:   values.NewDefaultInt(256, s, "mailboxState.leveldb.cache"),
-	}
-}
-
-// MailboxStateLevelDB settings
-type MailboxStateLevelDB struct {
-	Path    values.String
-	Handles values.Int
-	Cache   values.Int
-}
-
-// Output configuration as an `output.Element` for use in exporting configuration.
-func (s MailboxStateLevelDB) Output() output.Element {
-	return output.Element{
-		FullName: "mailboxState.leveldb",
-		Attributes: []output.Attribute{
-			s.Path.Attribute(),
-			s.Handles.Attribute(),
-			s.Cache.Attribute(),
-		},
-	}
-}
-
 func mailboxStateBadgerDB(s values.Store) MailBoxStateBadgerDB {
 	return MailBoxStateBadgerDB{
 		Path: values.NewDefaultString(defaults.MailboxStatePath(), s, "mailboxState.badgerdb.path"),

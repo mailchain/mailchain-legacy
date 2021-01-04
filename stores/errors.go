@@ -18,18 +18,16 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	ldberr "github.com/syndtr/goleveldb/leveldb/errors"
 )
 
 var (
 	errNotFound = errors.New("not found")
 )
 
-// IsNotFoundError checks if the error supplied is an not found error. It checks against known errors from supported stores, S3 and leveldb.
+// IsNotFoundError checks if the error supplied is an not found error. It checks against known errors from supported stores, S3, etc.
 func IsNotFoundError(err error) bool {
 	switch fmt.Sprintf("%v", errors.Cause(err)) {
-	case fmt.Sprintf("%v", errors.Cause(errNotFound)),
-		fmt.Sprintf("%v", errors.Cause(ldberr.ErrNotFound)):
+	case fmt.Sprintf("%v", errors.Cause(errNotFound)):
 		return true
 	default:
 		return false

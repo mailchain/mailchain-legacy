@@ -18,7 +18,6 @@ import (
 	"testing"
 
 	"github.com/pkg/errors"
-	ldberr "github.com/syndtr/goleveldb/leveldb/errors"
 )
 
 func TestIsNotFoundError(t *testing.T) {
@@ -34,13 +33,6 @@ func TestIsNotFoundError(t *testing.T) {
 			"ErrNotFound-not-found",
 			args{
 				errors.Errorf("not found"),
-			},
-			true,
-		},
-		{
-			"ErrNotFound-leveldb-with-stack",
-			args{
-				errors.WithStack(ldberr.ErrNotFound),
 			},
 			true,
 		},

@@ -26,6 +26,7 @@ func MigrateEnvelope(db *sql.DB, up bool) (int, error) {
 						tx_from            BYTEA NOT NULL,
 						tx_to              BYTEA NOT NULL,
 						tx_data            BYTEA NOT NULL,
+						tx_block_no        BIGINT NOT NULL,
 						tx_block_hash      BYTEA NOT NULL,    
 						tx_value           BYTEA NOT NULL,
 						tx_gas_used        BYTEA NOT NULL,

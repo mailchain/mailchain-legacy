@@ -2,6 +2,7 @@ package stores
 
 import "time"
 
+//TODO: delete
 type Header struct {
 	// When the message was created, this can be different to the transaction data of the message.
 	// example: 12 Mar 19 20:23 UTC

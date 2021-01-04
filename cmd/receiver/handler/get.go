@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/mailchain/mailchain/cmd/internal/datastore"
@@ -32,11 +33,12 @@ func HandleToRequest(ts datastore.TransactionStore) func(w http.ResponseWriter, 
 		for x := range txs {
 			envelopes = append(envelopes,
 				Envelope{
-					From:      encoding.EncodeHexZeroX(txs[x].From),
-					To:        encoding.EncodeHexZeroX(txs[x].To),
-					BlockHash: encoding.EncodeHexZeroX(txs[x].BlockHash),
-					Hash:      encoding.EncodeHexZeroX(txs[x].Hash),
-					Data:      encoding.EncodeHexZeroX(txs[x].Data),
+					From:        encoding.EncodeHexZeroX(txs[x].From),
+					To:          encoding.EncodeHexZeroX(txs[x].To),
+					BlockHash:   encoding.EncodeHexZeroX(txs[x].BlockHash),
+					BlockNumber: fmt.Sprint(txs[x].BlockNumber),
+					Hash:        encoding.EncodeHexZeroX(txs[x].Hash),
+					Data:        encoding.EncodeHexZeroX(txs[x].Data),
 
 					Value:    txs[x].Value.String(),
 					GasPrice: txs[x].GasPrice.String(),
@@ -122,11 +124,12 @@ type getEnvelopesResponse struct {
 }
 
 type Envelope struct {
-	From      string `json:"from"`
-	To        string `json:"to"`
-	Data      string `json:"data"`
-	BlockHash string `json:"block-hash"`
-	Hash      string `json:"hash"`
+	From        string `json:"from"`
+	To          string `json:"to"`
+	Data        string `json:"data"`
+	BlockHash   string `json:"block-hash"`
+	BlockNumber string `json:"block-number"`
+	Hash        string `json:"hash"`
 
 	Value    string `json:"value"`
 	GasUsed  string `json:"gas-used"`

@@ -14,7 +14,9 @@
 
 package stores
 
-import "github.com/mailchain/mailchain/internal/mail"
+import (
+	"github.com/mailchain/mailchain/internal/mail"
+)
 
 //go:generate mockgen -source=state.go -package=statemock -destination=./statemock/state_mock.go
 
@@ -24,6 +26,6 @@ type State interface {
 	PutMessageRead(messageID mail.ID) error
 	GetReadStatus(messageID mail.ID) (bool, error)
 
-	PutMessage(protocol, network, address string, message Message) error
-	GetMessages(protocol, network, address string) ([]Message, error)
+	PutTransaction(protocol, network string, address []byte, tx Transaction) error
+	GetTransactions(protocol, network string, address []byte) ([]Transaction, error)
 }

@@ -32,7 +32,7 @@ func Test_mailboxState(t *testing.T) {
 					return m
 				}(),
 			},
-			"leveldb",
+			"badgerdb",
 		},
 	}
 	for _, tt := range tests {
@@ -48,7 +48,6 @@ func TestMailboxState_Produce(t *testing.T) {
 	defer mockCtrl.Finish()
 	type fields struct {
 		Kind                 values.String
-		mailboxStateLevelDB  MailboxStateLevelDB
 		mailboxStateBadgerDB MailBoxStateBadgerDB
 	}
 	tests := []struct {
@@ -65,7 +64,6 @@ func TestMailboxState_Produce(t *testing.T) {
 					m.EXPECT().Get().Return("badgerdb")
 					return m
 				}(),
-				MailboxStateLevelDB{},
 				mailboxStateBadgerDB(
 					func() values.Store {
 						m := valuestest.NewMockStore(mockCtrl)
@@ -87,12 +85,6 @@ func TestMailboxState_Produce(t *testing.T) {
 					m.EXPECT().Get().Return("invalid").Times(2)
 					return m
 				}(),
-				mailboxStateLevelDB(
-					func() values.Store {
-						m := valuestest.NewMockStore(mockCtrl)
-						return m
-					}(),
-				),
 				MailBoxStateBadgerDB{},
 			},
 			nil,

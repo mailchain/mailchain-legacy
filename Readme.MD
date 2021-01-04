@@ -53,6 +53,10 @@ minutes to review our [code of conduct](CODE_OF_CONDUCT.md).
 
 See [development guide](DEVELOPMENT_GUIDE.md) for information on getting started as a developer.
 
+## Security Review Status: pre-audit
+
+The code in this repository has not been audited.
+
 ## License
 
 Copyright 2019, Finobo. All rights reserved.

@@ -25,6 +25,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
+	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus" //nolint:depguard
@@ -35,13 +36,13 @@ import (
 )
 
 // CreateRouter configure a router with all api resources.
-func CreateRouter(s *settings.Root, cmd *cobra.Command) (http.Handler, error) {
+func CreateRouter(s *settings.Root, mailbox stores.State, cmd *cobra.Command) (http.Handler, error) {
 	r := mux.NewRouter()
 	api := r.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/spec.json", handlers.GetSpec()).Methods("GET")
 	api.HandleFunc("/docs", handlers.GetDocs()).Methods("GET")
 
-	config, err := produceConfig(s)
+	config, err := produceConfig(s, mailbox)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not config http server")
 	}

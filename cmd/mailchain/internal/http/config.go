@@ -24,11 +24,7 @@ type config struct {
 }
 
 //nolint: gocyclo
-func produceConfig(s *settings.Root) (*config, error) { //nolint: funlen
-	mailboxStore, err := s.MailboxState.Produce()
-	if err != nil {
-		return nil, errors.WithMessage(err, "Could not config mailbox store")
-	}
+func produceConfig(s *settings.Root, inbox stores.State) (*config, error) { //nolint: funlen
 	keystorage, err := s.Keystore.Produce()
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not create `keystore`")
@@ -99,7 +95,7 @@ func produceConfig(s *settings.Root) (*config, error) { //nolint: funlen
 	return &config{
 		addressResolvers:  nsAddressResolvers,
 		domainResolvers:   nsDomainResolvers,
-		mailboxStateStore: mailboxStore,
+		mailboxStateStore: inbox,
 		cache:             cacheStore,
 		keystore:          keystorage,
 		publicKeyFinders:  publicKeyFinders,

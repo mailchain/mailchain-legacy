@@ -62,3 +62,17 @@ func (mr *MockReceiverMockRecorder) Receive(ctx, protocol, network, address inte
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Receive", reflect.TypeOf((*MockReceiver)(nil).Receive), ctx, protocol, network, address)
 }
+
+// Kind mocks base method
+func (m *MockReceiver) Kind() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Kind")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// Kind indicates an expected call of Kind
+func (mr *MockReceiverMockRecorder) Kind() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Kind", reflect.TypeOf((*MockReceiver)(nil).Kind))
+}

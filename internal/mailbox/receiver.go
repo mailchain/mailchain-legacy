@@ -24,6 +24,7 @@ import (
 // Receiver gets encrypted data from blockchain.
 type Receiver interface {
 	Receive(ctx context.Context, protocol, network string, address []byte) ([]stores.Transaction, error)
+	Kind() string
 }
 
 // type ReceiverOpts interface{}

@@ -17,8 +17,10 @@ package commands
 import (
 	"fmt"
 
+	"github.com/mailchain/mailchain/cmd/mailchain/internal/fetching"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/http"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" //nolint: depguard
 	"github.com/ttacon/chalk"
@@ -31,7 +33,17 @@ func serveCmd() (*cobra.Command, error) {
 		// PersistentPreRunE: preRun,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			config := settings.FromStore(viper.GetViper())
-			router, err := http.CreateRouter(config, cmd)
+
+			mailboxStore, err := config.MailboxState.Produce()
+			if err != nil {
+				return errors.WithMessage(err, "Could not config mailbox store")
+			}
+
+			if err := fetching.Do(config, mailboxStore); err != nil {
+				return err
+			}
+
+			router, err := http.CreateRouter(config, mailboxStore, cmd)
 			if err != nil {
 				return err
 			}

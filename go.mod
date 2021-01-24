@@ -9,6 +9,7 @@ require (
 	github.com/andreburgaud/crypt2go v0.11.0
 	github.com/aws/aws-sdk-go v1.34.6
 	github.com/cenkalti/backoff v2.2.1+incompatible
+	github.com/cenkalti/backoff/v4 v4.1.0
 	github.com/centrifuge/go-substrate-rpc-client v2.0.0-alpha.5+incompatible
 	github.com/dgraph-io/badger/v2 v2.0.3
 	github.com/dgraph-io/ristretto v0.0.2 // indirect

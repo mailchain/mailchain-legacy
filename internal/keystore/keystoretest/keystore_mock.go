@@ -110,18 +110,18 @@ func (mr *MockStoreMockRecorder) HasAddress(searchAddress, protocol, network int
 }
 
 // GetAddresses mocks base method
-func (m *MockStore) GetAddresses(protocol, address string) ([][]byte, error) {
+func (m *MockStore) GetAddresses(protocol, network string) ([][]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAddresses", protocol, address)
+	ret := m.ctrl.Call(m, "GetAddresses", protocol, network)
 	ret0, _ := ret[0].([][]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAddresses indicates an expected call of GetAddresses
-func (mr *MockStoreMockRecorder) GetAddresses(protocol, address interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) GetAddresses(protocol, network interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddresses", reflect.TypeOf((*MockStore)(nil).GetAddresses), protocol, address)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddresses", reflect.TypeOf((*MockStore)(nil).GetAddresses), protocol, network)
 }
 
 // GetPublicKeys mocks base method

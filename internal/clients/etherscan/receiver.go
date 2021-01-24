@@ -71,3 +71,11 @@ func (c APIClient) Receive(ctx context.Context, protocol, network string, addres
 
 	return res, nil
 }
+
+func (c APIClient) Kind() string {
+	if c.key == "" {
+		return "etherscan-no-auth"
+	}
+
+	return "etherscan"
+}

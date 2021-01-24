@@ -111,6 +111,10 @@ func (c Receiver) Receive(ctx context.Context, protocol, network string, address
 	return res, nil
 }
 
+func (c Receiver) Kind() string {
+	return "mailchain"
+}
+
 type envelopeList struct {
 	Envelopes []Envelope `json:"envelopes"`
 }

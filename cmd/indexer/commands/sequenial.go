@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/cenkalti/backoff"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/mailchain/mailchain/cmd/indexer/internal/processor"
 	"github.com/spf13/cobra"
 )

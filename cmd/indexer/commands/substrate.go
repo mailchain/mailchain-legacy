@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/cenkalti/backoff"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/jmoiron/sqlx"
 	"github.com/mailchain/mailchain/cmd/indexer/internal/processor"
 	sub "github.com/mailchain/mailchain/cmd/indexer/internal/substrate"

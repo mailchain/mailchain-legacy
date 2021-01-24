@@ -17,14 +17,15 @@ package etherscan
 import (
 	"bytes"
 	"context"
+	"strconv"
 
 	"github.com/mailchain/mailchain/encoding"
-	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 )
 
 // Receive check ethereum transactions for mailchain messages
-func (c APIClient) Receive(ctx context.Context, protocol, network string, address []byte) ([]mailbox.Transaction, error) {
+func (c APIClient) Receive(ctx context.Context, protocol, network string, address []byte) ([]stores.Transaction, error) {
 	if !c.isNetworkSupported(network) {
 		return nil, errors.Errorf("network not supported")
 	}
@@ -34,7 +35,7 @@ func (c APIClient) Receive(ctx context.Context, protocol, network string, addres
 		return nil, errors.WithStack(err)
 	}
 
-	res := []mailbox.Transaction{}
+	res := []stores.Transaction{}
 	txHashes := map[string]bool{}
 
 	for i := range txResult.Result { //nolint TODO: paging
@@ -56,10 +57,15 @@ func (c APIClient) Receive(ctx context.Context, protocol, network string, addres
 			continue
 		}
 
-		res = append(res, mailbox.Transaction{
-			Data:    encryptedTransactionData[len(encoding.DataPrefix()):],
-			BlockID: []byte(x.BlockNumber),
-			Hash:    []byte(x.Hash),
+		blkNo, err := strconv.ParseInt(x.BlockNumber, 10, 32)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+
+		res = append(res, stores.Transaction{
+			EnvelopeData: encryptedTransactionData[len(encoding.DataPrefix()):],
+			BlockNumber:  blkNo,
+			Hash:         []byte(x.Hash),
 		})
 	}
 

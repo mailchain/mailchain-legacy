@@ -1,4 +1,4 @@
-// Copyright 2020 Finobo
+// Copyright 2021 Finobo
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ package mailboxtest
 import (
 	context "context"
 	gomock "github.com/golang/mock/gomock"
-	mailbox "github.com/mailchain/mailchain/internal/mailbox"
+	stores "github.com/mailchain/mailchain/stores"
 	reflect "reflect"
 )
 
@@ -49,10 +49,10 @@ func (m *MockReceiver) EXPECT() *MockReceiverMockRecorder {
 }
 
 // Receive mocks base method
-func (m *MockReceiver) Receive(ctx context.Context, protocol, network string, address []byte) ([]mailbox.Transaction, error) {
+func (m *MockReceiver) Receive(ctx context.Context, protocol, network string, address []byte) ([]stores.Transaction, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Receive", ctx, protocol, network, address)
-	ret0, _ := ret[0].([]mailbox.Transaction)
+	ret0, _ := ret[0].([]stores.Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

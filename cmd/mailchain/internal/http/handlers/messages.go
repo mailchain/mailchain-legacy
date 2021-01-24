@@ -15,8 +15,8 @@
 package handlers
 
 import (
+	"encoding/binary"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -33,8 +33,7 @@ import (
 )
 
 // GetMessages returns a handler get spec.
-func GetMessages(inbox stores.State, cache stores.Cache, receivers map[string]mailbox.Receiver, ks keystore.Store,
-	deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { //nolint: funlen, gocyclo
+func GetMessages(inbox stores.State, cache stores.Cache, ks keystore.Store, deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { //nolint: funlen, gocyclo
 	// Get swagger:route GET /messages Messages GetMessages
 	//
 	// Get Mailchain messages.
@@ -44,22 +43,9 @@ func GetMessages(inbox stores.State, cache stores.Cache, receivers map[string]ma
 	//   200: GetMessagesResponse
 	//   422: ValidationError
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-
 		req, err := parseGetMessagesRequest(r)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
-			return
-		}
-
-		receiver, ok := receivers[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
-		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("receiver not supported on \"%s/%s\"", req.Protocol, req.Network))
-			return
-		}
-
-		if receiver == nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no receiver configured for \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
 
@@ -68,53 +54,46 @@ func GetMessages(inbox stores.State, cache stores.Cache, receivers map[string]ma
 			return
 		}
 
-		transactions, err := receiver.Receive(ctx, req.Protocol, req.Network, req.addressBytes)
-		if mailbox.IsNetworkNotSupportedError(err) {
-			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("network `%s` does not have etherscan client configured", req.Network))
-			return
-		}
-
+		txs, err := inbox.GetTransactions(req.Protocol, req.Network, req.addressBytes)
 		if err != nil {
 			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
 
-		messages := make([]getMessage, 0)
-		for i := range transactions { //nolint TODO: thats an arbitrary limit
-			env, err := envelope.Unmarshal(transactions[i].Data)
+		messages := make([]getMessage, 0, len(txs))
+
+		for _, tx := range txs {
+			env, err := envelope.Unmarshal(tx.EnvelopeData)
 			if err != nil {
-				messages = append(messages, getMessage{
-					Status: errors.WithMessagef(err, "failed to unmarshal envelope, %s", encoding.EncodeHexZeroX(transactions[i].Data)).Error(),
-				})
+				messages = append(messages, getMessage{Status: errors.WithMessagef(err, "failed to unmarshal envelope, %s", encoding.EncodeHexZeroX(tx.EnvelopeData)).Error()})
 				continue
 			}
 
 			decrypterKind, err := env.DecrypterKind()
 			if err != nil {
-				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to find decrypter type"))
-				return
+				messages = append(messages, getMessage{Status: errors.WithMessage(err, "failed to find decrypter type").Error()})
+				continue
 			}
 
 			decrypter, err := ks.GetDecrypter(req.addressBytes, req.Protocol, req.Network, decrypterKind, deriveKeyOptions)
 			if err != nil {
-				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not get `decrypter`"))
-				return
-			}
-
-			message, err := mailbox.ReadMessage(transactions[i].Data, decrypter, cache)
-			if err != nil {
-				messages = append(messages, getMessage{
-					Status: err.Error(),
-				})
-
+				messages = append(messages, getMessage{Status: errors.WithMessage(err, "could not get `decrypter`").Error()})
 				continue
 			}
 
-			readStatus, _ := inbox.GetReadStatus(message.ID)
+			message, err := mailbox.ReadMessage(tx.EnvelopeData, decrypter, cache)
+			if err != nil {
+				messages = append(messages, getMessage{Status: errors.WithMessage(err, "could not read message").Error()})
+				continue
+			}
 
-			messages = append(messages, getMessage{
+			buf := make([]byte, binary.MaxVarintLen64)
+			n := binary.PutVarint(buf, tx.BlockNumber)
+
+			readStatus, _ := inbox.GetReadStatus(message.ID)
+			mailStore := &stores.Message{
 				Body: string(message.Body),
-				Headers: &getHeaders{
+				Headers: stores.Header{
 					To:          message.Headers.To.String(),
 					From:        message.Headers.From.String(),
 					Date:        message.Headers.Date,
@@ -124,11 +103,13 @@ func GetMessages(inbox stores.State, cache stores.Cache, receivers map[string]ma
 				Read:                    readStatus,
 				Subject:                 message.Headers.Subject,
 				Status:                  "ok",
-				BlockID:                 string(transactions[i].BlockID),
+				BlockID:                 encoding.EncodeHexZeroX(buf[:n]),
 				BlockIDEncoding:         encoding.KindHex0XPrefix,
-				TransactionHash:         string(transactions[i].Hash),
+				TransactionHash:         encoding.EncodeHexZeroX(tx.Hash),
 				TransactionHashEncoding: encoding.KindHex0XPrefix,
-			})
+			}
+
+			messages = append(messages, convertStoreMessageToGetMessage(mailStore))
 		}
 
 		if err := json.NewEncoder(w).Encode(getResponse{Messages: messages}); err != nil {
@@ -170,7 +151,7 @@ type GetMessagesRequest struct {
 	addressBytes []byte
 }
 
-// ParseGetRequest get all the details for the get request
+// ParseGetRequest get all the details for the get request.
 func parseGetMessagesRequest(r *http.Request) (*GetMessagesRequest, error) {
 	protocol, err := params.QueryRequireProtocol(r)
 	if err != nil {
@@ -198,6 +179,26 @@ func parseGetMessagesRequest(r *http.Request) (*GetMessagesRequest, error) {
 		Network:      network,
 		Protocol:     protocol,
 	}, nil
+}
+
+func convertStoreMessageToGetMessage(message *stores.Message) getMessage {
+	return getMessage{
+		Body: message.Body,
+		Headers: &getHeaders{
+			To:          message.Headers.To,
+			From:        message.Headers.From,
+			Date:        message.Headers.Date,
+			MessageID:   message.Headers.MessageID,
+			ContentType: message.Headers.ContentType,
+		},
+		Read:                    message.Read,
+		Subject:                 message.Subject,
+		Status:                  message.Status,
+		BlockID:                 message.BlockID,
+		BlockIDEncoding:         message.BlockIDEncoding,
+		TransactionHash:         message.TransactionHash,
+		TransactionHashEncoding: message.TransactionHashEncoding,
+	}
 }
 
 // GetResponse Holds the response messages

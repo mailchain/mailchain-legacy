@@ -19,11 +19,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/address"
-	"github.com/mailchain/mailchain/internal/mailbox"
+	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 	"gopkg.in/resty.v1"
 )
@@ -67,13 +68,13 @@ func (c Receiver) getTransactionsByAddress(protocol, network string, addr []byte
 }
 
 // Receive check ethereum transactions for mailchain messages
-func (c Receiver) Receive(ctx context.Context, protocol, network string, address []byte) ([]mailbox.Transaction, error) {
+func (c Receiver) Receive(ctx context.Context, protocol, network string, address []byte) ([]stores.Transaction, error) {
 	txResult, err := c.getTransactionsByAddress(protocol, network, address)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	res := []mailbox.Transaction{}
+	res := []stores.Transaction{}
 	txHashes := map[string]bool{}
 
 	for i := range txResult.Envelopes { //nolint TODO: paging
@@ -95,9 +96,15 @@ func (c Receiver) Receive(ctx context.Context, protocol, network string, address
 			continue
 		}
 
-		res = append(res, mailbox.Transaction{
-			Data: encryptedTransactionData[len(encoding.DataPrefix()):],
-			Hash: []byte(x.Hash),
+		blkNo, err := strconv.ParseInt(x.BlockNumber, 10, 32)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+
+		res = append(res, stores.Transaction{
+			EnvelopeData: encryptedTransactionData[len(encoding.DataPrefix()):],
+			BlockNumber:  blkNo,
+			Hash:         []byte(x.Hash),
 		})
 	}
 
@@ -109,11 +116,12 @@ type envelopeList struct {
 }
 
 type Envelope struct {
-	From      string `json:"from"`
-	To        string `json:"to"`
-	Data      string `json:"data"`
-	BlockHash string `json:"block-hash"`
-	Hash      string `json:"hash"`
+	From        string `json:"from"`
+	To          string `json:"to"`
+	Data        string `json:"data"`
+	BlockHash   string `json:"block-hash"`
+	BlockNumber string `json:"block-number"`
+	Hash        string `json:"hash"`
 
 	Value    string `json:"value"`
 	GasUsed  string `json:"gas-used"`

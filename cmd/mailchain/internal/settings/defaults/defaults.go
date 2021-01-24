@@ -37,7 +37,7 @@ const (
 	// NameServiceDomainNameKind default value.
 	NameServiceDomainNameKind = Mailchain
 	// MailboxStateKind default value.
-	MailboxStateKind = "leveldb"
+	MailboxStateKind = "badgerdb"
 	// ConfigFileName default value.
 	ConfigFileName = ".mailchain"
 	// ConfigSubDirName default value.

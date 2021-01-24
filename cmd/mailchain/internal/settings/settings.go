@@ -21,8 +21,6 @@ const (
 	StoreS3 = "s3"
 	// StorePinata settings name for Pinata IPFS storage.
 	StorePinata = "pinata"
-	// StoreLevelDB settings name for level db storage.
-	StoreLevelDB = "leveldb"
 	// StoreBadgerDB settings name for badger db storage.
 	StoreBadgerDB = "badgerdb"
 )

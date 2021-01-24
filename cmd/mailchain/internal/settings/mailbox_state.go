@@ -6,14 +6,12 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/mailchain/mailchain/stores/bdbstore"
-	"github.com/mailchain/mailchain/stores/ldbstore"
 	"github.com/pkg/errors"
 )
 
 func mailboxState(s values.Store) *MailboxState {
 	k := &MailboxState{
 		Kind:                 values.NewDefaultString(defaults.MailboxStateKind, s, "mailboxState.kind"),
-		mailboxStateLevelDB:  mailboxStateLevelDB(s),
 		mailBoxStateBadgerDB: mailboxStateBadgerDB(s),
 	}
 	return k
@@ -22,15 +20,12 @@ func mailboxState(s values.Store) *MailboxState {
 // MailboxState settings for mailbox state storage
 type MailboxState struct {
 	Kind                 values.String
-	mailboxStateLevelDB  MailboxStateLevelDB
 	mailBoxStateBadgerDB MailBoxStateBadgerDB
 }
 
 // Produce `stores.State` based on configuration settings.
 func (s MailboxState) Produce() (stores.State, error) {
 	switch s.Kind.Get() {
-	case StoreLevelDB:
-		return s.mailboxStateLevelDB.Produce()
 	case StoreBadgerDB:
 		return s.mailBoxStateBadgerDB.Produce()
 	default:
@@ -43,40 +38,7 @@ func (s MailboxState) Output() output.Element {
 	return output.Element{
 		FullName: "mailboxState",
 		Elements: []output.Element{
-			s.mailboxStateLevelDB.Output(),
 			s.mailBoxStateBadgerDB.Output(),
-		},
-	}
-}
-
-func mailboxStateLevelDB(s values.Store) MailboxStateLevelDB {
-	return MailboxStateLevelDB{
-		Path:    values.NewDefaultString(defaults.MailboxStatePath(), s, "mailboxState.leveldb.path"),
-		Handles: values.NewDefaultInt(0, s, "mailboxState.leveldb.handles"),
-		Cache:   values.NewDefaultInt(256, s, "mailboxState.leveldb.cache"),
-	}
-}
-
-// MailboxStateLevelDB settings
-type MailboxStateLevelDB struct {
-	Path    values.String
-	Handles values.Int
-	Cache   values.Int
-}
-
-// Produce a leveldb database with settings applied
-func (s MailboxStateLevelDB) Produce() (*ldbstore.Database, error) {
-	return ldbstore.New(s.Path.Get(), s.Cache.Get(), s.Handles.Get())
-}
-
-// Output configuration as an `output.Element` for use in exporting configuration.
-func (s MailboxStateLevelDB) Output() output.Element {
-	return output.Element{
-		FullName: "mailboxState.leveldb",
-		Attributes: []output.Attribute{
-			s.Path.Attribute(),
-			s.Handles.Attribute(),
-			s.Cache.Attribute(),
 		},
 	}
 }

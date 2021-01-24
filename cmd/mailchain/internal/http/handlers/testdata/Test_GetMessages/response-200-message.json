@@ -13,9 +13,9 @@
             "status": "ok",
             "status-code": "",
             "read": false,
-            "block-id": "YS1ibG9jay1udW1iZXI=",
+            "block-id": "0xc801",
             "block-id-encoding": "hex/0x-prefix",
-            "transaction-hash": "YS1oYXNo",
+            "transaction-hash": "0x010203",
             "transaction-hash-encoding": "hex/0x-prefix"
         }
     ]

@@ -5,35 +5,34 @@
 package storestest
 
 import (
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
-// MockCache is a mock of Cache interface.
+// MockCache is a mock of Cache interface
 type MockCache struct {
 	ctrl     *gomock.Controller
 	recorder *MockCacheMockRecorder
 }
 
-// MockCacheMockRecorder is the mock recorder for MockCache.
+// MockCacheMockRecorder is the mock recorder for MockCache
 type MockCacheMockRecorder struct {
 	mock *MockCache
 }
 
-// NewMockCache creates a new mock instance.
+// NewMockCache creates a new mock instance
 func NewMockCache(ctrl *gomock.Controller) *MockCache {
 	mock := &MockCache{ctrl: ctrl}
 	mock.recorder = &MockCacheMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockCache) EXPECT() *MockCacheMockRecorder {
 	return m.recorder
 }
 
-// GetMessage mocks base method.
+// GetMessage mocks base method
 func (m *MockCache) GetMessage(location string) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMessage", location)
@@ -42,13 +41,13 @@ func (m *MockCache) GetMessage(location string) ([]byte, error) {
 	return ret0, ret1
 }
 
-// GetMessage indicates an expected call of GetMessage.
+// GetMessage indicates an expected call of GetMessage
 func (mr *MockCacheMockRecorder) GetMessage(location interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMessage", reflect.TypeOf((*MockCache)(nil).GetMessage), location)
 }
 
-// SetMessage mocks base method.
+// SetMessage mocks base method
 func (m *MockCache) SetMessage(location string, msg []byte) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SetMessage", location, msg)
@@ -56,7 +55,7 @@ func (m *MockCache) SetMessage(location string, msg []byte) error {
 	return ret0
 }
 
-// SetMessage indicates an expected call of SetMessage.
+// SetMessage indicates an expected call of SetMessage
 func (mr *MockCacheMockRecorder) SetMessage(location, msg interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetMessage", reflect.TypeOf((*MockCache)(nil).SetMessage), location, msg)

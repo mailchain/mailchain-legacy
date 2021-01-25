@@ -3,7 +3,7 @@ package pq
 import (
 	"fmt"
 
-	"github.com/cenkalti/backoff"
+	"github.com/cenkalti/backoff/v4"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // needed for postgres to work
 	"github.com/pkg/errors"

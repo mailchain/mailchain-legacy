@@ -16,11 +16,12 @@ package bdbstore
 
 import (
 	"context"
+	"io"
+	"log"
 	"time"
 
 	"github.com/dgraph-io/badger/v2"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus" //nolint:depguard
 )
 
 const (
@@ -65,8 +66,10 @@ type Database struct {
 }
 
 // New returns a wrapped BadgerDB object with default options.
-func New(dir string) (*Database, error) {
+func New(dir string, logWriter io.Writer) (*Database, error) {
 	opts := badger.DefaultOptions(dir)
+	opts.Logger = newLogger(logWriter)
+
 	return newBadgerDB(&opts)
 }
 
@@ -91,10 +94,10 @@ func (db *Database) runGC() {
 		select {
 		case <-ticker.C:
 			if err := db.db.RunValueLogGC(discardRatio); err != nil {
-				if errors.Cause(err) == badger.ErrNoRewrite {
-					logrus.Debugf("BadgerDB GC call ended with no rewrites: %v", err)
+				if errors.Is(errors.Cause(err), badger.ErrNoRewrite) {
+					log.Printf("BadgerDB GC call ended with no rewrites: %v\n", err)
 				} else {
-					logrus.Errorf("BadgerDB GC call failed: %v", err)
+					log.Printf("BadgerDB GC call failed: %v\n", err)
 				}
 			}
 		case <-db.ctx.Done():

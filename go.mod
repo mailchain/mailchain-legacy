@@ -31,6 +31,7 @@ require (
 	github.com/pierrec/xxHash v0.1.5 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.7.0
+	github.com/rs/zerolog v1.20.0
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
 	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/afero v1.3.1
@@ -41,6 +42,7 @@ require (
 	github.com/urfave/negroni v1.0.0
 	github.com/wealdtech/go-ens/v3 v3.4.3
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/resty.v1 v1.12.0
 )
 

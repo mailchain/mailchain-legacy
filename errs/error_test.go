@@ -48,7 +48,7 @@ func TestJSONWriter(t *testing.T) {
 				http.StatusPreconditionFailed,
 				errors.New("pre-condition failed"),
 			},
-			"{\"level\":\"debug\",\"method\":\"GET\",\"url\":\"/address\",\"status\":412,\"error\":\"pre-condition failed\",\"caller\":\"/Users/robdefeo/development/GitHub/mailchain/errs/error_test.go:102\",\"message\":\"client error\"}\n",
+			"{\"level\":\"debug\",\"method\":\"GET\",\"url\":\"/address\",\"status\":412,\"error\":\"pre-condition failed\",\"message\":\"client error\"}\n",
 		},
 		{
 			"warn-nil-error",
@@ -58,7 +58,7 @@ func TestJSONWriter(t *testing.T) {
 				http.StatusPreconditionFailed,
 				nil,
 			},
-			"{\"level\":\"debug\",\"method\":\"GET\",\"url\":\"/address\",\"status\":412,\"error\":\"no error specified\",\"caller\":\"/Users/robdefeo/development/GitHub/mailchain/errs/error_test.go:102\",\"message\":\"client error\"}\n",
+			"{\"level\":\"debug\",\"method\":\"GET\",\"url\":\"/address\",\"status\":412,\"error\":\"no error specified\",\"message\":\"client error\"}\n",
 		},
 		{
 			"err-error",
@@ -68,7 +68,7 @@ func TestJSONWriter(t *testing.T) {
 				http.StatusInternalServerError,
 				errors.New("internal error"),
 			},
-			"{\"level\":\"error\",\"method\":\"GET\",\"url\":\"/address\",\"status\":500,\"error\":\"internal error\",\"caller\":\"/Users/robdefeo/development/GitHub/mailchain/errs/error_test.go:102\",\"message\":\"server error\"}\n",
+			"{\"level\":\"error\",\"method\":\"GET\",\"url\":\"/address\",\"status\":500,\"error\":\"internal error\",\"message\":\"server error\"}\n",
 		},
 		{
 			"unknown-error",
@@ -78,7 +78,7 @@ func TestJSONWriter(t *testing.T) {
 				600,
 				errors.New("unknown error"),
 			},
-			"{\"level\":\"error\",\"method\":\"GET\",\"url\":\"/address\",\"status\":600,\"error\":\"unknown error\",\"caller\":\"/Users/robdefeo/development/GitHub/mailchain/errs/error_test.go:102\",\"message\":\"unknown status\"}\n",
+			"{\"level\":\"error\",\"method\":\"GET\",\"url\":\"/address\",\"status\":600,\"error\":\"unknown error\",\"message\":\"unknown status\"}\n",
 		},
 		{
 			"unknown-error",
@@ -88,7 +88,7 @@ func TestJSONWriter(t *testing.T) {
 				600,
 				errors.New("unknown error"),
 			},
-			"{\"level\":\"error\",\"method\":\"GET\",\"url\":\"/address\",\"status\":600,\"error\":\"unknown error\",\"caller\":\"/Users/robdefeo/development/GitHub/mailchain/errs/error_test.go:102\",\"message\":\"unknown status\"}\n",
+			"{\"level\":\"error\",\"method\":\"GET\",\"url\":\"/address\",\"status\":600,\"error\":\"unknown error\",\"message\":\"unknown status\"}\n",
 		},
 	}
 	for _, tt := range tests {

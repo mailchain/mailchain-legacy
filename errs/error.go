@@ -34,9 +34,9 @@ type ErrorWriter func(w http.ResponseWriter, code int, err error)
 
 // JSONWriter writes a swagger-compliant error response.
 func JSONWriter(w http.ResponseWriter, r *http.Request, code int, err error) {
-	logger := log.With().CallerWithSkipFrameCount(3).Logger()
+	logger := log.Logger
 	if r != nil {
-		logger = log.With().Str("method", r.Method).Stringer("url", r.URL).CallerWithSkipFrameCount(3).Logger()
+		logger = log.With().Str("method", r.Method).Stringer("url", r.URL).Logger()
 	}
 
 	if err == nil {

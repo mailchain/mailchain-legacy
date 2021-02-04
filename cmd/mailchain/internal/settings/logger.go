@@ -87,7 +87,7 @@ func (l *Logger) Produce() zerolog.Logger {
 		logger = logger.With().Stack().Logger()
 	}
 
-	r := logger.Level(l.getLevel()).With().Caller().Timestamp().Logger()
+	r := logger.Level(l.getLevel()).With().Timestamp().Logger()
 
 	return r
 }

@@ -61,58 +61,59 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 		ctx := r.Context()
 		req, err := parsePostRequest(r)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
 
 		messageSender, ok := senders[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("sender not supported on \"%s/%s\"", req.Protocol, req.Network))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("sender not supported on \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
 
 		if messageSender == nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no sender configured for \"%s/%s\"", req.Protocol, req.Network))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("no sender configured for \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
 
 		from, err := address.DecodeByProtocol(req.Body.from.ChainAddress, req.Protocol)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"))
 			return
 		}
 
 		if !ks.HasAddress(from, req.Protocol, req.Network) {
-			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Body.Message.Headers.From))
+			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Body.Message.Headers.From))
 			return
 		}
 
 		msg, err := mail.NewMessage(time.Now(), *req.Body.from, *req.Body.to, req.Body.replyTo, req.Body.Message.Subject, []byte(req.Body.Message.Body), req.Body.ContentType)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
 
 		signer, err := ks.GetSigner(from, req.Protocol, req.Network, deriveKeyOptions)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
 			return
 		}
 
 		encrypter, err := ec.GetEncrypter(req.Body.EncryptionName, req.Body.publicKey)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not get `encrypter`"))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not get `encrypter`"))
+			return
 		}
 
 		env, err := envelope.ParseEnvelope(req.Body.Envelope)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not parse `envelope`"))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not parse `envelope`"))
 			return
 		}
 
 		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network, msg,
 			encrypter, messageSender, sent, signer, env); err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
 			return
 		}
 

@@ -19,13 +19,13 @@ func HandleToRequest(ts datastore.TransactionStore) func(w http.ResponseWriter, 
 		ctx := r.Context()
 		req, err := parseGetEnvelopesRequest(r)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
 
 		txs, err := ts.GetTransactionsTo(ctx, req.Protocol, req.Network, req.addressBytes)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
 
@@ -48,7 +48,7 @@ func HandleToRequest(ts datastore.TransactionStore) func(w http.ResponseWriter, 
 		}
 
 		if err := json.NewEncoder(w).Encode(getEnvelopesResponse{Envelopes: envelopes}); err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err)
 			return
 		}
 

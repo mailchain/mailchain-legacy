@@ -14,14 +14,14 @@ type RelayFunc func(req *http.Request) (*http.Request, error)
 func (f RelayFunc) HandleRequest(w http.ResponseWriter, req *http.Request) {
 	r, err := f(req)
 	if err != nil {
-		errs.JSONWriter(w, http.StatusBadRequest, err)
+		errs.JSONWriter(w, r, http.StatusBadRequest, err)
 		return
 	}
 	client := http.Client{}
 
 	resp, err := client.Do(r)
 	if err != nil {
-		errs.JSONWriter(w, http.StatusBadGateway, err)
+		errs.JSONWriter(w, r, http.StatusBadGateway, err)
 		return
 	}
 

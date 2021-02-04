@@ -45,18 +45,18 @@ func GetMessages(inbox stores.State, cache stores.Cache, ks keystore.Store, deri
 	return func(w http.ResponseWriter, r *http.Request) {
 		req, err := parseGetMessagesRequest(r)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
 
 		if !ks.HasAddress(req.addressBytes, req.Protocol, req.Network) {
-			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("no private key found for address"))
+			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("no private key found for address"))
 			return
 		}
 
 		txs, err := inbox.GetTransactions(req.Protocol, req.Network, req.addressBytes)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
 
@@ -113,7 +113,7 @@ func GetMessages(inbox stores.State, cache stores.Cache, ks keystore.Store, deri
 		}
 
 		if err := json.NewEncoder(w).Encode(getResponse{Messages: messages}); err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err)
 			return
 		}
 

@@ -70,7 +70,7 @@ func GetRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		messageID, err := mail.FromHexString(mux.Vars(r)["message_id"])
 		if err != nil {
-			errs.JSONWriter(w, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
+			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
 			return
 		}
 
@@ -81,12 +81,12 @@ func GetRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		if err := json.NewEncoder(w).Encode(getBody{Read: read}); err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -131,12 +131,12 @@ type getBody struct {
 func doRead(inboxFunc func(messageID mail.ID) error, w http.ResponseWriter, r *http.Request) {
 	messageID, err := params.PathMessageID(r)
 	if err != nil {
-		errs.JSONWriter(w, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
+		errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
 		return
 	}
 
 	if err := inboxFunc(messageID); err != nil {
-		errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+		errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
 		return
 	}
 

@@ -40,6 +40,7 @@ func FromStore(s values.Store) *Root {
 		SentStore:    sentStore(s),
 		CacheStore:   cacheStore(s),
 		Server:       server(s),
+		Logger:       logger(s),
 	}
 }
 
@@ -59,6 +60,7 @@ type Root struct {
 	SentStore    *SentStore
 	Server       *Server
 	CacheStore   *CacheStore
+	Logger       *Logger
 }
 
 // ToYaml converts settings to yaml

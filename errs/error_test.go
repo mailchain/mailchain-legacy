@@ -22,6 +22,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
@@ -29,6 +31,7 @@ import (
 func TestJSONWriter(t *testing.T) {
 	type args struct {
 		w    http.ResponseWriter
+		r    *http.Request
 		code int
 		err  error
 	}
@@ -41,61 +44,62 @@ func TestJSONWriter(t *testing.T) {
 			"warn-error",
 			args{
 				&httptest.ResponseRecorder{},
+				httptest.NewRequest("GET", "/address", nil),
 				http.StatusPreconditionFailed,
 				errors.New("pre-condition failed"),
 			},
-			"level=warning msg=\"status 412: pre-condition failed\"\n",
+			"{\"level\":\"debug\",\"method\":\"GET\",\"url\":\"/address\",\"status\":412,\"error\":\"pre-condition failed\",\"caller\":\"/Users/robdefeo/development/GitHub/mailchain/errs/error_test.go:102\",\"message\":\"client error\"}\n",
 		},
 		{
 			"warn-nil-error",
 			args{
 				&httptest.ResponseRecorder{},
+				httptest.NewRequest("GET", "/address", nil),
 				http.StatusPreconditionFailed,
 				nil,
 			},
-			"level=warning msg=\"status 412: no error specified\"\n",
+			"{\"level\":\"debug\",\"method\":\"GET\",\"url\":\"/address\",\"status\":412,\"error\":\"no error specified\",\"caller\":\"/Users/robdefeo/development/GitHub/mailchain/errs/error_test.go:102\",\"message\":\"client error\"}\n",
 		},
 		{
 			"err-error",
 			args{
 				&httptest.ResponseRecorder{},
+				httptest.NewRequest("GET", "/address", nil),
 				http.StatusInternalServerError,
 				errors.New("internal error"),
 			},
-			"level=error msg=\"status 500: internal error\"\n",
+			"{\"level\":\"error\",\"method\":\"GET\",\"url\":\"/address\",\"status\":500,\"error\":\"internal error\",\"caller\":\"/Users/robdefeo/development/GitHub/mailchain/errs/error_test.go:102\",\"message\":\"server error\"}\n",
 		},
 		{
 			"unknown-error",
 			args{
 				&httptest.ResponseRecorder{},
+				httptest.NewRequest("GET", "/address", nil),
 				600,
 				errors.New("unknown error"),
 			},
-			"level=error msg=\"unknown status 600: unknown error\"\n",
+			"{\"level\":\"error\",\"method\":\"GET\",\"url\":\"/address\",\"status\":600,\"error\":\"unknown error\",\"caller\":\"/Users/robdefeo/development/GitHub/mailchain/errs/error_test.go:102\",\"message\":\"unknown status\"}\n",
 		},
 		{
 			"unknown-error",
 			args{
 				&httptest.ResponseRecorder{},
+				httptest.NewRequest("GET", "/address", nil),
 				600,
 				errors.New("unknown error"),
 			},
-			"level=error msg=\"unknown status 600: unknown error\"\n",
+			"{\"level\":\"error\",\"method\":\"GET\",\"url\":\"/address\",\"status\":600,\"error\":\"unknown error\",\"caller\":\"/Users/robdefeo/development/GitHub/mailchain/errs/error_test.go:102\",\"message\":\"unknown status\"}\n",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
-			logrus.SetFormatter(&logrus.TextFormatter{
-				DisableColors:    true,
-				DisableTimestamp: true,
-			})
+			log.Logger = zerolog.New(&buf)
 			logrus.SetOutput(&buf)
 			defer func() {
-				logrus.SetOutput(os.Stderr)
-				logrus.SetFormatter(&logrus.TextFormatter{})
+				log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 			}()
-			JSONWriter(tt.args.w, tt.args.code, tt.args.err)
+			JSONWriter(tt.args.w, tt.args.r, tt.args.code, tt.args.err)
 			gotLogOut := buf.String()
 			if !assert.Equal(t, tt.logOut, gotLogOut) {
 				t.Errorf("logOut = %v, want %v", gotLogOut, tt.logOut)

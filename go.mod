@@ -24,6 +24,7 @@ require (
 	github.com/lib/pq v1.7.0
 	github.com/mailchain/go-substrate-rpc-client v2.0.0-alpha.5+incompatible // indirect
 	github.com/manifoldco/promptui v0.7.0
+	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mr-tron/base58 v1.2.0
@@ -34,6 +35,7 @@ require (
 	github.com/rs/zerolog v1.20.0
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
 	github.com/sirupsen/logrus v1.6.0
+	github.com/smartystreets/assertions v1.0.0 // indirect
 	github.com/spf13/afero v1.3.1
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.0
@@ -44,6 +46,7 @@ require (
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/resty.v1 v1.12.0
+	gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c // indirect
 )
 
 replace github.com/centrifuge/go-substrate-rpc-client v2.0.0-alpha.5+incompatible => github.com/mailchain/go-substrate-rpc-client v2.0.0-RC6-mc0.1+incompatible

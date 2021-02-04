@@ -30,25 +30,25 @@ func GetPublicKey(store datastore.PublicKeyStore) func(w http.ResponseWriter, r 
 
 		req, err := parseGetPublicKey(r)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
 
 		publicKey, err := store.GetPublicKey(ctx, req.Protocol, req.Network, req.addressBytes)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
 
 		encodedKey, encodingType, err := pubkey.EncodeByProtocol(publicKey.PublicKey.Bytes(), req.Protocol)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
 
 		encryptionTypes, err := pubkey.EncryptionMethods(publicKey.PublicKey.Kind())
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
 

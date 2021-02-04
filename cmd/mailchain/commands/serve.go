@@ -16,11 +16,13 @@ package commands
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/fetching"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/http"
+	mchttp "github.com/mailchain/mailchain/cmd/mailchain/internal/http"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" //nolint: depguard
 	"github.com/ttacon/chalk"
@@ -30,9 +32,9 @@ func serveCmd() (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "serve",
 		Short: "Serve the mailchain application",
-		// PersistentPreRunE: preRun,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			config := settings.FromStore(viper.GetViper())
+			config.Logger.Init()
 
 			mailboxStore, err := config.MailboxState.Produce()
 			if err != nil {
@@ -43,21 +45,28 @@ func serveCmd() (*cobra.Command, error) {
 				return err
 			}
 
-			router, err := http.CreateRouter(config, mailboxStore, cmd)
+			router, err := mchttp.CreateRouter(config, mailboxStore, cmd)
 			if err != nil {
 				return err
 			}
-			fmt.Println(chalk.Bold.TextStyle(fmt.Sprintf(
-				"Find out more by visiting the docs http://127.0.0.1:%d/api/docs",
-				config.Server.Port.Get())))
 
-			http.CreateNegroni(config.Server, router).Run(fmt.Sprintf(":%d", config.Server.Port.Get()))
-			return nil
+			cmd.Println(chalk.Green.Color("Mailchain started."))
+			cmd.Println(("Check messages at https://inbox.mailchain.xyz."))
+			cmd.Printf("View developer documention at http://127.0.0.1:%d/api/docs.\n", config.Server.Port.Get())
+
+			listenAddress := fmt.Sprintf(":%d", config.Server.Port.Get())
+			log.Info().Str("address", listenAddress).Msg("serving http")
+
+			return http.ListenAndServe(
+				listenAddress,
+				mchttp.CreateNegroni(config.Server, router),
+			)
 		},
 	}
 
-	if err := http.SetupFlags(cmd); err != nil {
+	if err := mchttp.SetupFlags(cmd); err != nil {
 		return nil, err
 	}
+
 	return cmd, nil
 }

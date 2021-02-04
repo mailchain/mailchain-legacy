@@ -1,7 +1,6 @@
 package settings
 
 import (
-	"io"
 	"log"
 
 	"github.com/mailchain/mailchain/cmd/internal/settings/output"
@@ -48,15 +47,13 @@ func (s MailboxState) Output() output.Element {
 
 func mailboxStateBadgerDB(s values.Store) MailBoxStateBadgerDB {
 	return MailBoxStateBadgerDB{
-		Path:      values.NewDefaultString(defaults.MailboxStatePath(), s, "mailboxState.badgerdb.path"),
-		LogWriter: log.Writer(), // this has been set before
+		Path: values.NewDefaultString(defaults.MailboxStatePath(), s, "mailboxState.badgerdb.path"),
 	}
 }
 
 // MailboxStateBadgerDB settings
 type MailBoxStateBadgerDB struct {
-	Path      values.String
-	LogWriter io.Writer
+	Path values.String
 }
 
 // Output configuration as an `output.Element` for use in exporting configuration.
@@ -71,5 +68,5 @@ func (s MailBoxStateBadgerDB) Output() output.Element {
 
 // Produce a badgerdb database with settings applied.
 func (s MailBoxStateBadgerDB) Produce() (*bdbstore.Database, error) {
-	return bdbstore.New(s.Path.Get(), s.LogWriter)
+	return bdbstore.New(s.Path.Get(), log.Writer())
 }

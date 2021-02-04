@@ -73,7 +73,6 @@ func (l *Logger) Init() {
 		MaxBackups: l.MaxBackups.Get(),
 		MaxAge:     l.MaxAgeDays.Get(),
 	})
-
 }
 
 // Produce a logger.

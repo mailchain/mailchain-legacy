@@ -11,7 +11,7 @@ import (
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
-// FromStore creates root settings from a configuration storage
+// FromStore creates root settings from a configuration storage.
 func FromStore(s values.Store) *Root {
 	return &Root{
 		DomainNameServices:  domainNameServices(s),

@@ -44,40 +44,40 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 		ctx := r.Context()
 		req, err := parseGetPublicKey(r)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
 		finder, ok := finders[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("public key finder not supported on \"%s/%s\"", req.Protocol, req.Network))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("public key finder not supported on \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
 
 		if finder == nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.Errorf("no public key finder configured for \"%s/%s\"", req.Protocol, req.Network))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("no public key finder configured for \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
 
 		publicKey, err := finder.PublicKeyFromAddress(ctx, req.Protocol, req.Network, req.addressBytes)
 		if mailbox.IsNetworkNotSupportedError(err) {
-			errs.JSONWriter(w, http.StatusNotAcceptable, errors.Errorf("network %q not supported", req.Network))
+			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("network %q not supported", req.Network))
 			return
 		}
 
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
 
 		encodedKey, encodingType, err := pubkey.EncodeByProtocol(publicKey.Bytes(), req.Protocol)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
 
 		encryptionTypes, err := pubkey.EncryptionMethods(publicKey.Kind())
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
 

@@ -266,7 +266,6 @@ func TestGetPublicKey(t *testing.T) {
 				q.Add(k, v)
 			}
 			req.URL.RawQuery = q.Encode()
-
 			rr := httptest.NewRecorder()
 			handler := http.HandlerFunc(GetPublicKey(tt.args.finders))
 

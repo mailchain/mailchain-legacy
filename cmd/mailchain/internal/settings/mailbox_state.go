@@ -1,6 +1,8 @@
 package settings
 
 import (
+	"log"
+
 	"github.com/mailchain/mailchain/cmd/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
@@ -17,7 +19,7 @@ func mailboxState(s values.Store) *MailboxState {
 	return k
 }
 
-// MailboxState settings for mailbox state storage
+// MailboxState settings for mailbox state storage.
 type MailboxState struct {
 	Kind                 values.String
 	mailBoxStateBadgerDB MailBoxStateBadgerDB
@@ -66,5 +68,5 @@ func (s MailBoxStateBadgerDB) Output() output.Element {
 
 // Produce a badgerdb database with settings applied.
 func (s MailBoxStateBadgerDB) Produce() (*bdbstore.Database, error) {
-	return bdbstore.New(s.Path.Get())
+	return bdbstore.New(s.Path.Get(), log.Writer())
 }

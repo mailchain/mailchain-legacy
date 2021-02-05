@@ -70,6 +70,11 @@ const (
 	EthereumRelay = "ethereum-relay"
 )
 
+// LogsPath default value.
+func LogsPath() string {
+	return filepath.Join(MailchainHome(), "logs")
+}
+
 // KeystorePath default value.
 func KeystorePath() string {
 	return filepath.Join(MailchainHome(), ".keystore")
@@ -91,6 +96,7 @@ func MailchainHome() string {
 	if err != nil {
 		log.Fatalf("%+v", errors.WithStack(err))
 	}
+
 	return filepath.Join(d, ConfigSubDirName)
 }
 

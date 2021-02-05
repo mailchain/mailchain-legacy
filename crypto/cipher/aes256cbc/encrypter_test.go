@@ -15,7 +15,6 @@
 package aes256cbc
 
 import (
-	"log"
 	"testing"
 
 	ethcypto "github.com/ethereum/go-ethereum/crypto"
@@ -112,7 +111,7 @@ func Test_encrypt(t *testing.T) {
 				func() *ecies.PrivateKey {
 					tmpEphemeralPrivateKey, err := ethcypto.HexToECDSA("0404040404040404040404040404040404040404040404040404040404040404")
 					if err != nil {
-						log.Fatal(err)
+						t.Fatal(err)
 					}
 					return ecies.ImportECDSA(tmpEphemeralPrivateKey)
 				}(),
@@ -144,7 +143,7 @@ func Test_encrypt(t *testing.T) {
 				func() *ecies.PrivateKey {
 					tmpEphemeralPrivateKey, err := ethcypto.HexToECDSA("0404040404040404040404040404040404040404040404040404040404040404")
 					if err != nil {
-						log.Fatal(err)
+						t.Fatal(err)
 					}
 					return ecies.ImportECDSA(tmpEphemeralPrivateKey)
 				}(),

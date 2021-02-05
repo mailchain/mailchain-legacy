@@ -2,7 +2,7 @@ package fetching
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"runtime"
 	"strings"
 	"time"
@@ -13,6 +13,7 @@ import (
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 func getReceivers(config *settings.Root) (receiverByKind map[string]mailbox.Receiver, kindProtocolsNetworks map[string][]string, addressesProtocolsNetworks map[string][][]byte, err error) {
@@ -54,7 +55,7 @@ func getReceivers(config *settings.Root) (receiverByKind map[string]mailbox.Rece
 		}
 	}
 
-	return
+	return receiverByKind, kindProtocolsNetworks, addressesProtocolsNetworks, nil
 }
 
 func appendListMap(m map[string][]string, key, value string) []string {
@@ -87,7 +88,7 @@ func Do(config *settings.Root, inbox stores.State) error {
 	runtime.GOMAXPROCS(len(receiversByKind))
 
 	for kind := range receiversByKind {
-		fg, err := NewFetchGroup(inbox, receiversByKind[kind], kindProtocolsNetworks[kind], addressesProtocolsNetworks)
+		fg, err := NewFetchGroup(config, inbox, receiversByKind[kind], kindProtocolsNetworks[kind], addressesProtocolsNetworks)
 		if err != nil {
 			return errors.WithMessagef(err, "failed to create fetch group")
 		}
@@ -100,19 +101,25 @@ func Do(config *settings.Root, inbox stores.State) error {
 	return nil
 }
 
-func NewFetchGroup(inbox stores.State, receiver mailbox.Receiver, protocolsNetworks []string, addressesProtocolsNetworks map[string][][]byte) (*FetchGroup, error) {
+func NewFetchGroup(config *settings.Root, inbox stores.State, receiver mailbox.Receiver, protocolsNetworks []string, addressesProtocolsNetworks map[string][][]byte) (*FetchGroup, error) {
+	logger := log.With().Str("component", "FetchGroup").Str("kind", receiver.Kind()).Logger()
+
 	wait, err := waitByKind(receiver.Kind())
 	if err != nil {
 		return nil, errors.WithMessagef(err, "can't determine wait time")
 	}
-	log.Printf("%s initial wait %s\n", receiver.Kind(), wait)
+
+	logger.Debug().Msgf("initial wait %s", wait)
 
 	b := backoff.NewExponentialBackOff()
 	b.InitialInterval = wait / 1000 // Needed as backoff expects microseconds not seconds
 	b.MaxElapsedTime = 0            // prevent it from stoping
 
 	return &FetchGroup{
-		fetcher:                    &Fetcher{inbox: inbox, receiver: receiver},
+		fetcher: &Fetcher{
+			inbox:    inbox,
+			receiver: receiver,
+		},
 		backoff:                    b,
 		protocolsNetworks:          protocolsNetworks,
 		addressesProtocolsNetworks: addressesProtocolsNetworks,
@@ -128,28 +135,30 @@ type FetchGroup struct {
 }
 
 func (f *FetchGroup) Fetch() {
+	logger := log.With().Str("component", "Fetcher").Str("kind", f.fetcher.receiver.Kind()).Logger()
 	for {
-		log.Printf("starting check %s", f.fetcher.receiver.Kind())
+		logger.Debug().Msg("starting check")
 
 		for _, protocolNetwork := range f.protocolsNetworks {
 			parts := strings.Split(protocolNetwork, ".")
 			if len(parts) != 2 {
-				log.Printf("bad protocols network")
+				logger.Error().Str("protocolNetwork", protocolNetwork).Msg("bad protocols network")
 				continue
 			}
 
 			protocol, network := parts[0], parts[1]
 
 			for _, addr := range f.addressesProtocolsNetworks[protocolNetwork] {
+				subLogger := logger.With().Str("protocol", protocol).Str("network", network).Logger()
 				wait := f.backoff.NextBackOff() * 1000 // returning milliseconds needs converting
-				log.Printf("%s %s.%s waiting %v\n", f.fetcher.receiver.Kind(), protocol, network, wait)
+				subLogger.Debug().Stringer("wait", wait).Msg("waiting")
 				time.Sleep(wait * 1000)
 
 				encodedAddress, _, _ := address.EncodeByProtocol(addr, protocol)
-				log.Printf("%s.%s fetching %s\n", protocol, network, encodedAddress)
+				subLogger.Debug().Str("encoded address", encodedAddress).Msg("fetching")
 
 				if err := f.fetcher.Fetch(context.Background(), protocol, network, addr); err != nil {
-					log.Printf(err.Error())
+					subLogger.Error().Err(err).Msg("")
 					continue
 				}
 
@@ -165,6 +174,9 @@ type Fetcher struct {
 }
 
 func (f *Fetcher) Fetch(ctx context.Context, protocol, network string, addr []byte) error {
+	encodedAddress, _, _ := address.EncodeByProtocol(addr, protocol)
+	logger := log.With().Str("protocol", protocol).Str("network", network).Str("encoded address", encodedAddress).Logger()
+
 	transactions, err := f.receiver.Receive(ctx, protocol, network, addr)
 	if mailbox.IsNetworkNotSupportedError(err) {
 		return errors.Errorf("network `%s.%s` does not have etherscan client configured", protocol, network)
@@ -174,9 +186,7 @@ func (f *Fetcher) Fetch(ctx context.Context, protocol, network string, addr []by
 		return errors.WithStack(err)
 	}
 
-	encodedAddress, _, _ := address.EncodeByProtocol(addr, protocol)
-
-	log.Printf("%s.%s %s fetched %d message transactions", protocol, network, encodedAddress, len(transactions))
+	logger.Info().Str("found transactions", fmt.Sprint(len(transactions))).Msg("fetched message transactions")
 
 	for i := range transactions {
 		tx := transactions[i]

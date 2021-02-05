@@ -25,7 +25,7 @@ func Reverse(resolver nameservice.ReverseLookup, protocol, network string) func(
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if len(r.URL.Query()["address"]) != 1 {
-			errs.JSONWriter(w, http.StatusPreconditionFailed, errors.Errorf("address must be specified exactly once"))
+			errs.JSONWriter(w, r, http.StatusPreconditionFailed, errors.Errorf("address must be specified exactly once"))
 			return
 		}
 
@@ -48,7 +48,7 @@ func Reverse(resolver nameservice.ReverseLookup, protocol, network string) func(
 		}
 
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err)
 			return
 		}
 

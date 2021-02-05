@@ -18,6 +18,7 @@ package bdbstore
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -40,7 +41,7 @@ func getTempDir() string {
 }
 
 func setupDB(path string) (*Database, func(), error) {
-	db, err := New(path)
+	db, err := New(path, ioutil.Discard)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error creating BadgerDB: %v", err)
 	}
@@ -101,7 +102,7 @@ func TestNew(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			db, err := New(tt.dir)
+			db, err := New(tt.dir, ioutil.Discard)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("New() failed to open badger at path %q, err: %v", tt.dir, err)
 				return

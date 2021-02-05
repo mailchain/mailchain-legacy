@@ -28,7 +28,8 @@ import (
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
-	log "github.com/sirupsen/logrus" //nolint:depguard
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper" //nolint:depguard
 	"github.com/ttacon/chalk"
@@ -37,6 +38,7 @@ import (
 
 // CreateRouter configure a router with all api resources.
 func CreateRouter(s *settings.Root, mailbox stores.State, cmd *cobra.Command) (http.Handler, error) {
+	logger := s.Logger.Produce().With().Str("component", "http").Logger()
 	r := mux.NewRouter()
 	api := r.PathPrefix("/api").Subrouter()
 	api.HandleFunc("/spec.json", handlers.GetSpec()).Methods("GET")
@@ -82,7 +84,8 @@ func CreateRouter(s *settings.Root, mailbox stores.State, cmd *cobra.Command) (h
 
 	api.HandleFunc("/version", handlers.GetVersion()).Methods("GET")
 
-	_ = r.Walk(gorillaWalkFn)
+	_ = r.Walk(gorillaWalkFn(logger))
+
 	return r, nil
 }
 
@@ -94,11 +97,13 @@ func SetupFlags(cmd *cobra.Command) error {
 	if err := viper.BindPFlag("server.port", cmd.Flags().Lookup("port")); err != nil {
 		return err
 	}
+
 	if err := viper.BindPFlag("server.cors.disabled", cmd.Flags().Lookup("cors-disabled")); err != nil {
 		return err
 	}
 
 	cmd.PersistentFlags().String("passphrase", "", "Passphrase to encrypt/decrypt key with")
+
 	return nil
 }
 
@@ -120,11 +125,14 @@ func CreateNegroni(config *settings.Server, router http.Handler) *negroni.Negron
 	return n
 }
 
-func gorillaWalkFn(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
-	methods, _ := route.GetMethods()
-	for _, method := range methods {
-		path, _ := route.GetPathTemplate()
-		log.Infof("Serving %s : %s", method, path)
+func gorillaWalkFn(logger zerolog.Logger) func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+	return func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+		methods, _ := route.GetMethods()
+		for _, method := range methods {
+			path, _ := route.GetPathTemplate()
+			log.Info().Msgf("Serving %s : %s", method, path)
+		}
+
+		return nil
 	}
-	return nil
 }

@@ -25,7 +25,7 @@ func Forward(resolver nameservice.ForwardLookup, protocol, network string) func(
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if len(r.URL.Query()["domain-name"]) != 1 {
-			errs.JSONWriter(w, http.StatusPreconditionFailed, errors.Errorf("domain-name must be specified exactly once"))
+			errs.JSONWriter(w, r, http.StatusPreconditionFailed, errors.Errorf("domain-name must be specified exactly once"))
 			return
 		}
 
@@ -39,13 +39,13 @@ func Forward(resolver nameservice.ForwardLookup, protocol, network string) func(
 		}
 
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
 		encAddress, _, err := address.EncodeByProtocol(resolvedAddress, protocol)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"))
 			return
 		}
 

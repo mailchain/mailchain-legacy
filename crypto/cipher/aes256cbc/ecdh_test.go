@@ -17,7 +17,6 @@ package aes256cbc
 import (
 	"bytes"
 	"io"
-	"log"
 	"math/big"
 	"reflect"
 	"testing"
@@ -203,7 +202,7 @@ func Test_generateMac(t *testing.T) {
 				func() ecies.PublicKey {
 					tmpEphemeralPrivateKey, err := ethcrypto.HexToECDSA("0404040404040404040404040404040404040404040404040404040404040404")
 					if err != nil {
-						log.Fatal(err)
+						t.Fatal(err)
 					}
 					return ecies.ImportECDSA(tmpEphemeralPrivateKey).PublicKey
 				}(),

@@ -20,10 +20,10 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus" //nolint:depguard
+	"github.com/rs/zerolog/log"
 )
 
-// HTTPError definition
+// HTTPError definition.
 type HTTPError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
@@ -33,7 +33,12 @@ type HTTPError struct {
 type ErrorWriter func(w http.ResponseWriter, code int, err error)
 
 // JSONWriter writes a swagger-compliant error response.
-func JSONWriter(w http.ResponseWriter, code int, err error) {
+func JSONWriter(w http.ResponseWriter, r *http.Request, code int, err error) {
+	logger := log.Logger
+	if r != nil {
+		logger = log.With().Str("method", r.Method).Stringer("url", r.URL).Logger()
+	}
+
 	if err == nil {
 		err = errors.Errorf("no error specified")
 	}
@@ -51,7 +56,7 @@ func JSONWriter(w http.ResponseWriter, code int, err error) {
 	case http.StatusPreconditionFailed,
 		http.StatusMethodNotAllowed,
 		http.StatusNotFound:
-		logrus.Warnf("status %v: %v", out.Code, err)
+		logger.Debug().Int("status", out.Code).Err(err).Msg("client error")
 	case http.StatusInternalServerError,
 		http.StatusNotImplemented,
 		http.StatusBadGateway,
@@ -62,8 +67,9 @@ func JSONWriter(w http.ResponseWriter, code int, err error) {
 		http.StatusInsufficientStorage,
 		http.StatusLoopDetected,
 		http.StatusNotExtended, http.StatusNetworkAuthenticationRequired:
-		logrus.Errorf("status %v: %+v", out.Code, err)
+
+		logger.Error().Int("status", out.Code).Err(err).Msgf("server error")
 	default:
-		logrus.Errorf("unknown status %v: %+v", out.Code, err)
+		logger.Error().Int("status", out.Code).Err(err).Msg("unknown status")
 	}
 }

@@ -15,7 +15,7 @@ func HandleRequest(relayers map[string]relayer.RelayFunc) func(w http.ResponseWr
 		path := strings.Trim(req.URL.Path, "/")
 		relay, ok := relayers[path]
 		if !ok {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.Errorf("unknown relay destination for %q", path))
+			errs.JSONWriter(w, req, http.StatusInternalServerError, errors.Errorf("unknown relay destination for %q", path))
 			return
 		}
 		relay.HandleRequest(w, req)

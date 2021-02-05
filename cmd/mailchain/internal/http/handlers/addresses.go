@@ -39,19 +39,19 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 	return func(w http.ResponseWriter, r *http.Request) {
 		protocol, err := params.QueryRequireProtocol(r)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
 
 		network, err := params.QueryRequireNetwork(r)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
 
 		rawAddresses, err := ks.GetAddresses(protocol, network)
 		if err != nil {
-			errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
 
@@ -59,7 +59,7 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 		for _, x := range rawAddresses {
 			value, encoding, err := address.EncodeByProtocol(x, protocol)
 			if err != nil {
-				errs.JSONWriter(w, http.StatusInternalServerError, errors.WithStack(err))
+				errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
 				return
 			}
 

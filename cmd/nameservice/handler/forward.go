@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/mailchain/mailchain/errs"
+	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
 )
@@ -42,7 +43,7 @@ func Forward(resolver nameservice.ForwardLookup, protocol, network string) func(
 			return
 		}
 
-		encAddress, _, err := address.EncodeByProtocol(resolvedAddress, protocol)
+		encAddress, _, err := addressing.EncodeByProtocol(resolvedAddress, protocol)
 		if err != nil {
 			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"))
 			return

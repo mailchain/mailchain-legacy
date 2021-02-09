@@ -7,7 +7,6 @@ import (
 	"github.com/mailchain/mailchain/cmd/internal/datastore"
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/pubkey"
 	"github.com/pkg/errors"
 )

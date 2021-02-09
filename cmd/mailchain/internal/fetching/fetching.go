@@ -9,7 +9,6 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
-	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"

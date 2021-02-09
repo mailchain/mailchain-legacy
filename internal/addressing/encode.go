@@ -12,24 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package address
+package addressing
 
 import (
-	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols"
-	"github.com/mailchain/mailchain/internal/protocols/ethereum"
-	"github.com/mailchain/mailchain/internal/protocols/substrate"
 	"github.com/pkg/errors"
 )
 
-// FromPublicKey creates an address from public key.
-func FromPublicKey(pubKey crypto.PublicKey, protocol, network string) (address []byte, err error) {
+// EncodeByProtocol takes an address as `[]byte` then selects the relevant encoding method to encode it as string.
+func EncodeByProtocol(in []byte, protocol string) (encoded, encodingKind string, err error) {
 	switch protocol {
 	case protocols.Ethereum:
-		return ethereum.Address(pubKey)
+		encodingKind = encoding.KindHex0XPrefix
+		encoded = encoding.EncodeHexZeroX(in)
 	case protocols.Substrate:
-		return substrate.SS58AddressFormat(network, pubKey)
+		encodingKind = encoding.KindBase58
+		encoded = encoding.EncodeBase58(in)
 	default:
-		return nil, errors.Errorf("%q unsupported protocol", protocol)
+		err = errors.Errorf("%q unsupported protocol", protocol)
 	}
+
+	return encoded, encodingKind, err
 }

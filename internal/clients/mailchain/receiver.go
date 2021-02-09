@@ -23,7 +23,6 @@ import (
 	"strings"
 
 	"github.com/mailchain/mailchain/encoding"
-	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 	"gopkg.in/resty.v1"

@@ -9,7 +9,6 @@ import (
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/address"
 	"github.com/pkg/errors"
 )
 

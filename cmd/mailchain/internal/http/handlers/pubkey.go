@@ -21,7 +21,7 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/address"
+	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/internal/pubkey"
 	"github.com/pkg/errors"
@@ -135,7 +135,7 @@ func parseGetPublicKey(r *http.Request) (*GetPublicKeyRequest, error) {
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	addressBytes, err := address.DecodeByProtocol(addr, protocol)
+	addressBytes, err := addressing.DecodeByProtocol(addr, protocol)
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to decode public key")
 	}

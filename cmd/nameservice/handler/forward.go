@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
 )

@@ -20,7 +20,7 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/address"
+	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
 )
@@ -57,7 +57,7 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 
 		addresses := []GetAddressesItem{}
 		for _, x := range rawAddresses {
-			value, encoding, err := address.EncodeByProtocol(x, protocol)
+			value, encoding, err := addressing.EncodeByProtocol(x, protocol)
 			if err != nil {
 				errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
 				return

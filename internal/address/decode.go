@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package addressing
+package address
 
 import (
-	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/protocols"
-	"github.com/mailchain/mailchain/internal/protocols/ethereum"
-	"github.com/mailchain/mailchain/internal/protocols/substrate"
+	"github.com/mr-tron/base58"
 	"github.com/pkg/errors"
 )
 
-// FromPublicKey creates an address from public key.
-func FromPublicKey(pubKey crypto.PublicKey, protocol, network string) (address []byte, err error) {
+// DecodeByProtocol returns the raw `[]byte` from the supplied address.
+func DecodeByProtocol(in, protocol string) ([]byte, error) {
 	switch protocol {
 	case protocols.Ethereum:
-		return ethereum.Address(pubKey)
+		return encoding.DecodeHexZeroX(in)
 	case protocols.Substrate:
-		return substrate.SS58AddressFormat(network, pubKey)
+		return base58.Decode(in)
 	default:
 		return nil, errors.Errorf("%q unsupported protocol", protocol)
 	}

@@ -19,7 +19,7 @@ import (
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/multikey"
-	"github.com/mailchain/mailchain/internal/addressing"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
 )
@@ -61,7 +61,7 @@ func (f FileStore) GetAddresses(protocol, network string) ([][]byte, error) {
 	}
 
 	for _, pubKey := range keys {
-		pubkeyAddress, err := addressing.FromPublicKey(pubKey, protocol, network)
+		pubkeyAddress, err := address.FromPublicKey(pubKey, protocol, network)
 		if err != nil {
 			continue
 		}
@@ -86,7 +86,7 @@ func (f FileStore) getEncryptedKeyByAddress(searchAddress []byte, protocol, netw
 			continue
 		}
 
-		pubkeyAddress, err := addressing.FromPublicKey(pubKey, protocol, network)
+		pubkeyAddress, err := address.FromPublicKey(pubKey, protocol, network)
 		if err != nil {
 			continue
 		}

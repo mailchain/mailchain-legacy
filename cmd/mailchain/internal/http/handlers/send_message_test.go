@@ -23,7 +23,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/encoding"
-	"github.com/mailchain/mailchain/internal/addressing/addressingtest"
+	"github.com/mailchain/mailchain/internal/address/addresstest"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/sender"
@@ -163,7 +163,7 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To: encoding.EncodeHex(addressingtest.EthereumCharlotte),
+							To: encoding.EncodeHex(addresstest.EthereumCharlotte),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
@@ -183,8 +183,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:      encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From:    encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:      encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From:    encoding.EncodeHex(addresstest.EthereumSofia),
 							ReplyTo: "<invalid",
 						},
 						Subject:           "subject-value",
@@ -205,8 +205,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
@@ -226,12 +226,12 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
-						PublicKey:         encoding.EncodeHex(addressingtest.EthereumSofia),
+						PublicKey:         encoding.EncodeHex(addresstest.EthereumSofia),
 						PublicKeyEncoding: "public-key-Encoding-value",
 						PublicKeyKind:     "public-key-kind-value",
 					},
@@ -248,8 +248,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:   "subject-value",
 						Body:      "body-value",
@@ -267,8 +267,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:   "subject-value",
 						Body:      "body-value",
@@ -286,8 +286,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
@@ -309,8 +309,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
@@ -332,8 +332,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
@@ -355,8 +355,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
@@ -378,8 +378,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
@@ -401,8 +401,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addresstest.EthereumCharlotte),
+							From: encoding.EncodeHex(addresstest.EthereumSofia),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",

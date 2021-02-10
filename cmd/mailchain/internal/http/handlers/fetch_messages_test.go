@@ -10,7 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
-	"github.com/mailchain/mailchain/internal/addressing/addressingtest"
+	"github.com/mailchain/mailchain/internal/address/addresstest"
 	"github.com/mailchain/mailchain/internal/clients/etherscan"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/keystoretest"
@@ -122,14 +122,14 @@ func Test_FetchMessages(t *testing.T) {
 			args{
 				inbox: func() stores.State {
 					inbox := statemock.NewMockState(mockCtrl)
-					inbox.EXPECT().PutTransaction("ethereum", "mainnet", addressingtest.EthereumCharlotte, stores.Transaction{EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"), BlockNumber: 100, Hash: []byte("YS1oYXNo")}).Return(nil).Times(1)
+					inbox.EXPECT().PutTransaction("ethereum", "mainnet", addresstest.EthereumCharlotte, stores.Transaction{EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"), BlockNumber: 100, Hash: []byte("YS1oYXNo")}).Return(nil).Times(1)
 					return inbox
 				}(),
 				receivers: func() map[string]mailbox.Receiver {
 					return map[string]mailbox.Receiver{
 						"ethereum/mainnet": func() mailbox.Receiver {
 							receiver := mailboxtest.NewMockReceiver(mockCtrl)
-							receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumCharlotte).
+							receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addresstest.EthereumCharlotte).
 								Return([]stores.Transaction{
 									{
 										EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
@@ -143,11 +143,11 @@ func Test_FetchMessages(t *testing.T) {
 				}(),
 				ks: func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().HasAddress(addressingtest.EthereumCharlotte, "ethereum", "mainnet").Return(true).Times(1)
+					store.EXPECT().HasAddress(addresstest.EthereumCharlotte, "ethereum", "mainnet").Return(true).Times(1)
 					return store
 				}(),
 			},
-			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addressingtest.EthereumCharlotte)), nil),
+			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addresstest.EthereumCharlotte)), nil),
 			http.StatusOK,
 		},
 		{

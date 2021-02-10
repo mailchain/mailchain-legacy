@@ -22,7 +22,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/addressing"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
@@ -120,7 +120,7 @@ func parseGetResolveAddressRequest(r *http.Request) (protocol, network string, a
 		return "", "", nil, err
 	}
 
-	addr, err = addressing.DecodeByProtocol(mux.Vars(r)["address"], protocol)
+	addr, err = address.DecodeByProtocol(mux.Vars(r)["address"], protocol)
 	if err != nil {
 		return "", "", nil, err
 	}

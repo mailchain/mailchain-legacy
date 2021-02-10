@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/address"
+	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
 )
@@ -29,7 +29,7 @@ func Reverse(resolver nameservice.ReverseLookup, protocol, network string) func(
 			return
 		}
 
-		addr, err := address.DecodeByProtocol(r.URL.Query()["address"][0], protocol)
+		addr, err := addressing.DecodeByProtocol(r.URL.Query()["address"][0], protocol)
 		if err != nil {
 			_ = json.NewEncoder(w).Encode(response{
 				Status: nameservice.ErrorToRFC1035Status(nameservice.ErrFormat),

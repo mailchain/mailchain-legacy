@@ -23,7 +23,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/address"
+	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -168,7 +168,7 @@ func parseGetMessagesRequest(r *http.Request) (*GetMessagesRequest, error) {
 		return nil, err
 	}
 
-	addressBytes, err := address.DecodeByProtocol(addr, protocol)
+	addressBytes, err := addressing.DecodeByProtocol(addr, protocol)
 	if err != nil {
 		return nil, err
 	}

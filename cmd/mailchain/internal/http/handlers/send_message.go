@@ -26,7 +26,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/address"
+	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -76,7 +76,7 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 			return
 		}
 
-		from, err := address.DecodeByProtocol(req.Body.from.ChainAddress, req.Protocol)
+		from, err := addressing.DecodeByProtocol(req.Body.from.ChainAddress, req.Protocol)
 		if err != nil {
 			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"))
 			return

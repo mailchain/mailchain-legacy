@@ -9,7 +9,7 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
-	"github.com/mailchain/mailchain/internal/address"
+	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
@@ -154,7 +154,7 @@ func (f *FetchGroup) Fetch() {
 				subLogger.Debug().Stringer("wait", wait).Msg("waiting")
 				time.Sleep(wait * 1000)
 
-				encodedAddress, _, _ := address.EncodeByProtocol(addr, protocol)
+				encodedAddress, _, _ := addressing.EncodeByProtocol(addr, protocol)
 				subLogger.Debug().Str("encoded address", encodedAddress).Msg("fetching")
 
 				if err := f.fetcher.Fetch(context.Background(), protocol, network, addr); err != nil {
@@ -174,7 +174,7 @@ type Fetcher struct {
 }
 
 func (f *Fetcher) Fetch(ctx context.Context, protocol, network string, addr []byte) error {
-	encodedAddress, _, _ := address.EncodeByProtocol(addr, protocol)
+	encodedAddress, _, _ := addressing.EncodeByProtocol(addr, protocol)
 	logger := log.With().Str("protocol", protocol).Str("network", network).Str("encoded address", encodedAddress).Logger()
 
 	transactions, err := f.receiver.Receive(ctx, protocol, network, addr)

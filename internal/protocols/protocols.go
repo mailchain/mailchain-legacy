@@ -23,6 +23,8 @@ const (
 	Ethereum = "ethereum"
 	// Substrate protocol name.
 	Substrate = "substrate"
+	// Algorand protocol name.
+	Algorand = "algorand"
 )
 
 // NetworkNames supported by protocol.

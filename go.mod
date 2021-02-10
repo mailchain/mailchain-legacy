@@ -6,7 +6,6 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/Masterminds/squirrel v1.4.0
 	github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412
-	github.com/algorand/go-algorand-sdk v1.5.1
 	github.com/andreburgaud/crypt2go v0.11.0
 	github.com/aws/aws-sdk-go v1.34.6
 	github.com/cenkalti/backoff/v4 v4.1.0

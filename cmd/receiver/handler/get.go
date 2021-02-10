@@ -9,7 +9,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/addressing"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/pkg/errors"
 )
 
@@ -102,7 +102,7 @@ func parseGetEnvelopesRequest(r *http.Request) (*GetEnvelopesRequest, error) {
 		return nil, err
 	}
 
-	addressBytes, err := addressing.DecodeByProtocol(addr, protocol)
+	addressBytes, err := address.DecodeByProtocol(addr, protocol)
 	if err != nil {
 		return nil, err
 	}

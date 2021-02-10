@@ -19,7 +19,7 @@ import (
 
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/encoding"
-	"github.com/mailchain/mailchain/internal/addressing"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/internal/envelope"
 	"github.com/mailchain/mailchain/internal/hash"
 	"github.com/mailchain/mailchain/internal/mail"
@@ -80,13 +80,13 @@ func SendMessage(ctx context.Context, protocol, network string, msg *mail.Messag
 	}
 
 	transactonData := append(encoding.DataPrefix(), encodedData...)
-	to, err := addressing.DecodeByProtocol(msg.Headers.To.ChainAddress, protocol)
+	to, err := address.DecodeByProtocol(msg.Headers.To.ChainAddress, protocol)
 
 	if err != nil {
 		return errors.WithMessage(err, "could not decode to address")
 	}
 
-	from, err := addressing.DecodeByProtocol(msg.Headers.From.ChainAddress, protocol)
+	from, err := address.DecodeByProtocol(msg.Headers.From.ChainAddress, protocol)
 	if err != nil {
 		return errors.WithMessage(err, "could not decode from address")
 	}

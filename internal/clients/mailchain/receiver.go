@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"github.com/mailchain/mailchain/encoding"
-	"github.com/mailchain/mailchain/internal/addressing"
+	"github.com/mailchain/mailchain/internal/address"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 	"gopkg.in/resty.v1"
@@ -43,7 +43,7 @@ type Receiver struct {
 
 // GetTransactionsByAddress get transactions from address via etherscan.
 func (c Receiver) getTransactionsByAddress(protocol, network string, addr []byte) (*envelopeList, error) {
-	encodedAddress, _, err := addressing.EncodeByProtocol(addr, protocol)
+	encodedAddress, _, err := address.EncodeByProtocol(addr, protocol)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

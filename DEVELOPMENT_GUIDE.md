@@ -2,7 +2,10 @@
 
 ## Running a development version
 
-Mailchain is developed and tested against golang 1.13.x you can confirm this by checking the go version in `.travis.yml`. Use the same go minor version when developing or testing Mailchain from source code.
+Development is done using the [Go Programming Language](https://golang.org/).
+The version of go is specified in the project's [go.mod](go.mod) file. This document assumes that you have a functioning
+environment setup. If you need assistance setting up an environment please visit
+the [official Go documentation website](https://golang.org/doc/).
 
 Fork the repository and clone it to your local environment (see [contributing guidelines](https://github.com/mailchain/mailchain/blob/master/CONTRIBUTING.md#we-use-github-flow)).
 

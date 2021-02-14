@@ -22,7 +22,7 @@ func Address(pubKey crypto.PublicKey) ([]byte, error) {
 	}
 }
 
-// Algorand 4-byte checksum added to public key to make an algorand address.
+// Algorand 4-byte checksum. Added to a public key it combines make an algorand address.
 func checksum(data []byte) []byte {
 	fullHash := sha512.Sum512_256(data)
 	return fullHash[len(fullHash)-checksumLength:]

@@ -80,6 +80,12 @@
 #       - "ethereum/rinkeby"
 #       - "ethereum/ropsten"
 # public-key-finders:
+#   algorand-public-key-finder:
+#     disabled: false
+#     enabled-networks:
+#       - "algorand/mainnet"
+#       - "algorand/betanet"
+#       - "algorand/testnet"
 #   blockscout-no-auth:
 #     enabled-networks:
 #       - "ethereum/mainnet"

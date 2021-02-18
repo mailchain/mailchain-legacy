@@ -24,6 +24,8 @@ import (
 // DecodeByProtocol returns the raw `[]byte` from the supplied address.
 func DecodeByProtocol(in, protocol string) ([]byte, error) {
 	switch protocol {
+	case protocols.Algorand:
+		return encoding.DecodeBase32(in)
 	case protocols.Ethereum:
 		return encoding.DecodeHexZeroX(in)
 	case protocols.Substrate:

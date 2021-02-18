@@ -19,7 +19,6 @@ import (
 	"testing"
 
 	"github.com/mailchain/mailchain/encoding/encodingtest"
-	"github.com/mr-tron/base58"
 )
 
 func TestDecodeByProtocol(t *testing.T) {
@@ -48,10 +47,16 @@ func TestDecodeByProtocol(t *testing.T) {
 				"5DJJhV3tVzsWG1jZfL157azn8iRyDC7HyNG1yh8v2nQYd994",
 				"substrate",
 			},
-			func() []byte {
-				b, _ := base58.Decode("5DJJhV3tVzsWG1jZfL157azn8iRyDC7HyNG1yh8v2nQYd994")
-				return b
-			}(),
+			encodingtest.MustDecodeBase32("5DJJhV3tVzsWG1jZfL157azn8iRyDC7HyNG1yh8v2nQYd994"),
+			false,
+		},
+		{
+			"algorand",
+			args{
+				"C7Z4NNMIMOGZW56JCILF6DVY4MBZJMHXUQ67W2WKVE6U5QJSIDPYUEAXQU",
+				"algorand",
+			},
+			encodingtest.MustDecodeBase32("C7Z4NNMIMOGZW56JCILF6DVY4MBZJMHXUQ67W2WKVE6U5QJSIDPYUEAXQU"),
 			false,
 		},
 		{

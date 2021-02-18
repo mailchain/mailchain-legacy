@@ -12,25 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package addressing
+package encodingtest
 
 import (
 	"github.com/mailchain/mailchain/encoding"
-	"github.com/mailchain/mailchain/internal/protocols"
-	"github.com/mr-tron/base58"
-	"github.com/pkg/errors"
 )
 
-// DecodeByProtocol returns the raw `[]byte` from the supplied address.
-func DecodeByProtocol(in, protocol string) ([]byte, error) {
-	switch protocol {
-	case protocols.Algorand:
-		return encoding.DecodeBase32(in)
-	case protocols.Ethereum:
-		return encoding.DecodeHexZeroX(in)
-	case protocols.Substrate:
-		return base58.Decode(in)
-	default:
-		return nil, errors.Errorf("%q unsupported protocol", protocol)
+// MustDecodeBase32 decodes a Base32 string
+// It panics for invalid input.
+func MustDecodeBase32(input string) []byte {
+	dec, err := encoding.DecodeBase32(input)
+	if err != nil {
+		panic(err)
 	}
+
+	return dec
 }

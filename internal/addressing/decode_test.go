@@ -15,11 +15,10 @@
 package addressing
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/mailchain/mailchain/encoding/encodingtest"
-	"github.com/mr-tron/base58"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDecodeByProtocol(t *testing.T) {
@@ -48,10 +47,16 @@ func TestDecodeByProtocol(t *testing.T) {
 				"5DJJhV3tVzsWG1jZfL157azn8iRyDC7HyNG1yh8v2nQYd994",
 				"substrate",
 			},
-			func() []byte {
-				b, _ := base58.Decode("5DJJhV3tVzsWG1jZfL157azn8iRyDC7HyNG1yh8v2nQYd994")
-				return b
-			}(),
+			encodingtest.MustDecodeBase58("5DJJhV3tVzsWG1jZfL157azn8iRyDC7HyNG1yh8v2nQYd994"),
+			false,
+		},
+		{
+			"algorand",
+			args{
+				"C7Z4NNMIMOGZW56JCILF6DVY4MBZJMHXUQ67W2WKVE6U5QJSIDPYUEAXQU",
+				"algorand",
+			},
+			[]byte{0x17, 0xf3, 0xc6, 0xb5, 0x88, 0x63, 0x8d, 0x9b, 0x77, 0xc9, 0x12, 0x16, 0x5f, 0xe, 0xb8, 0xe3, 0x3, 0x94, 0xb0, 0xf7, 0xa4, 0x3d, 0xfb, 0x6a, 0xca, 0xa9, 0x3d, 0x4e, 0xc1, 0x32, 0x40, 0xdf, 0x8a, 0x10, 0x17, 0x85},
 			false,
 		},
 		{
@@ -71,7 +76,7 @@ func TestDecodeByProtocol(t *testing.T) {
 				t.Errorf("DecodeByProtocol() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("DecodeByProtocol() = %v, want %v", got, tt.want)
 			}
 		})

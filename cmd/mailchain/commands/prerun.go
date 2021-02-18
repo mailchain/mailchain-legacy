@@ -24,6 +24,7 @@ func prerunInitConfig(v *viper.Viper) func(cmd *cobra.Command, args []string) er
 	return func(cmd *cobra.Command, args []string) error {
 		cfgFile, _ := cmd.Flags().GetString("config")
 		logLevel, _ := cmd.Flags().GetString("log-level")
+		_ = viper.BindPFlag("logger.level", cmd.Flags().Lookup("log-level"))
 		preventInitConfig, _ := cmd.Flags().GetBool("prevent-init-config")
 
 		return settings.InitStore(v, cfgFile, logLevel, !preventInitConfig)

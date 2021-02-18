@@ -27,20 +27,31 @@ func getReceivers(config *settings.Root) (receiverByKind map[string]mailbox.Rece
 	}
 
 	for p := range config.Protocols {
+		logger := log.With().Str("component", "Fetching").Str("protocol", p).Logger()
 		protocol := config.Protocols[p]
+
 		if protocol.Disabled.Get() {
+			logger.Info().Msg("protocol disabled skipping")
 			continue
 		}
 
 		for n := range protocol.Networks {
+			logger := logger.With().Str("network", n).Logger()
 			network := protocol.Networks[n]
+
 			if network.Disabled() {
+				logger.Info().Msg("network disabled skipping")
 				continue
 			}
 
 			r, err := network.ProduceReceiver(config.Receivers)
 			if err != nil {
 				return nil, nil, nil, errors.WithMessagef(err, "failed to get receiver for %s.%s", p, n)
+			}
+
+			if r == nil {
+				logger.Info().Msg("no receiver configured skipping")
+				continue
 			}
 
 			receiverByKind[r.Kind()] = r

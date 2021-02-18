@@ -35,6 +35,16 @@ func TestEncodeByProtocol(t *testing.T) {
 		wantErr          bool
 	}{
 		{
+			"algorand",
+			args{
+				encodingtest.MustDecodeBase32("C7Z4NNMIMOGZW56JCILF6DVY4MBZJMHXUQ67W2WKVE6U5QJSIDPYUEAXQU"),
+				"algorand",
+			},
+			"C7Z4NNMIMOGZW56JCILF6DVY4MBZJMHXUQ67W2WKVE6U5QJSIDPYUEAXQU",
+			encoding.KindBase32,
+			false,
+		},
+		{
 			"ethereum",
 			args{
 				encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
@@ -42,6 +52,16 @@ func TestEncodeByProtocol(t *testing.T) {
 			},
 			"0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
 			encoding.KindHex0XPrefix,
+			false,
+		},
+		{
+			"substrate",
+			args{
+				encodingtest.MustDecodeBase58("5DJJhV3tVzsWG1jZfL157azn8iRyDC7HyNG1yh8v2nQYd994"),
+				"substrate",
+			},
+			"5DJJhV3tVzsWG1jZfL157azn8iRyDC7HyNG1yh8v2nQYd994",
+			encoding.KindBase58,
 			false,
 		},
 		{

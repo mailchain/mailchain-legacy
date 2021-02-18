@@ -23,6 +23,9 @@ import (
 // EncodeByProtocol takes an address as `[]byte` then selects the relevant encoding method to encode it as string.
 func EncodeByProtocol(in []byte, protocol string) (encoded, encodingKind string, err error) {
 	switch protocol {
+	case protocols.Algorand:
+		encodingKind = encoding.KindBase32
+		encoded = encoding.EncodeBase32(in)
 	case protocols.Ethereum:
 		encodingKind = encoding.KindHex0XPrefix
 		encoded = encoding.EncodeHexZeroX(in)

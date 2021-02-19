@@ -17,6 +17,7 @@ package addressing
 import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/protocols/algorand"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 	"github.com/pkg/errors"
@@ -25,6 +26,8 @@ import (
 // FromPublicKey creates an address from public key.
 func FromPublicKey(pubKey crypto.PublicKey, protocol, network string) (address []byte, err error) {
 	switch protocol {
+	case protocols.Algorand:
+		return algorand.Address(pubKey)
 	case protocols.Ethereum:
 		return ethereum.Address(pubKey)
 	case protocols.Substrate:

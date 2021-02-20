@@ -23,6 +23,9 @@ import (
 // EncodeByProtocol selects the correct encoding method, then encodes the public key with it.
 func EncodeByProtocol(in []byte, protocol string) (encoded, encodingType string, err error) {
 	switch protocol {
+	case protocols.Algorand:
+		encodingType = encoding.KindBase32
+		encoded = encoding.EncodeBase32(in)
 	case protocols.Ethereum:
 		encodingType = encoding.KindHex0XPrefix
 		encoded = encoding.EncodeHexZeroX(in)

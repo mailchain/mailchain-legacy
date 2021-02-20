@@ -1,4 +1,28 @@
 protocols:
+  algorand:
+    disabled: false
+    networks:
+      betanet:
+        disabled: false
+        nameservice-address: ""
+        nameservice-domain-name: ""
+        public-key-finder: "algorand-public-key-extractor"
+        receiver: ""
+        sender: ""
+      mainnet:
+        disabled: false
+        nameservice-address: ""
+        nameservice-domain-name: ""
+        public-key-finder: "algorand-public-key-extractor"
+        receiver: ""
+        sender: ""
+      testnet:
+        disabled: false
+        nameservice-address: ""
+        nameservice-domain-name: ""
+        public-key-finder: "algorand-public-key-extractor"
+        receiver: ""
+        sender: ""
   ethereum:
     disabled: false
     networks:
@@ -80,7 +104,7 @@ nameservice-domain-name:
       - "ethereum/rinkeby"
       - "ethereum/ropsten"
 public-key-finders:
-  algorand-public-key-finder:
+  algorand-public-key-extractor:
     disabled: false
     enabled-networks:
       - "algorand/mainnet"

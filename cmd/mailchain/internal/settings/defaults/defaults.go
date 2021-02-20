@@ -49,7 +49,7 @@ const (
 	// Port default value.
 	Port = 8080
 	// AlgorandPublicKeyFinder default value.
-	AlgorandPublicKeyFinder = "algorand-public-key-finder"
+	AlgorandPublicKeyFinder = "algorand-public-key-extractor"
 	// SubstratePublicKeyFinder default value.
 	SubstratePublicKeyFinder = "substrate-public-key-finder"
 	// CacheTimeout default value for caching interval in memory

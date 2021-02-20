@@ -7,6 +7,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/protocols/algorand"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
@@ -32,6 +33,11 @@ func FromStore(s values.Store) *Root {
 				substrate.EdgewareMainnet:   network(s, protocols.Substrate, substrate.EdgewareMainnet, defaults.SubstrateNetworkAny(substrate.EdgewareMainnet)),
 				substrate.EdgewareBeresheet: network(s, protocols.Substrate, substrate.EdgewareBeresheet, defaults.SubstrateNetworkAny(substrate.EdgewareBeresheet)),
 				substrate.EdgewareLocal:     network(s, protocols.Substrate, substrate.EdgewareLocal, defaults.SubstrateNetworkAny(substrate.EdgewareLocal)),
+			}),
+			protocols.Algorand: protocol(s, protocols.Algorand, map[string]NetworkClient{
+				algorand.Mainnet: network(s, protocols.Algorand, algorand.Mainnet, defaults.AlgorandNetworkAny(algorand.Mainnet)),
+				algorand.Testnet: network(s, protocols.Algorand, algorand.Testnet, defaults.AlgorandNetworkAny(algorand.Testnet)),
+				algorand.Betanet: network(s, protocols.Algorand, algorand.Betanet, defaults.AlgorandNetworkAny(algorand.Betanet)),
 			}),
 		},
 		// other

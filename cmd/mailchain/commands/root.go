@@ -29,7 +29,7 @@ Complete documentation is available at https://github.com/mailchain/mailchain`,
 		PersistentPreRunE: prerunInitConfig(v),
 	}
 	cmd.PersistentFlags().String("config", "", "config file (default is $HOME/.mailchain/.mailchain.yaml)")
-	cmd.PersistentFlags().String("log-level", "warn", "log level [Panic,Fatal,Error,Warn,Info,Debug]")
+	cmd.PersistentFlags().String("log-level", "warn", "log level [Error,Warn,Info,Debug]")
 	cmd.PersistentFlags().Bool("prevent-init-config", false, "stop automatically creating config if no file is found")
 
 	config := settings.FromStore(v)

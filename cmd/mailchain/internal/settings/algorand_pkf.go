@@ -9,7 +9,6 @@ import (
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/algorand"
-	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
 // AlgorandPublicKeyFinder configuration element.
@@ -51,7 +50,7 @@ func (r AlgorandPublicKeyFinder) Supports() map[string]bool {
 
 // Produce a `mailbox.PubKeyFinder` base on the configuration.
 func (r AlgorandPublicKeyFinder) Produce() (mailbox.PubKeyFinder, error) {
-	return substrate.NewPublicKeyFinder(), nil
+	return algorand.NewPublicKeyFinder(), nil
 }
 
 // Output configuration as an `output.Element` for use in exporting configuration.

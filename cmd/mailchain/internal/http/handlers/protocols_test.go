@@ -39,7 +39,7 @@ func TestGetProtocols(t *testing.T) {
 		wantStatus int
 	}{
 		{
-			"200-disabled-ethereum",
+			"200-disabled-all",
 			args{
 				func() *settings.Root {
 					m := valuestest.NewMockStore(mockCtrl)
@@ -47,6 +47,8 @@ func TestGetProtocols(t *testing.T) {
 					m.EXPECT().GetBool("protocols.ethereum.disabled").Return(true)
 					m.EXPECT().IsSet("protocols.substrate.disabled").Return(true)
 					m.EXPECT().GetBool("protocols.substrate.disabled").Return(true)
+					m.EXPECT().IsSet("protocols.algorand.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.algorand.disabled").Return(true)
 					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
 					return settings.FromStore(m)
 				}(),
@@ -62,6 +64,8 @@ func TestGetProtocols(t *testing.T) {
 					m.EXPECT().GetBool("protocols.ethereum.networks.goerli.disabled").Return(true)
 					m.EXPECT().IsSet("protocols.substrate.disabled").Return(true)
 					m.EXPECT().GetBool("protocols.substrate.disabled").Return(true)
+					m.EXPECT().IsSet("protocols.algorand.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.algorand.disabled").Return(true)
 					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
 					return settings.FromStore(m)
 				}(),
@@ -77,6 +81,8 @@ func TestGetProtocols(t *testing.T) {
 					m.EXPECT().GetString("protocols.ethereum.networks.goerli.nameservice-address").Return("")
 					m.EXPECT().IsSet("protocols.substrate.disabled").Return(true)
 					m.EXPECT().GetBool("protocols.substrate.disabled").Return(true)
+					m.EXPECT().IsSet("protocols.algorand.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.algorand.disabled").Return(true)
 					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
 					return settings.FromStore(m)
 				}(),
@@ -90,6 +96,8 @@ func TestGetProtocols(t *testing.T) {
 					m := valuestest.NewMockStore(mockCtrl)
 					m.EXPECT().IsSet("protocols.substrate.disabled").Return(true)
 					m.EXPECT().GetBool("protocols.substrate.disabled").Return(true)
+					m.EXPECT().IsSet("protocols.algorand.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.algorand.disabled").Return(true)
 					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
 					return settings.FromStore(m)
 				}(),
@@ -103,6 +111,23 @@ func TestGetProtocols(t *testing.T) {
 					m := valuestest.NewMockStore(mockCtrl)
 					m.EXPECT().IsSet("protocols.ethereum.disabled").Return(true)
 					m.EXPECT().GetBool("protocols.ethereum.disabled").Return(true)
+					m.EXPECT().IsSet("protocols.algorand.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.algorand.disabled").Return(true)
+					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
+					return settings.FromStore(m)
+				}(),
+			},
+			http.StatusOK,
+		},
+		{
+			"200-default-algorand",
+			args{
+				func() *settings.Root {
+					m := valuestest.NewMockStore(mockCtrl)
+					m.EXPECT().IsSet("protocols.ethereum.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.ethereum.disabled").Return(true)
+					m.EXPECT().IsSet("protocols.substrate.disabled").Return(true)
+					m.EXPECT().GetBool("protocols.substrate.disabled").Return(true)
 					m.EXPECT().IsSet(gomock.Any()).Return(false).AnyTimes()
 					return settings.FromStore(m)
 				}(),

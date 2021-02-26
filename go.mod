@@ -1,6 +1,6 @@
 module github.com/mailchain/mailchain
 
-go 1.13
+go 1.16
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1
@@ -54,7 +54,6 @@ require (
 	github.com/wealdtech/go-ens/v3 v3.4.3
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73 // indirect
-	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
 	golang.org/x/sys v0.0.0-20200905004654-be1d3432aa8f // indirect
 	golang.org/x/text v0.3.3 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect

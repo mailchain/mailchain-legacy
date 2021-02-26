@@ -59,7 +59,9 @@ builds:
   goarch:
     - amd64  
 archives:
-  - format: tar.gz
+  - 
+    allow_different_binary_count: true
+    format: tar.gz
     format_overrides:
       - goos: windows
         format: zip
@@ -95,7 +97,7 @@ changelog:
     - Merge branch    
 brews:
   -
-    github:
+    tap:
       owner: mailchain
       name: homebrew-tap
     folder: Formula
@@ -112,7 +114,7 @@ scoop:
   license: MIT
 dockers:
   -     
-    binaries: # Name templates of the built binaries that should be used.
+    binaries:
     - indexer
     goos: linux # GOOS of the built binary that should be used. 
     goarch: amd64 # GOARCH of the built binary that should be used.
@@ -131,7 +133,7 @@ dockers:
     - "--label=repository=https://github.com/mailchain/mailchain"
     - "--label=homepage=https://mailchain.xyz"
   -     
-    binaries: # Name templates of the built binaries that should be used.
+    binaries:
     - receiver
     goos: linux # GOOS of the built binary that should be used. 
     goarch: amd64 # GOARCH of the built binary that should be used.

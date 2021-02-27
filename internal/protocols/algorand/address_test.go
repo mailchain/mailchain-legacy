@@ -7,6 +7,7 @@ import (
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -63,6 +64,14 @@ func TestAddress(t *testing.T) {
 
 			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Address() = %v, want %v", got, tt.want)
+			}
+
+			if err != nil {
+				return
+			}
+
+			if !assert.Len(t, encoding.EncodeBase32(got), 58) {
+				t.Error("Encoded address must have a length of 58")
 			}
 		})
 	}

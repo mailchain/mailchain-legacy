@@ -30,6 +30,8 @@ const (
 	KindBase58 = "base58/plain"
 	// KindBase58SubstrateAddress encoding value.
 	KindBase58SubstrateAddress = "base58/ss58-address"
+	// KindMnemonicAlgorand encoding value.
+	KindMnemonicAlgorand = "mnemonic/algorand"
 )
 
 // PublicKeyEncoding check encoding types.

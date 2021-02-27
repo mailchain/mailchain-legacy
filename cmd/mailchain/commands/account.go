@@ -53,7 +53,7 @@ func getPrivateKeyBytes(privateKeyEncoding, privateKeyInput string) ([]byte, err
 	case encoding.KindMnemonicAlgorand:
 		return encoding.DecodeMnemonicAlgorand(privateKeyInput)
 	default:
-		return nil, errors.New("private key encoding type not supported.")
+		return nil, errors.New("private key encoding type not supported")
 	}
 }
 
@@ -111,6 +111,7 @@ func accountAddCmd(ks keystore.Store, passphrasePrompt, privateKeyPrompt prompts
 
 			cmd.Printf(chalk.Green.Color("Private key added\n"))
 			cmd.Printf("Public key=%s\n", encoding.EncodeHex(pubKey.Bytes()))
+
 			return nil
 		},
 	}
@@ -145,6 +146,7 @@ func accountListCmd(ks keystore.Store) *cobra.Command {
 
 				cmd.Printf("Encoding: %s, address: %s\n", encoding, encoded)
 			}
+
 			return nil
 		},
 	}

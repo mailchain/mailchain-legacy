@@ -22,6 +22,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts/promptstest"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/encoding"
@@ -85,7 +86,7 @@ func Test_accountListCmd(t *testing.T) {
 			true,
 		},
 		{
-			"err-empty-protocol",
+			"err-missing-protocol",
 			args{
 				func() keystore.Store {
 					m := keystoretest.NewMockStore(mockCtrl)
@@ -94,10 +95,9 @@ func Test_accountListCmd(t *testing.T) {
 			},
 			nil,
 			map[string]string{
-				"protocol": "",
-				"network":  "mainnet",
+				"network": "mainnet",
 			},
-			"Error: `--protocol` must be specified to return address list",
+			"Error: required flag(s) \"protocol\" not set",
 			true,
 		},
 		{
@@ -111,9 +111,8 @@ func Test_accountListCmd(t *testing.T) {
 			nil,
 			map[string]string{
 				"protocol": "ethereum",
-				"network":  "",
 			},
-			"Error: `--network` must be specified to return address list",
+			"Error: required flag(s) \"network\" not set",
 			true,
 		},
 	}
@@ -149,10 +148,10 @@ func Test_accountAddCmd(t *testing.T) {
 		cmdArgs     []string
 		cmdFlags    map[string]string
 		wantOutput  string
-		wantExecErr bool
+		wantExecErr string
 	}{
 		{
-			"success",
+			"success-hex",
 			args{
 				func() keystore.Store {
 					m := keystoretest.NewMockStore(mockCtrl)
@@ -168,7 +167,31 @@ func Test_accountAddCmd(t *testing.T) {
 				"key-type": crypto.KindSECP256K1,
 			},
 			"\x1b[32mPrivate key added\n\x1b[39mPublic key=69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0\n",
-			false,
+			"",
+		},
+		{
+			"success-mnemonic-algorand",
+			args{
+				func() keystore.Store {
+					m := keystoretest.NewMockStore(mockCtrl)
+					pk, _ := multikey.PrivateKeyFromBytes(ed25519test.SofiaPrivateKey.Kind(), ed25519test.SofiaPrivateKey.Bytes())
+					m.EXPECT().Store(pk, gomock.Any()).Return(ed25519test.SofiaPublicKey, nil)
+					return m
+				}(),
+				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
+				promptstest.MockRequiredSecret(t, func() string {
+					s, err := encoding.EncodeMnemonicAlgorand(ed25519test.SofiaPrivateKey.Bytes()[:32])
+					assert.NoError(t, err)
+					return s
+				}(), nil),
+			},
+			nil,
+			map[string]string{
+				"key-type":             crypto.KindED25519,
+				"private-key-encoding": encoding.KindMnemonicAlgorand,
+			},
+			"\x1b[32mPrivate key added\n\x1b[39mPublic key=723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671\n",
+			"",
 		},
 		{
 			"err-keystore",
@@ -186,8 +209,8 @@ func Test_accountAddCmd(t *testing.T) {
 			map[string]string{
 				"key-type": crypto.KindSECP256K1,
 			},
-			"Error: key could not be stored: failed",
-			true,
+			"",
+			"key could not be stored: failed",
 		},
 		{
 			"err-passphrase",
@@ -203,8 +226,8 @@ func Test_accountAddCmd(t *testing.T) {
 			map[string]string{
 				"key-type": crypto.KindSECP256K1,
 			},
-			"Error: could not get `passphrase`: failed",
-			true,
+			"",
+			"could not get `passphrase`: failed",
 		},
 		{
 			"err-private-key-invalid",
@@ -220,8 +243,8 @@ func Test_accountAddCmd(t *testing.T) {
 			map[string]string{
 				"key-type": crypto.KindSECP256K1,
 			},
-			"Error: `private-key` could not be decoded: encoding/hex: odd length hex string",
-			true,
+			"",
+			"`private-key` could not be decoded: encoding/hex: odd length hex string",
 		},
 		{
 			"err-private-key",
@@ -237,8 +260,8 @@ func Test_accountAddCmd(t *testing.T) {
 			map[string]string{
 				"key-type": crypto.KindSECP256K1,
 			},
-			"Error: could not get private key: failed",
-			true,
+			"",
+			"could not get private key: failed",
 		},
 		{
 			"err-key-type",
@@ -254,8 +277,8 @@ func Test_accountAddCmd(t *testing.T) {
 			map[string]string{
 				"key-type": "invalid",
 			},
-			"Error: `private-key` could not be created from bytes: unsupported key type: \"invalid\"",
-			true,
+			"",
+			"`private-key` could not be created from bytes: unsupported key type: \"invalid\"",
 		},
 		{
 			"err-empty-key-type",
@@ -269,10 +292,10 @@ func Test_accountAddCmd(t *testing.T) {
 			},
 			nil,
 			map[string]string{
-				"key-type": "",
+				// "key-type": "",
 			},
-			"Error: `key-type` must be specified",
-			true,
+			"",
+			"required flag(s) \"key-type\" not set",
 		},
 	}
 	for _, tt := range tests {
@@ -281,12 +304,19 @@ func Test_accountAddCmd(t *testing.T) {
 			if !assert.NotNil(t, got) {
 				t.Error("accountListCmd() is nil")
 			}
+
 			_, out, err := commandstest.ExecuteCommandC(got, tt.cmdArgs, tt.cmdFlags)
-			if (err != nil) != tt.wantExecErr {
+
+			if tt.wantExecErr == "" && !assert.NoError(t, err) {
+				t.Errorf("configChainEthereumNetwork().execute() error = %v, wantExecErr %v", err, tt.wantExecErr)
+			}
+
+			if tt.wantExecErr != "" && !assert.EqualError(t, err, tt.wantExecErr) {
 				t.Errorf("configChainEthereumNetwork().execute() error = %v, wantExecErr %v", err, tt.wantExecErr)
 				return
 			}
-			if !commandstest.AssertCommandOutput(t, got, err, out, tt.wantOutput) {
+
+			if tt.wantOutput != "" && !commandstest.AssertCommandOutput(t, got, err, out, tt.wantOutput) {
 				t.Errorf("configChainEthereumNetwork().Execute().out != %v", tt.wantOutput)
 			}
 		})

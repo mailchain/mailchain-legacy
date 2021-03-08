@@ -189,7 +189,7 @@ senders:
 keystore:
   kind: "NACLfilestore"
   NACLfilestore:
-    path: "/Users/robdefeo/.mailchain/.keystore"
+    path: "/home/user/.mailchain/.keystore"
 mailboxState:
   badgerdb:
     path: "/home/user/.mailchain/.mailbox"

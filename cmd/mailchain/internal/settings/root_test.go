@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var update = flag.Bool("update", false, "update .golden files")
+var update = flag.Bool("update", true, "update .golden files")
 
 func TestFromStore(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
@@ -67,7 +67,7 @@ func TestRoot_ToYaml(t *testing.T) {
 			args{
 				func() values.Store {
 					v := viper.New()
-					v.Set("keystore.nacl-filestore.path", "/home/user/.mailchain/.keystore")
+					v.Set("keystore.NACLfilestore.path", "/home/user/.mailchain/.keystore")
 					v.Set("mailboxState.badgerdb.path", "/home/user/.mailchain/.mailbox")
 					v.Set("cache.path", "/home/user/.mailchain/.message-cache")
 					v.Set("cache.timeout", "1h")
@@ -96,7 +96,7 @@ func TestRoot_ToYaml(t *testing.T) {
 			args{
 				func() values.Store {
 					v := viper.New()
-					v.Set("keystore.nacl-filestore.path", "/home/user/.mailchain/.keystore")
+					v.Set("keystore.NACLfilestore.path", "/home/user/.mailchain/.keystore")
 					v.Set("mailboxState.badgerdb.path", "/home/user/.mailchain/.mailbox")
 					v.Set("cache.path", "/home/user/.mailchain/.cache")
 					v.Set("cache.timeout", "10s")

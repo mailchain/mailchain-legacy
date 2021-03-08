@@ -49,7 +49,7 @@ func (s Keystore) Output() output.Element {
 
 func naclFileStore(s values.Store) NACLFileStore {
 	return NACLFileStore{
-		Path: values.NewDefaultString(defaults.KeystorePath(), s, "keystore.nacl-filestore.path"),
+		Path: values.NewDefaultString(defaults.KeystorePath(), s, "keystore.NACLfilestore.path"),
 	}
 }
 
@@ -67,7 +67,7 @@ func (n NACLFileStore) Produce() (*nacl.FileStore, error) {
 // Output configuration as an `output.Element` for use in exporting configuration.
 func (n NACLFileStore) Output() output.Element {
 	return output.Element{
-		FullName: "keystore.nacl-filestore",
+		FullName: "keystore.NACLfilestore",
 		Attributes: []output.Attribute{
 			n.Path.Attribute(),
 		},

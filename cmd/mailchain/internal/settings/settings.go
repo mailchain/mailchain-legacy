@@ -16,7 +16,7 @@ package settings
 
 const (
 	// StoreNACLFilestore settings name for nacl encrypted filestore.
-	StoreNACLFilestore = "nacl-filestore"
+	StoreNACLFilestore = "NACLfilestore"
 	// StoreS3 settings name for S3 storage.
 	StoreS3 = "s3"
 	// StorePinata settings name for Pinata IPFS storage.

@@ -351,22 +351,6 @@ func Test_accountCmd(t *testing.T) {
 			map[string]string{},
 			false,
 		},
-		{
-			"err-keystore",
-			args{
-				func() *settings.Root {
-					v := viper.New()
-					v.Set("keystore.kind", "invalid")
-					config := settings.FromStore(v)
-					return config
-				}(),
-			},
-			true,
-			true,
-			nil,
-			map[string]string{},
-			false,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

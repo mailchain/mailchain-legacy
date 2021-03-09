@@ -34,14 +34,12 @@ between ethereum nodes by simply copying.
 
 Make sure you backup your keys regularly.`,
 	}
-
-	ks, err := config.Keystore.Produce()
-	if err != nil {
-		return nil, errors.WithMessage(err, "could not create `keystore`")
+	produceKeystore := func() (keystore.Store, error) {
+		return config.Keystore.Produce()
 	}
 
-	cmd.AddCommand(accountAddCmd(ks, prompts.Secret, prompts.Secret))
-	cmd.AddCommand(accountListCmd(ks))
+	cmd.AddCommand(accountAddCmd(produceKeystore, prompts.Secret, prompts.Secret))
+	cmd.AddCommand(accountListCmd(produceKeystore))
 
 	return cmd, nil
 }
@@ -57,11 +55,16 @@ func getPrivateKeyBytes(privateKeyEncoding, privateKeyInput string) ([]byte, err
 	}
 }
 
-func accountAddCmd(ks keystore.Store, passphrasePrompt, privateKeyPrompt prompts.SecretFunc) *cobra.Command { //nolint: funlen
+func accountAddCmd(produceKeyStore func() (keystore.Store, error), passphrasePrompt, privateKeyPrompt prompts.SecretFunc) *cobra.Command { //nolint: funlen
 	cmd := &cobra.Command{
 		Use:   "add",
 		Short: "Add private key",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ks, err := produceKeyStore()
+			if err != nil {
+				return errors.WithMessage(err, "could not create `keystore`")
+			}
+
 			keyType, _ := cmd.Flags().GetString("key-type")
 			cmdPK, _ := cmd.Flags().GetString("private-key")
 			cmdPassphrase, _ := cmd.Flags().GetString("passphrase")
@@ -126,11 +129,15 @@ func accountAddCmd(ks keystore.Store, passphrasePrompt, privateKeyPrompt prompts
 	return cmd
 }
 
-func accountListCmd(ks keystore.Store) *cobra.Command {
+func accountListCmd(produceKeystore func() (keystore.Store, error)) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "List accounts",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ks, err := produceKeystore()
+			if err != nil {
+				return errors.WithMessage(err, "could not create `keystore`")
+			}
 			protocol, _ := cmd.Flags().GetString("protocol")
 			network, _ := cmd.Flags().GetString("network")
 

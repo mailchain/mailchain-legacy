@@ -38,7 +38,7 @@ func Test_accountListCmd(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
-		ks keystore.Store
+		produceKeystore func() (keystore.Store, error)
 	}
 	tests := []struct {
 		name        string
@@ -51,14 +51,14 @@ func Test_accountListCmd(t *testing.T) {
 		{
 			"success",
 			args{
-				func() keystore.Store {
+				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
 					m.EXPECT().GetAddresses("ethereum", "mainnet").Return([][]byte{
 						encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
 						encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
 					}, nil)
-					return m
-				}(),
+					return m, nil
+				},
 			},
 			nil,
 			map[string]string{
@@ -71,11 +71,11 @@ func Test_accountListCmd(t *testing.T) {
 		{
 			"err-store",
 			args{
-				func() keystore.Store {
+				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
 					m.EXPECT().GetAddresses("ethereum", "mainnet").Return([][]byte{}, errors.Errorf("failed"))
-					return m
-				}(),
+					return m, nil
+				},
 			},
 			nil,
 			map[string]string{
@@ -88,10 +88,10 @@ func Test_accountListCmd(t *testing.T) {
 		{
 			"err-missing-protocol",
 			args{
-				func() keystore.Store {
+				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					return m
-				}(),
+					return m, nil
+				},
 			},
 			nil,
 			map[string]string{
@@ -103,10 +103,10 @@ func Test_accountListCmd(t *testing.T) {
 		{
 			"err-empty-network",
 			args{
-				func() keystore.Store {
+				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					return m
-				}(),
+					return m, nil
+				},
 			},
 			nil,
 			map[string]string{
@@ -118,7 +118,7 @@ func Test_accountListCmd(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := accountListCmd(tt.args.ks)
+			got := accountListCmd(tt.args.produceKeystore)
 			if !assert.NotNil(t, got) {
 				t.Error("accountListCmd() is nil")
 			}
@@ -138,7 +138,7 @@ func Test_accountAddCmd(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	type args struct {
-		ks               keystore.Store
+		produceKeyStore  func() (keystore.Store, error)
 		passphrasePrompt func(suppliedSecret string, prePromptNote string, promptLabel string, allowEmpty bool, confirmPrompt bool) (string, error)
 		privateKeyPrompt func(suppliedSecret string, prePromptNote string, promptLabel string, allowEmpty bool, confirmPrompt bool) (string, error)
 	}
@@ -153,12 +153,12 @@ func Test_accountAddCmd(t *testing.T) {
 		{
 			"success-hex",
 			args{
-				func() keystore.Store {
+				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
 					pk, _ := multikey.PrivateKeyFromBytes(secp256k1test.SofiaPrivateKey.Kind(), secp256k1test.SofiaPrivateKey.Bytes())
 					m.EXPECT().Store(pk, gomock.Any()).Return(secp256k1test.SofiaPublicKey, nil)
-					return m
-				}(),
+					return m, nil
+				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
 				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
 			},
@@ -172,12 +172,12 @@ func Test_accountAddCmd(t *testing.T) {
 		{
 			"success-mnemonic-algorand",
 			args{
-				func() keystore.Store {
+				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
 					pk, _ := multikey.PrivateKeyFromBytes(ed25519test.SofiaPrivateKey.Kind(), ed25519test.SofiaPrivateKey.Bytes())
 					m.EXPECT().Store(pk, gomock.Any()).Return(ed25519test.SofiaPublicKey, nil)
-					return m
-				}(),
+					return m, nil
+				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
 				promptstest.MockRequiredSecret(t, func() string {
 					s, err := encoding.EncodeMnemonicAlgorand(ed25519test.SofiaPrivateKey.Bytes()[:32])
@@ -196,12 +196,12 @@ func Test_accountAddCmd(t *testing.T) {
 		{
 			"err-keystore",
 			args{
-				func() keystore.Store {
+				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
 					pk, _ := multikey.PrivateKeyFromBytes(secp256k1test.SofiaPrivateKey.Kind(), secp256k1test.SofiaPrivateKey.Bytes())
 					m.EXPECT().Store(pk, gomock.Any()).Return(nil, errors.Errorf("failed"))
-					return m
-				}(),
+					return m, nil
+				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
 				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
 			},
@@ -215,10 +215,10 @@ func Test_accountAddCmd(t *testing.T) {
 		{
 			"err-passphrase",
 			args{
-				func() keystore.Store {
+				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					return m
-				}(),
+					return m, nil
+				},
 				promptstest.MockRequiredSecret(t, "", errors.Errorf("failed")),
 				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
 			},
@@ -232,10 +232,10 @@ func Test_accountAddCmd(t *testing.T) {
 		{
 			"err-private-key-invalid",
 			args{
-				func() keystore.Store {
+				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					return m
-				}(),
+					return m, nil
+				},
 				nil,
 				promptstest.MockRequiredSecret(t, "01901E63389EF02EAA7C5782E08B40D98FAEF835F28BD144EECF5614A41594F", nil),
 			},
@@ -249,10 +249,10 @@ func Test_accountAddCmd(t *testing.T) {
 		{
 			"err-private-key",
 			args{
-				func() keystore.Store {
+				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					return m
-				}(),
+					return m, nil
+				},
 				nil,
 				promptstest.MockRequiredSecret(t, "", errors.Errorf("failed")),
 			},
@@ -266,10 +266,10 @@ func Test_accountAddCmd(t *testing.T) {
 		{
 			"err-key-type",
 			args{
-				func() keystore.Store {
+				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					return m
-				}(),
+					return m, nil
+				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
 				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
 			},
@@ -283,10 +283,10 @@ func Test_accountAddCmd(t *testing.T) {
 		{
 			"err-empty-key-type",
 			args{
-				func() keystore.Store {
+				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					return m
-				}(),
+					return m, nil
+				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
 				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
 			},
@@ -300,7 +300,7 @@ func Test_accountAddCmd(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := accountAddCmd(tt.args.ks, tt.args.passphrasePrompt, tt.args.privateKeyPrompt)
+			got := accountAddCmd(tt.args.produceKeyStore, tt.args.passphrasePrompt, tt.args.privateKeyPrompt)
 			if !assert.NotNil(t, got) {
 				t.Error("accountListCmd() is nil")
 			}

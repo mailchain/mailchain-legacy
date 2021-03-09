@@ -187,8 +187,8 @@ senders:
   substrate-rpc-edgeware-mainnet:
     address: "ws://mainnet1.edgewa.re:9944"
 keystore:
-  kind: "NACLfilestore"
-  NACLfilestore:
+  kind: "nacl-filestore"
+  nacl-filestore:
     path: "/home/user/.mailchain/.keystore"
 mailboxState:
   badgerdb:

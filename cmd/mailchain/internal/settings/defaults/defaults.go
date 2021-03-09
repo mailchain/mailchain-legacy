@@ -29,7 +29,7 @@ const (
 	// Empty default value.
 	Empty = ""
 	// KeystoreKind default value.
-	KeystoreKind = "NACLfilestore"
+	KeystoreKind = "nacl-filestore"
 	// SentStoreKind default value.
 	SentStoreKind = Mailchain
 	// NameServiceAddressKind default value.

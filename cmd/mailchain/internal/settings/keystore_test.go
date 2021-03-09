@@ -31,7 +31,7 @@ func Test_keystore(t *testing.T) {
 					return m
 				}(),
 			},
-			"NACLfilestore",
+			"nacl-filestore",
 		},
 	}
 	for _, tt := range tests {

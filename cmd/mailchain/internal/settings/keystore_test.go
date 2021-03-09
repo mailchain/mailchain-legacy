@@ -60,14 +60,14 @@ func TestKeystore_Produce(t *testing.T) {
 			fields{
 				func() values.String {
 					m := valuestest.NewMockString(mockCtrl)
-					m.EXPECT().Get().Return("NACLfilestore")
+					m.EXPECT().Get().Return("nacl-filestore")
 					return m
 				}(),
 				naclFileStore(
 					func() values.Store {
 						m := valuestest.NewMockStore(mockCtrl)
-						m.EXPECT().IsSet("keystore.NACLfilestore.path").Return(true)
-						m.EXPECT().GetString("keystore.NACLfilestore.path").Return("./tmp")
+						m.EXPECT().IsSet("keystore.nacl-filestore.path").Return(true)
+						m.EXPECT().GetString("keystore.nacl-filestore.path").Return("./tmp")
 						return m
 					}(),
 				),

@@ -8,21 +8,21 @@ protocols:
         nameservice-domain-name: ""
         public-key-finder: "algorand-public-key-extractor"
         receiver: ""
-        sender: ""
+        sender: "algod-betanet"
       mainnet:
         disabled: false
         nameservice-address: ""
         nameservice-domain-name: ""
         public-key-finder: "algorand-public-key-extractor"
         receiver: ""
-        sender: ""
+        sender: "algod-mainnet"
       testnet:
         disabled: false
         nameservice-address: ""
         nameservice-domain-name: ""
         public-key-finder: "algorand-public-key-extractor"
         receiver: ""
-        sender: ""
+        sender: "algod-testnet"
   ethereum:
     disabled: false
     networks:
@@ -162,6 +162,12 @@ receivers:
       - "substrate/edgeware-beresheet"
       - "substrate/edgeware-mainnet"
 senders:
+  algod-betanet:
+    address: "https://api.betanet.algoexplorer.io/v2"
+  algod-mainnet:
+    address: "https://api.algoexplorer.io/v2"
+  algod-testnet:
+    address: "https://api.testnet.algoexplorer.io/v2"
   ethereum-relay:
     base-url: "https://relay.mailchain.xyz/"
     enabled-networks:

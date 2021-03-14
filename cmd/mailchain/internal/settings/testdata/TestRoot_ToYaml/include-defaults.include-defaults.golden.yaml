@@ -163,11 +163,11 @@ receivers:
       - "substrate/edgeware-mainnet"
 senders:
   algod-betanet:
-    address: "https://api.betanet.algoexplorer.io/v2"
+    address: "https://api.betanet.algoexplorer.io"
   algod-mainnet:
-    address: "https://api.algoexplorer.io/v2"
+    address: "https://api.algoexplorer.io"
   algod-testnet:
-    address: "https://api.testnet.algoexplorer.io/v2"
+    address: "https://api.testnet.algoexplorer.io"
   ethereum-relay:
     base-url: "https://relay.mailchain.xyz/"
     enabled-networks:

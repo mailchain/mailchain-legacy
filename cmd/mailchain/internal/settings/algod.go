@@ -13,9 +13,9 @@ import (
 
 func algodSender(s values.Store, network string) *AlgodSender {
 	var defaultAddress = map[string]string{
-		algorand.Mainnet: "https://api.algoexplorer.io/v2",
-		algorand.Testnet: "https://api.testnet.algoexplorer.io/v2",
-		algorand.Betanet: "https://api.betanet.algoexplorer.io/v2",
+		algorand.Mainnet: "https://api.algoexplorer.io",
+		algorand.Testnet: "https://api.testnet.algoexplorer.io",
+		algorand.Betanet: "https://api.betanet.algoexplorer.io",
 	}
 
 	return &AlgodSender{

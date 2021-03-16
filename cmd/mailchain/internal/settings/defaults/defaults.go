@@ -67,6 +67,8 @@ const (
 	ClientEthereumRPC2 = "ethereum-rpc2"
 	// ClientRelay relay client name.
 	ClientRelay = "relay"
+	// ClientAlgod relay client name.
+	ClientAlgod = "algod"
 
 	// EthereumRelay relay for ethereum only
 	EthereumRelay = "ethereum-relay"

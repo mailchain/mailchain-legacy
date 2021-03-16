@@ -192,6 +192,8 @@ senders:
     address: "ws://localhost:9944"
   substrate-rpc-edgeware-mainnet:
     address: "ws://mainnet1.edgewa.re:9944"
+fetcher:
+  disabled: false
 keystore:
   kind: "nacl-filestore"
   nacl-filestore:

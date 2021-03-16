@@ -36,8 +36,8 @@ func SubstrateNetworkAny(network string) *NetworkDefaults {
 func AlgorandNetworkAny(network string) *NetworkDefaults {
 	return &NetworkDefaults{
 		PublicKeyFinder: AlgorandPublicKeyFinder,
-		// Receiver:        Mailchain,
-		Sender:   "algod-" + network,
-		Disabled: false,
+		Receiver:        ClientAlgod,
+		Sender:          "algod-" + network,
+		Disabled:        false,
 	}
 }

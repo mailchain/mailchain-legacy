@@ -7,21 +7,21 @@ protocols:
         nameservice-address: ""
         nameservice-domain-name: ""
         public-key-finder: "algorand-public-key-extractor"
-        receiver: ""
+        receiver: "algod"
         sender: "algod-betanet"
       mainnet:
         disabled: false
         nameservice-address: ""
         nameservice-domain-name: ""
         public-key-finder: "algorand-public-key-extractor"
-        receiver: ""
+        receiver: "algod"
         sender: "algod-mainnet"
       testnet:
         disabled: false
         nameservice-address: ""
         nameservice-domain-name: ""
         public-key-finder: "algorand-public-key-extractor"
-        receiver: ""
+        receiver: "algod"
         sender: "algod-testnet"
   ethereum:
     disabled: false
@@ -161,6 +161,12 @@ receivers:
       - "substrate/edgeware-local"
       - "substrate/edgeware-beresheet"
       - "substrate/edgeware-mainnet"
+  algod:
+    enabled-networks:
+      - "algorand/mainnet"
+      - "algorand/betanet"
+      - "algorand/testnet"
+    token: ""
 senders:
   algod-betanet:
     address: "https://api.betanet.algoexplorer.io"

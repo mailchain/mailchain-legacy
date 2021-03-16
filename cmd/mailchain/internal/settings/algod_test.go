@@ -34,7 +34,7 @@ func Test_algodSender(t *testing.T) {
 				}(),
 				algorand.Testnet,
 			},
-			"https://api.testnet.algoexplorer.io/v2",
+			"https://api.testnet.algoexplorer.io",
 			"testnet",
 		},
 	}

@@ -62,11 +62,10 @@ func (db *Database) GetTransactions(protocol, network string, address []byte) ([
 func transactionKey(prefixKey string, order int64, encodedTx []byte) []byte {
 	id, _ := multihash.Sum(encodedTx, multihash.SHA3_256, -1)
 
-	// reverse the order of the block number for returning messages easier in the query
-	orderBytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(orderBytes, uint64(order*-1))
+	orderBytes := new(bytes.Buffer)
+	_ = binary.Write(orderBytes, binary.BigEndian, order*-1)
 
-	return []byte(fmt.Sprintf("%s/%s/%s", prefixKey, encoding.EncodeHexZeroX(orderBytes), encoding.EncodeHexZeroX(id)))
+	return []byte(fmt.Sprintf("%s/%s/%s", prefixKey, encoding.EncodeHexZeroX(orderBytes.Bytes()), encoding.EncodeHexZeroX(id)))
 }
 
 func getTransactionPrefixKey(protocol, network string, address []byte) string {

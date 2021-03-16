@@ -46,7 +46,7 @@ func FetchMessages(inbox stores.State, receivers map[string]mailbox.Receiver, ks
 			return
 		}
 
-		for i := range transactions { //nolint TODO: thats an arbitrary limit
+		for i := range transactions {
 			tx := transactions[i]
 			if err := inbox.PutTransaction(req.Protocol, req.Network, req.addressBytes, tx); err != nil {
 				errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))

@@ -15,11 +15,7 @@ import (
 
 // Send transaction using the RPC2 client.
 func (c *Client) Send(ctx context.Context, network string, to, from, data []byte, txSigner signer.Signer, opts sender.SendOpts) error {
-	if !c.isNetworkSupported(network) {
-		return errors.New("network not supported")
-	}
-
-	algodClient, err := algod.MakeClient(c.networkConfigs[network].url, c.algodToken)
+	algodClient, err := algod.MakeClient(c.algoAddress, c.algodToken)
 	if err != nil {
 		return errors.WithMessage(err, "failed to create algod client")
 	}
@@ -58,9 +54,7 @@ func (c *Client) Send(ctx context.Context, network string, to, from, data []byte
 		return errors.Wrap(err, "error creating transaction")
 	}
 
-	rawSignedTx, err := txSigner.Sign(algorand.SignerOptions{
-		Transaction: txn,
-	})
+	rawSignedTx, err := txSigner.Sign(algorand.SignerOptions{Transaction: txn})
 	if err != nil {
 		return errors.WithMessage(err, "could not sign transaction")
 	}

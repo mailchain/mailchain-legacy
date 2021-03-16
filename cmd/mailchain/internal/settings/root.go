@@ -41,6 +41,7 @@ func FromStore(s values.Store) *Root {
 			}),
 		},
 		// other
+		Fetcher:      fetcher(s),
 		Keystore:     keystore(s),
 		MailboxState: mailboxState(s),
 		SentStore:    sentStore(s),
@@ -61,6 +62,7 @@ type Root struct {
 	Protocols map[string]*Protocol
 	// Ethereum  *Protocol
 	// other
+	Fetcher      *Fetcher
 	Keystore     *Keystore
 	MailboxState *MailboxState
 	SentStore    *SentStore
@@ -90,6 +92,7 @@ func (o *Root) ToYaml(out io.Writer, tabsize int, commentDefaults, excludeDefaul
 			o.Receivers.Output(),
 			o.Senders.Output(),
 
+			o.Fetcher.Output(),
 			o.Keystore.Output(),
 			o.MailboxState.Output(),
 			o.SentStore.Output(),

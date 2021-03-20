@@ -24,3 +24,6 @@ tmp
 
 .idea
 __debug_bin
+
+out/
+private-keys.yaml

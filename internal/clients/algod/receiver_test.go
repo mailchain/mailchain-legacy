@@ -128,7 +128,7 @@ func TestClient_Kind(t *testing.T) {
 				nil,
 				"",
 			},
-			"",
+			"algod",
 		},
 	}
 	for _, tt := range tests {

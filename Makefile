@@ -12,7 +12,8 @@ help:
 	@echo '    help               Show this help screen.'
 	@echo '    clean              Remove binaries, artifacts and releases.'
 	@echo '    test               Generate Unit test.'
-	@echo '    unit-test          Run test.'
+	@echo '    unit-test          Run unit tests.'
+	@echo '    integration-test   Run integration tests.'
 	@echo '    build              Build project for current platform.'
 	@echo '    go-generation      Open go generate.'
 	@echo '    generate           Generate License.'
@@ -27,7 +28,10 @@ build:
 
 test: generate unit-test
 unit-test:
-	$(GO) test ./...
+	$(GO) test --short ./...
+
+integration-test: unit-test
+	$(GO) test ./testing/integration
 
 license: .FORCE
 	addlicense -l apache -c Finobo ./internal

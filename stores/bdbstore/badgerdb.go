@@ -36,7 +36,7 @@ const (
 func newBadgerDB(opts *badger.Options) (*Database, error) {
 	db, err := badger.Open(*opts)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -69,6 +69,7 @@ type Database struct {
 func New(dir string, logWriter io.Writer) (*Database, error) {
 	opts := badger.DefaultOptions(dir)
 	opts.Logger = newLogger(logWriter)
+	opts.Truncate = true
 
 	return newBadgerDB(&opts)
 }
@@ -83,6 +84,7 @@ func NewWithOptions(opts *badger.Options) (*Database, error) {
 // the underlying key-value store.
 func (db *Database) Close() error {
 	db.cancel()
+
 	return db.db.Close()
 }
 

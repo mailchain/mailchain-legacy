@@ -22,6 +22,8 @@ import (
 
 	"github.com/dgraph-io/badger/v2"
 	"github.com/pkg/errors"
+	"github.com/dgraph-io/badger/v2/options"
+
 )
 
 const (
@@ -36,7 +38,7 @@ const (
 func newBadgerDB(opts *badger.Options) (*Database, error) {
 	db, err := badger.Open(*opts)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -69,7 +71,8 @@ type Database struct {
 func New(dir string, logWriter io.Writer) (*Database, error) {
 	opts := badger.DefaultOptions(dir)
 	opts.Logger = newLogger(logWriter)
-
+	opts.Truncate = true
+	opts.ValueLogLoadingMode = options.FileIO
 	return newBadgerDB(&opts)
 }
 

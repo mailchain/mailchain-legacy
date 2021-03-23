@@ -53,7 +53,7 @@ func newBadgerDB(opts *badger.Options) (*Database, error) {
 
 	return bdb, nil
 }
-
+//
 // Database is a persistent key-value store. Apart from
 // basic data store functionality it also supports iterating
 // over the key space in byte-wise lexicographical order,

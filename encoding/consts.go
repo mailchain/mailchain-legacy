@@ -33,13 +33,3 @@ const (
 	// KindMnemonicAlgorand encoding value.
 	KindMnemonicAlgorand = "mnemonic/algorand"
 )
-
-// PublicKeyEncoding check encoding types.
-func PublicKeyEncoding() map[string]bool {
-	return map[string]bool{
-		KindHex:                    true,
-		KindHex0XPrefix:            true,
-		KindBase58:                 true,
-		KindBase58SubstrateAddress: true,
-	}
-}

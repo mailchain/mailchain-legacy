@@ -295,17 +295,12 @@ func isValid(p *PostRequestBody, protocol, network string) error {
 		}
 	}
 
-	// Validate Public-key-encoding
-	if _, validEncod := encoding.PublicKeyEncoding()[p.Message.PublicKeyEncoding]; !validEncod {
-		return errors.Errorf("invalid `public-key-encoding` ")
-	}
-
 	// Validate Public-key Kind
 	if _, validkindType := crypto.KeyTypes()[p.Message.PublicKeyKind]; !validkindType {
 		return errors.Errorf("invalid `public-key-kind` ")
 	}
 
-	keyBytes, err := encoding.DecodeHexZeroX(p.Message.PublicKey)
+	keyBytes, err := encoding.Decode(p.Message.PublicKeyEncoding, p.Message.PublicKey)
 	if err != nil {
 		return errors.WithMessage(err, "invalid `public-key-bytes`")
 	}

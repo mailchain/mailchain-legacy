@@ -65,6 +65,7 @@ func CreateRouter(s *settings.Root, mailbox stores.State, cmd *cobra.Command) (h
 	}
 
 	api.HandleFunc("/addresses", handlers.GetAddresses(config.keystore)).Methods("GET")
+	api.HandleFunc("/balance", handlers.GetBalance(config.keystore)).Methods("GET")
 
 	api.HandleFunc("/envelope", handlers.GetEnvelope(config.sentStore)).Methods("GET")
 

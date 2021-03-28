@@ -156,7 +156,7 @@ func Test_accountAddCmd(t *testing.T) {
 				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
 					pk, _ := multikey.PrivateKeyFromBytes(secp256k1test.SofiaPrivateKey.Kind(), secp256k1test.SofiaPrivateKey.Bytes())
-					m.EXPECT().Store(pk, gomock.Any()).Return(secp256k1test.SofiaPublicKey, nil)
+					m.EXPECT().Store("ethereum", "mainnet", pk, gomock.Any()).Return(secp256k1test.SofiaPublicKey, nil)
 					return m, nil
 				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
@@ -165,8 +165,10 @@ func Test_accountAddCmd(t *testing.T) {
 			nil,
 			map[string]string{
 				"key-type": crypto.KindSECP256K1,
+				"protocol": "ethereum",
+				"network":  "mainnet",
 			},
-			"\x1b[32mPrivate key added\n\x1b[39mPublic key=69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0\n",
+			"{\n  \"message\": \"private key added\",\n  \"public-key\": \"0x69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0\",\n  \"public-key-encoding\": \"hex/0x-prefix\",\n  \"protocol\": \"ethereum\",\n  \"network\": \"mainnet\"\n}",
 			"",
 		},
 		{
@@ -175,7 +177,7 @@ func Test_accountAddCmd(t *testing.T) {
 				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
 					pk, _ := multikey.PrivateKeyFromBytes(ed25519test.SofiaPrivateKey.Kind(), ed25519test.SofiaPrivateKey.Bytes())
-					m.EXPECT().Store(pk, gomock.Any()).Return(ed25519test.SofiaPublicKey, nil)
+					m.EXPECT().Store("algorand", "mainnet", pk, gomock.Any()).Return(ed25519test.SofiaPublicKey, nil)
 					return m, nil
 				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
@@ -189,8 +191,10 @@ func Test_accountAddCmd(t *testing.T) {
 			map[string]string{
 				"key-type":             crypto.KindED25519,
 				"private-key-encoding": encoding.KindMnemonicAlgorand,
+				"protocol":             "algorand",
+				"network":              "mainnet",
 			},
-			"\x1b[32mPrivate key added\n\x1b[39mPublic key=723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671\n",
+			"{\n  \"message\": \"private key added\",\n  \"public-key\": \"OI6KUI5FWUI26WWXW7XWA5XECSVX45NJ3SIQ5JQOIF5CW5YKKZYQ\",\n  \"public-key-encoding\": \"base32/plain\",\n  \"protocol\": \"algorand\",\n  \"network\": \"mainnet\"\n}",
 			"",
 		},
 		{
@@ -199,7 +203,7 @@ func Test_accountAddCmd(t *testing.T) {
 				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
 					pk, _ := multikey.PrivateKeyFromBytes(secp256k1test.SofiaPrivateKey.Kind(), secp256k1test.SofiaPrivateKey.Bytes())
-					m.EXPECT().Store(pk, gomock.Any()).Return(nil, errors.Errorf("failed"))
+					m.EXPECT().Store("ethereum", "mainnet", pk, gomock.Any()).Return(nil, errors.Errorf("failed"))
 					return m, nil
 				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
@@ -208,6 +212,8 @@ func Test_accountAddCmd(t *testing.T) {
 			nil,
 			map[string]string{
 				"key-type": crypto.KindSECP256K1,
+				"protocol": "ethereum",
+				"network":  "mainnet",
 			},
 			"",
 			"key could not be stored: failed",
@@ -225,6 +231,8 @@ func Test_accountAddCmd(t *testing.T) {
 			nil,
 			map[string]string{
 				"key-type": crypto.KindSECP256K1,
+				"protocol": "ethereum",
+				"network":  "mainnet",
 			},
 			"",
 			"could not get `passphrase`: failed",
@@ -242,6 +250,8 @@ func Test_accountAddCmd(t *testing.T) {
 			nil,
 			map[string]string{
 				"key-type": crypto.KindSECP256K1,
+				"protocol": "ethereum",
+				"network":  "mainnet",
 			},
 			"",
 			"`private-key` could not be decoded: encoding/hex: odd length hex string",
@@ -259,6 +269,8 @@ func Test_accountAddCmd(t *testing.T) {
 			nil,
 			map[string]string{
 				"key-type": crypto.KindSECP256K1,
+				"protocol": "ethereum",
+				"network":  "mainnet",
 			},
 			"",
 			"could not get private key: failed",
@@ -276,6 +288,8 @@ func Test_accountAddCmd(t *testing.T) {
 			nil,
 			map[string]string{
 				"key-type": "invalid",
+				"protocol": "ethereum",
+				"network":  "mainnet",
 			},
 			"",
 			"`private-key` could not be created from bytes: unsupported key type: \"invalid\"",
@@ -295,7 +309,7 @@ func Test_accountAddCmd(t *testing.T) {
 				// "key-type": "",
 			},
 			"",
-			"required flag(s) \"key-type\" not set",
+			"required flag(s) \"key-type\", \"network\" not set",
 		},
 	}
 	for _, tt := range tests {

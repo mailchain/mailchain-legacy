@@ -15,10 +15,9 @@
 package protocols
 
 import (
-	"reflect"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/protocols/ethereum"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNetworkNames(t *testing.T) {
@@ -31,11 +30,25 @@ func TestNetworkNames(t *testing.T) {
 		want []string
 	}{
 		{
+			"algorand",
+			args{
+				"algorand",
+			},
+			[]string{"mainnet", "betanet", "testnet"},
+		},
+		{
 			"ethereum",
 			args{
 				"ethereum",
 			},
-			ethereum.Networks(),
+			[]string{"goerli", "kovan", "mainnet", "rinkeby", "ropsten"},
+		},
+		{
+			"substrate",
+			args{
+				"substrate",
+			},
+			[]string{"edgeware-mainnet", "edgeware-beresheet", "edgeware-local"},
 		},
 		{
 			"unknown",
@@ -47,8 +60,27 @@ func TestNetworkNames(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NetworkNames(tt.args.chain); !reflect.DeepEqual(got, tt.want) {
+			if got := NetworkNames(tt.args.chain); !assert.Equal(t, tt.want, got) {
 				t.Errorf("NetworkNames() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestAll(t *testing.T) {
+	tests := []struct {
+		name string
+		want []string
+	}{
+		{
+			"success",
+			[]string{"algorand", "ethereum", "substrate"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := All(); !assert.Equal(t, tt.want, got) {
+				t.Errorf("All() = %v, want %v", got, tt.want)
 			}
 		})
 	}

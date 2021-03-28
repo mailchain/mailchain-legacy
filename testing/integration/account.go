@@ -1,8 +1,8 @@
 package integration
 
 import (
+	"encoding/json"
 	"os/exec"
-	"strings"
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func addPrivateKey(t *testing.T, settingsFileName, passphrase string, v *viper.Viper, keyLookup string) crypto.PublicKey {
+func addPrivateKey(t *testing.T, protocol, network, settingsFileName, passphrase string, v *viper.Viper, keyLookup string) crypto.PublicKey {
 	privateKey := v.GetString(keyLookup + ".private-key")
 	if privateKey == "" {
 		assert.FailNow(t, "private key not set")
@@ -33,6 +33,8 @@ func addPrivateKey(t *testing.T, settingsFileName, passphrase string, v *viper.V
 				"--private-key-encoding", privateKeyEncoding,
 				"--key-type", keyType,
 				"--passphrase", passphrase,
+				"--protocol", protocol,
+				"--network", network,
 			),
 		)
 	}
@@ -42,13 +44,22 @@ func addPrivateKey(t *testing.T, settingsFileName, passphrase string, v *viper.V
 		t.Logf("failed to add account: %s", out)
 		return nil
 	}
-	t.Logf("account added: %s", out)
-	splitOut := strings.Split(string(out), "=")
-	if !assert.Len(t, splitOut, 2) {
+
+	type response struct {
+		Message           string `json:"message"`
+		PublicKey         string `json:"public-key"`
+		PublicKeyEncoding string `json:"public-key-encoding"`
+		Protocol          string `json:"protocol"`
+		Network           string `json:"network"`
+	}
+
+	var cmdRes response
+
+	if err := json.Unmarshal(out, &cmdRes); !assert.NoError(t, err) {
 		t.FailNow()
 	}
 
-	pubKeyBytes, err := encoding.DecodeHex(strings.TrimSpace(splitOut[1]))
+	pubKeyBytes, err := encoding.Decode(cmdRes.PublicKeyEncoding, cmdRes.PublicKey)
 	if !assert.NoError(t, err) {
 		t.FailNow()
 	}

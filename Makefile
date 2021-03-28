@@ -11,6 +11,7 @@ help:
 	@echo ''
 	@echo '    help               Show this help screen.'
 	@echo '    clean              Remove binaries, artifacts and releases.'
+	@echo '    deps               Install dependencies to execute build tasks.'
 	@echo '    test               Generate Unit test.'
 	@echo '    unit-test          Run unit tests.'
 	@echo '    integration-test   Run integration tests.'
@@ -25,6 +26,9 @@ clean:
 	$(GO) clean
 build:
 	$(GO) build ./...
+
+deps:
+	$(GO) get github.com/golang/mock/mockgen@v1.5.0
 
 test: generate unit-test
 unit-test:

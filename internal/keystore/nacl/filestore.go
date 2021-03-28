@@ -25,27 +25,34 @@ import (
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/afero"
 )
 
 // NewFileStore create a new filestore with the path specified
-func NewFileStore(path string, logger io.Writer) FileStore {
-	return FileStore{
-		fs:     afero.NewBasePathFs(afero.NewOsFs(), path),
-		rand:   rand.Reader,
-		logger: logger,
+func NewFileStore(path string) *FileStore {
+	return &FileStore{
+		fs:   afero.NewBasePathFs(afero.NewOsFs(), path),
+		rand: rand.Reader,
 	}
 }
 
 // FileStore object
 type FileStore struct {
-	fs     afero.Fs
-	rand   io.Reader
-	logger io.Writer
+	fs   afero.Fs
+	rand io.Reader
 }
 
-func (f FileStore) getEncryptedKeys() ([]keystore.EncryptedKey, error) {
-	files, err := afero.ReadDir(f.fs, "./")
+func (f FileStore) getEncryptedKeys(protocol, network string) ([]keystore.EncryptedKey, error) {
+	logger := log.With().Str("component", "nacl-filestore").Str("action", "getEncryptedKeys").Logger()
+
+	// directory needs to be created if looking for a key before one has been added and sub directories created
+	const dirPerm = 0700
+	if err := f.fs.MkdirAll(fmt.Sprintf("./%s/%s", protocol, network), dirPerm); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	files, err := afero.ReadDir(f.fs, fmt.Sprintf("./%s/%s", protocol, network))
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +62,8 @@ func (f FileStore) getEncryptedKeys() ([]keystore.EncryptedKey, error) {
 	for _, file := range files {
 		fileName := file.Name()
 		if !strings.HasSuffix(fileName, ".json") {
-			fmt.Fprintf(f.logger, "skipping non .json filename %s\n", fileName)
+			logger.Warn().Msgf("skipping non .json filename %s", fileName)
+
 			continue
 		}
 
@@ -65,12 +73,15 @@ func (f FileStore) getEncryptedKeys() ([]keystore.EncryptedKey, error) {
 
 		pubKeyBytes, err := encoding.DecodeHex(pubKeyPortion)
 		if err != nil {
-			fmt.Fprintf(f.logger, "skipping invalid filename %s: %v\n", fileName, err)
+			logger.Warn().Err(err).Msgf("invalid filename %s", fileName)
+
+			continue
 		}
 
-		encryptedKey, err := f.getEncryptedKey(pubKeyBytes)
+		encryptedKey, err := f.getEncryptedKey(protocol, network, pubKeyBytes)
 		if err != nil {
-			fmt.Fprintf(f.logger, "skipping invalid file %s: %v\n", fileName, err)
+			logger.Warn().Err(err).Msgf("invalid file %s", fileName)
+
 			continue
 		}
 
@@ -80,8 +91,8 @@ func (f FileStore) getEncryptedKeys() ([]keystore.EncryptedKey, error) {
 	return encryptedKeys, nil
 }
 
-func (f FileStore) getEncryptedKey(pubKeyBytes []byte) (*keystore.EncryptedKey, error) {
-	fd, err := f.fs.Open(f.filename(pubKeyBytes))
+func (f FileStore) getEncryptedKey(protocol, network string, pubKeyBytes []byte) (*keystore.EncryptedKey, error) {
+	fd, err := f.fs.Open(fmt.Sprintf("./%s/%s/%s", protocol, network, f.filename(pubKeyBytes)))
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not find key file")
 	}
@@ -90,11 +101,11 @@ func (f FileStore) getEncryptedKey(pubKeyBytes []byte) (*keystore.EncryptedKey, 
 
 	encryptedKey := new(keystore.EncryptedKey)
 	if err := json.NewDecoder(fd).Decode(encryptedKey); err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	if !bytes.Equal(encryptedKey.PublicKeyBytes, pubKeyBytes) {
-		return nil, fmt.Errorf("key content mismatch: have pubKey %x, want %x", encryptedKey.PublicKeyBytes, pubKeyBytes)
+		return nil, errors.Errorf("key content mismatch: have pubKey %x, want %x", encryptedKey.PublicKeyBytes, pubKeyBytes)
 	}
 
 	return encryptedKey, nil

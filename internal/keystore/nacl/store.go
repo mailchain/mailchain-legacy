@@ -16,6 +16,7 @@ package nacl
 
 import (
 	"encoding/json"
+	"fmt"
 	"path/filepath"
 	"time"
 
@@ -31,7 +32,7 @@ import (
 )
 
 // Store the private key with the storage key and curve type
-func (f FileStore) Store(private crypto.PrivateKey, deriveKeyOptions multi.OptionsBuilders) (crypto.PublicKey, error) {
+func (f FileStore) Store(protocol, network string, private crypto.PrivateKey, deriveKeyOptions multi.OptionsBuilders) (crypto.PublicKey, error) {
 	storageKey, keyDefFunc, err := multi.DeriveKey(deriveKeyOptions)
 	if err != nil {
 		return nil, errors.WithMessage(err, "could not derive storage key")
@@ -60,15 +61,17 @@ func (f FileStore) Store(private crypto.PrivateKey, deriveKeyOptions multi.Optio
 
 	content, err := json.Marshal(keyJSON)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
-	// Write into temporary file
-	tmpName, err := writeTemporaryKeyFile(f.fs, f.filename(private.PublicKey().Bytes()), content)
+
+	fileLoc := fmt.Sprintf("./%s/%s./%s", protocol, network, f.filename(private.PublicKey().Bytes()))
+
+	tmpName, err := writeTemporaryKeyFile(f.fs, fileLoc, content)
 	if err != nil {
 		return nil, err
 	}
 
-	return private.PublicKey(), f.fs.Rename(tmpName, f.filename(private.PublicKey().Bytes()))
+	return private.PublicKey(), f.fs.Rename(tmpName, fileLoc)
 }
 
 func writeTemporaryKeyFile(fs afero.Fs, file string, content []byte) (string, error) {
@@ -76,14 +79,14 @@ func writeTemporaryKeyFile(fs afero.Fs, file string, content []byte) (string, er
 	// in case it is not present yet.
 	const dirPerm = 0700
 	if err := fs.MkdirAll(filepath.Dir(file), dirPerm); err != nil {
-		return "", err
+		return "", errors.WithStack(err)
 	}
 
 	// Atomic write: create a temporary hidden file first
 	// then move it into place. TempFile assigns mode 0600.
 	f, err := afero.TempFile(fs, filepath.Dir(file), "."+filepath.Base(file)+".tmp")
 	if err != nil {
-		return "", err
+		return "", errors.WithStack(err)
 	}
 
 	if _, err := f.Write(content); err != nil {

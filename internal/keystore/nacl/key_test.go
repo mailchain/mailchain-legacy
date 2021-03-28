@@ -16,7 +16,6 @@ package nacl
 
 import (
 	"io"
-	"io/ioutil"
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
@@ -120,9 +119,8 @@ func Test_deriveKey(t *testing.T) {
 
 func TestFileStore_getPrivateKey(t *testing.T) {
 	type fields struct {
-		fs     afero.Fs
-		rand   io.Reader
-		logger io.Writer
+		fs   afero.Fs
+		rand io.Reader
 	}
 	type args struct {
 		encryptedKey     *keystore.EncryptedKey
@@ -140,7 +138,6 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 			fields{
 				nil,
 				nil,
-				ioutil.Discard,
 			},
 			args{
 				&encryptedKeySofiaSECP256k1,
@@ -156,7 +153,6 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 			fields{
 				nil,
 				nil,
-				ioutil.Discard,
 			},
 			args{
 				&encryptedKeySofiaED25519,
@@ -188,7 +184,6 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 			fields{
 				nil,
 				nil,
-				ioutil.Discard,
 			},
 			args{
 				func() *keystore.EncryptedKey {
@@ -208,7 +203,6 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 			fields{
 				nil,
 				nil,
-				ioutil.Discard,
 			},
 			args{
 				&encryptedKeyCharlotteED25519,
@@ -224,7 +218,6 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 			fields{
 				nil,
 				nil,
-				ioutil.Discard,
 			},
 			args{
 				func() *keystore.EncryptedKey {
@@ -244,7 +237,6 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 			fields{
 				nil,
 				nil,
-				ioutil.Discard,
 			},
 			args{
 				nil,
@@ -259,9 +251,8 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			f := FileStore{
-				fs:     tt.fields.fs,
-				rand:   tt.fields.rand,
-				logger: tt.fields.logger,
+				fs:   tt.fields.fs,
+				rand: tt.fields.rand,
 			}
 			got, err := f.getPrivateKey(tt.args.encryptedKey, tt.args.deriveKeyOptions)
 			if (err != nil) != tt.wantErr {

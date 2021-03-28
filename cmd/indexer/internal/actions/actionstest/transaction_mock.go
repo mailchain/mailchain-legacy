@@ -6,35 +6,36 @@ package actionstest
 
 import (
 	context "context"
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	actions "github.com/mailchain/mailchain/cmd/indexer/internal/actions"
-	reflect "reflect"
 )
 
-// MockTransaction is a mock of Transaction interface
+// MockTransaction is a mock of Transaction interface.
 type MockTransaction struct {
 	ctrl     *gomock.Controller
 	recorder *MockTransactionMockRecorder
 }
 
-// MockTransactionMockRecorder is the mock recorder for MockTransaction
+// MockTransactionMockRecorder is the mock recorder for MockTransaction.
 type MockTransactionMockRecorder struct {
 	mock *MockTransaction
 }
 
-// NewMockTransaction creates a new mock instance
+// NewMockTransaction creates a new mock instance.
 func NewMockTransaction(ctrl *gomock.Controller) *MockTransaction {
 	mock := &MockTransaction{ctrl: ctrl}
 	mock.recorder = &MockTransactionMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockTransaction) EXPECT() *MockTransactionMockRecorder {
 	return m.recorder
 }
 
-// Run mocks base method
+// Run mocks base method.
 func (m *MockTransaction) Run(ctx context.Context, protocol, network string, tx interface{}, txOpts actions.TransactionOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Run", ctx, protocol, network, tx, txOpts)
@@ -42,31 +43,31 @@ func (m *MockTransaction) Run(ctx context.Context, protocol, network string, tx 
 	return ret0
 }
 
-// Run indicates an expected call of Run
+// Run indicates an expected call of Run.
 func (mr *MockTransactionMockRecorder) Run(ctx, protocol, network, tx, txOpts interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Run", reflect.TypeOf((*MockTransaction)(nil).Run), ctx, protocol, network, tx, txOpts)
 }
 
-// MockTransactionOptions is a mock of TransactionOptions interface
+// MockTransactionOptions is a mock of TransactionOptions interface.
 type MockTransactionOptions struct {
 	ctrl     *gomock.Controller
 	recorder *MockTransactionOptionsMockRecorder
 }
 
-// MockTransactionOptionsMockRecorder is the mock recorder for MockTransactionOptions
+// MockTransactionOptionsMockRecorder is the mock recorder for MockTransactionOptions.
 type MockTransactionOptionsMockRecorder struct {
 	mock *MockTransactionOptions
 }
 
-// NewMockTransactionOptions creates a new mock instance
+// NewMockTransactionOptions creates a new mock instance.
 func NewMockTransactionOptions(ctrl *gomock.Controller) *MockTransactionOptions {
 	mock := &MockTransactionOptions{ctrl: ctrl}
 	mock.recorder = &MockTransactionOptionsMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockTransactionOptions) EXPECT() *MockTransactionOptionsMockRecorder {
 	return m.recorder
 }

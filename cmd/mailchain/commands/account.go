@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -13,6 +15,7 @@ import (
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/scrypt"
 	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/pubkey"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/ttacon/chalk"
@@ -44,22 +47,25 @@ Make sure you backup your keys regularly.`,
 	return cmd, nil
 }
 
-func getPrivateKeyBytes(privateKeyEncoding, privateKeyInput string) ([]byte, error) {
-	switch privateKeyEncoding {
-	case encoding.KindHex:
-		return encoding.DecodeHex(privateKeyInput)
-	case encoding.KindMnemonicAlgorand:
-		return encoding.DecodeMnemonicAlgorand(privateKeyInput)
-	default:
-		return nil, errors.New("private key encoding type not supported")
-	}
-}
-
 func accountAddCmd(produceKeyStore func() (keystore.Store, error), passphrasePrompt, privateKeyPrompt prompts.SecretFunc) *cobra.Command { //nolint: funlen
 	cmd := &cobra.Command{
 		Use:   "add",
 		Short: "Add private key",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			protocol, _ := cmd.Flags().GetString("protocol")
+			if len(protocols.NetworkNames(protocol)) == 0 {
+				return errors.New("protocol has no available networks")
+			}
+
+			network, _ := cmd.Flags().GetString("network")
+			if network == "" {
+				return errors.New("network must be specified")
+			}
+
+			if !contains(protocols.NetworkNames(protocol), network) {
+				return errors.New("network not found for protocol")
+			}
+
 			ks, err := produceKeyStore()
 			if err != nil {
 				return errors.WithMessage(err, "could not create `keystore`")
@@ -75,7 +81,7 @@ func accountAddCmd(produceKeyStore func() (keystore.Store, error), passphrasePro
 				return errors.WithMessage(err, "could not get private key")
 			}
 
-			privKeyBytes, err := getPrivateKeyBytes(privateKeyEncoding, privateKey)
+			privKeyBytes, err := encoding.Decode(privateKeyEncoding, privateKey)
 			if err != nil {
 				return errors.WithMessage(err, "`private-key` could not be decoded")
 			}
@@ -100,26 +106,46 @@ func accountAddCmd(produceKeyStore func() (keystore.Store, error), passphrasePro
 				return errors.WithMessage(err, "could not create `random salt`")
 			}
 
-			pubKey, err := ks.Store(privKey,
-				multi.OptionsBuilders{
-					Scrypt: []scrypt.DeriveOptionsBuilder{
-						scrypt.DefaultDeriveOptions(),
-						scrypt.WithPassphrase(passphrase),
-						randomSalt,
-					},
-				})
+			pk, err := ks.Store(protocol, network, privKey, multi.OptionsBuilders{Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.DefaultDeriveOptions(), scrypt.WithPassphrase(passphrase), randomSalt}})
 			if err != nil {
 				return errors.WithMessage(err, "key could not be stored")
 			}
 
-			cmd.Printf(chalk.Green.Color("Private key added\n"))
-			cmd.Printf("Public key=%s\n", encoding.EncodeHex(pubKey.Bytes()))
+			encodedPubKey, encodingUsed, err := pubkey.EncodeByProtocol(pk.Bytes(), protocol)
+			if err != nil {
+				return errors.WithMessage(err, "public key could not be encoded")
+			}
+
+			type response struct {
+				Message           string `json:"message"`
+				PublicKey         string `json:"public-key"`
+				PublicKeyEncoding string `json:"public-key-encoding"`
+				Protocol          string `json:"protocol"`
+				Network           string `json:"network"`
+			}
+
+			jsonResponse, _ := json.Marshal(response{
+				Message:           "private key added",
+				Protocol:          protocol,
+				Network:           network,
+				PublicKey:         encodedPubKey,
+				PublicKeyEncoding: encodingUsed,
+			})
+			var prettyJSON bytes.Buffer
+			if err := json.Indent(&prettyJSON, jsonResponse, "", "  "); err != nil {
+				return errors.WithMessage(err, "public key could not be encoded")
+			}
+
+			cmd.Print(prettyJSON.String())
 
 			return nil
 		},
 	}
 
-	cmd.Flags().StringP("protocol", "P", "", fmt.Sprintf("Select the protocol [%s]", strings.Join([]string{protocols.Algorand, protocols.Ethereum, protocols.Substrate}, ", ")))
+	cmd.Flags().StringP("protocol", "P", "", fmt.Sprintf("Protocol to add private key to. Available: [%s].", strings.Join(protocols.All(), ", ")))
+	_ = cmd.MarkFlagRequired("protool")
+	cmd.Flags().StringP("network", "N", "", "Network to add the private key to.")
+	_ = cmd.MarkFlagRequired("network")
 	cmd.Flags().StringP("key-type", "", "", "Select the key type [secp256k1, ed25519, sr25519]")
 	_ = cmd.MarkFlagRequired("key-type")
 	cmd.Flags().StringP("private-key", "K", "", "Private key to store encoded")
@@ -164,4 +190,14 @@ func accountListCmd(produceKeystore func() (keystore.Store, error)) *cobra.Comma
 	_ = cmd.MarkFlagRequired("network")
 
 	return cmd
+}
+
+func contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+
+	return false
 }

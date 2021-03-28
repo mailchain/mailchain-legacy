@@ -24,15 +24,16 @@ import (
 	"github.com/pkg/errors"
 )
 
-// HasAddress check for the presence of the address in the store
+// HasAddress check for the presence of the address in the store.
 func (f FileStore) HasAddress(searchAddress []byte, protocol, network string) bool {
 	_, err := f.getEncryptedKeyByAddress(searchAddress, protocol, network)
+
 	return err == nil
 }
 
 // GetPublicKeys that are stored on disk.
-func (f FileStore) GetPublicKeys() ([]crypto.PublicKey, error) {
-	rawKeys, err := f.getEncryptedKeys()
+func (f FileStore) getPublicKeys(protocol, network string) ([]crypto.PublicKey, error) {
+	rawKeys, err := f.getEncryptedKeys(protocol, network)
 	if err != nil {
 		return nil, err
 	}
@@ -51,11 +52,11 @@ func (f FileStore) GetPublicKeys() ([]crypto.PublicKey, error) {
 	return publicKeys, nil
 }
 
-// GetAddresses list all the address this key store has
+// GetAddresses list all addresses.
 func (f FileStore) GetAddresses(protocol, network string) ([][]byte, error) {
 	addresses := [][]byte{}
 
-	keys, err := f.GetPublicKeys()
+	keys, err := f.getPublicKeys(protocol, network)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -75,7 +76,7 @@ func (f FileStore) GetAddresses(protocol, network string) ([][]byte, error) {
 func (f FileStore) getEncryptedKeyByAddress(searchAddress []byte, protocol, network string) (*keystore.EncryptedKey, error) {
 	var out *keystore.EncryptedKey
 
-	rawKeys, err := f.getEncryptedKeys()
+	rawKeys, err := f.getEncryptedKeys(protocol, network)
 	if err != nil {
 		return nil, err
 	}

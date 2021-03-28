@@ -5,35 +5,36 @@
 package ciphertest
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	crypto "github.com/mailchain/mailchain/crypto"
-	reflect "reflect"
 )
 
-// MockKeyExchange is a mock of KeyExchange interface
+// MockKeyExchange is a mock of KeyExchange interface.
 type MockKeyExchange struct {
 	ctrl     *gomock.Controller
 	recorder *MockKeyExchangeMockRecorder
 }
 
-// MockKeyExchangeMockRecorder is the mock recorder for MockKeyExchange
+// MockKeyExchangeMockRecorder is the mock recorder for MockKeyExchange.
 type MockKeyExchangeMockRecorder struct {
 	mock *MockKeyExchange
 }
 
-// NewMockKeyExchange creates a new mock instance
+// NewMockKeyExchange creates a new mock instance.
 func NewMockKeyExchange(ctrl *gomock.Controller) *MockKeyExchange {
 	mock := &MockKeyExchange{ctrl: ctrl}
 	mock.recorder = &MockKeyExchangeMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockKeyExchange) EXPECT() *MockKeyExchangeMockRecorder {
 	return m.recorder
 }
 
-// EphemeralKey mocks base method
+// EphemeralKey mocks base method.
 func (m *MockKeyExchange) EphemeralKey() (crypto.PrivateKey, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "EphemeralKey")
@@ -42,13 +43,13 @@ func (m *MockKeyExchange) EphemeralKey() (crypto.PrivateKey, error) {
 	return ret0, ret1
 }
 
-// EphemeralKey indicates an expected call of EphemeralKey
+// EphemeralKey indicates an expected call of EphemeralKey.
 func (mr *MockKeyExchangeMockRecorder) EphemeralKey() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EphemeralKey", reflect.TypeOf((*MockKeyExchange)(nil).EphemeralKey))
 }
 
-// SharedSecret mocks base method
+// SharedSecret mocks base method.
 func (m *MockKeyExchange) SharedSecret(privateKey crypto.PrivateKey, publicKey crypto.PublicKey) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SharedSecret", privateKey, publicKey)
@@ -57,7 +58,7 @@ func (m *MockKeyExchange) SharedSecret(privateKey crypto.PrivateKey, publicKey c
 	return ret0, ret1
 }
 
-// SharedSecret indicates an expected call of SharedSecret
+// SharedSecret indicates an expected call of SharedSecret.
 func (mr *MockKeyExchangeMockRecorder) SharedSecret(privateKey, publicKey interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SharedSecret", reflect.TypeOf((*MockKeyExchange)(nil).SharedSecret), privateKey, publicKey)

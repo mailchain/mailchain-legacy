@@ -5,35 +5,36 @@
 package ciphertest
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	cipher "github.com/mailchain/mailchain/crypto/cipher"
-	reflect "reflect"
 )
 
-// MockDecrypter is a mock of Decrypter interface
+// MockDecrypter is a mock of Decrypter interface.
 type MockDecrypter struct {
 	ctrl     *gomock.Controller
 	recorder *MockDecrypterMockRecorder
 }
 
-// MockDecrypterMockRecorder is the mock recorder for MockDecrypter
+// MockDecrypterMockRecorder is the mock recorder for MockDecrypter.
 type MockDecrypterMockRecorder struct {
 	mock *MockDecrypter
 }
 
-// NewMockDecrypter creates a new mock instance
+// NewMockDecrypter creates a new mock instance.
 func NewMockDecrypter(ctrl *gomock.Controller) *MockDecrypter {
 	mock := &MockDecrypter{ctrl: ctrl}
 	mock.recorder = &MockDecrypterMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockDecrypter) EXPECT() *MockDecrypterMockRecorder {
 	return m.recorder
 }
 
-// Decrypt mocks base method
+// Decrypt mocks base method.
 func (m *MockDecrypter) Decrypt(arg0 cipher.EncryptedContent) (cipher.PlainContent, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Decrypt", arg0)
@@ -42,36 +43,36 @@ func (m *MockDecrypter) Decrypt(arg0 cipher.EncryptedContent) (cipher.PlainConte
 	return ret0, ret1
 }
 
-// Decrypt indicates an expected call of Decrypt
+// Decrypt indicates an expected call of Decrypt.
 func (mr *MockDecrypterMockRecorder) Decrypt(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Decrypt", reflect.TypeOf((*MockDecrypter)(nil).Decrypt), arg0)
 }
 
-// MockEncrypter is a mock of Encrypter interface
+// MockEncrypter is a mock of Encrypter interface.
 type MockEncrypter struct {
 	ctrl     *gomock.Controller
 	recorder *MockEncrypterMockRecorder
 }
 
-// MockEncrypterMockRecorder is the mock recorder for MockEncrypter
+// MockEncrypterMockRecorder is the mock recorder for MockEncrypter.
 type MockEncrypterMockRecorder struct {
 	mock *MockEncrypter
 }
 
-// NewMockEncrypter creates a new mock instance
+// NewMockEncrypter creates a new mock instance.
 func NewMockEncrypter(ctrl *gomock.Controller) *MockEncrypter {
 	mock := &MockEncrypter{ctrl: ctrl}
 	mock.recorder = &MockEncrypterMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockEncrypter) EXPECT() *MockEncrypterMockRecorder {
 	return m.recorder
 }
 
-// Encrypt mocks base method
+// Encrypt mocks base method.
 func (m *MockEncrypter) Encrypt(arg0 cipher.PlainContent) (cipher.EncryptedContent, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Encrypt", arg0)
@@ -80,7 +81,7 @@ func (m *MockEncrypter) Encrypt(arg0 cipher.PlainContent) (cipher.EncryptedConte
 	return ret0, ret1
 }
 
-// Encrypt indicates an expected call of Encrypt
+// Encrypt indicates an expected call of Encrypt.
 func (mr *MockEncrypterMockRecorder) Encrypt(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Encrypt", reflect.TypeOf((*MockEncrypter)(nil).Encrypt), arg0)

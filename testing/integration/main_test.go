@@ -109,8 +109,8 @@ func TestSendReceive(t *testing.T) {
 				t.FailNow()
 			}
 
-			toPubkey := addPrivateKey(t, settingsFileName, passphrase, v, tt.args.toKeyLookup)
-			fromPubKey := addPrivateKey(t, settingsFileName, passphrase, v, tt.args.fromKeyLookup)
+			toPubkey := addPrivateKey(t, tt.args.protocol, tt.args.network, settingsFileName, passphrase, v, tt.args.toKeyLookup)
+			fromPubKey := addPrivateKey(t, tt.args.protocol, tt.args.network, settingsFileName, passphrase, v, tt.args.fromKeyLookup)
 
 			serveCmd := createCommand(settingsFileName, bundle("serve"), bundle("--passphrase", passphrase))
 

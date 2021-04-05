@@ -4,13 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"strings"
 	"syscall"
 	"testing"
 	"time"
 
-	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/mailchain/mailchain/internal/protocols/algorand"
 	"github.com/mailchain/mailchain/stores"
@@ -18,38 +15,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func testDir(t *testing.T) string {
-	wd, err := os.Getwd()
-	if !assert.NoError(t, err) {
-		t.FailNow()
-	}
-	return strings.Join([]string{wd, "out", t.Name()}, "/")
-}
-
-func encodeAddress(t *testing.T, pubKey crypto.PublicKey, protocol, network string) string {
-	addressBytes, err := addressing.FromPublicKey(pubKey, protocol, network)
-	if !assert.NoError(t, err) {
-		t.FailNow()
-	}
-
-	encoded, _, err := addressing.EncodeByProtocol(addressBytes, protocol)
-	if !assert.NoError(t, err) {
-		t.FailNow()
-	}
-
-	return encoded
-}
-
 func TestSendReceive(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+
 	v := viper.New()
 	v.SetConfigFile("./private-keys.yaml")
 
 	if err := v.ReadInConfig(); !assert.NoError(t, err) {
 		t.FailNow()
-	}
-
-	if testing.Short() {
-		t.Skip()
 	}
 
 	type fields struct {
@@ -133,8 +108,6 @@ func TestSendReceive(t *testing.T) {
 			subject := apiSendMessage(t, tt.args.protocol, tt.args.network, tt.args.contentType, tt.args.envelope, toPubKeyRes.SupportedEncryptionTypes[0], toAddress, fromAddress, toPubkey)
 
 			time.Sleep(30 * time.Second)
-
-			apiFetchMessage(t, tt.args.protocol, tt.args.network, toAddress)
 
 			apiCheckMessage(t, tt.args.protocol, tt.args.network, toAddress, subject)
 		})

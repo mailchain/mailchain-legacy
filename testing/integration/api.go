@@ -25,6 +25,7 @@ func apiCheckMessage(t *testing.T, protocol, network, address, checkSubject stri
 			"address":  address,
 			"network":  network,
 			"protocol": protocol,
+			"fetch":    "true",
 		}).
 		Get("http://localhost:8080/api/messages")
 
@@ -51,24 +52,6 @@ func apiCheckMessage(t *testing.T, protocol, network, address, checkSubject stri
 	}
 
 	if !assert.Equal(t, checkSubject, res.Messages[0].Subject) {
-		t.FailNow()
-	}
-}
-
-func apiFetchMessage(t *testing.T, protocol, network, address string) {
-	r, err := resty.R().
-		SetQueryParams(map[string]string{
-			"address":  address,
-			"network":  network,
-			"protocol": protocol,
-		}).
-		Post("http://localhost:8080/api/messages/fetch")
-
-	if !assert.NoError(t, err) {
-		t.FailNow()
-	}
-
-	if !assert.Equal(t, 200, r.StatusCode()) {
 		t.FailNow()
 	}
 }

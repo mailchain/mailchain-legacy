@@ -16,6 +16,7 @@
 vendor/
 
 coverage.out
+mailchain.cov
 
 dist
 debug

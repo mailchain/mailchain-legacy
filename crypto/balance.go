@@ -17,4 +17,12 @@ package crypto
 type Balance interface {
 	Balance() string
 	Unit() string
+	// Bytes returns the raw bytes representation of the public key.
+	//
+	// The returned bytes are used for encrypting, verifying a signature, and locating an address.
+	Bytes() []byte
+	// Kind returns the type of the key.
+	Kind() string
+	// Verify verifies whether sig is a valid signature of message.
+	Verify(message, sig []byte) bool
 }

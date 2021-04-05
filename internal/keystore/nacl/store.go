@@ -64,7 +64,7 @@ func (f FileStore) Store(protocol, network string, private crypto.PrivateKey, de
 		return nil, errors.WithStack(err)
 	}
 
-	fileLoc := fmt.Sprintf("./%s/%s./%s", protocol, network, f.filename(private.PublicKey().Bytes()))
+	fileLoc := fmt.Sprintf("./%s/%s/%s", protocol, network, f.filename(private.PublicKey().Bytes()))
 
 	tmpName, err := writeTemporaryKeyFile(f.fs, fileLoc, content)
 	if err != nil {

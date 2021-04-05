@@ -16,12 +16,16 @@ package nacl
 
 import (
 	"bytes"
+	"strings"
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/multikey"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/keystore"
+	"github.com/mailchain/mailchain/internal/protocols"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // HasAddress check for the presence of the address in the store.
@@ -53,7 +57,51 @@ func (f FileStore) getPublicKeys(protocol, network string) ([]crypto.PublicKey, 
 }
 
 // GetAddresses list all addresses.
-func (f FileStore) GetAddresses(protocol, network string) ([][]byte, error) {
+func (f FileStore) GetAddresses(protocol, network string) (map[string]map[string][][]byte, error) {
+	protocol = strings.TrimSpace(protocol)
+	network = strings.TrimSpace(network)
+	addresses := map[string]map[string][][]byte{}
+
+	if protocol == "" && network == "" {
+		for _, protocol := range protocols.All() {
+			addresses[protocol] = map[string][][]byte{}
+
+			for _, network := range protocols.NetworkNames(protocol) {
+				a, err := f.getProtocolNetworkAddresses(protocol, network)
+				if err != nil {
+					return nil, err
+				}
+
+				addresses[protocol][network] = a
+			}
+		}
+	} else if protocol != "" && network == "" {
+		addresses[protocol] = map[string][][]byte{}
+
+		for _, network := range protocols.NetworkNames(protocol) {
+			a, err := f.getProtocolNetworkAddresses(protocol, network)
+			if err != nil {
+				return nil, err
+			}
+
+			addresses[protocol][network] = a
+		}
+	} else if protocol != "" && network != "" {
+		addresses[protocol] = map[string][][]byte{}
+		a, err := f.getProtocolNetworkAddresses(protocol, network)
+		if err != nil {
+			return nil, err
+		}
+
+		addresses[protocol][network] = a
+	} else if protocol == "" && network != "" {
+		return nil, errors.New("protocol must be specified if network is supplied")
+	}
+
+	return addresses, nil
+}
+
+func (f FileStore) getProtocolNetworkAddresses(protocol, network string) ([][]byte, error) {
 	addresses := [][]byte{}
 
 	keys, err := f.getPublicKeys(protocol, network)
@@ -64,6 +112,8 @@ func (f FileStore) GetAddresses(protocol, network string) ([][]byte, error) {
 	for _, pubKey := range keys {
 		pubkeyAddress, err := addressing.FromPublicKey(pubKey, protocol, network)
 		if err != nil {
+			log.Logger.Warn().Str("component", "nacl-filestore").Str("func", "getProtocolNetworkAddresses").Str("protocol", protocol).Str("network", network).Str("public-key", encoding.EncodeHex(pubKey.Bytes())).Err(err).Msg("could not get address from public key")
+
 			continue
 		}
 
@@ -94,6 +144,7 @@ func (f FileStore) getEncryptedKeyByAddress(searchAddress []byte, protocol, netw
 
 		if bytes.Equal(pubkeyAddress, searchAddress) {
 			out = &rawKeys[i]
+
 			break
 		}
 	}

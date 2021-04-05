@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/stretchr/testify/assert"
@@ -72,15 +73,15 @@ func apiFetchMessage(t *testing.T, protocol, network, address string) {
 	}
 }
 
-func apiSendMessage(t *testing.T, protocol, network string, sendArgs sendArgs, encryptionMethodName, toAddress, fromAddress string, pubKey crypto.PublicKey) string {
+func apiSendMessage(t *testing.T, protocol, network string, contentType, envelope string, encryptionMethodName, toAddress, fromAddress string, pubKey crypto.PublicKey) string {
 	now := time.Now()
 	subject := fmt.Sprintf("IT-%s-%d", t.Name(), now.Unix())
 	client := resty.New()
 
 	body := map[string]interface{}{
-		"content-type":           sendArgs.contentType,
+		"content-type":           contentType,
 		"encryption-method-name": encryptionMethodName,
-		"envelope":               sendArgs.envelope,
+		"envelope":               envelope,
 		"message": map[string]interface{}{
 			"headers": map[string]interface{}{
 				"to":   fmt.Sprintf("Charlotte <%s@%s.%s>", toAddress, network, protocol),
@@ -147,7 +148,47 @@ func apiGetPublicKey(t *testing.T, address, protocol, network string) *getPublic
 	}
 
 	return r.Result().(*getPublicKeyResponse)
+}
 
+func apiCheckContainsAddress(t *testing.T, address, protocol, network string) {
+	type GetAddressesItem struct {
+		Value    string `json:"value"`
+		Encoding string `json:"encoding"`
+		Protocol string `json:"protocol"`
+		Network  string `json:"network"`
+	}
+
+	r, err := resty.R().
+		SetQueryParams(map[string]string{
+			"network":  network,
+			"protocol": protocol,
+		}).
+		Get("http://localhost:8080/api/addresses")
+	if !assert.NoError(t, err) {
+		t.FailNow()
+	}
+	t.Logf("body: %s", r.Body())
+
+	if !assert.Equal(t, 200, r.StatusCode()) {
+		t.FailNow()
+	}
+
+	if err := ioutil.WriteFile(fmt.Sprintf("%s/api/response-GET-addresses-%s.json", testDir(t), address), r.Body(), 0644); !assert.NoError(t, err) {
+		t.FailNow()
+	}
+
+	var res handlers.GetAddressesResponse
+	if err := json.Unmarshal(r.Body(), &res); !assert.NoError(t, err) {
+		t.FailNow()
+	}
+
+	for _, x := range res.Addresses {
+		if x.Value == address {
+			return
+		}
+	}
+
+	assert.FailNowf(t, "address %s not found in GetAddresses response", address)
 }
 
 type getPublicKeyResponse struct {

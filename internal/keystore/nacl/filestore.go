@@ -80,7 +80,7 @@ func (f FileStore) getEncryptedKeys(protocol, network string) ([]keystore.Encryp
 
 		encryptedKey, err := f.getEncryptedKey(protocol, network, pubKeyBytes)
 		if err != nil {
-			logger.Warn().Err(err).Msgf("invalid file %s", fileName)
+			logger.Warn().Err(err).Msgf("invalid file %s", file.Name())
 
 			continue
 		}

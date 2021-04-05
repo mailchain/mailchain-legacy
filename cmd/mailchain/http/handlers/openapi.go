@@ -1,4 +1,4 @@
-// Copyright 2020 Finobo
+// Copyright 2021 Finobo
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,21 +59,20 @@ func spec() string {
             "x-go-name": "Network",
             "description": "Network to use when finding addresses.",
             "name": "network",
-            "in": "query",
-            "required": true
+            "in": "query"
           },
           {
             "enum": [
               "ethereum",
-              " substrate"
+              " substrate",
+              " algorand"
             ],
             "type": "string",
             "example": "ethereum",
             "x-go-name": "Protocol",
             "description": "Protocol to use when finding addresses.",
             "name": "protocol",
-            "in": "query",
-            "required": true
+            "in": "query"
           }
         ],
         "responses": {
@@ -524,7 +523,9 @@ func spec() string {
       "type": "object",
       "required": [
         "value",
-        "encoding"
+        "encoding",
+        "protocol",
+        "network"
       ],
       "properties": {
         "encoding": {
@@ -533,6 +534,18 @@ func spec() string {
           "x-go-name": "Encoding",
           "example": "hex/0x-prefix"
         },
+        "network": {
+          "description": "Network ¬address¬ is available on",
+          "type": "string",
+          "x-go-name": "Network",
+          "example": "mainnet"
+        },
+        "protocol": {
+          "description": "Protocol ¬address¬ is available on",
+          "type": "string",
+          "x-go-name": "Protocol",
+          "example": "ethereum"
+        },
         "value": {
           "description": "Address value",
           "type": "string",
@@ -540,7 +553,7 @@ func spec() string {
           "example": "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetEnvelopeResponseBodyElement": {
       "description": "GetEnvelopeResponseBodyElement response",
@@ -563,7 +576,7 @@ func spec() string {
           "example": "0x01"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetMessagesResponseHeaders": {
       "type": "object",
@@ -611,7 +624,7 @@ func spec() string {
         }
       },
       "x-go-name": "getHeaders",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetMessagesResponseMessage": {
       "type": "object",
@@ -676,7 +689,7 @@ func spec() string {
         }
       },
       "x-go-name": "getMessage",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetProtocolsProtocol": {
       "type": "object",
@@ -695,7 +708,7 @@ func spec() string {
           "x-go-name": "Networks"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetPublicKeyResponseBody": {
       "description": "GetPublicKeyResponseBody body response",
@@ -739,7 +752,7 @@ func spec() string {
           ]
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetReadResponseBody": {
       "type": "object",
@@ -755,7 +768,7 @@ func spec() string {
         }
       },
       "x-go-name": "getBody",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetResolveAddressResponseBody": {
       "description": "GetResolveAddressResponseBody body response",
@@ -778,7 +791,7 @@ func spec() string {
           "example": 3
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetResolveNameResponseBody": {
       "description": "GetResolveNameResponseBody body response",
@@ -801,7 +814,7 @@ func spec() string {
           "example": 3
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetVersionResponseBody": {
       "description": "GetVersionResponseBody response",
@@ -830,7 +843,7 @@ func spec() string {
           "example": "1.0.0"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "Network": {
       "type": "object",
@@ -852,7 +865,7 @@ func spec() string {
           "x-go-name": "NameServiceDomainEnabled"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "PostMessagesResponseHeaders": {
       "description": "PostHeaders body",
@@ -880,7 +893,7 @@ func spec() string {
         }
       },
       "x-go-name": "PostHeaders",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "PostMessagesResponseMessage": {
       "description": "PostMessage body",
@@ -925,7 +938,7 @@ func spec() string {
         }
       },
       "x-go-name": "PostMessage",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "SendMessageRequestBody": {
       "description": "PostRequestBody body",
@@ -969,7 +982,7 @@ func spec() string {
         }
       },
       "x-go-name": "PostRequestBody",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     }
   },
   "responses": {

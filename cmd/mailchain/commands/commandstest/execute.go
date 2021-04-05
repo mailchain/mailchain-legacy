@@ -2,6 +2,8 @@ package commandstest
 
 import (
 	"bytes"
+	"fmt"
+	"io/ioutil"
 	"testing"
 
 	"github.com/spf13/cobra"
@@ -41,6 +43,30 @@ func AssertCommandOutput(t *testing.T, cmd *cobra.Command, err error, out, wantO
 		if !assert.Equal(t, wantOutput+"\n"+cmd.UsageString()+"\n", out) {
 			t.Errorf("cmd().Execute().out = %v, want %v", out, wantOutput)
 			return false
+		}
+	}
+
+	return true
+}
+
+// AssertCommandJsonOutput ensure that the command outputs a specific string.
+func AssertCommandJsonOutput(t *testing.T, cmd *cobra.Command, err error, out, wantOutputErr string) bool {
+	if err != nil {
+		if !assert.Equal(t, wantOutputErr+"\n"+cmd.UsageString()+"\n", out) {
+			t.Errorf("cmd().Execute().out = %v, want %v", out, wantOutputErr)
+			return false
+		}
+	}
+
+	if err == nil {
+		goldenResponse, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s.json", t.Name()))
+		if err != nil {
+			assert.FailNow(t, err.Error())
+		}
+
+		if !assert.JSONEq(t, string(goldenResponse), out) {
+			t.Errorf("command returned unexpected response: got %v want %v",
+				out, goldenResponse)
 		}
 	}
 

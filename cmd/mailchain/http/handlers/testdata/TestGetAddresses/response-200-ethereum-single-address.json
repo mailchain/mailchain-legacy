@@ -1,0 +1,10 @@
+{
+    "addresses": [
+        {
+            "value": "0xd5ab4ce3605cd590db609b6b5c8901fdb2ef7fe6",
+            "encoding": "hex/0x-prefix",
+            "protocol": "ethereum",
+            "network": "mainnet"
+        }
+    ]
+}

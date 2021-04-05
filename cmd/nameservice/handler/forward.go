@@ -8,6 +8,7 @@ import (
 	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // Forward handle forward domain lookups where an address is looked up to find a domain name.
@@ -25,7 +26,7 @@ func Forward(resolver nameservice.ForwardLookup, protocol, network string) func(
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if len(r.URL.Query()["domain-name"]) != 1 {
-			errs.JSONWriter(w, r, http.StatusPreconditionFailed, errors.Errorf("domain-name must be specified exactly once"))
+			errs.JSONWriter(w, r, http.StatusPreconditionFailed, errors.Errorf("domain-name must be specified exactly once"), log.Logger)
 			return
 		}
 
@@ -39,13 +40,13 @@ func Forward(resolver nameservice.ForwardLookup, protocol, network string) func(
 		}
 
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err, log.Logger)
 			return
 		}
 
 		encAddress, _, err := addressing.EncodeByProtocol(resolvedAddress, protocol)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"), log.Logger)
 			return
 		}
 

@@ -1,0 +1,30 @@
+{
+    "addresses": [
+        {
+            "address": "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2",
+            "address-encoding": "hex/0x-prefix",
+            "protocol": "ethereum",
+            "network": "goerli"
+        },
+        {
+            "address": "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+            "address-encoding": "hex/0x-prefix",
+            "protocol": "ethereum",
+            "network": "goerli"
+        },
+        {
+            "address": "0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2",
+            "address-encoding": "hex/0x-prefix",
+            "protocol": "ethereum",
+            "network": "mainnet"
+        },
+        {
+            "address": "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+            "address-encoding": "hex/0x-prefix",
+            "protocol": "ethereum",
+            "network": "mainnet"
+        }
+    ],
+    "protocol": "ethereum",
+    "network": ""
+}

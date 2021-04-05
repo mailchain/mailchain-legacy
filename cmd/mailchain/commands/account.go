@@ -156,6 +156,19 @@ func accountAddCmd(produceKeyStore func() (keystore.Store, error), passphrasePro
 }
 
 func accountListCmd(produceKeystore func() (keystore.Store, error)) *cobra.Command {
+	type address struct {
+		Address         string `json:"address"`
+		AddressEncoding string `json:"address-encoding"`
+		Protocol        string `json:"protocol"`
+		Network         string `json:"network"`
+	}
+
+	type response struct {
+		Addresses []address `json:"addresses"`
+		Protocol  string    `json:"protocol"`
+		Network   string    `json:"network"`
+	}
+
 	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "List accounts",
@@ -164,30 +177,48 @@ func accountListCmd(produceKeystore func() (keystore.Store, error)) *cobra.Comma
 			if err != nil {
 				return errors.WithMessage(err, "could not create `keystore`")
 			}
+
 			protocol, _ := cmd.Flags().GetString("protocol")
 			network, _ := cmd.Flags().GetString("network")
 
-			addresses, err := ks.GetAddresses(protocol, network)
+			allAddresses, err := ks.GetAddresses(protocol, network)
 			if err != nil {
 				return errors.WithMessage(err, "could not get addresses")
 			}
-			for _, x := range addresses {
-				encoded, encoding, err := addressing.EncodeByProtocol(x, protocol)
+
+			addresses := []address{}
+			for _, a := range keystore.FlattenAddressesMap(allAddresses) {
+				encodedAddress, encodingUsed, err := addressing.EncodeByProtocol(a.Address, a.Protocol)
 				if err != nil {
-					return errors.WithMessage(err, "could not encode address")
+					return errors.WithStack(err)
 				}
 
-				cmd.Printf("Encoding: %s, address: %s\n", encoding, encoded)
+				addresses = append(addresses, address{
+					Protocol:        a.Protocol,
+					Network:         a.Network,
+					Address:         encodedAddress,
+					AddressEncoding: encodingUsed,
+				})
 			}
+
+			jsonResponse, _ := json.Marshal(response{
+				Addresses: addresses,
+				Protocol:  protocol,
+				Network:   network,
+			})
+			var prettyJSON bytes.Buffer
+			if err := json.Indent(&prettyJSON, jsonResponse, "", "  "); err != nil {
+				return errors.WithMessage(err, "list addresses could not be encoded")
+			}
+
+			cmd.Print(prettyJSON.String())
 
 			return nil
 		},
 	}
 
 	cmd.Flags().StringP("protocol", "", "", "Protocol to search for")
-	_ = cmd.MarkFlagRequired("protocol")
 	cmd.Flags().StringP("network", "", "", "Network to search for")
-	_ = cmd.MarkFlagRequired("network")
 
 	return cmd
 }

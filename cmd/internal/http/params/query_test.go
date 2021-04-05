@@ -179,3 +179,81 @@ func TestQueryRequireAddresses(t *testing.T) {
 		})
 	}
 }
+
+func TestQueryOptionalProtocol(t *testing.T) {
+	type args struct {
+		r *http.Request
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"success",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("GET", "/?protocol=ethereum", nil)
+					return req
+				}(),
+			},
+			"ethereum",
+		},
+		{
+			"missing",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("GET", "/", nil)
+					return req
+				}(),
+			},
+			"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := QueryOptionalProtocol(tt.args.r); got != tt.want {
+				t.Errorf("QueryOptionalProtocol() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestQueryOptionalNetwork(t *testing.T) {
+	type args struct {
+		r *http.Request
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"success",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("GET", "/?network=mainnet", nil)
+					return req
+				}(),
+			},
+			"mainnet",
+		},
+		{
+			"missing",
+			args{
+				func() *http.Request {
+					req := httptest.NewRequest("GET", "/", nil)
+					return req
+				}(),
+			},
+			"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := QueryOptionalNetwork(tt.args.r); got != tt.want {
+				t.Errorf("QueryOptionalNetwork() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

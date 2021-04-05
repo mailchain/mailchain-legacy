@@ -24,7 +24,6 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -95,11 +94,10 @@ func TestJSONWriter(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
 			log.Logger = zerolog.New(&buf)
-			logrus.SetOutput(&buf)
 			defer func() {
 				log.Logger = zerolog.New(os.Stdout).With().Timestamp().Logger()
 			}()
-			JSONWriter(tt.args.w, tt.args.r, tt.args.code, tt.args.err)
+			JSONWriter(tt.args.w, tt.args.r, tt.args.code, tt.args.err, log.Logger)
 			gotLogOut := buf.String()
 			if !assert.Equal(t, tt.logOut, gotLogOut) {
 				t.Errorf("logOut = %v, want %v", gotLogOut, tt.logOut)

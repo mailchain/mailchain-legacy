@@ -1,0 +1,30 @@
+{
+    "addresses": [
+      {
+        "address": "6ANDhTm2cojBRKLFCcwbQd3rksng71Uq7jRnhLmBTLzm",
+        "address-encoding": "base58/plain",
+        "protocol": "substrate",
+        "network": "edgeware-beresheet"
+      },
+      {
+        "address": "6nkeC7WK3QKjg6Tp98s72Vi8L9Xzp45g8iKjZfAVeizC",
+        "address-encoding": "base58/plain",
+        "protocol": "substrate",
+        "network": "edgeware-beresheet"
+      },
+      {
+        "address": "6ANDhTm2cojBRKLFCcwbQd3rksng71Uq7jRnhLmBTLzm",
+        "address-encoding": "base58/plain",
+        "protocol": "substrate",
+        "network": "edgeware-mainnet"
+      },
+      {
+        "address": "6nkeC7WK3QKjg6Tp98s72Vi8L9Xzp45g8iKjZfAVeizC",
+        "address-encoding": "base58/plain",
+        "protocol": "substrate",
+        "network": "edgeware-mainnet"
+      }
+    ],
+    "protocol": "substrate",
+    "network": ""
+  }

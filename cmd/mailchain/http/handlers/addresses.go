@@ -19,10 +19,12 @@ import (
 	"net/http"
 
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
+	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // GetAddresses returns a handler get spec.
@@ -37,35 +39,32 @@ func GetAddresses(ks keystore.Store) func(w http.ResponseWriter, r *http.Request
 	//   404: NotFoundError
 	//   422: ValidationError
 	return func(w http.ResponseWriter, r *http.Request) {
-		protocol, err := params.QueryRequireProtocol(r)
-		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
-			return
-		}
-
-		network, err := params.QueryRequireNetwork(r)
-		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
-			return
-		}
+		protocol := params.QueryOptionalProtocol(r)
+		network := params.QueryOptionalNetwork(r)
 
 		rawAddresses, err := ks.GetAddresses(protocol, network)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
+
 			return
 		}
 
+		flattenAddresses := keystore.FlattenAddressesMap(rawAddresses)
 		addresses := []GetAddressesItem{}
-		for _, x := range rawAddresses {
-			value, encoding, err := addressing.EncodeByProtocol(x, protocol)
+
+		for _, x := range flattenAddresses {
+			value, addressEncoding, err := addressing.EncodeByProtocol(x.Address, x.Protocol)
 			if err != nil {
-				errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
+				errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger.With().Str("query-protocol", protocol).Str("address", encoding.EncodeHexZeroX(x.Address)).Logger())
+
 				return
 			}
 
 			addresses = append(addresses, GetAddressesItem{
 				Value:    value,
-				Encoding: encoding,
+				Encoding: addressEncoding,
+				Protocol: x.Protocol,
+				Network:  x.Network,
 			})
 		}
 
@@ -82,7 +81,6 @@ type GetAddressesResponse struct {
 	Addresses []GetAddressesItem `json:"addresses"`
 }
 
-// swagger:response // in: body
 type GetAddressesItem struct {
 	// Address value
 	//
@@ -94,24 +92,34 @@ type GetAddressesItem struct {
 	// Required: true
 	// example: hex/0x-prefix
 	Encoding string `json:"encoding"`
+	// Protocol `address` is available on
+	//
+	// Required: true
+	// example: ethereum
+	Protocol string `json:"protocol"`
+	// Network `address` is available on
+	//
+	// Required: true
+	// example: mainnet
+	Network string `json:"network"`
 }
 
-// GetAddressesRequest body
+// GetAddressesRequest bod
 // swagger:parameters GetAddresses
 type GetAddressesRequest struct {
 	// Network to use when finding addresses.
 	//
 	// enum: mainnet,goerli,ropsten,rinkeby,local
 	// in: query
-	// required: true
+	// required: false
 	// example: goerli
 	Network string `json:"network"`
 
 	// Protocol to use when finding addresses.
 	//
-	// enum: ethereum, substrate
+	// enum: ethereum, substrate, algorand
 	// in: query
-	// required: true
+	// required: false
 	// example: ethereum
 	Protocol string `json:"protocol"`
 }

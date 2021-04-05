@@ -27,6 +27,7 @@ import (
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // GetResolveName returns a handler get spec
@@ -45,24 +46,24 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 	return func(w http.ResponseWriter, r *http.Request) {
 		protocol, network, domainName, err := parseGetResolveNameRequest(r)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err), log.Logger)
 			return
 		}
 
 		resolver, ok := resolvers[fmt.Sprintf("%s/%s", protocol, network)]
 		if !ok {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("nameserver not supported on \"%s/%s\"", protocol, network))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("nameserver not supported on \"%s/%s\"", protocol, network), log.Logger)
 			return
 		}
 
 		if resolver == nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("no nameserver configured for \"%s/%s\"", protocol, network))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("no nameserver configured for \"%s/%s\"", protocol, network), log.Logger)
 			return
 		}
 
 		resolvedAddress, err := resolver.ResolveName(r.Context(), protocol, network, domainName)
 		if mailbox.IsNetworkNotSupportedError(err) {
-			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("%q not supported", protocol+"/"+network))
+			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("%q not supported", protocol+"/"+network), log.Logger)
 			return
 		}
 
@@ -72,13 +73,13 @@ func GetResolveName(resolvers map[string]nameservice.ForwardLookup) func(w http.
 		}
 
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
 			return
 		}
 
 		encAddress, _, err := addressing.EncodeByProtocol(resolvedAddress, protocol)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "failed to encode address"), log.Logger)
 			return
 		}
 

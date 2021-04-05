@@ -25,3 +25,6 @@ jobs:
         path-to-profile: mailchain.cov
         flag-name: Go-${{ matrix.go }}
         parallel: true
+    
+    - name: Tidy
+      run: go mod tidy && git diff --exit-code

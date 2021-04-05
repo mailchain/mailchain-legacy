@@ -17,11 +17,11 @@ jobs:
       run: go get -v ./...
 
     - name: Test
-      run: go test --short -covermode=count -coverprofile=mailchain.cov.tmp ./... && cat mailchain.cov.tmp | grep -v ".pb.go" > mailchain.cov && rm mailchain.cov.tmp
+      run: go test --short -covermode=count -coverprofile=mailchain.cov.tmp `go list ./... | grep -v ./testing/integration` && cat mailchain.cov.tmp | grep -v ".pb.go" > mailchain.cov && rm mailchain.cov.tmp
 
     - name: Send coverage
       uses: shogo82148/actions-goveralls@v1
       with:
         path-to-profile: mailchain.cov
         flag-name: Go-${{ matrix.go }}
-        parallel: true  
+        parallel: true

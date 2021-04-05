@@ -5,6 +5,7 @@ type NetworkDefaults struct {
 	NameServiceAddress    string
 	NameServiceDomainName string
 	PublicKeyFinder       string
+	BalanceFinder         string
 	Receiver              string
 	Sender                string
 	Disabled              bool

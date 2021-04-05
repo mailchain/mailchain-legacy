@@ -21,6 +21,8 @@ func network(s values.Store, protocol, network string, nd *defaults.NetworkDefau
 			fmt.Sprintf("protocols.%s.networks.%s.nameservice-domain-name", protocol, network)),
 		PublicKeyFinder: values.NewDefaultString(nd.PublicKeyFinder, s,
 			fmt.Sprintf("protocols.%s.networks.%s.public-key-finder", protocol, network)),
+		BalanceFinder: values.NewDefaultString(nd.BalanceFinder, s,
+			fmt.Sprintf("protocols.%s.networks.%s.balance-finder", protocol, network)),
 		Receiver: values.NewDefaultString(nd.Receiver, s,
 			fmt.Sprintf("protocols.%s.networks.%s.receiver", protocol, network)),
 		Sender: values.NewDefaultString(nd.Sender, s,

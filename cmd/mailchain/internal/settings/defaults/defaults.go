@@ -50,6 +50,8 @@ const (
 	Port = 8080
 	// SubstratePublicKeyFinder default value.
 	SubstratePublicKeyFinder = "substrate-public-key-finder"
+	// SubstrateBalanceFinder default value.
+	SubstrateBalanceFinder = "substrate-balance-finder"
 	// CacheTimeout default value for caching interval in memory
 	CacheTimeout = "1h"
 )

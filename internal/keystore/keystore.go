@@ -16,8 +16,6 @@ package keystore
 
 //go:generate mockgen -source=keystore.go -package=keystoretest -destination=./keystoretest/keystore_mock.go
 import (
-	"math/big"
-
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -32,5 +30,4 @@ type Store interface {
 	HasAddress(searchAddress []byte, protocol, network string) bool
 	GetAddresses(protocol, network string) ([][]byte, error)
 	GetPublicKeys() ([]crypto.PublicKey, error)
-	GetBalance(address []byte) (*big.Int, error)
 }

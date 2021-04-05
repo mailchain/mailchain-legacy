@@ -38,6 +38,7 @@ type Network struct {
 	NameServiceAddress    values.String
 	NameServiceDomainName values.String
 	PublicKeyFinder       values.String
+	BalanceFinder         values.String
 	Receiver              values.String
 	Sender                values.String
 	disabled              values.Bool
@@ -68,6 +69,11 @@ func (s *Network) ProducePublicKeyFinders(publicKeyFinders *PublicKeyFinders) (m
 	return publicKeyFinders.Produce(s.PublicKeyFinder.Get())
 }
 
+// ProduceBalanceFinders returns a `mailbox.Balance` based on configuration settings for network.
+func (s *Network) ProduceBalanceFinders(balanceFinders *BalanceFinders) (mailbox.Balance, error) {
+	return balanceFinders.Produce(s.BalanceFinder.Get())
+}
+
 // Disabled check for network.
 func (s *Network) Disabled() bool {
 	return s.disabled.Get()
@@ -86,6 +92,7 @@ func (s *Network) Output() output.Element {
 			s.NameServiceAddress.Attribute(),
 			s.NameServiceDomainName.Attribute(),
 			s.PublicKeyFinder.Attribute(),
+			s.BalanceFinder.Attribute(),
 			s.Receiver.Attribute(),
 			s.Sender.Attribute(),
 			s.disabled.Attribute(),

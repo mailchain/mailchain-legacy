@@ -7,7 +7,7 @@ import (
 
 func fetcher(s values.Store) *Fetcher {
 	l := &Fetcher{
-		Disabled: values.NewDefaultBool(false, s, "fetcher.disabled"),
+		Disabled: values.NewDefaultBool(true, s, "fetcher.disabled"),
 	}
 
 	return l

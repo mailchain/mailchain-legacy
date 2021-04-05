@@ -15,8 +15,10 @@
 package handlers
 
 import (
+	"context"
 	"encoding/binary"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -34,7 +36,7 @@ import (
 )
 
 // GetMessages returns a handler get spec.
-func GetMessages(inbox stores.State, cache stores.Cache, ks keystore.Store, deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { //nolint: funlen, gocyclo
+func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cache stores.Cache, ks keystore.Store, deriveKeyOptions multi.OptionsBuilders) func(w http.ResponseWriter, r *http.Request) { //nolint: funlen, gocyclo
 	// Get swagger:route GET /messages Messages GetMessages
 	//
 	// Get Mailchain messages.
@@ -44,20 +46,29 @@ func GetMessages(inbox stores.State, cache stores.Cache, ks keystore.Store, deri
 	//   200: GetMessagesResponse
 	//   422: ValidationError
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger := log.Logger.With().Str("component", "http").Logger()
+
 		req, err := parseGetMessagesRequest(r)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err), log.Logger)
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err), logger)
 			return
 		}
 
 		if !ks.HasAddress(req.addressBytes, req.Protocol, req.Network) {
-			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("no private key found for address"), log.Logger)
+			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("no private key found for address"), logger)
 			return
+		}
+
+		if req.Fetch {
+			if err := fetchMessages(r.Context(), req.Protocol, req.Network, req.addressBytes, receivers, inbox); err != nil {
+				errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.WithMessage(err, "fetch messages failed"), logger)
+				return
+			}
 		}
 
 		txs, err := inbox.GetTransactions(req.Protocol, req.Network, req.addressBytes)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), logger)
 			return
 		}
 
@@ -67,24 +78,28 @@ func GetMessages(inbox stores.State, cache stores.Cache, ks keystore.Store, deri
 			env, err := envelope.Unmarshal(tx.EnvelopeData)
 			if err != nil {
 				messages = append(messages, getMessage{Status: errors.WithMessagef(err, "failed to unmarshal envelope, %s", encoding.EncodeHexZeroX(tx.EnvelopeData)).Error()})
+
 				continue
 			}
 
 			decrypterKind, err := env.DecrypterKind()
 			if err != nil {
 				messages = append(messages, getMessage{Status: errors.WithMessage(err, "failed to find decrypter type").Error()})
+
 				continue
 			}
 
 			decrypter, err := ks.GetDecrypter(req.addressBytes, req.Protocol, req.Network, decrypterKind, deriveKeyOptions)
 			if err != nil {
 				messages = append(messages, getMessage{Status: errors.WithMessage(err, "could not get `decrypter`").Error()})
+
 				continue
 			}
 
 			message, err := mailbox.ReadMessage(tx.EnvelopeData, decrypter, cache)
 			if err != nil {
 				messages = append(messages, getMessage{Status: errors.WithMessage(err, "could not read message").Error()})
+
 				continue
 			}
 
@@ -114,12 +129,39 @@ func GetMessages(inbox stores.State, cache stores.Cache, ks keystore.Store, deri
 		}
 
 		if err := json.NewEncoder(w).Encode(getResponse{Messages: messages}); err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, err, log.Logger)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err, logger)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 	}
+}
+
+func fetchMessages(ctx context.Context, protocol, network string, address []byte, receivers map[string]mailbox.Receiver, inbox stores.State) error {
+	receiver, ok := receivers[fmt.Sprintf("%s/%s", protocol, network)]
+	if !ok {
+		return errors.Errorf("receiver not supported on \"%s/%s\"", protocol, network)
+	}
+
+	if receiver == nil {
+		return errors.Errorf("no receiver configured for \"%s/%s\"", protocol, network)
+	}
+
+	transactions, err := receiver.Receive(ctx, protocol, network, address)
+	if mailbox.IsNetworkNotSupportedError(err) {
+		return errors.Errorf("network `%s` does not have etherscan client configured", network)
+	} else if err != nil {
+		return errors.WithStack(err)
+	}
+
+	for i := range transactions {
+		tx := transactions[i]
+		if err := inbox.PutTransaction(protocol, network, address, tx); err != nil {
+			return errors.WithStack(err)
+		}
+	}
+
+	return nil
 }
 
 // GetMessagesRequest get mailchain messages
@@ -143,11 +185,18 @@ type GetMessagesRequest struct {
 
 	// Protocol to use when looking for messages.
 	//
-	// enum: ethereum
+	// enum: algorand, ethereum, substrate
 	// in: query
 	// required: true
 	// example: ethereum
 	Protocol string `json:"protocol"`
+
+	// Fetch go to the blockchain to retrieve messages
+	//
+	// in: query
+	// example: true
+	// default: false
+	Fetch bool `json:"fetch"`
 
 	addressBytes []byte
 }
@@ -174,12 +223,19 @@ func parseGetMessagesRequest(r *http.Request) (*GetMessagesRequest, error) {
 		return nil, err
 	}
 
-	return &GetMessagesRequest{
+	res := &GetMessagesRequest{
 		Address:      addr,
 		addressBytes: addressBytes,
 		Network:      network,
 		Protocol:     protocol,
-	}, nil
+	}
+
+	fetch := r.URL.Query()["fetch"]
+	if len(fetch) == 1 && fetch[0] == "true" {
+		res.Fetch = true
+	}
+
+	return res, nil
 }
 
 func convertStoreMessageToGetMessage(message *stores.Message) getMessage {

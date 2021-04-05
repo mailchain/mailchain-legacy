@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/keystoretest"
 	"github.com/pkg/errors"
@@ -25,32 +24,67 @@ func TestGetAddresses(t *testing.T) {
 		name       string
 		args       args
 		req        *http.Request
-		wantBody   string
 		wantStatus int
 	}{
 		{
-			"422-missing-protocol",
+			"200-missing-protocol",
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
+					store.EXPECT().GetAddresses("", "").Return(
+						map[string]map[string][][]uint8{
+							"algorand": {
+								"betanet": [][]uint8{}, "mainnet": [][]uint8{}, "testnet": [][]uint8{},
+							},
+							"ethereum": {
+								"goerli":  [][]uint8{{0xd5, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6}},
+								"kovan":   [][]uint8{},
+								"mainnet": [][]uint8{{0xd5, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6}},
+								"rinkeby": [][]uint8{},
+								"ropsten": [][]uint8{}},
+							"substrate": {
+								"edgeware-beresheet": [][]uint8{
+									{0x2a, 0x2e, 0x32, 0x2f, 0x87, 0x40, 0xc6, 0x1, 0x72, 0x11, 0x1a, 0xc8, 0xea, 0xdc, 0xdd, 0xa2, 0x51, 0x2f, 0x90, 0xd0, 0x6d, 0xe, 0x50, 0x3e, 0xf1, 0x89, 0x97, 0x9a, 0x15, 0x9b, 0xec, 0xe1, 0xe8, 0x6d, 0x48},
+									{0x2a, 0x72, 0x3c, 0xaa, 0x23, 0xa5, 0xb5, 0x11, 0xaf, 0x5a, 0xd7, 0xb7, 0xef, 0x60, 0x76, 0xe4, 0x14, 0xab, 0x7e, 0x75, 0xa9, 0xdc, 0x91, 0xe, 0xa6, 0xe, 0x41, 0x7a, 0x2b, 0x77, 0xa, 0x56, 0x71, 0x63, 0x83},
+								},
+								"edgeware-local": [][]uint8{},
+								"edgeware-mainnet": [][]uint8{
+									{0x7, 0x2e, 0x32, 0x2f, 0x87, 0x40, 0xc6, 0x1, 0x72, 0x11, 0x1a, 0xc8, 0xea, 0xdc, 0xdd, 0xa2, 0x51, 0x2f, 0x90, 0xd0, 0x6d, 0xe, 0x50, 0x3e, 0xf1, 0x89, 0x97, 0x9a, 0x15, 0x9b, 0xec, 0xe1, 0xe8, 0x9b, 0x76},
+									{0x7, 0x72, 0x3c, 0xaa, 0x23, 0xa5, 0xb5, 0x11, 0xaf, 0x5a, 0xd7, 0xb7, 0xef, 0x60, 0x76, 0xe4, 0x14, 0xab, 0x7e, 0x75, 0xa9, 0xdc, 0x91, 0xe, 0xa6, 0xe, 0x41, 0x7a, 0x2b, 0x77, 0xa, 0x56, 0x71, 0xda, 0xb},
+								},
+							},
+						},
+						nil,
+					).Times(1)
+
 					return store
 				}(),
 			},
-			httptest.NewRequest("GET", "/?network=mainnet", nil),
-			"{\"code\":422,\"message\":\"'protocol' must be specified exactly once\"}\n",
-			http.StatusUnprocessableEntity,
+			httptest.NewRequest("GET", "/", nil),
+			http.StatusOK,
 		},
 		{
-			"422-missing-network",
+			"200-missing-network",
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
+					store.EXPECT().GetAddresses("ethereum", "").Return(
+						map[string]map[string][][]uint8{
+							"ethereum": {
+								"goerli":  [][]uint8{{0xd5, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6}},
+								"kovan":   [][]uint8{},
+								"mainnet": [][]uint8{{0xd5, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6}},
+								"rinkeby": [][]uint8{},
+								"ropsten": [][]uint8{}},
+						},
+						nil,
+					).Times(1)
+
 					return store
 				}(),
 			},
 			httptest.NewRequest("GET", "/?protocol=ethereum", nil),
-			"{\"code\":422,\"message\":\"'network' must be specified exactly once\"}\n",
-			http.StatusUnprocessableEntity,
+			http.StatusOK,
 		},
 		{
 			"500-keystore-error",
@@ -66,7 +100,6 @@ func TestGetAddresses(t *testing.T) {
 				}(),
 			},
 			httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil),
-			"{\"code\":500,\"message\":\"error getting address\"}\n",
 			http.StatusInternalServerError,
 		},
 		{
@@ -75,7 +108,7 @@ func TestGetAddresses(t *testing.T) {
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
 					store.EXPECT().GetAddresses("ethereum", "mainnet").Return(
-						[][]byte{},
+						map[string]map[string][][]uint8{"ethereum": {"mainnet": [][]uint8{}}},
 						nil,
 					).Times(1)
 
@@ -83,18 +116,21 @@ func TestGetAddresses(t *testing.T) {
 				}(),
 			},
 			httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil),
-			"{\"addresses\":[]}\n",
 			http.StatusOK,
 		},
 		{
-			"200-substrate-address",
+			"200-substrate-edgeware-beresheet-address",
 			args{
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
 					store.EXPECT().GetAddresses("substrate", "edgeware-beresheet").Return(
-						[][]byte{
-							encodingtest.MustDecodeHex("2a169a11721851f5dff3541dd5c4b0b478ac1cd092c9d5976e83daa0d03f26620c464b"),
-							encodingtest.MustDecodeHex("2a84623e7252e41138af6904e1b02304c941625f39e5762589125dc1a2f2cf2e30e02a"),
+						map[string]map[string][][]uint8{
+							"substrate": {
+								"edgeware-beresheet": [][]uint8{
+									{0x2a, 0x2e, 0x32, 0x2f, 0x87, 0x40, 0xc6, 0x1, 0x72, 0x11, 0x1a, 0xc8, 0xea, 0xdc, 0xdd, 0xa2, 0x51, 0x2f, 0x90, 0xd0, 0x6d, 0xe, 0x50, 0x3e, 0xf1, 0x89, 0x97, 0x9a, 0x15, 0x9b, 0xec, 0xe1, 0xe8, 0x6d, 0x48},
+									{0x2a, 0x72, 0x3c, 0xaa, 0x23, 0xa5, 0xb5, 0x11, 0xaf, 0x5a, 0xd7, 0xb7, 0xef, 0x60, 0x76, 0xe4, 0x14, 0xab, 0x7e, 0x75, 0xa9, 0xdc, 0x91, 0xe, 0xa6, 0xe, 0x41, 0x7a, 0x2b, 0x77, 0xa, 0x56, 0x71, 0x63, 0x83},
+								},
+							},
 						},
 						nil,
 					).Times(1)
@@ -103,7 +139,6 @@ func TestGetAddresses(t *testing.T) {
 				}(),
 			},
 			httptest.NewRequest("GET", "/?network=edgeware-beresheet&protocol=substrate", nil),
-			"{\"addresses\":[\"5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\"]}\n",
 			http.StatusOK,
 		},
 		{
@@ -112,35 +147,17 @@ func TestGetAddresses(t *testing.T) {
 				func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
 					store.EXPECT().GetAddresses("ethereum", "mainnet").Return(
-						[][]byte{encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761")},
-						nil,
+						map[string]map[string][][]uint8{
+							"ethereum": {
+								"mainnet": [][]uint8{{0xd5, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6}},
+							},
+						}, nil,
 					).Times(1)
 
 					return store
 				}(),
 			},
 			httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil),
-			"{\"addresses\":[\"5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\"]}\n",
-			http.StatusOK,
-		},
-		{
-			"200-ethereum-multi-address",
-			args{
-				func() keystore.Store {
-					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().GetAddresses("ethereum", "mainnet").Return(
-						[][]byte{
-							encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
-							encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
-						},
-						nil,
-					).Times(1)
-
-					return store
-				}(),
-			},
-			httptest.NewRequest("GET", "/?network=mainnet&protocol=ethereum", nil),
-			"{\"addresses\":[\"5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\",\"4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2\"]}\n",
 			http.StatusOK,
 		},
 	}

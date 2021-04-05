@@ -41,21 +41,25 @@ func Test_accountListCmd(t *testing.T) {
 		produceKeystore func() (keystore.Store, error)
 	}
 	tests := []struct {
-		name        string
-		args        args
-		cmdArgs     []string
-		cmdFlags    map[string]string
-		wantOutput  string
-		wantExecErr bool
+		name          string
+		args          args
+		cmdArgs       []string
+		cmdFlags      map[string]string
+		wantErrOutput string
+		wantExecErr   bool
 	}{
 		{
-			"success",
+			"query-ethereum-mainnet",
 			args{
 				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					m.EXPECT().GetAddresses("ethereum", "mainnet").Return([][]byte{
-						encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
-						encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+					m.EXPECT().GetAddresses("ethereum", "mainnet").Return(map[string]map[string][][]byte{
+						"ethereum": {
+							"mainnet": {
+								encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+								encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+							},
+						},
 					}, nil)
 					return m, nil
 				},
@@ -65,7 +69,96 @@ func Test_accountListCmd(t *testing.T) {
 				"protocol": "ethereum",
 				"network":  "mainnet",
 			},
-			"Encoding: hex/0x-prefix, address: 0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761\nEncoding: hex/0x-prefix, address: 0x4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2\n",
+			"",
+			false,
+		},
+		{
+			"query-ethereum",
+			args{
+				func() (keystore.Store, error) {
+					m := keystoretest.NewMockStore(mockCtrl)
+					m.EXPECT().GetAddresses("ethereum", "").Return(map[string]map[string][][]byte{
+						"ethereum": {
+							"mainnet": {
+								encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+								encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+							},
+							"goerli": {
+								encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+								encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+							},
+						},
+					}, nil)
+					return m, nil
+				},
+			},
+			nil,
+			map[string]string{
+				"protocol": "ethereum",
+			},
+			"",
+			false,
+		},
+		{
+			"query-substrate",
+			args{
+				func() (keystore.Store, error) {
+					m := keystoretest.NewMockStore(mockCtrl)
+					m.EXPECT().GetAddresses("substrate", "").Return(map[string]map[string][][]byte{
+						"substrate": {
+							"edgeware-beresheet": {
+								encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+								encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+							},
+							"edgeware-mainnet": {
+								encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+								encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+							},
+						},
+					}, nil)
+					return m, nil
+				},
+			},
+			nil,
+			map[string]string{
+				"protocol": "substrate",
+			},
+			"",
+			false,
+		},
+		{
+			"query-all",
+			args{
+				func() (keystore.Store, error) {
+					m := keystoretest.NewMockStore(mockCtrl)
+					m.EXPECT().GetAddresses("", "").Return(map[string]map[string][][]byte{
+						"ethereum": {
+							"mainnet": {
+								encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+								encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+							},
+							"goerli": {
+								encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+								encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+							},
+						},
+						"substrate": {
+							"edgeware-beresheet": {
+								encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+								encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+							},
+							"edgeware-mainnet": {
+								encodingtest.MustDecodeHex("5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"),
+								encodingtest.MustDecodeHex("4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2"),
+							},
+						},
+					}, nil)
+					return m, nil
+				},
+			},
+			nil,
+			map[string]string{},
+			"",
 			false,
 		},
 		{
@@ -73,7 +166,7 @@ func Test_accountListCmd(t *testing.T) {
 			args{
 				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					m.EXPECT().GetAddresses("ethereum", "mainnet").Return([][]byte{}, errors.Errorf("failed"))
+					m.EXPECT().GetAddresses("ethereum", "mainnet").Return(nil, errors.Errorf("failed"))
 					return m, nil
 				},
 			},
@@ -83,36 +176,6 @@ func Test_accountListCmd(t *testing.T) {
 				"network":  "mainnet",
 			},
 			"Error: could not get addresses: failed",
-			true,
-		},
-		{
-			"err-missing-protocol",
-			args{
-				func() (keystore.Store, error) {
-					m := keystoretest.NewMockStore(mockCtrl)
-					return m, nil
-				},
-			},
-			nil,
-			map[string]string{
-				"network": "mainnet",
-			},
-			"Error: required flag(s) \"protocol\" not set",
-			true,
-		},
-		{
-			"err-empty-network",
-			args{
-				func() (keystore.Store, error) {
-					m := keystoretest.NewMockStore(mockCtrl)
-					return m, nil
-				},
-			},
-			nil,
-			map[string]string{
-				"protocol": "ethereum",
-			},
-			"Error: required flag(s) \"network\" not set",
 			true,
 		},
 	}
@@ -127,8 +190,8 @@ func Test_accountListCmd(t *testing.T) {
 				t.Errorf("configChainEthereumNetwork().execute() error = %v, wantExecErr %v", err, tt.wantExecErr)
 				return
 			}
-			if !commandstest.AssertCommandOutput(t, got, err, out, tt.wantOutput) {
-				t.Errorf("configChainEthereumNetwork().Execute().out != %v", tt.wantOutput)
+			if !commandstest.AssertCommandJsonOutput(t, got, err, out, tt.wantErrOutput) {
+				t.Errorf("configChainEthereumNetwork().Execute().out != %v", tt.wantErrOutput)
 			}
 		})
 	}

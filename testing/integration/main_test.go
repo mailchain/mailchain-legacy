@@ -18,11 +18,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type sendArgs struct {
-	contentType string
-	envelope    string
-}
-
 func testDir(t *testing.T) string {
 	wd, err := os.Getwd()
 	if !assert.NoError(t, err) {
@@ -66,7 +61,8 @@ func TestSendReceive(t *testing.T) {
 		network       string
 		fromKeyLookup string
 		toKeyLookup   string
-		sendArgs      sendArgs
+		contentType   string
+		envelope      string
 	}
 	tests := []struct {
 		name    string
@@ -83,10 +79,8 @@ func TestSendReceive(t *testing.T) {
 				algorand.Testnet,
 				"algorand.testnet.charlotte",
 				"algorand.testnet.sofia",
-				sendArgs{
-					contentType: "'text/plain; charset=\\\"UTF-8\\\"'",
-					envelope:    "0x01",
-				},
+				"'text/plain; charset=\\\"UTF-8\\\"'",
+				"0x01",
 			},
 			nil,
 			false,
@@ -131,9 +125,12 @@ func TestSendReceive(t *testing.T) {
 			toAddress := encodeAddress(t, toPubkey, tt.args.protocol, tt.args.network)
 			fromAddress := encodeAddress(t, fromPubKey, tt.args.protocol, tt.args.network)
 
+			apiCheckContainsAddress(t, fromAddress, tt.args.protocol, tt.args.network)
+			apiCheckContainsAddress(t, toAddress, tt.args.protocol, tt.args.network)
+
 			toPubKeyRes := apiGetPublicKey(t, toAddress, tt.args.protocol, tt.args.network)
 
-			subject := apiSendMessage(t, tt.args.protocol, tt.args.network, tt.args.sendArgs, toPubKeyRes.SupportedEncryptionTypes[0], toAddress, fromAddress, toPubkey)
+			subject := apiSendMessage(t, tt.args.protocol, tt.args.network, tt.args.contentType, tt.args.envelope, toPubKeyRes.SupportedEncryptionTypes[0], toAddress, fromAddress, toPubkey)
 
 			time.Sleep(30 * time.Second)
 

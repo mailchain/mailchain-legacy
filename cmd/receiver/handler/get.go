@@ -11,6 +11,7 @@ import (
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // HandleToRequest accepts all relay requests and routes then to the new URL as required.
@@ -19,13 +20,13 @@ func HandleToRequest(ts datastore.TransactionStore) func(w http.ResponseWriter, 
 		ctx := r.Context()
 		req, err := parseGetEnvelopesRequest(r)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err), log.Logger)
 			return
 		}
 
 		txs, err := ts.GetTransactionsTo(ctx, req.Protocol, req.Network, req.addressBytes)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
 			return
 		}
 
@@ -48,7 +49,7 @@ func HandleToRequest(ts datastore.TransactionStore) func(w http.ResponseWriter, 
 		}
 
 		if err := json.NewEncoder(w).Encode(getEnvelopesResponse{Envelopes: envelopes}); err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err, log.Logger)
 			return
 		}
 

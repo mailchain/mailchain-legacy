@@ -26,6 +26,7 @@ import (
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // GetResolveAddress returns a handler get spec
@@ -44,24 +45,24 @@ func GetResolveAddress(resolvers map[string]nameservice.ReverseLookup) func(w ht
 	return func(w http.ResponseWriter, r *http.Request) {
 		protocol, network, address, err := parseGetResolveAddressRequest(r)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err), log.Logger)
 			return
 		}
 
 		resolver, ok := resolvers[fmt.Sprintf("%s/%s", protocol, network)]
 		if !ok {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("nameserver not supported on \"%s/%s\"", protocol, network))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("nameserver not supported on \"%s/%s\"", protocol, network), log.Logger)
 			return
 		}
 
 		if resolver == nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("no nameserver configured for \"%s/%s\"", protocol, network))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("no nameserver configured for \"%s/%s\"", protocol, network), log.Logger)
 			return
 		}
 
 		name, err := resolver.ResolveAddress(r.Context(), protocol, network, address)
 		if mailbox.IsNetworkNotSupportedError(err) {
-			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("%q not supported", protocol+"/"+network))
+			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("%q not supported", protocol+"/"+network), log.Logger)
 			return
 		}
 
@@ -71,7 +72,7 @@ func GetResolveAddress(resolvers map[string]nameservice.ReverseLookup) func(w ht
 		}
 
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
 			return
 		}
 

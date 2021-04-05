@@ -52,10 +52,10 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 }
 
 // GetAddresses mocks base method.
-func (m *MockStore) GetAddresses(protocol, network string) ([][]byte, error) {
+func (m *MockStore) GetAddresses(protocol, network string) (map[string]map[string][][]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAddresses", protocol, network)
-	ret0, _ := ret[0].([][]byte)
+	ret0, _ := ret[0].(map[string]map[string][][]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

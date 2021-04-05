@@ -19,7 +19,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+	"github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/prompts"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"

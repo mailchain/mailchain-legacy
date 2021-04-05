@@ -35,6 +35,7 @@ import (
 	"github.com/mailchain/mailchain/sender"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // SendMessage handler http
@@ -61,59 +62,59 @@ func SendMessage(sent stores.Sent, senders map[string]sender.Message, ks keystor
 		ctx := r.Context()
 		req, err := parsePostRequest(r)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err), log.Logger)
 			return
 		}
 
 		messageSender, ok := senders[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("sender not supported on \"%s/%s\"", req.Protocol, req.Network))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("sender not supported on \"%s/%s\"", req.Protocol, req.Network), log.Logger)
 			return
 		}
 
 		if messageSender == nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("no sender configured for \"%s/%s\"", req.Protocol, req.Network))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("no sender configured for \"%s/%s\"", req.Protocol, req.Network), log.Logger)
 			return
 		}
 
 		from, err := addressing.DecodeByProtocol(req.Body.from.ChainAddress, req.Protocol)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "failed to decode address"), log.Logger)
 			return
 		}
 
 		if !ks.HasAddress(from, req.Protocol, req.Network) {
-			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Body.Message.Headers.From))
+			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("no private key found for `%s` from address", req.Body.Message.Headers.From), log.Logger)
 			return
 		}
 
 		msg, err := mail.NewMessage(time.Now(), *req.Body.from, *req.Body.to, req.Body.replyTo, req.Body.Message.Subject, []byte(req.Body.Message.Body), req.Body.ContentType)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err), log.Logger)
 			return
 		}
 
 		signer, err := ks.GetSigner(from, req.Protocol, req.Network, deriveKeyOptions)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(errors.WithMessage(err, "could not get `signer`")), log.Logger)
 			return
 		}
 
 		encrypter, err := ec.GetEncrypter(req.Body.EncryptionName, req.Body.publicKey)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not get `encrypter`"))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not get `encrypter`"), log.Logger)
 			return
 		}
 
 		env, err := envelope.ParseEnvelope(req.Body.Envelope)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not parse `envelope`"))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithMessage(err, "could not parse `envelope`"), log.Logger)
 			return
 		}
 
 		if err := mailbox.SendMessage(ctx, req.Protocol, req.Network, msg,
 			encrypter, messageSender, sent, signer, env); err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithMessage(err, "could not send message"), log.Logger)
 			return
 		}
 

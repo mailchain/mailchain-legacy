@@ -10,6 +10,7 @@ import (
 	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/pubkey"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // GetPublicKey returns a handler get spec
@@ -30,25 +31,25 @@ func GetPublicKey(store datastore.PublicKeyStore) func(w http.ResponseWriter, r 
 
 		req, err := parseGetPublicKey(r)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err), log.Logger)
 			return
 		}
 
 		publicKey, err := store.GetPublicKey(ctx, req.Protocol, req.Network, req.addressBytes)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
 			return
 		}
 
 		encodedKey, encodingType, err := pubkey.EncodeByProtocol(publicKey.PublicKey.Bytes(), req.Protocol)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
 			return
 		}
 
 		encryptionTypes, err := pubkey.EncryptionMethods(publicKey.PublicKey.Kind())
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
 			return
 		}
 

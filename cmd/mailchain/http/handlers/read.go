@@ -19,11 +19,12 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/mailchain/mailchain/cmd/mailchain/internal/http/params"
+	"github.com/mailchain/mailchain/cmd/mailchain/http/params"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/mail"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // DeleteRead returns a handler
@@ -70,7 +71,7 @@ func GetRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		messageID, err := mail.FromHexString(mux.Vars(r)["message_id"])
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
+			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"), log.Logger)
 			return
 		}
 
@@ -81,12 +82,12 @@ func GetRead(store stores.State) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err, log.Logger)
 			return
 		}
 
 		if err := json.NewEncoder(w).Encode(getBody{Read: read}); err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err, log.Logger)
 			return
 		}
 
@@ -131,12 +132,12 @@ type getBody struct {
 func doRead(inboxFunc func(messageID mail.ID) error, w http.ResponseWriter, r *http.Request) {
 	messageID, err := params.PathMessageID(r)
 	if err != nil {
-		errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"))
+		errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.WithMessage(err, "invalid `message_id`"), log.Logger)
 		return
 	}
 
 	if err := inboxFunc(messageID); err != nil {
-		errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
+		errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err), log.Logger)
 		return
 	}
 

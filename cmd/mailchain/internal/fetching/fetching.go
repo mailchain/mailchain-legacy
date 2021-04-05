@@ -21,43 +21,52 @@ func getReceivers(config *settings.Root) (receiverByKind map[string]mailbox.Rece
 		return nil, nil, nil, err
 	}
 
-	for p := range config.Protocols {
-		logger := log.With().Str("component", "Fetching").Str("protocol", p).Logger()
-		protocol := config.Protocols[p]
+	for protocolName := range config.Protocols {
+		logger := log.With().Str("component", "Fetching").Str("protocol", protocolName).Logger()
+		protocol := config.Protocols[protocolName]
 
 		if protocol.Disabled.Get() {
-			logger.Info().Msg("protocol disabled skipping")
+			logger.Debug().Msg("protocol disabled skipping")
+
 			continue
 		}
 
-		for n := range protocol.Networks {
-			logger := logger.With().Str("network", n).Logger()
-			network := protocol.Networks[n]
+		for networkName := range protocol.Networks {
+			logger := logger.With().Str("network", networkName).Logger()
+			network := protocol.Networks[networkName]
 
 			if network.Disabled() {
-				logger.Info().Msg("network disabled skipping")
+				logger.Debug().Msg("network disabled skipping")
+
 				continue
 			}
 
+			addresses, err := ks.GetAddresses(protocolName, networkName)
+			if err != nil {
+				return nil, nil, nil, errors.WithMessagef(err, "failed to get addresses for %s.%s", protocolName, networkName)
+			}
+
+			if len(addresses[protocolName][networkName]) == 0 {
+				logger.Debug().Msg("no addresses found skipping")
+
+				continue
+			}
+
+			addressesProtocolsNetworks[protocolName+"."+networkName] = addresses[protocolName][networkName]
+
 			r, err := network.ProduceReceiver(config.Receivers)
 			if err != nil {
-				return nil, nil, nil, errors.WithMessagef(err, "failed to get receiver for %s.%s", p, n)
+				return nil, nil, nil, errors.WithMessagef(err, "failed to get receiver for %s.%s", protocolName, networkName)
 			}
 
 			if r == nil {
 				logger.Info().Msg("no receiver configured skipping")
+
 				continue
 			}
 
 			receiverByKind[r.Kind()] = r
-			kindProtocolsNetworks[r.Kind()] = appendListMap(kindProtocolsNetworks, r.Kind(), p+"."+n)
-
-			addresses, err := ks.GetAddresses(p, n)
-			if err != nil {
-				return nil, nil, nil, errors.WithMessagef(err, "failed to get addresses for %s.%s", p, n)
-			}
-
-			addressesProtocolsNetworks[p+"."+n] = addresses
+			kindProtocolsNetworks[r.Kind()] = appendListMap(kindProtocolsNetworks, r.Kind(), protocolName+"."+networkName)
 		}
 	}
 
@@ -84,6 +93,7 @@ func waitByKind(kind string) (time.Duration, error) {
 		return time.Second * 60, nil
 	default:
 		log.Logger.Warn().Str("component", "FetchGroup").Str("kind", kind).Msg("unknown kind using default wait time 500 seconds")
+
 		return time.Second * 500, nil
 	}
 }

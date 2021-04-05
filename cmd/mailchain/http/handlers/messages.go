@@ -30,6 +30,7 @@ import (
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // GetMessages returns a handler get spec.
@@ -45,18 +46,18 @@ func GetMessages(inbox stores.State, cache stores.Cache, ks keystore.Store, deri
 	return func(w http.ResponseWriter, r *http.Request) {
 		req, err := parseGetMessagesRequest(r)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err), log.Logger)
 			return
 		}
 
 		if !ks.HasAddress(req.addressBytes, req.Protocol, req.Network) {
-			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("no private key found for address"))
+			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("no private key found for address"), log.Logger)
 			return
 		}
 
 		txs, err := inbox.GetTransactions(req.Protocol, req.Network, req.addressBytes)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
 			return
 		}
 
@@ -113,7 +114,7 @@ func GetMessages(inbox stores.State, cache stores.Cache, ks keystore.Store, deri
 		}
 
 		if err := json.NewEncoder(w).Encode(getResponse{Messages: messages}); err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err, log.Logger)
 			return
 		}
 

@@ -51,6 +51,7 @@ type Root struct {
 	Senders             *Senders
 	Receivers           *Receivers
 	PublicKeyFinders    *PublicKeyFinders
+	BalanceFinders      *BalanceFinders
 	// protocol
 	Protocols map[string]*Protocol
 	// Ethereum  *Protocol

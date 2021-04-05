@@ -16,15 +16,15 @@ import (
 )
 
 func TestSendReceive(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+
 	v := viper.New()
 	v.SetConfigFile("./private-keys.yaml")
 
 	if err := v.ReadInConfig(); !assert.NoError(t, err) {
 		t.FailNow()
-	}
-
-	if testing.Short() {
-		t.Skip()
 	}
 
 	type fields struct {

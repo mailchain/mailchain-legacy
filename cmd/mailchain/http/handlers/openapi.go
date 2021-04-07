@@ -140,7 +140,9 @@ func spec() string {
           },
           {
             "enum": [
-              "ethereum"
+              "algorand",
+              " ethereum",
+              " substrate"
             ],
             "type": "string",
             "example": "ethereum",
@@ -149,6 +151,15 @@ func spec() string {
             "name": "protocol",
             "in": "query",
             "required": true
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "example": true,
+            "x-go-name": "Fetch",
+            "description": "Fetch go to the blockchain to retrieve messages",
+            "name": "fetch",
+            "in": "query"
           }
         ],
         "responses": {

@@ -22,5 +22,6 @@ func Execute(settingsStore *viper.Viper) error {
 	if err != nil {
 		return err
 	}
+
 	return root.Execute()
 }

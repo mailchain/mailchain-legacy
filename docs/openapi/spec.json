@@ -38,21 +38,20 @@
             "x-go-name": "Network",
             "description": "Network to use when finding addresses.",
             "name": "network",
-            "in": "query",
-            "required": true
+            "in": "query"
           },
           {
             "enum": [
               "ethereum",
-              " substrate"
+              " substrate",
+              " algorand"
             ],
             "type": "string",
             "example": "ethereum",
             "x-go-name": "Protocol",
             "description": "Protocol to use when finding addresses.",
             "name": "protocol",
-            "in": "query",
-            "required": true
+            "in": "query"
           }
         ],
         "responses": {
@@ -120,7 +119,9 @@
           },
           {
             "enum": [
-              "ethereum"
+              "algorand",
+              " ethereum",
+              " substrate"
             ],
             "type": "string",
             "example": "ethereum",
@@ -129,6 +130,15 @@
             "name": "protocol",
             "in": "query",
             "required": true
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "example": true,
+            "x-go-name": "Fetch",
+            "description": "Fetch go to the blockchain to retrieve messages",
+            "name": "fetch",
+            "in": "query"
           }
         ],
         "responses": {
@@ -503,7 +513,9 @@
       "type": "object",
       "required": [
         "value",
-        "encoding"
+        "encoding",
+        "protocol",
+        "network"
       ],
       "properties": {
         "encoding": {
@@ -512,6 +524,18 @@
           "x-go-name": "Encoding",
           "example": "hex/0x-prefix"
         },
+        "network": {
+          "description": "Network `address` is available on",
+          "type": "string",
+          "x-go-name": "Network",
+          "example": "mainnet"
+        },
+        "protocol": {
+          "description": "Protocol `address` is available on",
+          "type": "string",
+          "x-go-name": "Protocol",
+          "example": "ethereum"
+        },
         "value": {
           "description": "Address value",
           "type": "string",
@@ -519,7 +543,7 @@
           "example": "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetEnvelopeResponseBodyElement": {
       "description": "GetEnvelopeResponseBodyElement response",
@@ -542,7 +566,7 @@
           "example": "0x01"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetMessagesResponseHeaders": {
       "type": "object",
@@ -590,7 +614,7 @@
         }
       },
       "x-go-name": "getHeaders",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetMessagesResponseMessage": {
       "type": "object",
@@ -655,7 +679,7 @@
         }
       },
       "x-go-name": "getMessage",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetProtocolsProtocol": {
       "type": "object",
@@ -674,7 +698,7 @@
           "x-go-name": "Networks"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetPublicKeyResponseBody": {
       "description": "GetPublicKeyResponseBody body response",
@@ -718,7 +742,7 @@
           ]
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetReadResponseBody": {
       "type": "object",
@@ -734,7 +758,7 @@
         }
       },
       "x-go-name": "getBody",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetResolveAddressResponseBody": {
       "description": "GetResolveAddressResponseBody body response",
@@ -757,7 +781,7 @@
           "example": 3
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetResolveNameResponseBody": {
       "description": "GetResolveNameResponseBody body response",
@@ -780,7 +804,7 @@
           "example": 3
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetVersionResponseBody": {
       "description": "GetVersionResponseBody response",
@@ -809,7 +833,7 @@
           "example": "1.0.0"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "Network": {
       "type": "object",
@@ -831,7 +855,7 @@
           "x-go-name": "NameServiceDomainEnabled"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "PostMessagesResponseHeaders": {
       "description": "PostHeaders body",
@@ -859,7 +883,7 @@
         }
       },
       "x-go-name": "PostHeaders",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "PostMessagesResponseMessage": {
       "description": "PostMessage body",
@@ -904,7 +928,7 @@
         }
       },
       "x-go-name": "PostMessage",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "SendMessageRequestBody": {
       "description": "PostRequestBody body",
@@ -948,7 +972,7 @@
         }
       },
       "x-go-name": "PostRequestBody",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     }
   },
   "responses": {

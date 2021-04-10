@@ -6,34 +6,35 @@ package nameservicetest
 
 import (
 	context "context"
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
 )
 
-// MockReverseLookup is a mock of ReverseLookup interface
+// MockReverseLookup is a mock of ReverseLookup interface.
 type MockReverseLookup struct {
 	ctrl     *gomock.Controller
 	recorder *MockReverseLookupMockRecorder
 }
 
-// MockReverseLookupMockRecorder is the mock recorder for MockReverseLookup
+// MockReverseLookupMockRecorder is the mock recorder for MockReverseLookup.
 type MockReverseLookupMockRecorder struct {
 	mock *MockReverseLookup
 }
 
-// NewMockReverseLookup creates a new mock instance
+// NewMockReverseLookup creates a new mock instance.
 func NewMockReverseLookup(ctrl *gomock.Controller) *MockReverseLookup {
 	mock := &MockReverseLookup{ctrl: ctrl}
 	mock.recorder = &MockReverseLookupMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockReverseLookup) EXPECT() *MockReverseLookupMockRecorder {
 	return m.recorder
 }
 
-// ResolveAddress mocks base method
+// ResolveAddress mocks base method.
 func (m *MockReverseLookup) ResolveAddress(ctx context.Context, protocol, network string, address []byte) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ResolveAddress", ctx, protocol, network, address)
@@ -42,7 +43,7 @@ func (m *MockReverseLookup) ResolveAddress(ctx context.Context, protocol, networ
 	return ret0, ret1
 }
 
-// ResolveAddress indicates an expected call of ResolveAddress
+// ResolveAddress indicates an expected call of ResolveAddress.
 func (mr *MockReverseLookupMockRecorder) ResolveAddress(ctx, protocol, network, address interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResolveAddress", reflect.TypeOf((*MockReverseLookup)(nil).ResolveAddress), ctx, protocol, network, address)

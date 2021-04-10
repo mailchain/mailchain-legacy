@@ -15,21 +15,33 @@
 package protocols
 
 import (
+	"github.com/mailchain/mailchain/internal/protocols/algorand"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
+	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
 const (
+	// Algorand protocol name.
+	Algorand = "algorand"
 	// Ethereum protocol name.
 	Ethereum = "ethereum"
 	// Substrate protocol name.
 	Substrate = "substrate"
 )
 
+func All() []string {
+	return []string{Algorand, Ethereum, Substrate}
+}
+
 // NetworkNames supported by protocol.
 func NetworkNames(protocol string) []string {
 	switch protocol {
+	case Algorand:
+		return algorand.Networks()
 	case Ethereum:
 		return ethereum.Networks()
+	case Substrate:
+		return substrate.Networks()
 	default:
 		return nil
 	}

@@ -19,35 +19,36 @@
 package signertest
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	signer "github.com/mailchain/mailchain/internal/mailbox/signer"
-	reflect "reflect"
 )
 
-// MockSigner is a mock of Signer interface
+// MockSigner is a mock of Signer interface.
 type MockSigner struct {
 	ctrl     *gomock.Controller
 	recorder *MockSignerMockRecorder
 }
 
-// MockSignerMockRecorder is the mock recorder for MockSigner
+// MockSignerMockRecorder is the mock recorder for MockSigner.
 type MockSignerMockRecorder struct {
 	mock *MockSigner
 }
 
-// NewMockSigner creates a new mock instance
+// NewMockSigner creates a new mock instance.
 func NewMockSigner(ctrl *gomock.Controller) *MockSigner {
 	mock := &MockSigner{ctrl: ctrl}
 	mock.recorder = &MockSignerMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockSigner) EXPECT() *MockSignerMockRecorder {
 	return m.recorder
 }
 
-// Sign mocks base method
+// Sign mocks base method.
 func (m *MockSigner) Sign(opts signer.Options) (interface{}, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Sign", opts)
@@ -56,31 +57,31 @@ func (m *MockSigner) Sign(opts signer.Options) (interface{}, error) {
 	return ret0, ret1
 }
 
-// Sign indicates an expected call of Sign
+// Sign indicates an expected call of Sign.
 func (mr *MockSignerMockRecorder) Sign(opts interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Sign", reflect.TypeOf((*MockSigner)(nil).Sign), opts)
 }
 
-// MockOptions is a mock of Options interface
+// MockOptions is a mock of Options interface.
 type MockOptions struct {
 	ctrl     *gomock.Controller
 	recorder *MockOptionsMockRecorder
 }
 
-// MockOptionsMockRecorder is the mock recorder for MockOptions
+// MockOptionsMockRecorder is the mock recorder for MockOptions.
 type MockOptionsMockRecorder struct {
 	mock *MockOptions
 }
 
-// NewMockOptions creates a new mock instance
+// NewMockOptions creates a new mock instance.
 func NewMockOptions(ctrl *gomock.Controller) *MockOptions {
 	mock := &MockOptions{ctrl: ctrl}
 	mock.recorder = &MockOptionsMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockOptions) EXPECT() *MockOptionsMockRecorder {
 	return m.recorder
 }

@@ -5,7 +5,7 @@ services:
 go_import_path: github.com/mailchain/mailchain
 matrix:
   include:
-    - go: 1.13.x
+    - go: 1.16.x
       env: 
       - DEPLOY=true
       - GO111MODULE=on
@@ -14,7 +14,7 @@ install:
   - go get -v ./...
 script:
   - go get github.com/mattn/goveralls
-  - go test -covermode=count -coverprofile=coverage.out.tmp ./...  
+  - go test --short -covermode=count -coverprofile=coverage.out.tmp ./...  
   - cat coverage.out.tmp | grep -v ".pb.go" > coverage.out
   - rm coverage.out.tmp
   - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
@@ -22,7 +22,7 @@ script:
   - git diff --exit-code
 deploy:
   - provider: script
-    script: docker run -e DOCKER_USERNAME=$DOCKER_USERNAME -e DOCKER_PASSWORD=$DOCKER_PASSWORD -e GITHUB_TOKEN=$GITHUB_TOKEN --rm --privileged -v $TRAVIS_BUILD_DIR:/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo --rm-dist
+    script: docker run -e DOCKER_USERNAME=$DOCKER_USERNAME -e DOCKER_PASSWORD=$DOCKER_PASSWORD -e GITHUB_TOKEN=$GITHUB_TOKEN --rm --privileged -v $TRAVIS_BUILD_DIR:/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain neilotoole/xcgo goreleaser --rm-dist
     skip_cleanup: true
     on:
       tags: true

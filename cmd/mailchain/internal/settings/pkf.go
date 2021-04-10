@@ -15,6 +15,7 @@ func publicKeyFinders(s values.Store) *PublicKeyFinders {
 			defaults.ClientEtherscan:          etherscanPublicKeyFinder(s),
 			defaults.ClientBlockscoutNoAuth:   blockscoutPublicKeyFinderNoAuth(s),
 			defaults.SubstratePublicKeyFinder: substratePublicKeyFinder(s),
+			defaults.AlgorandPublicKeyFinder:  algorandPublicKeyFinder(s),
 		},
 	}
 }

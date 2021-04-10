@@ -4,6 +4,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/internal/settings/output"
 	"github.com/mailchain/mailchain/cmd/internal/settings/values"
 	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/protocols/algorand"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 	"github.com/mailchain/mailchain/sender"
@@ -22,6 +23,9 @@ func senders(s values.Store) *Senders {
 			"substrate-rpc-" + substrate.EdgewareLocal:     substrateRPCSender(s, substrate.EdgewareLocal),
 			"substrate-rpc-" + substrate.EdgewareMainnet:   substrateRPCSender(s, substrate.EdgewareMainnet),
 			"substrate-rpc-" + substrate.EdgewareBeresheet: substrateRPCSender(s, substrate.EdgewareBeresheet),
+			"algod-" + algorand.Mainnet:                    algodSender(s, algorand.Mainnet),
+			"algod-" + algorand.Testnet:                    algodSender(s, algorand.Testnet),
+			"algod-" + algorand.Betanet:                    algodSender(s, algorand.Betanet),
 		},
 	}
 }

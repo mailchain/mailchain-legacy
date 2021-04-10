@@ -2,9 +2,11 @@ package bdbstore
 
 import (
 	"path"
+	"sort"
 	"testing"
 
-	"github.com/mailchain/mailchain/internal/address/addresstest"
+	"github.com/mailchain/mailchain/encoding"
+	"github.com/mailchain/mailchain/internal/addressing/addressingtest"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/stretchr/testify/assert"
 )
@@ -26,7 +28,7 @@ func TestDatabase_PutTransaction(t *testing.T) {
 			args{
 				"ethereum",
 				"mainnet",
-				addresstest.EthereumCharlotte,
+				addressingtest.EthereumCharlotte,
 				stores.Transaction{
 					EnvelopeData: []byte("env1"),
 					BlockNumber:  100,
@@ -69,7 +71,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addresstest.EthereumCharlotte,
+					addressingtest.EthereumCharlotte,
 					stores.Transaction{
 						EnvelopeData: []byte("env2"),
 						BlockNumber:  2,
@@ -78,7 +80,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addresstest.EthereumSofia,
+					addressingtest.EthereumSofia,
 					stores.Transaction{
 						EnvelopeData: []byte("env3"),
 						BlockNumber:  3,
@@ -87,7 +89,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			},
 			"ethereum",
 			"mainnet",
-			addresstest.EthereumCharlotte,
+			addressingtest.EthereumCharlotte,
 			[]stores.Transaction{
 				{
 					EnvelopeData: []byte("env2"),
@@ -102,7 +104,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addresstest.EthereumCharlotte,
+					addressingtest.EthereumCharlotte,
 					stores.Transaction{
 						EnvelopeData: []byte("env2"),
 						BlockNumber:  2,
@@ -111,7 +113,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addresstest.EthereumSofia,
+					addressingtest.EthereumSofia,
 					stores.Transaction{
 						EnvelopeData: []byte("env3"),
 						BlockNumber:  3,
@@ -120,7 +122,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addresstest.EthereumCharlotte,
+					addressingtest.EthereumCharlotte,
 					stores.Transaction{
 						EnvelopeData: []byte("env4"),
 						BlockNumber:  4,
@@ -129,7 +131,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			},
 			"ethereum",
 			"mainnet",
-			addresstest.EthereumCharlotte,
+			addressingtest.EthereumCharlotte,
 			[]stores.Transaction{
 				{
 					EnvelopeData: []byte("env4"),
@@ -148,7 +150,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addresstest.EthereumCharlotte,
+					addressingtest.EthereumCharlotte,
 					stores.Transaction{
 						EnvelopeData: []byte("env2"),
 						BlockNumber:  2,
@@ -157,7 +159,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addresstest.EthereumSofia,
+					addressingtest.EthereumSofia,
 					stores.Transaction{
 						EnvelopeData: []byte("env2"),
 						BlockNumber:  3,
@@ -166,7 +168,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addresstest.EthereumCharlotte,
+					addressingtest.EthereumCharlotte,
 					stores.Transaction{
 						EnvelopeData: []byte("env4"),
 						BlockNumber:  4,
@@ -175,7 +177,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addresstest.EthereumCharlotte,
+					addressingtest.EthereumCharlotte,
 					stores.Transaction{
 						EnvelopeData: []byte("env1"),
 						BlockNumber:  1,
@@ -184,7 +186,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			},
 			"ethereum",
 			"mainnet",
-			addresstest.EthereumCharlotte,
+			addressingtest.EthereumCharlotte,
 			[]stores.Transaction{
 				{
 					EnvelopeData: []byte("env4"),
@@ -223,5 +225,40 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				t.Errorf("Database.GetTransactions() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func Test_transactionKeyOrder(t *testing.T) {
+	orderedBlockNumbers := []int64{
+		999999999999,
+		999999999998,
+		88888888888,
+		88888888887,
+		7777777777,
+		7777777776,
+		55556,
+		55555,
+		4445,
+		4444,
+		334,
+		333,
+		22,
+		11,
+		2,
+		1,
+	}
+
+	txKeysBlockNumbers := map[string]int64{}
+	transactionKeys := []string{}
+	for _, x := range orderedBlockNumbers {
+		txKey := encoding.EncodeHex(transactionKey("0", x, nil))
+		// blockNumbersTxKeys[x] = txKey
+		txKeysBlockNumbers[txKey] = x
+		transactionKeys = append(transactionKeys, txKey)
+	}
+
+	sort.Strings(transactionKeys)
+	for i, x := range transactionKeys {
+		assert.Equal(t, orderedBlockNumbers[i], txKeysBlockNumbers[x])
 	}
 }

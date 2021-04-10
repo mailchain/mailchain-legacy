@@ -1,0 +1,30 @@
+name: Go
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+
+    - name: Vendor
+      run: go get -v ./...
+
+    - name: Test
+      run: go test --short -covermode=count -coverprofile=mailchain.cov.tmp `go list ./... | grep -v ./testing/integration` && cat mailchain.cov.tmp | grep -v ".pb.go" > mailchain.cov && rm mailchain.cov.tmp
+
+    - name: Send coverage
+      uses: shogo82148/actions-goveralls@v1
+      with:
+        path-to-profile: mailchain.cov
+        flag-name: Go-${{ matrix.go }}
+        parallel: true
+    
+    - name: Tidy
+      run: go mod tidy && git diff --exit-code

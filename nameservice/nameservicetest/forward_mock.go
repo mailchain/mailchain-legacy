@@ -6,34 +6,35 @@ package nameservicetest
 
 import (
 	context "context"
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
 )
 
-// MockForwardLookup is a mock of ForwardLookup interface
+// MockForwardLookup is a mock of ForwardLookup interface.
 type MockForwardLookup struct {
 	ctrl     *gomock.Controller
 	recorder *MockForwardLookupMockRecorder
 }
 
-// MockForwardLookupMockRecorder is the mock recorder for MockForwardLookup
+// MockForwardLookupMockRecorder is the mock recorder for MockForwardLookup.
 type MockForwardLookupMockRecorder struct {
 	mock *MockForwardLookup
 }
 
-// NewMockForwardLookup creates a new mock instance
+// NewMockForwardLookup creates a new mock instance.
 func NewMockForwardLookup(ctrl *gomock.Controller) *MockForwardLookup {
 	mock := &MockForwardLookup{ctrl: ctrl}
 	mock.recorder = &MockForwardLookupMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockForwardLookup) EXPECT() *MockForwardLookupMockRecorder {
 	return m.recorder
 }
 
-// ResolveName mocks base method
+// ResolveName mocks base method.
 func (m *MockForwardLookup) ResolveName(ctx context.Context, protocol, network, domainName string) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ResolveName", ctx, protocol, network, domainName)
@@ -42,7 +43,7 @@ func (m *MockForwardLookup) ResolveName(ctx context.Context, protocol, network, 
 	return ret0, ret1
 }
 
-// ResolveName indicates an expected call of ResolveName
+// ResolveName indicates an expected call of ResolveName.
 func (mr *MockForwardLookupMockRecorder) ResolveName(ctx, protocol, network, domainName interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResolveName", reflect.TypeOf((*MockForwardLookup)(nil).ResolveName), ctx, protocol, network, domainName)

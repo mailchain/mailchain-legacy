@@ -31,5 +31,5 @@ func (c APIClient) GetBalance(ctx context.Context, protocol, network string, add
 		return "", errors.WithMessage(err, "could not get balance")
 	}
 
-	return balance.balance, nil
+	return balance.Result, nil
 }

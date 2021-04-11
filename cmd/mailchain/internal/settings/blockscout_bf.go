@@ -24,9 +24,9 @@ func blockscoutBalanceFinderNoAuth(s values.Store) *BlockscoutBalanceFinder {
 		EnabledProtocolNetworks: values.NewDefaultStringSlice(
 			[]string{"ethereum/" + ethereum.Mainnet},
 			s,
-			"public-key-finders."+kind+".enabled-networks",
+			"balance-finder."+kind+".enabled-networks",
 		),
-		APIKey: values.NewDefaultString("", s, "public-key-finders."+kind+".api-key"),
+		APIKey: values.NewDefaultString("", s, "balance-finder."+kind+".api-key"),
 	}
 }
 
@@ -41,7 +41,7 @@ func (r BlockscoutBalanceFinder) Supports() map[string]bool {
 }
 
 // Produce `mailbox.PubKeyFinder` based on configuration settings.
-func (r BlockscoutBalanceFinder) Produce() (mailbox.Balance, error) {
+func (r BlockscoutBalanceFinder) Produce() (mailbox.BalanceFinder, error) {
 	return blockscout.NewAPIClient()
 }
 

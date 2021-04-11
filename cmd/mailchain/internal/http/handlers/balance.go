@@ -28,7 +28,7 @@ import (
 )
 
 // GetBalance returns the balance of a user.
-func GetBalance(balances map[string]mailbox.Balance) func(w http.ResponseWriter, r *http.Request) {
+func GetBalance(balances map[string]mailbox.BalanceFinder) func(w http.ResponseWriter, r *http.Request) {
 	// Get swagger:route GET /balance Balance GetBalance
 	//
 	// Get balance.
@@ -70,8 +70,8 @@ func GetBalance(balances map[string]mailbox.Balance) func(w http.ResponseWriter,
 
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(GetBalanceResponseBody{
-			balance: balance,
-			unit:    "wie",
+			Balance: balance,
+			Unit:    "wie",
 		})
 	}
 }
@@ -152,11 +152,11 @@ type GetBalanceResponseBody struct {
 	//
 	// Required: true
 	// example: 0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463
-	balance string `json:"balance"`
+	Balance string `json:"balance"`
 
 	// Encoding method used for encoding the `public-key`
 	//
 	// Required: true
 	// example: hex/0x-prefix
-	unit string `json:"unit"`
+	Unit string `json:"unit"`
 }

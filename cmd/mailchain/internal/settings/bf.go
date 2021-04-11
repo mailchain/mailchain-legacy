@@ -11,10 +11,10 @@ import (
 func balanceFinders(s values.Store) *BalanceFinders {
 	return &BalanceFinders{
 		clients: map[string]BalanceFinderClient{
-			defaults.ClientEtherscanNoAuth:    etherscanBalanceFinderNoAuth(s),
-			defaults.ClientEtherscan:          etherscanBalanceFinder(s),
-			defaults.ClientBlockscoutNoAuth:   blockscoutBalanceFinderNoAuth(s),
-			defaults.SubstratePublicKeyFinder: EtherscanBalanceFinder(s),
+			defaults.ClientEtherscanNoAuth: etherscanBalanceFinderNoAuth(s),
+			defaults.ClientEtherscan:       etherscanBalanceFinder(s),
+			//defaults.ClientBlockscoutNoAuth:   blockscoutBalanceFinderNoAuth(s),
+			//defaults.SubstratePublicKeyFinder: EtherscanBalanceFinder(s),
 		},
 	}
 }
@@ -25,7 +25,7 @@ type BalanceFinders struct {
 }
 
 // Produce `mailbox.PublicKeyFinder` based on configuration settings.
-func (s BalanceFinders) Produce(client string) (mailbox.Balance, error) {
+func (s BalanceFinders) Produce(client string) (mailbox.BalanceFinder, error) {
 	if client == "" {
 		return nil, nil
 	}

@@ -32,7 +32,7 @@ type BalanceFinder struct {
 }
 
 // PublicKeyFromAddress returns the public key from the address.
-func (pkf *PublicKeyFinder) BalanceFromAddress(ctx context.Context, protocol, network string, address []byte) (crypto.PublicKey, error) {
+func (bf *BalanceFinder) BalanceFromAddress(ctx context.Context, protocol, network string, address []byte) (crypto.Balance, error) {
 	if protocol != "substrate" {
 		return nil, errors.Errorf("protocol must be 'substrate'")
 	}
@@ -45,5 +45,22 @@ func (pkf *PublicKeyFinder) BalanceFromAddress(ctx context.Context, protocol, ne
 	// Remove last 2 bytes (blake2b hash)
 	bytes := address[1:33]
 
-	return sr25519.PublicKeyFromBytes(bytes)
+	return sr25519.BalanceFromBytes(bytes)
+}
+
+// PublicKeyFromAddress returns the public key from the address.
+func (bf *BalanceFinder) GetBalance(ctx context.Context, protocol, network string, address []byte) (string, error) {
+	if protocol != "substrate" {
+		return "", errors.Errorf("protocol must be 'substrate'")
+	}
+
+	if len(address) != 35 {
+		return "", errors.Errorf("address must be 35 bytes in length")
+	}
+
+	// Remove the 1st byte (network identifier)
+	// Remove last 2 bytes (blake2b hash)
+	//bytes := address[1:33]
+
+	return "found balance", errors.Errorf("bfkey error")
 }

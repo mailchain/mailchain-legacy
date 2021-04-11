@@ -49,7 +49,7 @@ func (r SubstrateBalanceFinder) Supports() map[string]bool {
 }
 
 // Produce a `mailbox.PubKeyFinder` base on the configuration.
-func (r SubstrateBalanceFinder) Produce() (mailbox.Balance, error) {
+func (r SubstrateBalanceFinder) Produce() (mailbox.BalanceFinder, error) {
 	return substrate.NewBalanceFinder(), nil
 }
 

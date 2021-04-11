@@ -30,9 +30,9 @@ func SubstrateNetworkAny(network string) *NetworkDefaults {
 		// NameServiceAddress:    NameServiceAddressKind,
 		// NameServiceDomainName: NameServiceDomainNameKind,
 		PublicKeyFinder: SubstratePublicKeyFinder,
-		BalanceFinder:   SubstrateBalanceFinder,
-		Receiver:        Mailchain,
-		Sender:          "substrate-rpc-" + network,
-		Disabled:        false,
+		//	BalanceFinder:   SubstrateBalanceFinder,
+		Receiver: Mailchain,
+		Sender:   "substrate-rpc-" + network,
+		Disabled: false,
 	}
 }

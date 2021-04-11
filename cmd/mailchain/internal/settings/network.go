@@ -72,7 +72,7 @@ func (s *Network) ProducePublicKeyFinders(publicKeyFinders *PublicKeyFinders) (m
 }
 
 // ProduceBalanceFinders returns a `mailbox.Balance` based on configuration settings for network.
-func (s *Network) ProduceBalanceFinders(balanceFinders *BalanceFinders) (mailbox.Balance, error) {
+func (s *Network) ProduceBalanceFinders(balanceFinders *BalanceFinders) (mailbox.BalanceFinder, error) {
 	return balanceFinders.Produce(s.BalanceFinder.Get())
 }
 

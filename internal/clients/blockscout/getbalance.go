@@ -12,14 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package mailbox
+package blockscout
 
 import (
 	"context"
+
+	"github.com/pkg/errors"
 )
 
-//go:generate mockgen -source=balance.go -package=mailboxtest -destination=./mailboxtest/balance_mock.go
-// Receiver gets balance from blockchain.
-type BalanceFinder interface {
-	GetBalance(ctx context.Context, protocol, network string, address []byte) (string, error)
+// Receive check ethereum transactions for mailchain messages
+func (c APIClient) GetBalance(ctx context.Context, protocol, network string, address []byte) (string, error) {
+	if !c.isNetworkSupported(network) {
+		return "", errors.Errorf("network not supported")
+	}
+
+	balance, err := c.getBalanceByAddress(network, address)
+	if err != nil {
+		return "", errors.WithMessage(err, "could not get balance")
+	}
+
+	return balance.balance, nil
 }

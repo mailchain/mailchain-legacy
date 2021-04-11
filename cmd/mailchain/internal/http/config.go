@@ -18,9 +18,8 @@ type config struct {
 	addressResolvers  map[string]nameservice.ReverseLookup
 	domainResolvers   map[string]nameservice.ForwardLookup
 	publicKeyFinders  map[string]mailbox.PubKeyFinder
-	BalanceFinders    map[string]mailbox.Balance
 	receivers         map[string]mailbox.Receiver
-	balances          map[string]mailbox.Balance
+	balanceFinders    map[string]mailbox.BalanceFinder
 	senders           map[string]sender.Message
 	sentStore         stores.Sent
 }
@@ -43,7 +42,7 @@ func produceConfig(s *settings.Root, inbox stores.State) (*config, error) { //no
 	nsAddressResolvers := map[string]nameservice.ReverseLookup{}
 	nsDomainResolvers := map[string]nameservice.ForwardLookup{}
 	publicKeyFinders := map[string]mailbox.PubKeyFinder{}
-	balanceFinders := map[string]mailbox.Balance{}
+	balanceFinders := map[string]mailbox.BalanceFinder{}
 	receivers := map[string]mailbox.Receiver{}
 	senders := map[string]sender.Message{}
 
@@ -76,7 +75,7 @@ func produceConfig(s *settings.Root, inbox stores.State) (*config, error) { //no
 			publicKeyFinders[k] = v
 		}
 
-		protocolGetBalances, err := s.Protocols[protocol].GetBalances(s.BalanceFinders)
+		protocolGetBalances, err := s.Protocols[protocol].GetBalanceFinders(s.BalanceFinders)
 		if err != nil {
 			return nil, errors.WithMessagef(err, "could not get %q public key finders", name)
 		}
@@ -111,6 +110,7 @@ func produceConfig(s *settings.Root, inbox stores.State) (*config, error) { //no
 		cache:             cacheStore,
 		keystore:          keystorage,
 		publicKeyFinders:  publicKeyFinders,
+		balanceFinders:    balanceFinders,
 		receivers:         receivers,
 		senders:           senders,
 		sentStore:         sentStore,

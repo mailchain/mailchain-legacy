@@ -50,7 +50,7 @@ func (r EtherscanBalanceFinder) Supports() map[string]bool {
 }
 
 // Produce `mailbox.PubKeyFinder` based on configuration settings.
-func (r EtherscanBalanceFinder) Produce() (mailbox.Balance, error) {
+func (r EtherscanBalanceFinder) Produce() (mailbox.BalanceFinder, error) {
 	return etherscan.NewAPIClient(r.APIKey.Get())
 }
 

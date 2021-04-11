@@ -69,10 +69,9 @@ func (p Protocol) GetPublicKeyFinders(publicKeyFinders *PublicKeyFinders) (map[s
 	return msg, nil
 }
 
-//Shivani
 // GetBalances returns all `mailbox.GetBalance` resources from configuration.
-func (p Protocol) GetBalances(balanceFinders *BalanceFinders) (map[string]mailbox.Balance, error) {
-	msg := map[string]mailbox.Balance{}
+func (p Protocol) GetBalanceFinders(balanceFinders *BalanceFinders) (map[string]mailbox.BalanceFinder, error) {
+	msg := map[string]mailbox.BalanceFinder{}
 
 	for network, v := range p.Networks {
 		s, err := v.ProduceBalanceFinders(balanceFinders)

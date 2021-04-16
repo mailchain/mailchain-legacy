@@ -114,6 +114,46 @@ func Test_GetMessages(t *testing.T) {
 			http.StatusOK,
 		},
 		{
+			"200-message-rekeyed",
+			args{
+				cache: func() stores.Cache {
+					m := storestest.NewMockCache(mockCtrl)
+					m.EXPECT().GetMessage("test://TestReadMessage/success-2204f3d89e5a").Return([]byte{}, errors.Errorf("message not found"))
+					m.EXPECT().SetMessage("test://TestReadMessage/success-2204f3d89e5a", gomock.Any()).Return(nil)
+					return m
+				}(),
+				inbox: func() stores.State {
+					inbox := statemock.NewMockState(mockCtrl)
+					inbox.EXPECT().GetReadStatus(mail.ID{71, 236, 160, 17, 227, 43, 82, 199, 16, 5, 173, 138, 143, 117, 225, 180, 76, 146, 201, 159, 209, 46, 67, 188, 207, 229, 113, 227, 194, 209, 61, 46, 154, 130, 106, 85, 15, 95, 246, 59, 36, 122, 244, 113}).Return(false, nil).Times(1)
+					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte).Return([]stores.Transaction{
+						{
+							BlockNumber:  100,
+							Hash:         []byte{0x01, 0x02, 0x03},
+							EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
+							RekeyAddress: addressingtest.EthereumCharlotte,
+						},
+					}, nil)
+					return inbox
+				}(),
+				ks: func() keystore.Store {
+					decrypted, _ := ioutil.ReadFile("./testdata/simple.golden.eml")
+					decrypter := ciphertest.NewMockDecrypter(mockCtrl)
+					gomock.InOrder(
+						decrypter.EXPECT().Decrypt(cipher.EncryptedContent(encodingtest.MustDecodeHex("7365637265742d6c6f636174696f6e"))).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil),
+						decrypter.EXPECT().Decrypt(cipher.EncryptedContent(encodingtest.MustDecodeHex("7365637265742d6c6f636174696f6e"))).Return([]byte("test://TestReadMessage/success-2204f3d89e5a"), nil),
+						decrypter.EXPECT().Decrypt(cipher.EncryptedContent([]byte{0x54, 0x65, 0x73, 0x74, 0x52, 0x65, 0x61, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65})).Return(decrypted, nil),
+					)
+
+					store := keystoretest.NewMockStore(mockCtrl)
+					store.EXPECT().HasAddress(addressingtest.EthereumCharlotte, "ethereum", "mainnet").Return(true).Times(1)
+					store.EXPECT().GetDecrypter(addressingtest.EthereumCharlotte, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil)
+					return store
+				}(),
+			},
+			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addressingtest.EthereumCharlotte)), nil),
+			http.StatusOK,
+		},
+		{
 			"200-message-with-fetch",
 			args{
 				cache: func() stores.Cache {

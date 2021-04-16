@@ -19,7 +19,7 @@ To compile and run the package locally, you need to run the following command in
 To `add account` to your development version
 
 1. Navigate into the directory of the repository
-2. Run: `go run cmd/mailchain/main.go account add --protocol=ethereum --key-type="secp256k1" --private-key=YOUR_PRIVATE_KEY`
+2. Run: `go run cmd/mailchain/main.go account add --protocol=ethereum --network=mainnet --key-type="secp256k1" --private-key=YOUR_PRIVATE_KEY`
 
 #### Serve
 

@@ -107,6 +107,7 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 			n := binary.PutVarint(buf, tx.BlockNumber)
 
 			readStatus, _ := inbox.GetReadStatus(message.ID)
+
 			mailStore := &stores.Message{
 				Body: string(message.Body),
 				Headers: stores.Header{
@@ -123,6 +124,11 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 				BlockIDEncoding:         encoding.KindHex0XPrefix,
 				TransactionHash:         encoding.EncodeHexZeroX(tx.Hash),
 				TransactionHashEncoding: encoding.KindHex0XPrefix,
+			}
+
+			if tx.RekeyAddress != nil {
+				encodedAddress, _, _ := addressing.EncodeByProtocol(tx.RekeyAddress, req.Protocol)
+				mailStore.Headers.RekeyTo = encodedAddress
 			}
 
 			messages = append(messages, convertStoreMessageToGetMessage(mailStore))
@@ -247,6 +253,7 @@ func convertStoreMessageToGetMessage(message *stores.Message) getMessage {
 			Date:        message.Headers.Date,
 			MessageID:   message.Headers.MessageID,
 			ContentType: message.Headers.ContentType,
+			RekeyTo:     message.Headers.RekeyTo,
 		},
 		Read:                    message.Read,
 		Subject:                 message.Subject,
@@ -319,6 +326,9 @@ type getHeaders struct {
 	// Reply to if the reply address is different to the from address.
 	// readOnly: true
 	ReplyTo string `json:"reply-to,omitempty"`
+	// Rekey use this key when responding.
+	// readOnly: true
+	RekeyTo string `json:"rekey-to,omitempty"`
 	// Unique identifier of the message
 	// example: 47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471@mailchain
 	// readOnly: true

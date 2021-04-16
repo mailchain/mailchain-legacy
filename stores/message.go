@@ -2,7 +2,6 @@ package stores
 
 import "time"
 
-//TODO: delete
 type Header struct {
 	// When the message was created, this can be different to the transaction data of the message.
 	// example: 12 Mar 19 20:23 UTC
@@ -15,6 +14,8 @@ type Header struct {
 	To string `json:"to"`
 	// Reply to if the reply address is different to the from address.
 	ReplyTo string `json:"reply-to,omitempty"`
+	// RekeyTo the address to use when responding.
+	RekeyTo string `json:"rekey-to,omitempty"`
 	// Unique identifier of the message
 	// example: 47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471@mailchain
 	MessageID string `json:"message-id"`

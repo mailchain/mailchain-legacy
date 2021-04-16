@@ -20,6 +20,7 @@ import (
 	"github.com/algorand/go-algorand-sdk/client/v2/indexer"
 	"github.com/algorand/go-algorand-sdk/types"
 	"github.com/mailchain/mailchain/encoding"
+	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/stores"
 	"github.com/pkg/errors"
 )
@@ -45,10 +46,16 @@ func (c *Client) Receive(ctx context.Context, protocol, network string, address 
 	for i := range txResult.Transactions {
 		tx := txResult.Transactions[i]
 
+		var reKeyAddress []byte
+		if tx.RekeyTo != "" {
+			reKeyAddress, _ = addressing.DecodeByProtocol(tx.RekeyTo, protocol)
+		}
+
 		res = append(res, stores.Transaction{
 			EnvelopeData: tx.Note[len(encoding.DataPrefix()):],
 			BlockNumber:  int64(tx.RoundTime),
 			Hash:         []byte(tx.Id),
+			RekeyAddress: reKeyAddress,
 		})
 	}
 

@@ -210,7 +210,6 @@ func Test_accountAddCmd(t *testing.T) {
 		args        args
 		cmdArgs     []string
 		cmdFlags    map[string]string
-		wantOutput  string
 		wantExecErr string
 	}{
 		{
@@ -231,7 +230,6 @@ func Test_accountAddCmd(t *testing.T) {
 				"protocol": "ethereum",
 				"network":  "mainnet",
 			},
-			"{\n  \"message\": \"private key added\",\n  \"public-key\": \"0x69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0\",\n  \"public-key-encoding\": \"hex/0x-prefix\",\n  \"protocol\": \"ethereum\",\n  \"network\": \"mainnet\"\n}",
 			"",
 		},
 		{
@@ -257,7 +255,6 @@ func Test_accountAddCmd(t *testing.T) {
 				"protocol":             "algorand",
 				"network":              "mainnet",
 			},
-			"{\n  \"message\": \"private key added\",\n  \"public-key\": \"OI6KUI5FWUI26WWXW7XWA5XECSVX45NJ3SIQ5JQOIF5CW5YKKZYQ\",\n  \"public-key-encoding\": \"base32/plain\",\n  \"protocol\": \"algorand\",\n  \"network\": \"mainnet\"\n}",
 			"",
 		},
 		{
@@ -278,8 +275,7 @@ func Test_accountAddCmd(t *testing.T) {
 				"protocol": "ethereum",
 				"network":  "mainnet",
 			},
-			"",
-			"key could not be stored: failed",
+			"Error: key could not be stored: failed",
 		},
 		{
 			"err-passphrase",
@@ -297,8 +293,7 @@ func Test_accountAddCmd(t *testing.T) {
 				"protocol": "ethereum",
 				"network":  "mainnet",
 			},
-			"",
-			"could not get `passphrase`: failed",
+			"Error: could not get `passphrase`: failed",
 		},
 		{
 			"err-private-key-invalid",
@@ -316,8 +311,7 @@ func Test_accountAddCmd(t *testing.T) {
 				"protocol": "ethereum",
 				"network":  "mainnet",
 			},
-			"",
-			"`private-key` could not be decoded: encoding/hex: odd length hex string",
+			"Error: `private-key` could not be decoded: encoding/hex: odd length hex string",
 		},
 		{
 			"err-private-key",
@@ -335,8 +329,7 @@ func Test_accountAddCmd(t *testing.T) {
 				"protocol": "ethereum",
 				"network":  "mainnet",
 			},
-			"",
-			"could not get private key: failed",
+			"Error: could not get private key: failed",
 		},
 		{
 			"err-key-type",
@@ -354,8 +347,7 @@ func Test_accountAddCmd(t *testing.T) {
 				"protocol": "ethereum",
 				"network":  "mainnet",
 			},
-			"",
-			"`private-key` could not be created from bytes: unsupported key type: \"invalid\"",
+			"Error: `private-key` could not be created from bytes: unsupported key type: \"invalid\"",
 		},
 		{
 			"err-empty-key-type",
@@ -371,8 +363,7 @@ func Test_accountAddCmd(t *testing.T) {
 			map[string]string{
 				// "key-type": "",
 			},
-			"",
-			"required flag(s) \"key-type\", \"network\" not set",
+			"Error: required flag(s) \"key-type\", \"network\" not set",
 		},
 	}
 	for _, tt := range tests {
@@ -384,18 +375,36 @@ func Test_accountAddCmd(t *testing.T) {
 
 			_, out, err := commandstest.ExecuteCommandC(got, tt.cmdArgs, tt.cmdFlags)
 
+			if !commandstest.AssertCommandJsonOutput(t, got, err, out, tt.wantExecErr) {
+				t.Errorf("Test_accountAddCmd().Execute().out != %v", tt.wantExecErr)
+			}
+
 			if tt.wantExecErr == "" && !assert.NoError(t, err) {
-				t.Errorf("configChainEthereumNetwork().execute() error = %v, wantExecErr %v", err, tt.wantExecErr)
+				t.Errorf("Test_accountAddCmd().execute() error = %v, wantExecErr %v", err, tt.wantExecErr)
 			}
 
-			if tt.wantExecErr != "" && !assert.EqualError(t, err, tt.wantExecErr) {
-				t.Errorf("configChainEthereumNetwork().execute() error = %v, wantExecErr %v", err, tt.wantExecErr)
-				return
-			}
+			// if tt.wantExecErr != "" && !assert.EqualError(t, err, tt.wantExecErr) {
+			// 	t.Errorf("Test_accountAddCmd().execute() error = %v, wantExecErr %v", err, tt.wantExecErr)
+			// 	return
+			// }
 
-			if tt.wantOutput != "" && !commandstest.AssertCommandOutput(t, got, err, out, tt.wantOutput) {
-				t.Errorf("configChainEthereumNetwork().Execute().out != %v", tt.wantOutput)
-			}
+			// if err == nil {
+			// 	goldenResponse, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s.json", t.Name()))
+			// 	if err != nil {
+			// 		assert.FailNow(t, err.Error())
+			// 	}
+			// 	if !commandstest.AssertCommandJsonOutput(t, got, err, out, tt.wantExecErr) {
+			// 		t.Errorf("configChainEthereumNetwork().Execute().out != %v", tt.wantExecErr)
+			// 	}
+			// 	if !assert.JSONEq(t, string(goldenResponse), out) {
+			// 		t.Errorf("command returned unexpected response: got %v want %v",
+			// 			out, goldenResponse)
+			// 	}
+			// }
+
+			// if tt.wantOutput != "" && !commandstest.AssertCommandOutput(t, got, err, out, tt.wantOutput) {
+			// 	t.Errorf("configChainEthereumNetwork().Execute().out != %v", tt.wantOutput)
+			// }
 		})
 	}
 }

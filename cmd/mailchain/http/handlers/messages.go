@@ -72,9 +72,9 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 			return
 		}
 
-		messages := make([]getMessage, 0, len(txs))
+		messages := make([]getMessage, len(txs))
 
-		for _, tx := range txs {
+		for i, tx := range txs {
 			buf := make([]byte, binary.MaxVarintLen64)
 			n := binary.PutVarint(buf, tx.BlockNumber)
 			blockID := encoding.EncodeHexZeroX(buf[:n])
@@ -82,28 +82,28 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 
 			env, err := envelope.Unmarshal(tx.EnvelopeData)
 			if err != nil {
-				messages = append(messages, getMessage{Status: errors.WithMessagef(err, "failed to unmarshal envelope, %s", encoding.EncodeHexZeroX(tx.EnvelopeData)).Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding})
+				messages[i] = getMessage{Status: errors.WithMessagef(err, "failed to unmarshal envelope, %s", encoding.EncodeHexZeroX(tx.EnvelopeData)).Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding}
 
 				continue
 			}
 
 			decrypterKind, err := env.DecrypterKind()
 			if err != nil {
-				messages = append(messages, getMessage{Status: errors.WithMessage(err, "failed to find decrypter type").Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding})
+				messages[i] = getMessage{Status: errors.WithMessage(err, "failed to find decrypter type").Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding}
 
 				continue
 			}
 
 			decrypter, err := ks.GetDecrypter(req.addressBytes, req.Protocol, req.Network, decrypterKind, deriveKeyOptions)
 			if err != nil {
-				messages = append(messages, getMessage{Status: errors.WithMessage(err, "could not get `decrypter`").Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding})
+				messages[i] = getMessage{Status: errors.WithMessage(err, "could not get `decrypter`").Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding}
 
 				continue
 			}
 
 			message, err := mailbox.ReadMessage(tx.EnvelopeData, decrypter, cache)
 			if err != nil {
-				messages = append(messages, getMessage{Status: errors.WithMessage(err, "could not read message").Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding})
+				messages[i] = getMessage{Status: errors.WithMessage(err, "could not read message").Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding}
 
 				continue
 			}
@@ -133,7 +133,7 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 				mailStore.Headers.RekeyTo = encodedAddress
 			}
 
-			messages = append(messages, convertStoreMessageToGetMessage(mailStore))
+			messages[i] = convertStoreMessageToGetMessage(mailStore)
 		}
 
 		if err := json.NewEncoder(w).Encode(getResponse{Messages: messages}); err != nil {

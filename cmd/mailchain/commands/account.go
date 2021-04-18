@@ -111,7 +111,7 @@ func accountAddCmd(produceKeyStore func() (keystore.Store, error), passphrasePro
 				return errors.WithMessage(err, "key could not be stored")
 			}
 
-			encodedPubKey, encodingUsed, err := pubkey.EncodeByProtocol(pk.Bytes(), protocol)
+			encodedPubKey, publicKeyEncoding, err := pubkey.EncodeByProtocol(pk.Bytes(), protocol)
 			if err != nil {
 				return errors.WithMessage(err, "public key could not be encoded")
 			}
@@ -120,8 +120,20 @@ func accountAddCmd(produceKeyStore func() (keystore.Store, error), passphrasePro
 				Message           string `json:"message"`
 				PublicKey         string `json:"public-key"`
 				PublicKeyEncoding string `json:"public-key-encoding"`
+				Address           string `json:"address"`
+				AddressEncoding   string `json:"address-encoding"`
 				Protocol          string `json:"protocol"`
 				Network           string `json:"network"`
+			}
+
+			addressBytes, err := addressing.FromPublicKey(pk, protocol, network)
+			if err != nil {
+				return errors.WithMessage(err, "could not get address fom public key")
+			}
+
+			encodedAddress, addressEncoding, err := addressing.EncodeByProtocol(addressBytes, protocol)
+			if err != nil {
+				return errors.WithMessage(err, "could not encode address")
 			}
 
 			jsonResponse, _ := json.Marshal(response{
@@ -129,7 +141,9 @@ func accountAddCmd(produceKeyStore func() (keystore.Store, error), passphrasePro
 				Protocol:          protocol,
 				Network:           network,
 				PublicKey:         encodedPubKey,
-				PublicKeyEncoding: encodingUsed,
+				PublicKeyEncoding: publicKeyEncoding,
+				Address:           encodedAddress,
+				AddressEncoding:   addressEncoding,
 			})
 			var prettyJSON bytes.Buffer
 			if err := json.Indent(&prettyJSON, jsonResponse, "", "  "); err != nil {

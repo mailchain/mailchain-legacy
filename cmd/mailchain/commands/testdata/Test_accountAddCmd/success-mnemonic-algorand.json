@@ -1,0 +1,9 @@
+{
+    "message": "private key added",
+    "public-key": "OI6KUI5FWUI26WWXW7XWA5XECSVX45NJ3SIQ5JQOIF5CW5YKKZYQ",
+    "public-key-encoding": "base32/plain",
+    "address": "OI6KUI5FWUI26WWXW7XWA5XECSVX45NJ3SIQ5JQOIF5CW5YKKZYWJ2SYKA",
+    "address-encoding": "base32/plain",
+    "protocol": "algorand",
+    "network": "mainnet"
+  }

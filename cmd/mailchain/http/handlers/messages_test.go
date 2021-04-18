@@ -92,7 +92,13 @@ func Test_GetMessages(t *testing.T) {
 							Hash:         []byte{0x01, 0x02, 0x03},
 							EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
 						},
+						{ // bad envelope
+							BlockNumber:  102,
+							Hash:         []byte{0x01, 0x02, 0x08},
+							EnvelopeData: encodingtest.MustDecodeHex("500801127365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
+						},
 					}, nil)
+
 					return inbox
 				}(),
 				ks: func() keystore.Store {

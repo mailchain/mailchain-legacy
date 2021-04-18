@@ -75,36 +75,38 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 		messages := make([]getMessage, 0, len(txs))
 
 		for _, tx := range txs {
+			buf := make([]byte, binary.MaxVarintLen64)
+			n := binary.PutVarint(buf, tx.BlockNumber)
+			blockID := encoding.EncodeHexZeroX(buf[:n])
+			blockIDEncoding := encoding.KindHex0XPrefix
+
 			env, err := envelope.Unmarshal(tx.EnvelopeData)
 			if err != nil {
-				messages = append(messages, getMessage{Status: errors.WithMessagef(err, "failed to unmarshal envelope, %s", encoding.EncodeHexZeroX(tx.EnvelopeData)).Error()})
+				messages = append(messages, getMessage{Status: errors.WithMessagef(err, "failed to unmarshal envelope, %s", encoding.EncodeHexZeroX(tx.EnvelopeData)).Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding})
 
 				continue
 			}
 
 			decrypterKind, err := env.DecrypterKind()
 			if err != nil {
-				messages = append(messages, getMessage{Status: errors.WithMessage(err, "failed to find decrypter type").Error()})
+				messages = append(messages, getMessage{Status: errors.WithMessage(err, "failed to find decrypter type").Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding})
 
 				continue
 			}
 
 			decrypter, err := ks.GetDecrypter(req.addressBytes, req.Protocol, req.Network, decrypterKind, deriveKeyOptions)
 			if err != nil {
-				messages = append(messages, getMessage{Status: errors.WithMessage(err, "could not get `decrypter`").Error()})
+				messages = append(messages, getMessage{Status: errors.WithMessage(err, "could not get `decrypter`").Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding})
 
 				continue
 			}
 
 			message, err := mailbox.ReadMessage(tx.EnvelopeData, decrypter, cache)
 			if err != nil {
-				messages = append(messages, getMessage{Status: errors.WithMessage(err, "could not read message").Error()})
+				messages = append(messages, getMessage{Status: errors.WithMessage(err, "could not read message").Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding})
 
 				continue
 			}
-
-			buf := make([]byte, binary.MaxVarintLen64)
-			n := binary.PutVarint(buf, tx.BlockNumber)
 
 			readStatus, _ := inbox.GetReadStatus(message.ID)
 
@@ -120,8 +122,8 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 				Read:                    readStatus,
 				Subject:                 message.Headers.Subject,
 				Status:                  "ok",
-				BlockID:                 encoding.EncodeHexZeroX(buf[:n]),
-				BlockIDEncoding:         encoding.KindHex0XPrefix,
+				BlockID:                 blockID,
+				BlockIDEncoding:         blockIDEncoding,
 				TransactionHash:         encoding.EncodeHexZeroX(tx.Hash),
 				TransactionHashEncoding: encoding.KindHex0XPrefix,
 			}

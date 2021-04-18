@@ -17,6 +17,13 @@
             "block-id-encoding": "hex/0x-prefix",
             "transaction-hash": "0x010203",
             "transaction-hash-encoding": "hex/0x-prefix"
+        },
+        {
+            "read": false,
+            "status": "failed to unmarshal envelope, 0x500801127365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13: unexpected EOF",
+            "status-code": "",
+            "block-id":"0xcc01",
+            "block-id-encoding":"hex/0x-prefix"
         }
     ]
 }

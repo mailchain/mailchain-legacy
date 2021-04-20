@@ -2,6 +2,7 @@ package params
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/pkg/errors"
 )
@@ -74,4 +75,19 @@ func QueryOptionalNetwork(r *http.Request) string {
 	}
 
 	return networks[0]
+}
+
+// QueryDefaultInt verify presence and return value of parameter if empty return default value
+func QueryDefaultInt(r *http.Request, name string, defaultValue int32) (int32, error) {
+	val := r.URL.Query()[name]
+	if len(val) != 1 {
+		return defaultValue, nil
+	}
+
+	i64, err := strconv.ParseInt(val[0], 10, 32)
+	if err != nil {
+		return 0, err
+	}
+
+	return int32(i64), nil
 }

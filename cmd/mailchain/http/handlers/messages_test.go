@@ -62,7 +62,7 @@ func Test_GetMessages(t *testing.T) {
 			args{
 				inbox: func() stores.State {
 					stateMock := statemock.NewMockState(mockCtrl)
-					stateMock.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte).Times(1)
+					stateMock.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte, int32(0), int32(15)).Times(1)
 					return stateMock
 				}(),
 				ks: func() keystore.Store {
@@ -86,7 +86,7 @@ func Test_GetMessages(t *testing.T) {
 				inbox: func() stores.State {
 					inbox := statemock.NewMockState(mockCtrl)
 					inbox.EXPECT().GetReadStatus(mail.ID{71, 236, 160, 17, 227, 43, 82, 199, 16, 5, 173, 138, 143, 117, 225, 180, 76, 146, 201, 159, 209, 46, 67, 188, 207, 229, 113, 227, 194, 209, 61, 46, 154, 130, 106, 85, 15, 95, 246, 59, 36, 122, 244, 113}).Return(false, nil).Times(1)
-					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte).Return([]stores.Transaction{
+					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte, int32(0), int32(15)).Return([]stores.Transaction{
 						{
 							BlockNumber:  100,
 							Hash:         []byte{0x01, 0x02, 0x03},
@@ -131,7 +131,7 @@ func Test_GetMessages(t *testing.T) {
 				inbox: func() stores.State {
 					inbox := statemock.NewMockState(mockCtrl)
 					inbox.EXPECT().GetReadStatus(mail.ID{71, 236, 160, 17, 227, 43, 82, 199, 16, 5, 173, 138, 143, 117, 225, 180, 76, 146, 201, 159, 209, 46, 67, 188, 207, 229, 113, 227, 194, 209, 61, 46, 154, 130, 106, 85, 15, 95, 246, 59, 36, 122, 244, 113}).Return(false, nil).Times(1)
-					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte).Return([]stores.Transaction{
+					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte, int32(0), int32(15)).Return([]stores.Transaction{
 						{
 							BlockNumber:  100,
 							Hash:         []byte{0x01, 0x02, 0x03},
@@ -171,7 +171,7 @@ func Test_GetMessages(t *testing.T) {
 				inbox: func() stores.State {
 					inbox := statemock.NewMockState(mockCtrl)
 					inbox.EXPECT().GetReadStatus(mail.ID{71, 236, 160, 17, 227, 43, 82, 199, 16, 5, 173, 138, 143, 117, 225, 180, 76, 146, 201, 159, 209, 46, 67, 188, 207, 229, 113, 227, 194, 209, 61, 46, 154, 130, 106, 85, 15, 95, 246, 59, 36, 122, 244, 113}).Return(false, nil).Times(1)
-					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte).Return([]stores.Transaction{
+					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte, int32(0), int32(15)).Return([]stores.Transaction{
 						{
 							BlockNumber:  100,
 							Hash:         []byte{0x01, 0x02, 0x03},
@@ -219,7 +219,7 @@ func Test_GetMessages(t *testing.T) {
 			args{
 				inbox: func() stores.State {
 					inbox := statemock.NewMockState(mockCtrl)
-					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte).Return(nil, errors.New("internal error"))
+					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte, int32(0), int32(15)).Return(nil, errors.New("internal error"))
 					return inbox
 				}(),
 				ks: func() keystore.Store {
@@ -306,6 +306,8 @@ func Test_parseGetMessagesRequest(t *testing.T) {
 				Network:      "mainnet",
 				Protocol:     "ethereum",
 				Fetch:        true,
+				Limit:        15,
+				Skip:         0,
 				addressBytes: []byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61},
 			},
 			false,
@@ -323,9 +325,37 @@ func Test_parseGetMessagesRequest(t *testing.T) {
 				Address:      "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
 				Network:      "mainnet",
 				Protocol:     "ethereum",
+				Limit:        15,
+				Skip:         0,
 				addressBytes: []byte{0x56, 0x2, 0xea, 0x95, 0x54, 0xb, 0xee, 0x46, 0xd0, 0x3b, 0xa3, 0x35, 0xee, 0xd6, 0xf4, 0x9d, 0x11, 0x7e, 0xab, 0x95, 0xc8, 0xab, 0x8b, 0x71, 0xba, 0xe2, 0xcd, 0xd1, 0xe5, 0x64, 0xa7, 0x61},
 			},
 			false,
+		},
+		{
+			"err-skip-value",
+			args{
+				map[string]string{
+					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"network":  "mainnet",
+					"protocol": "ethereum",
+					"skip":     "invalid",
+				},
+			},
+			nil,
+			true,
+		},
+		{
+			"err-limit-value",
+			args{
+				map[string]string{
+					"address":  "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761",
+					"network":  "mainnet",
+					"protocol": "ethereum",
+					"limit":    "invalid",
+				},
+			},
+			nil,
+			true,
 		},
 		{
 			"err-invalid-protocol",

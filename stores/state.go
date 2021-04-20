@@ -27,5 +27,5 @@ type State interface {
 	GetReadStatus(messageID mail.ID) (bool, error)
 
 	PutTransaction(protocol, network string, address []byte, tx Transaction) error
-	GetTransactions(protocol, network string, address []byte) ([]Transaction, error)
+	GetTransactions(protocol, network string, address []byte, skip, limit int32) ([]Transaction, error)
 }

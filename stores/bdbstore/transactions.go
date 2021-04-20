@@ -28,17 +28,29 @@ func (db *Database) PutTransaction(protocol, network string, address []byte, tx 
 	})
 }
 
-func (db *Database) GetTransactions(protocol, network string, address []byte) ([]stores.Transaction, error) {
+func (db *Database) GetTransactions(protocol, network string, address []byte, skip, limit int32) ([]stores.Transaction, error) {
 	var txs []stores.Transaction
 
 	err := db.db.View(func(txn *badger.Txn) error {
 		prefix := []byte(getTransactionPrefixKey(protocol, network, address))
 		opts := badger.DefaultIteratorOptions
 		opts.PrefetchValues = false
+
 		it := txn.NewIterator(opts)
 		defer it.Close()
 
 		for it.Seek(prefix); it.ValidForPrefix(prefix); it.Next() {
+			if skip > 0 {
+				skip--
+
+				continue
+			}
+
+			if limit <= 0 {
+				break
+			}
+			limit--
+
 			item := it.Item()
 
 			val, err := item.ValueCopy(nil)
@@ -52,6 +64,7 @@ func (db *Database) GetTransactions(protocol, network string, address []byte) ([
 			}
 
 			txs = append(txs, tx)
+
 		}
 		return nil
 	})

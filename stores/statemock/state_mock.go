@@ -65,18 +65,18 @@ func (mr *MockStateMockRecorder) GetReadStatus(messageID interface{}) *gomock.Ca
 }
 
 // GetTransactions mocks base method.
-func (m *MockState) GetTransactions(protocol, network string, address []byte) ([]stores.Transaction, error) {
+func (m *MockState) GetTransactions(protocol, network string, address []byte, skip, limit int32) ([]stores.Transaction, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTransactions", protocol, network, address)
+	ret := m.ctrl.Call(m, "GetTransactions", protocol, network, address, skip, limit)
 	ret0, _ := ret[0].([]stores.Transaction)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetTransactions indicates an expected call of GetTransactions.
-func (mr *MockStateMockRecorder) GetTransactions(protocol, network, address interface{}) *gomock.Call {
+func (mr *MockStateMockRecorder) GetTransactions(protocol, network, address, skip, limit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactions", reflect.TypeOf((*MockState)(nil).GetTransactions), protocol, network, address)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactions", reflect.TypeOf((*MockState)(nil).GetTransactions), protocol, network, address, skip, limit)
 }
 
 // PutMessageRead mocks base method.

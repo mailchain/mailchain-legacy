@@ -66,7 +66,7 @@ func AssertCommandJsonOutput(t *testing.T, cmd *cobra.Command, err error, out, w
 
 		if !assert.JSONEq(t, string(goldenResponse), out) {
 			t.Errorf("command returned unexpected response: got %v want %v",
-				out, goldenResponse)
+				out, string(goldenResponse))
 		}
 	}
 

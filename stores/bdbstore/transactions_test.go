@@ -62,6 +62,8 @@ func TestDatabase_GetTransactions(t *testing.T) {
 		queryProtocol string
 		queryNetwork  string
 		queryAddress  []byte
+		querySkip     int32
+		queryLimit    int32
 		want          []stores.Transaction
 		wantErr       bool
 	}{
@@ -90,6 +92,8 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			"ethereum",
 			"mainnet",
 			addressingtest.EthereumCharlotte,
+			0,
+			100,
 			[]stores.Transaction{
 				{
 					EnvelopeData: []byte("env2"),
@@ -132,6 +136,8 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			"ethereum",
 			"mainnet",
 			addressingtest.EthereumCharlotte,
+			0,
+			100,
 			[]stores.Transaction{
 				{
 					EnvelopeData: []byte("env4"),
@@ -140,6 +146,146 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					EnvelopeData: []byte("env2"),
 					BlockNumber:  2,
+				},
+			},
+			false,
+		},
+		{
+			"limit-message-charlotte",
+			[]args{
+				{
+					"ethereum",
+					"mainnet",
+					addressingtest.EthereumCharlotte,
+					stores.Transaction{
+						EnvelopeData: []byte("env2"),
+						BlockNumber:  2,
+					},
+				},
+				{
+					"ethereum",
+					"mainnet",
+					addressingtest.EthereumCharlotte,
+					stores.Transaction{
+						EnvelopeData: []byte("env3"),
+						BlockNumber:  3,
+					},
+				},
+				{
+					"ethereum",
+					"mainnet",
+					addressingtest.EthereumCharlotte,
+					stores.Transaction{
+						EnvelopeData: []byte("env4"),
+						BlockNumber:  4,
+					},
+				},
+			},
+			"ethereum",
+			"mainnet",
+			addressingtest.EthereumCharlotte,
+			0,
+			2,
+			[]stores.Transaction{
+				{
+					EnvelopeData: []byte("env4"),
+					BlockNumber:  4,
+				},
+				{
+					EnvelopeData: []byte("env3"),
+					BlockNumber:  3,
+				},
+			},
+			false,
+		},
+		{
+			"skip-message-charlotte",
+			[]args{
+				{
+					"ethereum",
+					"mainnet",
+					addressingtest.EthereumCharlotte,
+					stores.Transaction{
+						EnvelopeData: []byte("env2"),
+						BlockNumber:  2,
+					},
+				},
+				{
+					"ethereum",
+					"mainnet",
+					addressingtest.EthereumCharlotte,
+					stores.Transaction{
+						EnvelopeData: []byte("env3"),
+						BlockNumber:  3,
+					},
+				},
+				{
+					"ethereum",
+					"mainnet",
+					addressingtest.EthereumCharlotte,
+					stores.Transaction{
+						EnvelopeData: []byte("env4"),
+						BlockNumber:  4,
+					},
+				},
+			},
+			"ethereum",
+			"mainnet",
+			addressingtest.EthereumCharlotte,
+			1,
+			100,
+			[]stores.Transaction{
+				{
+					EnvelopeData: []byte("env3"),
+					BlockNumber:  3,
+				},
+				{
+					EnvelopeData: []byte("env2"),
+					BlockNumber:  2,
+				},
+			},
+			false,
+		},
+		{
+			"skip-limit-message-charlotte",
+			[]args{
+				{
+					"ethereum",
+					"mainnet",
+					addressingtest.EthereumCharlotte,
+					stores.Transaction{
+						EnvelopeData: []byte("env2"),
+						BlockNumber:  2,
+					},
+				},
+				{
+					"ethereum",
+					"mainnet",
+					addressingtest.EthereumCharlotte,
+					stores.Transaction{
+						EnvelopeData: []byte("env3"),
+						BlockNumber:  3,
+					},
+				},
+				{
+					"ethereum",
+					"mainnet",
+					addressingtest.EthereumCharlotte,
+					stores.Transaction{
+						EnvelopeData: []byte("env4"),
+						BlockNumber:  4,
+					},
+				},
+			},
+			"ethereum",
+			"mainnet",
+			addressingtest.EthereumCharlotte,
+			1,
+			1,
+			[]stores.Transaction{
+				{
+					EnvelopeData: []byte("env3"),
+					BlockNumber:  3,
 				},
 			},
 			false,
@@ -187,6 +333,8 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			"ethereum",
 			"mainnet",
 			addressingtest.EthereumCharlotte,
+			0,
+			100,
 			[]stores.Transaction{
 				{
 					EnvelopeData: []byte("env4"),
@@ -215,13 +363,13 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				}
 			}
 
-			got, err := db.GetTransactions(tt.queryProtocol, tt.queryNetwork, tt.queryAddress)
+			got, err := db.GetTransactions(tt.queryProtocol, tt.queryNetwork, tt.queryAddress, tt.querySkip, tt.queryLimit)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetTransactions() err = %v, want err %v", err, tt.wantErr)
 				return
 			}
 
-			if !assert.Equal(t, got, tt.want) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("Database.GetTransactions() = %v, want %v", got, tt.want)
 			}
 		})

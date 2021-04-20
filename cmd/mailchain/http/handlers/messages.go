@@ -66,7 +66,7 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 			}
 		}
 
-		txs, err := inbox.GetTransactions(req.Protocol, req.Network, req.addressBytes)
+		txs, err := inbox.GetTransactions(req.Protocol, req.Network, req.addressBytes, req.Skip, req.Limit)
 		if err != nil {
 			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), logger)
 			return
@@ -206,6 +206,20 @@ type GetMessagesRequest struct {
 	// default: false
 	Fetch bool `json:"fetch"`
 
+	// Limit the maximum number of message transactions that will be returned. Used for paging.
+	//
+	// in: query
+	// example: 15
+	// default: 15
+	Limit int32 `json:"limit"`
+
+	// Skip this number of transactions before returning messages. Used for paging.
+	//
+	// in: query
+	// example: 0
+	// default: 0
+	Skip int32 `json:"skip"`
+
 	addressBytes []byte
 }
 
@@ -231,11 +245,23 @@ func parseGetMessagesRequest(r *http.Request) (*GetMessagesRequest, error) {
 		return nil, err
 	}
 
+	skip, err := params.QueryDefaultInt(r, "skip", 0)
+	if err != nil {
+		return nil, err
+	}
+
+	limit, err := params.QueryDefaultInt(r, "limit", 15)
+	if err != nil {
+		return nil, err
+	}
+
 	res := &GetMessagesRequest{
 		Address:      addr,
 		addressBytes: addressBytes,
 		Network:      network,
 		Protocol:     protocol,
+		Skip:         skip,
+		Limit:        limit,
 	}
 
 	fetch := r.URL.Query()["fetch"]

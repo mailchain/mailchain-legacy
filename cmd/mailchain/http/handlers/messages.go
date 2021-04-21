@@ -74,7 +74,7 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 		}
 
 		decrypters := map[byte]cipher.Decrypter{}
-		messages := make([]getMessage, 0, len(txs))
+		messages := make([]getMessage, len(txs))
 
 		for i, tx := range txs {
 			buf := make([]byte, binary.MaxVarintLen64)

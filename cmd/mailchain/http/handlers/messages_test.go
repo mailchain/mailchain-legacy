@@ -112,7 +112,7 @@ func Test_GetMessages(t *testing.T) {
 
 					store := keystoretest.NewMockStore(mockCtrl)
 					store.EXPECT().HasAddress(addressingtest.EthereumCharlotte, "ethereum", "mainnet").Return(true).Times(1)
-					store.EXPECT().GetDecrypter(addressingtest.EthereumCharlotte, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil)
+					store.EXPECT().GetDecrypter(addressingtest.EthereumCharlotte, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil).Times(1)
 					return store
 				}(),
 			},
@@ -152,7 +152,7 @@ func Test_GetMessages(t *testing.T) {
 
 					store := keystoretest.NewMockStore(mockCtrl)
 					store.EXPECT().HasAddress(addressingtest.EthereumCharlotte, "ethereum", "mainnet").Return(true).Times(1)
-					store.EXPECT().GetDecrypter(addressingtest.EthereumCharlotte, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil)
+					store.EXPECT().GetDecrypter(addressingtest.EthereumCharlotte, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil).Times(1)
 					return store
 				}(),
 			},
@@ -193,7 +193,7 @@ func Test_GetMessages(t *testing.T) {
 
 					store := keystoretest.NewMockStore(mockCtrl)
 					store.EXPECT().HasAddress(addressingtest.EthereumCharlotte, "ethereum", "mainnet").Return(true).Times(1)
-					store.EXPECT().GetDecrypter(addressingtest.EthereumCharlotte, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil)
+					store.EXPECT().GetDecrypter(addressingtest.EthereumCharlotte, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil).Times(1)
 					return store
 				}(),
 				receivers: map[string]mailbox.Receiver{

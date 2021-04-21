@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
+	"github.com/mailchain/mailchain/crypto/cipher"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/addressing"
@@ -72,6 +73,7 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 			return
 		}
 
+		decrypters := map[byte]cipher.Decrypter{}
 		messages := make([]getMessage, len(txs))
 
 		for i, tx := range txs {
@@ -94,14 +96,14 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 				continue
 			}
 
-			decrypter, err := ks.GetDecrypter(req.addressBytes, req.Protocol, req.Network, decrypterKind, deriveKeyOptions)
+			decrypter, err := getDecrypter(decrypters, decrypterKind, ks, req.addressBytes, req.Protocol, req.Network, deriveKeyOptions)
 			if err != nil {
 				messages[i] = getMessage{Status: errors.WithMessage(err, "could not get `decrypter`").Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding}
 
 				continue
 			}
 
-			message, err := mailbox.ReadMessage(tx.EnvelopeData, decrypter, cache)
+			message, err := mailbox.ReadMessage(tx.EnvelopeData, decrypter[decrypterKind], cache)
 			if err != nil {
 				messages[i] = getMessage{Status: errors.WithMessage(err, "could not read message").Error(), BlockID: blockID, BlockIDEncoding: blockIDEncoding}
 
@@ -143,6 +145,22 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 
 		w.Header().Set("Content-Type", "application/json")
 	}
+}
+
+// getting a decrypted from key store can take ~800ms, this reduces the number of times it's fetched
+func getDecrypter(decrypters map[byte]cipher.Decrypter, kind byte, ks keystore.Store, address []byte, protocol, network string, deriveKeyOptions multi.OptionsBuilders) (map[byte]cipher.Decrypter, error) {
+	if _, ok := decrypters[kind]; ok {
+		return decrypters, nil
+	}
+
+	decrypter, err := ks.GetDecrypter(address, protocol, network, kind, deriveKeyOptions)
+	if err != nil {
+		return nil, errors.WithMessage(err, "could not get `decrypter`")
+	}
+
+	decrypters[kind] = decrypter
+
+	return decrypters, nil
 }
 
 func fetchMessages(ctx context.Context, protocol, network string, address []byte, receivers map[string]mailbox.Receiver, inbox stores.State) error {

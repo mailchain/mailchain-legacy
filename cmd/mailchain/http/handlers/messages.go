@@ -73,12 +73,8 @@ func GetMessages(receivers map[string]mailbox.Receiver, inbox stores.State, cach
 			return
 		}
 
-<<<<<<< Updated upstream
-		messages := make([]getMessage, len(txs))
-=======
 		decrypters := map[byte]cipher.Decrypter{}
 		messages := make([]getMessage, 0, len(txs))
->>>>>>> Stashed changes
 
 		for i, tx := range txs {
 			buf := make([]byte, binary.MaxVarintLen64)

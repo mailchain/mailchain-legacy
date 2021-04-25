@@ -160,6 +160,26 @@ func spec() string {
             "description": "Fetch go to the blockchain to retrieve messages",
             "name": "fetch",
             "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "default": 15,
+            "example": 15,
+            "x-go-name": "Limit",
+            "description": "Limit the maximum number of message transactions that will be returned. Used for paging.",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "default": 0,
+            "example": 0,
+            "x-go-name": "Skip",
+            "description": "Skip this number of transactions before returning messages. Used for paging.",
+            "name": "skip",
+            "in": "query"
           }
         ],
         "responses": {
@@ -621,6 +641,12 @@ func spec() string {
           "readOnly": true,
           "example": "47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471@mailchain"
         },
+        "rekey-to": {
+          "description": "Rekey use this key when responding.",
+          "type": "string",
+          "x-go-name": "RekeyTo",
+          "readOnly": true
+        },
         "reply-to": {
           "description": "Reply to if the reply address is different to the from address.",
           "type": "string",
@@ -1062,42 +1088,10 @@ func spec() string {
         "$ref": "#/definitions/GetVersionResponseBody"
       }
     },
-    "NotFoundError": {
-      "description": "NotFoundError describes a 404 not found error.",
-      "headers": {
-        "code": {
-          "type": "string",
-          "example": "404",
-          "description": "Code describing the error"
-        },
-        "message": {
-          "type": "string",
-          "example": "Not found.",
-          "description": "Description of the error"
-        }
-      }
-    },
     "StatusOK": {
       "description": "StatusOK Description of an StatusOK."
-    },
-    "ValidationError": {
-      "description": "ValidationError describes a 422 validation error.",
-      "headers": {
-        "code": {
-          "type": "string",
-          "example": "422",
-          "description": "Code describing the error"
-        },
-        "message": {
-          "type": "string",
-          "example": "Response to invalid input",
-          "description": "Description of the error"
-        }
-      }
     }
   }
 }
-
-
 `
 }

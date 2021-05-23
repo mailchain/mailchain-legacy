@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/mailchain/mailchain/errs"
+	"github.com/rs/zerolog/log"
 )
 
 // RelayFunc definition of a relay.
@@ -14,14 +15,14 @@ type RelayFunc func(req *http.Request) (*http.Request, error)
 func (f RelayFunc) HandleRequest(w http.ResponseWriter, req *http.Request) {
 	r, err := f(req)
 	if err != nil {
-		errs.JSONWriter(w, r, http.StatusBadRequest, err)
+		errs.JSONWriter(w, r, http.StatusBadRequest, err, log.Logger)
 		return
 	}
 	client := http.Client{}
 
 	resp, err := client.Do(r)
 	if err != nil {
-		errs.JSONWriter(w, r, http.StatusBadGateway, err)
+		errs.JSONWriter(w, r, http.StatusBadGateway, err, log.Logger)
 		return
 	}
 

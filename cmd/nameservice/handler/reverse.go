@@ -5,9 +5,10 @@ import (
 	"net/http"
 
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/address"
+	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/nameservice"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // Reverse handle forward domain lookups where a domain name is looked up to find an address.
@@ -25,11 +26,11 @@ func Reverse(resolver nameservice.ReverseLookup, protocol, network string) func(
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if len(r.URL.Query()["address"]) != 1 {
-			errs.JSONWriter(w, r, http.StatusPreconditionFailed, errors.Errorf("address must be specified exactly once"))
+			errs.JSONWriter(w, r, http.StatusPreconditionFailed, errors.Errorf("address must be specified exactly once"), log.Logger)
 			return
 		}
 
-		addr, err := address.DecodeByProtocol(r.URL.Query()["address"][0], protocol)
+		addr, err := addressing.DecodeByProtocol(r.URL.Query()["address"][0], protocol)
 		if err != nil {
 			_ = json.NewEncoder(w).Encode(response{
 				Status: nameservice.ErrorToRFC1035Status(nameservice.ErrFormat),
@@ -48,7 +49,7 @@ func Reverse(resolver nameservice.ReverseLookup, protocol, network string) func(
 		}
 
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, err)
+			errs.JSONWriter(w, r, http.StatusInternalServerError, err, log.Logger)
 			return
 		}
 

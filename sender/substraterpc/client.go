@@ -6,7 +6,7 @@ import (
 
 	gsrpc "github.com/centrifuge/go-substrate-rpc-client"
 	"github.com/centrifuge/go-substrate-rpc-client/types"
-	"github.com/mailchain/mailchain/internal/address"
+	"github.com/mailchain/mailchain/internal/addressing"
 )
 
 //go:generate mockgen -source=client.go -package=substraterpctest -destination=./substraterpctest/client_mock.go
@@ -71,7 +71,7 @@ func (s SubstrateClient) GetRuntimeVersion(blockHash types.Hash) (*types.Runtime
 }
 
 func (s SubstrateClient) GetNonce(ctx context.Context, protocol, network string, addr []byte) (uint32, error) {
-	encodedAddress, _, err := address.EncodeByProtocol(addr, protocol)
+	encodedAddress, _, err := addressing.EncodeByProtocol(addr, protocol)
 	if err != nil {
 		return uint32(0), err
 	}

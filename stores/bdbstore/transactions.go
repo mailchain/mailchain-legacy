@@ -28,17 +28,29 @@ func (db *Database) PutTransaction(protocol, network string, address []byte, tx 
 	})
 }
 
-func (db *Database) GetTransactions(protocol, network string, address []byte) ([]stores.Transaction, error) {
+func (db *Database) GetTransactions(protocol, network string, address []byte, skip, limit int32) ([]stores.Transaction, error) {
 	var txs []stores.Transaction
 
 	err := db.db.View(func(txn *badger.Txn) error {
 		prefix := []byte(getTransactionPrefixKey(protocol, network, address))
 		opts := badger.DefaultIteratorOptions
 		opts.PrefetchValues = false
+
 		it := txn.NewIterator(opts)
 		defer it.Close()
 
 		for it.Seek(prefix); it.ValidForPrefix(prefix); it.Next() {
+			if skip > 0 {
+				skip--
+
+				continue
+			}
+
+			if limit <= 0 {
+				break
+			}
+			limit--
+
 			item := it.Item()
 
 			val, err := item.ValueCopy(nil)
@@ -52,6 +64,7 @@ func (db *Database) GetTransactions(protocol, network string, address []byte) ([
 			}
 
 			txs = append(txs, tx)
+
 		}
 		return nil
 	})
@@ -62,11 +75,10 @@ func (db *Database) GetTransactions(protocol, network string, address []byte) ([
 func transactionKey(prefixKey string, order int64, encodedTx []byte) []byte {
 	id, _ := multihash.Sum(encodedTx, multihash.SHA3_256, -1)
 
-	// reverse the order of the block number for returning messages easier in the query
-	orderBytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(orderBytes, uint64(order*-1))
+	orderBytes := new(bytes.Buffer)
+	_ = binary.Write(orderBytes, binary.BigEndian, order*-1)
 
-	return []byte(fmt.Sprintf("%s/%s/%s", prefixKey, encoding.EncodeHexZeroX(orderBytes), encoding.EncodeHexZeroX(id)))
+	return []byte(fmt.Sprintf("%s/%s/%s", prefixKey, encoding.EncodeHexZeroX(orderBytes.Bytes()), encoding.EncodeHexZeroX(id)))
 }
 
 func getTransactionPrefixKey(protocol, network string, address []byte) string {

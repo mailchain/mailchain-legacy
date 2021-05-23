@@ -7,6 +7,7 @@ import (
 	"github.com/mailchain/mailchain/cmd/internal/settings/values"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings/defaults"
 	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/protocols/algorand"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
@@ -34,8 +35,14 @@ func FromStore(s values.Store) *Root {
 				substrate.EdgewareBeresheet: network(s, protocols.Substrate, substrate.EdgewareBeresheet, defaults.SubstrateNetworkAny(substrate.EdgewareBeresheet)),
 				substrate.EdgewareLocal:     network(s, protocols.Substrate, substrate.EdgewareLocal, defaults.SubstrateNetworkAny(substrate.EdgewareLocal)),
 			}),
+			protocols.Algorand: protocol(s, protocols.Algorand, map[string]NetworkClient{
+				algorand.Mainnet: network(s, protocols.Algorand, algorand.Mainnet, defaults.AlgorandNetworkAny(algorand.Mainnet)),
+				algorand.Testnet: network(s, protocols.Algorand, algorand.Testnet, defaults.AlgorandNetworkAny(algorand.Testnet)),
+				algorand.Betanet: network(s, protocols.Algorand, algorand.Betanet, defaults.AlgorandNetworkAny(algorand.Betanet)),
+			}),
 		},
 		// other
+		Fetcher:      fetcher(s),
 		Keystore:     keystore(s),
 		MailboxState: mailboxState(s),
 		SentStore:    sentStore(s),
@@ -57,6 +64,7 @@ type Root struct {
 	Protocols map[string]*Protocol
 	// Ethereum  *Protocol
 	// other
+	Fetcher      *Fetcher
 	Keystore     *Keystore
 	MailboxState *MailboxState
 	SentStore    *SentStore
@@ -87,6 +95,7 @@ func (o *Root) ToYaml(out io.Writer, tabsize int, commentDefaults, excludeDefaul
 			o.Receivers.Output(),
 			o.Senders.Output(),
 
+			o.Fetcher.Output(),
 			o.Keystore.Output(),
 			o.MailboxState.Output(),
 			o.SentStore.Output(),

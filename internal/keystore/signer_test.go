@@ -15,9 +15,12 @@
 package keystore
 
 import (
-	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
-	"github.com/mailchain/mailchain/internal/protocols/substrate"
 	"testing"
+
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
+	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
+	"github.com/mailchain/mailchain/internal/protocols/algorand"
+	"github.com/mailchain/mailchain/internal/protocols/substrate"
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
@@ -38,6 +41,18 @@ func TestSigner(t *testing.T) {
 		want    signer.Signer
 		wantErr bool
 	}{
+		{
+			"algorand",
+			args{
+				protocols.Algorand,
+				ed25519test.CharlottePrivateKey,
+			},
+			func() signer.Signer {
+				m, _ := algorand.NewSigner(ed25519test.CharlottePrivateKey)
+				return m
+			}(),
+			false,
+		},
 		{
 			"ethereum",
 			args{

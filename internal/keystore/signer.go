@@ -18,6 +18,7 @@ import (
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/internal/mailbox/signer"
 	"github.com/mailchain/mailchain/internal/protocols"
+	"github.com/mailchain/mailchain/internal/protocols/algorand"
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 	"github.com/pkg/errors"
@@ -26,6 +27,8 @@ import (
 // Signer use the correct function to get the decrypter from private key
 func Signer(protocol string, pk crypto.PrivateKey) (signer.Signer, error) {
 	switch protocol {
+	case protocols.Algorand:
+		return algorand.NewSigner(pk)
 	case protocols.Ethereum:
 		return ethereum.NewSigner(pk)
 	case protocols.Substrate:

@@ -38,21 +38,20 @@
             "x-go-name": "Network",
             "description": "Network to use when finding addresses.",
             "name": "network",
-            "in": "query",
-            "required": true
+            "in": "query"
           },
           {
             "enum": [
               "ethereum",
-              " substrate"
+              " substrate",
+              " algorand"
             ],
             "type": "string",
             "example": "ethereum",
             "x-go-name": "Protocol",
             "description": "Protocol to use when finding addresses.",
             "name": "protocol",
-            "in": "query",
-            "required": true
+            "in": "query"
           }
         ],
         "responses": {
@@ -120,7 +119,9 @@
           },
           {
             "enum": [
-              "ethereum"
+              "algorand",
+              " ethereum",
+              " substrate"
             ],
             "type": "string",
             "example": "ethereum",
@@ -129,6 +130,35 @@
             "name": "protocol",
             "in": "query",
             "required": true
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "example": true,
+            "x-go-name": "Fetch",
+            "description": "Fetch go to the blockchain to retrieve messages",
+            "name": "fetch",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "default": 15,
+            "example": 15,
+            "x-go-name": "Limit",
+            "description": "Limit the maximum number of message transactions that will be returned. Used for paging.",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int32",
+            "default": 0,
+            "example": 0,
+            "x-go-name": "Skip",
+            "description": "Skip this number of transactions before returning messages. Used for paging.",
+            "name": "skip",
+            "in": "query"
           }
         ],
         "responses": {
@@ -503,7 +533,9 @@
       "type": "object",
       "required": [
         "value",
-        "encoding"
+        "encoding",
+        "protocol",
+        "network"
       ],
       "properties": {
         "encoding": {
@@ -512,6 +544,18 @@
           "x-go-name": "Encoding",
           "example": "hex/0x-prefix"
         },
+        "network": {
+          "description": "Network `address` is available on",
+          "type": "string",
+          "x-go-name": "Network",
+          "example": "mainnet"
+        },
+        "protocol": {
+          "description": "Protocol `address` is available on",
+          "type": "string",
+          "x-go-name": "Protocol",
+          "example": "ethereum"
+        },
         "value": {
           "description": "Address value",
           "type": "string",
@@ -519,7 +563,7 @@
           "example": "0x5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetEnvelopeResponseBodyElement": {
       "description": "GetEnvelopeResponseBodyElement response",
@@ -542,7 +586,7 @@
           "example": "0x01"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetMessagesResponseHeaders": {
       "type": "object",
@@ -576,6 +620,12 @@
           "readOnly": true,
           "example": "47eca011e32b52c71005ad8a8f75e1b44c92c99fd12e43bccfe571e3c2d13d2e9a826a550f5ff63b247af471@mailchain"
         },
+        "rekey-to": {
+          "description": "Rekey use this key when responding.",
+          "type": "string",
+          "x-go-name": "RekeyTo",
+          "readOnly": true
+        },
         "reply-to": {
           "description": "Reply to if the reply address is different to the from address.",
           "type": "string",
@@ -590,7 +640,7 @@
         }
       },
       "x-go-name": "getHeaders",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetMessagesResponseMessage": {
       "type": "object",
@@ -655,7 +705,7 @@
         }
       },
       "x-go-name": "getMessage",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetProtocolsProtocol": {
       "type": "object",
@@ -674,7 +724,7 @@
           "x-go-name": "Networks"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetPublicKeyResponseBody": {
       "description": "GetPublicKeyResponseBody body response",
@@ -718,7 +768,7 @@
           ]
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetReadResponseBody": {
       "type": "object",
@@ -734,7 +784,7 @@
         }
       },
       "x-go-name": "getBody",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetResolveAddressResponseBody": {
       "description": "GetResolveAddressResponseBody body response",
@@ -757,7 +807,7 @@
           "example": 3
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetResolveNameResponseBody": {
       "description": "GetResolveNameResponseBody body response",
@@ -780,7 +830,7 @@
           "example": 3
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "GetVersionResponseBody": {
       "description": "GetVersionResponseBody response",
@@ -809,7 +859,7 @@
           "example": "1.0.0"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "Network": {
       "type": "object",
@@ -831,7 +881,7 @@
           "x-go-name": "NameServiceDomainEnabled"
         }
       },
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "PostMessagesResponseHeaders": {
       "description": "PostHeaders body",
@@ -859,7 +909,7 @@
         }
       },
       "x-go-name": "PostHeaders",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "PostMessagesResponseMessage": {
       "description": "PostMessage body",
@@ -904,7 +954,7 @@
         }
       },
       "x-go-name": "PostMessage",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     },
     "SendMessageRequestBody": {
       "description": "PostRequestBody body",
@@ -948,7 +998,7 @@
         }
       },
       "x-go-name": "PostRequestBody",
-      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/internal/http/handlers"
+      "x-go-package": "github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
     }
   },
   "responses": {
@@ -1017,38 +1067,8 @@
         "$ref": "#/definitions/GetVersionResponseBody"
       }
     },
-    "NotFoundError": {
-      "description": "NotFoundError describes a 404 not found error.",
-      "headers": {
-        "code": {
-          "type": "string",
-          "example": "404",
-          "description": "Code describing the error"
-        },
-        "message": {
-          "type": "string",
-          "example": "Not found.",
-          "description": "Description of the error"
-        }
-      }
-    },
     "StatusOK": {
       "description": "StatusOK Description of an StatusOK."
-    },
-    "ValidationError": {
-      "description": "ValidationError describes a 422 validation error.",
-      "headers": {
-        "code": {
-          "type": "string",
-          "example": "422",
-          "description": "Code describing the error"
-        },
-        "message": {
-          "type": "string",
-          "example": "Response to invalid input",
-          "description": "Description of the error"
-        }
-      }
     }
   }
 }

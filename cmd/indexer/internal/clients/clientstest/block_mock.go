@@ -6,34 +6,35 @@ package clientstest
 
 import (
 	context "context"
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
 )
 
-// MockBlock is a mock of Block interface
+// MockBlock is a mock of Block interface.
 type MockBlock struct {
 	ctrl     *gomock.Controller
 	recorder *MockBlockMockRecorder
 }
 
-// MockBlockMockRecorder is the mock recorder for MockBlock
+// MockBlockMockRecorder is the mock recorder for MockBlock.
 type MockBlockMockRecorder struct {
 	mock *MockBlock
 }
 
-// NewMockBlock creates a new mock instance
+// NewMockBlock creates a new mock instance.
 func NewMockBlock(ctrl *gomock.Controller) *MockBlock {
 	mock := &MockBlock{ctrl: ctrl}
 	mock.recorder = &MockBlockMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockBlock) EXPECT() *MockBlockMockRecorder {
 	return m.recorder
 }
 
-// BlockByNumber mocks base method
+// BlockByNumber mocks base method.
 func (m *MockBlock) BlockByNumber(ctx context.Context, blockNo uint64) (interface{}, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "BlockByNumber", ctx, blockNo)
@@ -42,13 +43,13 @@ func (m *MockBlock) BlockByNumber(ctx context.Context, blockNo uint64) (interfac
 	return ret0, ret1
 }
 
-// BlockByNumber indicates an expected call of BlockByNumber
+// BlockByNumber indicates an expected call of BlockByNumber.
 func (mr *MockBlockMockRecorder) BlockByNumber(ctx, blockNo interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BlockByNumber", reflect.TypeOf((*MockBlock)(nil).BlockByNumber), ctx, blockNo)
 }
 
-// LatestBlockNumber mocks base method
+// LatestBlockNumber mocks base method.
 func (m *MockBlock) LatestBlockNumber(ctx context.Context) (uint64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "LatestBlockNumber", ctx)
@@ -57,7 +58,7 @@ func (m *MockBlock) LatestBlockNumber(ctx context.Context) (uint64, error) {
 	return ret0, ret1
 }
 
-// LatestBlockNumber indicates an expected call of LatestBlockNumber
+// LatestBlockNumber indicates an expected call of LatestBlockNumber.
 func (mr *MockBlockMockRecorder) LatestBlockNumber(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LatestBlockNumber", reflect.TypeOf((*MockBlock)(nil).LatestBlockNumber), ctx)

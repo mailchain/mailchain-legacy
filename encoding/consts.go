@@ -24,18 +24,12 @@ const (
 	KindHex = "hex/plain"
 	// KindHex0XPrefix encoding value.
 	KindHex0XPrefix = "hex/0x-prefix"
+	// KindBase32 encoding value.
+	KindBase32 = "base32/plain"
 	// KindBase58 encoding value.
 	KindBase58 = "base58/plain"
 	// KindBase58SubstrateAddress encoding value.
 	KindBase58SubstrateAddress = "base58/ss58-address"
+	// KindMnemonicAlgorand encoding value.
+	KindMnemonicAlgorand = "mnemonic/algorand"
 )
-
-// PublicKeyEncoding check encoding types.
-func PublicKeyEncoding() map[string]bool {
-	return map[string]bool{
-		KindHex:                    true,
-		KindHex0XPrefix:            true,
-		KindBase58:                 true,
-		KindBase58SubstrateAddress: true,
-	}
-}

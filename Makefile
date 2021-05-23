@@ -11,8 +11,10 @@ help:
 	@echo ''
 	@echo '    help               Show this help screen.'
 	@echo '    clean              Remove binaries, artifacts and releases.'
+	@echo '    deps               Install dependencies to execute build tasks.'
 	@echo '    test               Generate Unit test.'
-	@echo '    unit-test          Run test.'
+	@echo '    unit-test          Run unit tests.'
+	@echo '    integration-test   Run integration tests.'
 	@echo '    build              Build project for current platform.'
 	@echo '    go-generation      Open go generate.'
 	@echo '    generate           Generate License.'
@@ -25,9 +27,15 @@ clean:
 build:
 	$(GO) build ./...
 
+deps:
+	$(GO) get github.com/golang/mock/mockgen@v1.5.0
+
 test: generate unit-test
 unit-test:
-	$(GO) test ./...
+	$(GO) test --short ./...
+
+integration-test: unit-test
+	$(GO) test ./testing/integration
 
 license: .FORCE
 	addlicense -l apache -c Finobo ./internal
@@ -71,7 +79,7 @@ openapi:
 	rm -rf vendor
 
 snapshot:
-	docker run --rm --privileged -v $(CURDIR):/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain mailchain/goreleaser-xcgo --snapshot --rm-dist
+	docker run --rm --privileged -v $(CURDIR):/go/src/github.com/mailchain/mailchain -v /var/run/docker.sock:/var/run/docker.sock -w /go/src/github.com/mailchain/mailchain neilotoole/xcgo goreleaser --snapshot --rm-dist
 
 lint: 
 	golangci-lint run --fix

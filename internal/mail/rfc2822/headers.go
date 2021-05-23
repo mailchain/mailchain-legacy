@@ -31,14 +31,17 @@ func parseHeaders(h nm.Header) (*mail.Headers, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to parse `date`")
 	}
+
 	subject, err := parseSubject(h)
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to parse `subject`")
 	}
+
 	to, err := parseTo(h)
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to parse `to`")
 	}
+
 	from, err := parseFrom(h)
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to parse `from`")
@@ -64,12 +67,14 @@ func parseTo(h nm.Header) (*mail.Address, error) {
 	if !ok {
 		return nil, errors.Errorf("header missing")
 	}
+
 	if len(sources) == 0 {
 		return nil, errors.Errorf("empty header")
 	}
 
 	return mail.ParseAddress(sources[0], "", "")
 }
+
 func parseFrom(h nm.Header) (*mail.Address, error) {
 	sources, ok := h["From"]
 	if !ok {
@@ -90,10 +95,12 @@ func parseDate(h nm.Header) (*time.Time, error) {
 	if len(dateStrings) == 0 {
 		return nil, errors.Errorf("empty header")
 	}
-	t, err := nm.ParseDate(dateStrings[0])
+
+	t, err := mailParseDate(strings.TrimSpace(dateStrings[0]))
 	if err != nil {
 		return nil, err
 	}
+
 	return &t, nil
 }
 

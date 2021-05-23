@@ -7,7 +7,7 @@ import (
 	ks "github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/nacl"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus" //nolint: depguard
+	//nolint: depguard
 )
 
 func keystore(s values.Store) *Keystore {
@@ -60,8 +60,7 @@ type NACLFileStore struct {
 
 // Produce `nacl.FileStore` based on configuration settings.
 func (n NACLFileStore) Produce() (*nacl.FileStore, error) {
-	fs := nacl.NewFileStore(n.Path.Get(), logrus.StandardLogger().Writer())
-	return &fs, nil
+	return nacl.NewFileStore(n.Path.Get()), nil
 }
 
 // Output configuration as an `output.Element` for use in exporting configuration.

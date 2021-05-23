@@ -48,6 +48,8 @@ const (
 	CORSDisabled = false
 	// Port default value.
 	Port = 8080
+	// AlgorandPublicKeyFinder default value.
+	AlgorandPublicKeyFinder = "algorand-public-key-extractor"
 	// SubstratePublicKeyFinder default value.
 	SubstratePublicKeyFinder = "substrate-public-key-finder"
 	// SubstrateBalanceFinder default value.
@@ -67,6 +69,8 @@ const (
 	ClientEthereumRPC2 = "ethereum-rpc2"
 	// ClientRelay relay client name.
 	ClientRelay = "relay"
+	// ClientAlgod relay client name.
+	ClientAlgod = "algod"
 
 	// EthereumRelay relay for ethereum only
 	EthereumRelay = "ethereum-relay"

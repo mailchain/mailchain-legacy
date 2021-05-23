@@ -1,0 +1,27 @@
+{
+    "protocols": [
+        {
+            "name": "algorand",
+            "networks": [
+                {
+                    "name": "betanet",
+                    "id": "",
+                    "nameservice-domain-enabled": false,
+                    "nameservice-address-enabled": false
+                },
+                {
+                    "name": "mainnet",
+                    "id": "",
+                    "nameservice-domain-enabled": false,
+                    "nameservice-address-enabled": false
+                },
+                {
+                    "name": "testnet",
+                    "id": "",
+                    "nameservice-domain-enabled": false,
+                    "nameservice-address-enabled": false
+                }
+            ]
+        }
+    ]
+}

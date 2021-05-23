@@ -13,7 +13,9 @@
 // limitations under the License.
 
 // Package cipher collects common cryptographic constants and interfaces.
-package cipher //go:generate mockgen -source=cipher.go -package=ciphertest -destination=./ciphertest/cipher_mock.go
+package cipher
+
+//go:generate mockgen -source=cipher.go -package=ciphertest -destination=./ciphertest/cipher_mock.go
 
 const (
 	// NoOperation identified for Encrypt and Decrypter in noop package.

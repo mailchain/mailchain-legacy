@@ -5,35 +5,36 @@
 package cryptotest
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	crypto "github.com/mailchain/mailchain/crypto"
-	reflect "reflect"
 )
 
-// MockPrivateKey is a mock of PrivateKey interface
+// MockPrivateKey is a mock of PrivateKey interface.
 type MockPrivateKey struct {
 	ctrl     *gomock.Controller
 	recorder *MockPrivateKeyMockRecorder
 }
 
-// MockPrivateKeyMockRecorder is the mock recorder for MockPrivateKey
+// MockPrivateKeyMockRecorder is the mock recorder for MockPrivateKey.
 type MockPrivateKeyMockRecorder struct {
 	mock *MockPrivateKey
 }
 
-// NewMockPrivateKey creates a new mock instance
+// NewMockPrivateKey creates a new mock instance.
 func NewMockPrivateKey(ctrl *gomock.Controller) *MockPrivateKey {
 	mock := &MockPrivateKey{ctrl: ctrl}
 	mock.recorder = &MockPrivateKeyMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockPrivateKey) EXPECT() *MockPrivateKeyMockRecorder {
 	return m.recorder
 }
 
-// Bytes mocks base method
+// Bytes mocks base method.
 func (m *MockPrivateKey) Bytes() []byte {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Bytes")
@@ -41,27 +42,13 @@ func (m *MockPrivateKey) Bytes() []byte {
 	return ret0
 }
 
-// Bytes indicates an expected call of Bytes
+// Bytes indicates an expected call of Bytes.
 func (mr *MockPrivateKeyMockRecorder) Bytes() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Bytes", reflect.TypeOf((*MockPrivateKey)(nil).Bytes))
 }
 
-// PublicKey mocks base method
-func (m *MockPrivateKey) PublicKey() crypto.PublicKey {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PublicKey")
-	ret0, _ := ret[0].(crypto.PublicKey)
-	return ret0
-}
-
-// PublicKey indicates an expected call of PublicKey
-func (mr *MockPrivateKeyMockRecorder) PublicKey() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PublicKey", reflect.TypeOf((*MockPrivateKey)(nil).PublicKey))
-}
-
-// Kind mocks base method
+// Kind mocks base method.
 func (m *MockPrivateKey) Kind() string {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Kind")
@@ -69,13 +56,27 @@ func (m *MockPrivateKey) Kind() string {
 	return ret0
 }
 
-// Kind indicates an expected call of Kind
+// Kind indicates an expected call of Kind.
 func (mr *MockPrivateKeyMockRecorder) Kind() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Kind", reflect.TypeOf((*MockPrivateKey)(nil).Kind))
 }
 
-// Sign mocks base method
+// PublicKey mocks base method.
+func (m *MockPrivateKey) PublicKey() crypto.PublicKey {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PublicKey")
+	ret0, _ := ret[0].(crypto.PublicKey)
+	return ret0
+}
+
+// PublicKey indicates an expected call of PublicKey.
+func (mr *MockPrivateKeyMockRecorder) PublicKey() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PublicKey", reflect.TypeOf((*MockPrivateKey)(nil).PublicKey))
+}
+
+// Sign mocks base method.
 func (m *MockPrivateKey) Sign(message []byte) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Sign", message)
@@ -84,7 +85,7 @@ func (m *MockPrivateKey) Sign(message []byte) ([]byte, error) {
 	return ret0, ret1
 }
 
-// Sign indicates an expected call of Sign
+// Sign indicates an expected call of Sign.
 func (mr *MockPrivateKeyMockRecorder) Sign(message interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Sign", reflect.TypeOf((*MockPrivateKey)(nil).Sign), message)

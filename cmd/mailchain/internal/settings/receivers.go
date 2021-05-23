@@ -15,6 +15,7 @@ func receivers(s values.Store) *Receivers {
 			defaults.ClientEtherscan:        etherscanReceiver(s),
 			defaults.ClientBlockscoutNoAuth: blockscoutReceiverNoAuth(s),
 			defaults.Mailchain:              mailchainReceiverNoAuth(s),
+			defaults.ClientAlgod:            algodReceiver(s),
 		},
 	}
 }

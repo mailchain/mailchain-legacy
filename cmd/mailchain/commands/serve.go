@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"net/http"
 
+	mchttp "github.com/mailchain/mailchain/cmd/mailchain/http"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/fetching"
-	mchttp "github.com/mailchain/mailchain/cmd/mailchain/internal/http"
 	"github.com/mailchain/mailchain/cmd/mailchain/internal/settings"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"

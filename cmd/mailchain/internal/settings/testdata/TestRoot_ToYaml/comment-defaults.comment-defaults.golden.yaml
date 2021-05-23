@@ -1,4 +1,28 @@
 # protocols:
+#   algorand:
+#     disabled: false
+#     networks:
+#       betanet:
+#         disabled: false
+#         nameservice-address: ""
+#         nameservice-domain-name: ""
+#         public-key-finder: "algorand-public-key-extractor"
+#         receiver: "algod"
+#         sender: "algod-betanet"
+#       mainnet:
+#         disabled: false
+#         nameservice-address: ""
+#         nameservice-domain-name: ""
+#         public-key-finder: "algorand-public-key-extractor"
+#         receiver: "algod"
+#         sender: "algod-mainnet"
+#       testnet:
+#         disabled: false
+#         nameservice-address: ""
+#         nameservice-domain-name: ""
+#         public-key-finder: "algorand-public-key-extractor"
+#         receiver: "algod"
+#         sender: "algod-testnet"
 #   ethereum:
 #     disabled: false
 #     networks:
@@ -80,6 +104,12 @@
 #       - "ethereum/rinkeby"
 #       - "ethereum/ropsten"
 # public-key-finders:
+#   algorand-public-key-extractor:
+#     disabled: false
+#     enabled-networks:
+#       - "algorand/mainnet"
+#       - "algorand/betanet"
+#       - "algorand/testnet"
 #   blockscout-no-auth:
 #     enabled-networks:
 #       - "ethereum/mainnet"
@@ -131,7 +161,19 @@
 #       - "substrate/edgeware-local"
 #       - "substrate/edgeware-beresheet"
 #       - "substrate/edgeware-mainnet"
+#   algod:
+#     enabled-networks:
+#       - "algorand/mainnet"
+#       - "algorand/betanet"
+#       - "algorand/testnet"
+#     token: ""
 # senders:
+#   algod-betanet:
+#     address: "https://api.betanet.algoexplorer.io"
+#   algod-mainnet:
+#     address: "https://api.algoexplorer.io"
+#   algod-testnet:
+#     address: "https://api.testnet.algoexplorer.io"
 #   ethereum-relay:
 #     base-url: "https://relay.mailchain.xyz/"
 #     enabled-networks:
@@ -156,6 +198,8 @@
 #     address: "ws://localhost:9944"
 #   substrate-rpc-edgeware-mainnet:
 #     address: "ws://mainnet1.edgewa.re:9944"
+# fetcher:
+#   disabled: true
 keystore:
 #   kind: "nacl-filestore"
   nacl-filestore:

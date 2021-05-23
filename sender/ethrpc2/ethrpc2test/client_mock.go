@@ -6,38 +6,39 @@ package ethrpc2test
 
 import (
 	context "context"
+	big "math/big"
+	reflect "reflect"
+
 	ethereum "github.com/ethereum/go-ethereum"
 	common "github.com/ethereum/go-ethereum/common"
 	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
-	big "math/big"
-	reflect "reflect"
 )
 
-// MockClient is a mock of Client interface
+// MockClient is a mock of Client interface.
 type MockClient struct {
 	ctrl     *gomock.Controller
 	recorder *MockClientMockRecorder
 }
 
-// MockClientMockRecorder is the mock recorder for MockClient
+// MockClientMockRecorder is the mock recorder for MockClient.
 type MockClientMockRecorder struct {
 	mock *MockClient
 }
 
-// NewMockClient creates a new mock instance
+// NewMockClient creates a new mock instance.
 func NewMockClient(ctrl *gomock.Controller) *MockClient {
 	mock := &MockClient{ctrl: ctrl}
 	mock.recorder = &MockClientMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockClient) EXPECT() *MockClientMockRecorder {
 	return m.recorder
 }
 
-// EstimateGas mocks base method
+// EstimateGas mocks base method.
 func (m *MockClient) EstimateGas(ctx context.Context, msg ethereum.CallMsg) (uint64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "EstimateGas", ctx, msg)
@@ -46,13 +47,13 @@ func (m *MockClient) EstimateGas(ctx context.Context, msg ethereum.CallMsg) (uin
 	return ret0, ret1
 }
 
-// EstimateGas indicates an expected call of EstimateGas
+// EstimateGas indicates an expected call of EstimateGas.
 func (mr *MockClientMockRecorder) EstimateGas(ctx, msg interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EstimateGas", reflect.TypeOf((*MockClient)(nil).EstimateGas), ctx, msg)
 }
 
-// NetworkID mocks base method
+// NetworkID mocks base method.
 func (m *MockClient) NetworkID(ctx context.Context) (*big.Int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "NetworkID", ctx)
@@ -61,13 +62,13 @@ func (m *MockClient) NetworkID(ctx context.Context) (*big.Int, error) {
 	return ret0, ret1
 }
 
-// NetworkID indicates an expected call of NetworkID
+// NetworkID indicates an expected call of NetworkID.
 func (mr *MockClientMockRecorder) NetworkID(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NetworkID", reflect.TypeOf((*MockClient)(nil).NetworkID), ctx)
 }
 
-// NonceAt mocks base method
+// NonceAt mocks base method.
 func (m *MockClient) NonceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (uint64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "NonceAt", ctx, account, blockNumber)
@@ -76,13 +77,13 @@ func (m *MockClient) NonceAt(ctx context.Context, account common.Address, blockN
 	return ret0, ret1
 }
 
-// NonceAt indicates an expected call of NonceAt
+// NonceAt indicates an expected call of NonceAt.
 func (mr *MockClientMockRecorder) NonceAt(ctx, account, blockNumber interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NonceAt", reflect.TypeOf((*MockClient)(nil).NonceAt), ctx, account, blockNumber)
 }
 
-// SendTransaction mocks base method
+// SendTransaction mocks base method.
 func (m *MockClient) SendTransaction(ctx context.Context, tx *types.Transaction) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SendTransaction", ctx, tx)
@@ -90,13 +91,13 @@ func (m *MockClient) SendTransaction(ctx context.Context, tx *types.Transaction)
 	return ret0
 }
 
-// SendTransaction indicates an expected call of SendTransaction
+// SendTransaction indicates an expected call of SendTransaction.
 func (mr *MockClientMockRecorder) SendTransaction(ctx, tx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendTransaction", reflect.TypeOf((*MockClient)(nil).SendTransaction), ctx, tx)
 }
 
-// SuggestGasPrice mocks base method
+// SuggestGasPrice mocks base method.
 func (m *MockClient) SuggestGasPrice(ctx context.Context) (*big.Int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SuggestGasPrice", ctx)
@@ -105,7 +106,7 @@ func (m *MockClient) SuggestGasPrice(ctx context.Context) (*big.Int, error) {
 	return ret0, ret1
 }
 
-// SuggestGasPrice indicates an expected call of SuggestGasPrice
+// SuggestGasPrice indicates an expected call of SuggestGasPrice.
 func (mr *MockClientMockRecorder) SuggestGasPrice(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SuggestGasPrice", reflect.TypeOf((*MockClient)(nil).SuggestGasPrice), ctx)

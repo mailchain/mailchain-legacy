@@ -20,6 +20,7 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
@@ -30,11 +31,10 @@ type HTTPError struct {
 }
 
 // ErrorWriter is the function definition called when writing a HTTP error.
-type ErrorWriter func(w http.ResponseWriter, code int, err error)
+type ErrorWriter func(w http.ResponseWriter, code int, err error, logger zerolog.Logger)
 
 // JSONWriter writes a swagger-compliant error response.
-func JSONWriter(w http.ResponseWriter, r *http.Request, code int, err error) {
-	logger := log.Logger
+func JSONWriter(w http.ResponseWriter, r *http.Request, code int, err error, logger zerolog.Logger) {
 	if r != nil {
 		logger = log.With().Str("method", r.Method).Stringer("url", r.URL).Logger()
 	}

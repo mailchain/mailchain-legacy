@@ -153,7 +153,6 @@ func TestPublicKeyStore_PutPublicKey(t *testing.T) {
 				addressBytes,
 				func() *datastore.PublicKey {
 					mockPublicKey := cryptotest.NewMockPublicKey(mockCtrl)
-					mockPublicKey.EXPECT().Bytes().Return([]byte("unknown public key")).Times(1)
 					mockPublicKey.EXPECT().Kind().Return("unknown").Times(1)
 					return &datastore.PublicKey{
 						PublicKey: mockPublicKey,

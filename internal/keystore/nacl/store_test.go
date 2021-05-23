@@ -18,7 +18,6 @@ import (
 	"bytes"
 	"flag"
 	"io"
-	"io/ioutil"
 	"testing"
 	"testing/iotest"
 
@@ -83,11 +82,12 @@ func Test_writeTemporaryKeyFile(t *testing.T) {
 
 func TestFileStore_Store(t *testing.T) {
 	type fields struct {
-		fs     afero.Fs
-		rand   io.Reader
-		logger io.Writer
+		fs   afero.Fs
+		rand io.Reader
 	}
 	type args struct {
+		protocol         string
+		network          string
 		private          crypto.PrivateKey
 		deriveKeyOptions multi.OptionsBuilders
 	}
@@ -104,9 +104,10 @@ func TestFileStore_Store(t *testing.T) {
 			fields{
 				afero.NewMemMapFs(),
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				ioutil.Discard,
 			},
 			args{
+				"ethereum",
+				"mainnet",
 				secp256k1test.SofiaPrivateKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{
@@ -124,9 +125,10 @@ func TestFileStore_Store(t *testing.T) {
 			fields{
 				afero.NewMemMapFs(),
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				ioutil.Discard,
 			},
 			args{
+				"algorand",
+				"mainnet",
 				ed25519test.SofiaPrivateKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{
@@ -144,9 +146,10 @@ func TestFileStore_Store(t *testing.T) {
 			fields{
 				afero.NewMemMapFs(),
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				ioutil.Discard,
 			},
 			args{
+				"substrate",
+				"mainnet",
 				sr25519test.CharlottePrivateKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{
@@ -164,9 +167,10 @@ func TestFileStore_Store(t *testing.T) {
 			fields{
 				afero.NewMemMapFs(),
 				iotest.DataErrReader(bytes.NewReader(nil)),
-				ioutil.Discard,
 			},
 			args{
+				"algorand",
+				"mainnet",
 				ed25519test.SofiaPrivateKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{
@@ -184,9 +188,10 @@ func TestFileStore_Store(t *testing.T) {
 			fields{
 				afero.NewReadOnlyFs(afero.NewMemMapFs()),
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				ioutil.Discard,
 			},
 			args{
+				"algorand",
+				"mainnet",
 				ed25519test.SofiaPrivateKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{
@@ -204,9 +209,10 @@ func TestFileStore_Store(t *testing.T) {
 			fields{
 				afero.NewReadOnlyFs(afero.NewMemMapFs()),
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				ioutil.Discard,
 			},
 			args{
+				"algorand",
+				"mainnet",
 				ed25519test.SofiaPrivateKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{},
@@ -220,11 +226,10 @@ func TestFileStore_Store(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			f := FileStore{
-				fs:     tt.fields.fs,
-				rand:   tt.fields.rand,
-				logger: tt.fields.logger,
+				fs:   tt.fields.fs,
+				rand: tt.fields.rand,
 			}
-			got, err := f.Store(tt.args.private, tt.args.deriveKeyOptions)
+			got, err := f.Store(tt.args.protocol, tt.args.network, tt.args.private, tt.args.deriveKeyOptions)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("FileStore.Store() error = %v, wantErr %v", err, tt.wantErr)
 				return

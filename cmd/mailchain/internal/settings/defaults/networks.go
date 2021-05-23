@@ -27,12 +27,20 @@ func EthereumNetworkAny() *NetworkDefaults {
 // SubstrateNetworkAny default values for any Substrate network.
 func SubstrateNetworkAny(network string) *NetworkDefaults {
 	return &NetworkDefaults{
-		// NameServiceAddress:    NameServiceAddressKind,
-		// NameServiceDomainName: NameServiceDomainNameKind,
 		PublicKeyFinder: SubstratePublicKeyFinder,
 		//	BalanceFinder:   SubstrateBalanceFinder,
 		Receiver: Mailchain,
 		Sender:   "substrate-rpc-" + network,
 		Disabled: false,
+	}
+}
+
+// AlgorandNetworkAny default values for any Algorand network.
+func AlgorandNetworkAny(network string) *NetworkDefaults {
+	return &NetworkDefaults{
+		PublicKeyFinder: AlgorandPublicKeyFinder,
+		Receiver:        ClientAlgod,
+		Sender:          "algod-" + network,
+		Disabled:        false,
 	}
 }

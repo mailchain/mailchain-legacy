@@ -17,6 +17,7 @@ package pubkey
 import (
 	"testing"
 
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 )
@@ -33,6 +34,16 @@ func TestEncodeByProtocol(t *testing.T) {
 		wantEncodingType string
 		wantErr          bool
 	}{
+		{
+			"algorand",
+			args{
+				ed25519test.SofiaPublicKey.Bytes(),
+				"algorand",
+			},
+			"OI6KUI5FWUI26WWXW7XWA5XECSVX45NJ3SIQ5JQOIF5CW5YKKZYQ",
+			encoding.KindBase32,
+			false,
+		},
 		{
 			"ethereum",
 			args{

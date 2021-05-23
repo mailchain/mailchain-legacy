@@ -20,35 +20,50 @@ package mailboxtest
 
 import (
 	context "context"
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	stores "github.com/mailchain/mailchain/stores"
-	reflect "reflect"
 )
 
-// MockReceiver is a mock of Receiver interface
+// MockReceiver is a mock of Receiver interface.
 type MockReceiver struct {
 	ctrl     *gomock.Controller
 	recorder *MockReceiverMockRecorder
 }
 
-// MockReceiverMockRecorder is the mock recorder for MockReceiver
+// MockReceiverMockRecorder is the mock recorder for MockReceiver.
 type MockReceiverMockRecorder struct {
 	mock *MockReceiver
 }
 
-// NewMockReceiver creates a new mock instance
+// NewMockReceiver creates a new mock instance.
 func NewMockReceiver(ctrl *gomock.Controller) *MockReceiver {
 	mock := &MockReceiver{ctrl: ctrl}
 	mock.recorder = &MockReceiverMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockReceiver) EXPECT() *MockReceiverMockRecorder {
 	return m.recorder
 }
 
-// Receive mocks base method
+// Kind mocks base method.
+func (m *MockReceiver) Kind() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Kind")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// Kind indicates an expected call of Kind.
+func (mr *MockReceiverMockRecorder) Kind() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Kind", reflect.TypeOf((*MockReceiver)(nil).Kind))
+}
+
+// Receive mocks base method.
 func (m *MockReceiver) Receive(ctx context.Context, protocol, network string, address []byte) ([]stores.Transaction, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Receive", ctx, protocol, network, address)
@@ -57,22 +72,8 @@ func (m *MockReceiver) Receive(ctx context.Context, protocol, network string, ad
 	return ret0, ret1
 }
 
-// Receive indicates an expected call of Receive
+// Receive indicates an expected call of Receive.
 func (mr *MockReceiverMockRecorder) Receive(ctx, protocol, network, address interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Receive", reflect.TypeOf((*MockReceiver)(nil).Receive), ctx, protocol, network, address)
-}
-
-// Kind mocks base method
-func (m *MockReceiver) Kind() string {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Kind")
-	ret0, _ := ret[0].(string)
-	return ret0
-}
-
-// Kind indicates an expected call of Kind
-func (mr *MockReceiverMockRecorder) Kind() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Kind", reflect.TypeOf((*MockReceiver)(nil).Kind))
 }

@@ -97,7 +97,7 @@ func Test_getAnyMessage(t *testing.T) {
 		{
 			"err-parse-location",
 			args{
-				"un-parseable-location" + string(0x7f),
+				"un-parseable-location" + string(rune(0x7f)),
 			},
 			nil,
 			true,

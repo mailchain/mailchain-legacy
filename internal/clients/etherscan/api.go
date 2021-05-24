@@ -16,6 +16,7 @@ package etherscan
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -141,6 +142,8 @@ func (c APIClient) getBalanceByAddress(network string, address []byte) (*balance
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+
+	fmt.Println("%s", balanceResponse)
 
 	balanceresult := &balanceResult{}
 	if err := json.Unmarshal(balanceResponse.Body(), balanceresult); err != nil {

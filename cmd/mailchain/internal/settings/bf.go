@@ -14,7 +14,7 @@ func balanceFinders(s values.Store) *BalanceFinders {
 			defaults.ClientEtherscanNoAuth: etherscanBalanceFinderNoAuth(s),
 			defaults.ClientEtherscan:       etherscanBalanceFinder(s),
 			//defaults.ClientBlockscoutNoAuth:   blockscoutBalanceFinderNoAuth(s),
-			//defaults.SubstratePublicKeyFinder: EtherscanBalanceFinder(s),
+			// defaults.SubstratePublicKeyFinder: EtherscanBalanceFinder(s),
 		},
 	}
 }

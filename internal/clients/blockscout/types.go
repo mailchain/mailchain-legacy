@@ -42,7 +42,7 @@ type txResult struct {
 }
 
 type balanceresult struct {
-	balance string
+	balance uint64
 	Message string
 	Result  string
 }

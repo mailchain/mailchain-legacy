@@ -48,7 +48,7 @@ func (r SubstrateBalanceFinder) Supports() map[string]bool {
 	return m
 }
 
-// Produce a `mailbox.PubKeyFinder` base on the configuration.
+// Produce a `mailbox.Balance` base on the configuration.
 func (r SubstrateBalanceFinder) Produce() (mailbox.BalanceFinder, error) {
 	return substrate.NewBalanceFinder(), nil
 }

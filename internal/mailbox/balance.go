@@ -21,5 +21,5 @@ import (
 //go:generate mockgen -source=balance.go -package=mailboxtest -destination=./mailboxtest/balance_mock.go
 // Receiver gets balance from blockchain.
 type BalanceFinder interface {
-	GetBalance(ctx context.Context, protocol, network string, address []byte) (string, error)
+	GetBalance(ctx context.Context, protocol, network string, address []byte) (uint64, error)
 }

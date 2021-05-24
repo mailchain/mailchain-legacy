@@ -12,17 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package crypto
+package blockscout
 
-type Balance interface {
-	Balance() string
-	Unit() string
-	// Bytes returns the raw bytes representation of the public key.
-	//
-	// The returned bytes are used for encrypting, verifying a signature, and locating an address.
-	Bytes() []byte
-	// Kind returns the type of the key.
-	Kind() string
-	// Verify verifies whether sig is a valid signature of message.
-	Verify(message, sig []byte) bool
+import (
+	"context"
+
+	"github.com/pkg/errors"
+)
+
+// Receive check ethereum transactions for mailchain messages
+func (c APIClient) GetBalance(ctx context.Context, protocol, network string, address []byte) (uint64, error) {
+	if !c.isNetworkSupported(network) {
+		return 0, errors.Errorf("network not supported")
+	}
+
+	balance, err := c.getBalanceByAddress(network, address)
+	if err != nil {
+		return 0, errors.WithMessage(err, "could not get balance")
+	}
+
+	return balance.balance, nil
 }

@@ -28,7 +28,7 @@ import (
 )
 
 // GetBalance returns the balance of a user.
-func GetBalance(balances map[string]mailbox.BalanceFinder) func(w http.ResponseWriter, r *http.Request) {
+func GetBalance(balanceFinder map[string]mailbox.BalanceFinder) func(w http.ResponseWriter, r *http.Request) {
 	// Get swagger:route GET /balance Balance GetBalance
 	//
 	// Get balance.
@@ -45,19 +45,19 @@ func GetBalance(balances map[string]mailbox.BalanceFinder) func(w http.ResponseW
 			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
 			return
 		}
-		fmt.Println(balances)
-		balances, ok := balances[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
+		fmt.Println(balanceFinder)
+		balanceFinder, ok := balanceFinder[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
 			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("balance not supported on \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
 
-		if balances == nil {
+		if balanceFinder == nil {
 			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("no balance finder configured for \"%s/%s\"", req.Protocol, req.Network))
 			return
 		}
 
-		balance, err := balances.GetBalance(ctx, req.Protocol, req.Network, req.addressBytes)
+		balance, err := balanceFinder.GetBalance(ctx, req.Protocol, req.Network, req.addressBytes)
 		if mailbox.IsNetworkNotSupportedError(err) {
 			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("network %q not supported", req.Network))
 			return
@@ -71,7 +71,7 @@ func GetBalance(balances map[string]mailbox.BalanceFinder) func(w http.ResponseW
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(GetBalanceResponseBody{
 			Balance: balance,
-			Unit:    "wie",
+			Unit:    "wei",
 		})
 	}
 }
@@ -116,16 +116,11 @@ func parseGetBalance(r *http.Request) (*GetBalanaceRequest, error) {
 		return nil, errors.WithStack(err)
 	}
 
-	//addr, err := params.QueryRequireAddress(r)
-	// if err != nil {
-	// 	return nil, errors.WithStack(err)
-	// }
-	fmt.Printf("%s", mux.Vars(r)["address"])
 	addr := mux.Vars(r)["address"]
 
 	addressBytes, err := address.DecodeByProtocol(addr, protocol)
 	if err != nil {
-		return nil, errors.WithMessage(err, "failed to decode public key")
+		return nil, errors.WithMessage(err, "failed to decode address")
 	}
 
 	return &GetBalanaceRequest{
@@ -152,7 +147,7 @@ type GetBalanceResponseBody struct {
 	//
 	// Required: true
 	// example: 0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463
-	Balance string `json:"balance"`
+	Balance uint64 `json:"balance"`
 
 	// Encoding method used for encoding the `public-key`
 	//

@@ -77,7 +77,7 @@ func produceConfig(s *settings.Root, inbox stores.State) (*config, error) { //no
 
 		protocolGetBalances, err := s.Protocols[protocol].GetBalanceFinders(s.BalanceFinders)
 		if err != nil {
-			return nil, errors.WithMessagef(err, "could not get %q public key finders", name)
+			return nil, errors.WithMessagef(err, "could not get %q balance", name)
 		}
 
 		for k, v := range protocolGetBalances {

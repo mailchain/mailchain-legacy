@@ -16,20 +16,21 @@ package etherscan
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/pkg/errors"
 )
 
 // Receive check ethereum transactions for mailchain messages
-func (c APIClient) GetBalance(ctx context.Context, protocol, network string, address []byte) (string, error) {
+func (c APIClient) GetBalance(ctx context.Context, protocol, network string, address []byte) (uint64, error) {
 	if !c.isNetworkSupported(network) {
-		return "", errors.Errorf("network not supported")
+		return 0, errors.Errorf("network not supported")
 	}
 
 	balance, err := c.getBalanceByAddress(network, address)
 	if err != nil {
-		return "", errors.WithMessage(err, "could not get balance")
+		return 0, errors.WithMessage(err, "could not get balance")
 	}
 
-	return balance.Result, nil
+	return strconv.ParseUint(balance.Result, 0, 64)
 }

@@ -38,7 +38,6 @@ func (c *Client) Send(ctx context.Context, network string, to, from, data []byte
 	fromAddr := fromAddress
 	toAddr := toAddress
 	var amount uint64 = 0
-	var minFee uint64 = 1000
 	note := data
 	genID := txParams.GenesisID
 	genHash := txParams.GenesisHash
@@ -49,7 +48,14 @@ func (c *Client) Send(ctx context.Context, network string, to, from, data []byte
 	logger := c.logger.With().Str("action", "send-message").Str("from", fromAddress).Str("to", toAddress).Logger()
 	logger.Info().Msg("sending message")
 
-	txn, err := transaction.MakePaymentTxn(fromAddr, toAddr, minFee, amount, firstValidRound, lastValidRound, note, "", genID, genHash)
+	algodClient.SuggestedParams()
+
+	suggestedParams, err := algodClient.SuggestedParams()
+	if err != nil {
+		return errors.Wrap(err, "error getting suggested params")
+	}
+
+	txn, err := transaction.MakePaymentTxn(fromAddr, toAddr, suggestedParams.Fee, amount, firstValidRound, lastValidRound, note, "", genID, genHash)
 	if err != nil {
 		return errors.Wrap(err, "error creating transaction")
 	}

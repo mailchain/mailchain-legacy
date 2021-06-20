@@ -17,7 +17,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -26,6 +25,7 @@ import (
 	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 // GetBalance returns the balance of a user.
@@ -44,6 +44,7 @@ func GetBalance(balanceFinder map[string]mailbox.BalanceFinder) func(w http.Resp
 		req, err := parseGetBalance(r)
 		if err != nil {
 			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err), log.Logger)
+
 			return
 		}
 

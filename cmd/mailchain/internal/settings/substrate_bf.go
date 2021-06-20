@@ -11,7 +11,7 @@ import (
 	"github.com/mailchain/mailchain/internal/protocols/substrate"
 )
 
-// SubstratePublicKeyFinder configuration element.
+// SubstrateBalanceFinder configuration element.
 type SubstrateBalanceFinder struct {
 	EnabledProtocolNetworks values.StringSlice
 	kind                    string

@@ -17,12 +17,13 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
 	"github.com/mailchain/mailchain/errs"
-	"github.com/mailchain/mailchain/internal/address"
+	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/mailbox"
 	"github.com/pkg/errors"
 )
@@ -42,29 +43,29 @@ func GetBalance(balanceFinder map[string]mailbox.BalanceFinder) func(w http.Resp
 		ctx := r.Context()
 		req, err := parseGetBalance(r)
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.WithStack(err), log.Logger)
 			return
 		}
-		fmt.Println(balanceFinder)
+
 		balanceFinder, ok := balanceFinder[fmt.Sprintf("%s/%s", req.Protocol, req.Network)]
 		if !ok {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("balance not supported on \"%s/%s\"", req.Protocol, req.Network))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("balance not supported on \"%s/%s\"", req.Protocol, req.Network), log.Logger)
 			return
 		}
 
 		if balanceFinder == nil {
-			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("no balance finder configured for \"%s/%s\"", req.Protocol, req.Network))
+			errs.JSONWriter(w, r, http.StatusUnprocessableEntity, errors.Errorf("no balance finder configured for \"%s/%s\"", req.Protocol, req.Network), log.Logger)
 			return
 		}
 
 		balance, err := balanceFinder.GetBalance(ctx, req.Protocol, req.Network, req.addressBytes)
 		if mailbox.IsNetworkNotSupportedError(err) {
-			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("network %q not supported", req.Network))
+			errs.JSONWriter(w, r, http.StatusNotAcceptable, errors.Errorf("network %q not supported", req.Network), log.Logger)
 			return
 		}
 
 		if err != nil {
-			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err))
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
 			return
 		}
 
@@ -76,10 +77,10 @@ func GetBalance(balanceFinder map[string]mailbox.BalanceFinder) func(w http.Resp
 	}
 }
 
-// GetBalanaceRequest pubic key from address request
+// GetBalanaceRequest balance from address request
 // swagger:parameters GetBalance
 type GetBalanaceRequest struct {
-	// Address to to use when performing public key lookup.
+	// Address to to use when retrieving balance.
 	//
 	// in: query
 	// required: true
@@ -88,7 +89,7 @@ type GetBalanaceRequest struct {
 	Address      string `json:"address"`
 	addressBytes []byte
 
-	// Network to use when performing public key lookup.
+	// Network to use when retrieving balance.
 	//
 	// enum: mainnet,goerli,ropsten,rinkeby,local
 	// in: query
@@ -96,7 +97,7 @@ type GetBalanaceRequest struct {
 	// example: goerli
 	Network string `json:"network"`
 
-	// Protocol to use when performing public key lookup.
+	// Protocol to use when retrieving balance.
 	//
 	// enum: ethereum
 	// in: query
@@ -118,7 +119,7 @@ func parseGetBalance(r *http.Request) (*GetBalanaceRequest, error) {
 
 	addr := mux.Vars(r)["address"]
 
-	addressBytes, err := address.DecodeByProtocol(addr, protocol)
+	addressBytes, err := addressing.DecodeByProtocol(addr, protocol)
 	if err != nil {
 		return nil, errors.WithMessage(err, "failed to decode address")
 	}
@@ -131,7 +132,7 @@ func parseGetBalance(r *http.Request) (*GetBalanaceRequest, error) {
 	}, nil
 }
 
-// GetBalanceResponse public key from address response
+// GetBalanceResponse balance from address response
 //
 // swagger:response GetBalanceResponse
 type GetBalanceResponse struct {
@@ -143,15 +144,15 @@ type GetBalanceResponse struct {
 //
 // swagger:model GetBalanceBody
 type GetBalanceResponseBody struct {
-	// The public key encoded as per `public-key-encoding`
+	// The balance is represened as uint64
 	//
 	// Required: true
-	// example: 0x79964e63752465973b6b3c610d8ac773fc7ce04f5d1ba599ba8768fb44cef525176f81d3c7603d5a2e466bc96da7b2443bef01b78059a98f45d5c440ca379463
+	// example:  2999976584000000000
 	Balance uint64 `json:"balance"`
 
-	// Encoding method used for encoding the `public-key`
+	// The balance is returned in the smallest unit, e.g. wei
 	//
 	// Required: true
-	// example: hex/0x-prefix
+	// example: wei
 	Unit string `json:"unit"`
 }

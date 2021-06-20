@@ -14,7 +14,7 @@ func balanceFinders(s values.Store) *BalanceFinders {
 			defaults.ClientEtherscanNoAuth: etherscanBalanceFinderNoAuth(s),
 			defaults.ClientEtherscan:       etherscanBalanceFinder(s),
 			//defaults.ClientBlockscoutNoAuth:   blockscoutBalanceFinderNoAuth(s),
-			// defaults.SubstratePublicKeyFinder: EtherscanBalanceFinder(s),
+			// defaults.SubstrateBalanceFinder: EtherscanBalanceFinder(s),
 		},
 	}
 }
@@ -24,7 +24,7 @@ type BalanceFinders struct {
 	clients map[string]BalanceFinderClient
 }
 
-// Produce `mailbox.PublicKeyFinder` based on configuration settings.
+// Produce `mailbox.BalanceFinder` based on configuration settings.
 func (s BalanceFinders) Produce(client string) (mailbox.BalanceFinder, error) {
 	if client == "" {
 		return nil, nil

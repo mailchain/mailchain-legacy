@@ -9,7 +9,7 @@ import (
 	"github.com/mailchain/mailchain/internal/protocols/ethereum"
 )
 
-// BlockscoutPublicKeyFinder configuration settings.
+// BlockscoutBalanceFinder configuration settings.
 type BlockscoutBalanceFinder struct {
 	EnabledProtocolNetworks values.StringSlice
 	APIKey                  values.String

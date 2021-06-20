@@ -20,12 +20,12 @@ import (
 	"github.com/pkg/errors"
 )
 
-// NewPublicKeyFinder create a default substrate public key finder.
+// NewBalanceFinder create a default substrate balance finder.
 func NewBalanceFinder() *BalanceFinder {
 	return &BalanceFinder{}
 }
 
-// PublicKeyFinder for substrate.
+// BalanceFinder for substrate.
 type BalanceFinder struct {
 }
 
@@ -42,7 +42,7 @@ func (bf *BalanceFinder) BalanceForAddress(ctx context.Context, protocol, networ
 	return 0, nil
 }
 
-// PublicKeyFromAddress returns the public key from the address.
+// BalanceFromAddress returns the balance from the address.
 func (bf *BalanceFinder) GetBalance(ctx context.Context, protocol, network string, address []byte) (uint64, error) {
 	if protocol != "substrate" {
 		return 0, errors.Errorf("protocol must be 'substrate'")

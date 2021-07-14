@@ -30,7 +30,7 @@ import (
 
 // GetBalance returns the balance of a user.
 func GetBalance(balanceFinder map[string]mailbox.BalanceFinder) func(w http.ResponseWriter, r *http.Request) {
-	// Get swagger:route GET /balance Balance GetBalance
+	// Get swagger:route GET /addresses/{address}/balance Balance GetBalance
 	//
 	// Get balance.
 	//

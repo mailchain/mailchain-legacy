@@ -40,3 +40,9 @@ type txResult struct {
 	Confirmations     string
 	Value             string
 }
+
+type balanceresult struct {
+	balance uint64
+	Message string
+	Result  string
+}

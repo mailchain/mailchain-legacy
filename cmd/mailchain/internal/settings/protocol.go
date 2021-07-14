@@ -69,6 +69,21 @@ func (p Protocol) GetPublicKeyFinders(publicKeyFinders *PublicKeyFinders) (map[s
 	return msg, nil
 }
 
+// GetBalances returns all `mailbox.GetBalance` resources from configuration.
+func (p Protocol) GetBalanceFinders(balanceFinders *BalanceFinders) (map[string]mailbox.BalanceFinder, error) {
+	msg := map[string]mailbox.BalanceFinder{}
+
+	for network, v := range p.Networks {
+		s, err := v.ProduceBalanceFinders(balanceFinders)
+		if err != nil {
+			return nil, err
+		}
+		msg[p.Kind+"/"+network] = s
+	}
+
+	return msg, nil
+}
+
 // GetAddressNameServices returns all `nameservice.ReverseLookup` resources from configuration.
 func (p Protocol) GetAddressNameServices(ans *AddressNameServices) (map[string]nameservice.ReverseLookup, error) {
 	msg := map[string]nameservice.ReverseLookup{}

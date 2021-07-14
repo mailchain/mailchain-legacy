@@ -5,6 +5,7 @@ type NetworkDefaults struct {
 	NameServiceAddress    string
 	NameServiceDomainName string
 	PublicKeyFinder       string
+	BalanceFinder         string
 	Receiver              string
 	Sender                string
 	Disabled              bool
@@ -16,6 +17,7 @@ func EthereumNetworkAny() *NetworkDefaults {
 		NameServiceAddress:    NameServiceAddressKind,
 		NameServiceDomainName: NameServiceDomainNameKind,
 		PublicKeyFinder:       ClientEtherscanNoAuth,
+		BalanceFinder:         ClientEtherscanNoAuth,
 		Receiver:              ClientEtherscanNoAuth,
 		Sender:                EthereumRelay,
 		Disabled:              false,
@@ -26,9 +28,10 @@ func EthereumNetworkAny() *NetworkDefaults {
 func SubstrateNetworkAny(network string) *NetworkDefaults {
 	return &NetworkDefaults{
 		PublicKeyFinder: SubstratePublicKeyFinder,
-		Receiver:        Mailchain,
-		Sender:          "substrate-rpc-" + network,
-		Disabled:        false,
+		//	BalanceFinder:   SubstrateBalanceFinder,
+		Receiver: Mailchain,
+		Sender:   "substrate-rpc-" + network,
+		Disabled: false,
 	}
 }
 

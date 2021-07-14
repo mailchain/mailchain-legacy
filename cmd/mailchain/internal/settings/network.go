@@ -21,6 +21,8 @@ func network(s values.Store, protocol, network string, nd *defaults.NetworkDefau
 			fmt.Sprintf("protocols.%s.networks.%s.nameservice-domain-name", protocol, network)),
 		PublicKeyFinder: values.NewDefaultString(nd.PublicKeyFinder, s,
 			fmt.Sprintf("protocols.%s.networks.%s.public-key-finder", protocol, network)),
+		BalanceFinder: values.NewDefaultString(nd.BalanceFinder, s,
+			fmt.Sprintf("protocols.%s.networks.%s.balance-finder", protocol, network)),
 		Receiver: values.NewDefaultString(nd.Receiver, s,
 			fmt.Sprintf("protocols.%s.networks.%s.receiver", protocol, network)),
 		Sender: values.NewDefaultString(nd.Sender, s,
@@ -38,6 +40,7 @@ type Network struct {
 	NameServiceAddress    values.String
 	NameServiceDomainName values.String
 	PublicKeyFinder       values.String
+	BalanceFinder         values.String
 	Receiver              values.String
 	Sender                values.String
 	disabled              values.Bool
@@ -68,6 +71,11 @@ func (s *Network) ProducePublicKeyFinders(publicKeyFinders *PublicKeyFinders) (m
 	return publicKeyFinders.Produce(s.PublicKeyFinder.Get())
 }
 
+// ProduceBalanceFinders returns a `mailbox.Balance` based on configuration settings for network.
+func (s *Network) ProduceBalanceFinders(balanceFinders *BalanceFinders) (mailbox.BalanceFinder, error) {
+	return balanceFinders.Produce(s.BalanceFinder.Get())
+}
+
 // Disabled check for network.
 func (s *Network) Disabled() bool {
 	return s.disabled.Get()
@@ -86,6 +94,7 @@ func (s *Network) Output() output.Element {
 			s.NameServiceAddress.Attribute(),
 			s.NameServiceDomainName.Attribute(),
 			s.PublicKeyFinder.Attribute(),
+			s.BalanceFinder.Attribute(),
 			s.Receiver.Attribute(),
 			s.Sender.Attribute(),
 			s.disabled.Attribute(),

@@ -21,6 +21,7 @@ type NetworkClient interface {
 	ProduceSender(senders *Senders) (sender.Message, error)
 	ProduceReceiver(receivers *Receivers) (mailbox.Receiver, error)
 	ProducePublicKeyFinders(publicKeyFinders *PublicKeyFinders) (mailbox.PubKeyFinder, error)
+	ProduceBalanceFinders(balanceFinders *BalanceFinders) (mailbox.BalanceFinder, error)
 	Disabled() bool
 	Kind() string
 	Output() output.Element
@@ -43,6 +44,13 @@ type ReceiverClient interface {
 // PublicKeyFinderClient configuration.
 type PublicKeyFinderClient interface {
 	Produce() (mailbox.PubKeyFinder, error)
+	Supporter
+	Output() output.Element
+}
+
+// BalanceClient configuration.
+type BalanceFinderClient interface {
+	Produce() (mailbox.BalanceFinder, error)
 	Supporter
 	Output() output.Element
 }

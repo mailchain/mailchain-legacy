@@ -102,3 +102,28 @@ func (c APIClient) getTransactionByHash(network string, hash common.Hash) (*type
 
 	return tx, err
 }
+
+// getBalanceByAddress get transactions from address via etherscan.
+func (c APIClient) getBalanceByAddress(network string, address []byte) (*balanceresult, error) {
+	config, ok := c.networkConfigs[network]
+	if !ok {
+		return nil, errors.Errorf("network not supported")
+	}
+
+	balanceResponse, err := resty.R().
+		SetQueryParams(map[string]string{
+			"module":  "account",
+			"action":  "balance",
+			"address": common.BytesToAddress(address).Hex(),
+		}).Get(config.url)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	balanceresult := &balanceresult{}
+	if err := json.Unmarshal(balanceResponse.Body(), balanceresult); err != nil {
+		return nil, errors.WithMessage(err, string(balanceResponse.Body()))
+	}
+
+	return balanceresult, nil
+}

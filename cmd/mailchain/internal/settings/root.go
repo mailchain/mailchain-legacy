@@ -20,6 +20,7 @@ func FromStore(s values.Store) *Root {
 		Senders:             senders(s),
 		Receivers:           receivers(s),
 		PublicKeyFinders:    publicKeyFinders(s),
+		BalanceFinders:      balanceFinders(s),
 		// Protocols these contain the networks
 		Protocols: map[string]*Protocol{
 			protocols.Ethereum: protocol(s, protocols.Ethereum, map[string]NetworkClient{
@@ -58,6 +59,7 @@ type Root struct {
 	Senders             *Senders
 	Receivers           *Receivers
 	PublicKeyFinders    *PublicKeyFinders
+	BalanceFinders      *BalanceFinders
 	// protocol
 	Protocols map[string]*Protocol
 	// Ethereum  *Protocol
@@ -89,6 +91,7 @@ func (o *Root) ToYaml(out io.Writer, tabsize int, commentDefaults, excludeDefaul
 			o.DomainNameServices.Output(),
 
 			o.PublicKeyFinders.Output(),
+			o.BalanceFinders.Output(),
 			o.Receivers.Output(),
 			o.Senders.Output(),
 

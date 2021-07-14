@@ -40,3 +40,9 @@ type txResult struct {
 	GasUsed           string
 	Confirmations     string
 }
+
+type balanceResult struct {
+	Result  string
+	Message string
+	Status  string
+}

@@ -15,9 +15,9 @@ require (
 	github.com/dgraph-io/badger/v2 v2.0.3
 	github.com/dgraph-io/ristretto v0.0.2 // indirect
 	github.com/ethereum/go-ethereum v1.9.19
-	github.com/go-delve/delve v1.6.0 // indirect
 	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.2
+	github.com/google/go-cmp v0.5.4 // indirect
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.4
 	github.com/gtank/merlin v0.1.1
@@ -33,6 +33,7 @@ require (
 	github.com/multiformats/go-multihash v0.0.14
 	github.com/pierrec/xxHash v0.1.5 // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/rogpeppe/go-internal v1.6.2 // indirect
 	github.com/rs/cors v1.7.0
 	github.com/rs/zerolog v1.20.0
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
@@ -45,8 +46,9 @@ require (
 	github.com/ttacon/chalk v0.0.0-20160626202418-22c06c80ed31
 	github.com/urfave/negroni v1.0.0
 	github.com/wealdtech/go-ens/v3 v3.4.3
-	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
-	golang.org/x/tools/gopls v0.6.9 // indirect
+	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
+	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
+	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/resty.v1 v1.12.0
 	gopkg.in/yaml.v2 v2.4.0

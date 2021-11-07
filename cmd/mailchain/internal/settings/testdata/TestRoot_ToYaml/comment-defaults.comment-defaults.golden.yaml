@@ -3,6 +3,7 @@
 #     disabled: false
 #     networks:
 #       betanet:
+#         balance-finder: ""
 #         disabled: false
 #         nameservice-address: ""
 #         nameservice-domain-name: ""
@@ -10,6 +11,7 @@
 #         receiver: "algod"
 #         sender: "algod-betanet"
 #       mainnet:
+#         balance-finder: ""
 #         disabled: false
 #         nameservice-address: ""
 #         nameservice-domain-name: ""
@@ -17,6 +19,7 @@
 #         receiver: "algod"
 #         sender: "algod-mainnet"
 #       testnet:
+#         balance-finder: ""
 #         disabled: false
 #         nameservice-address: ""
 #         nameservice-domain-name: ""
@@ -27,6 +30,7 @@
 #     disabled: false
 #     networks:
 #       goerli:
+#         balance-finder: "etherscan-no-auth"
 #         disabled: false
 #         nameservice-address: "mailchain"
 #         nameservice-domain-name: "mailchain"
@@ -34,6 +38,7 @@
 #         receiver: "etherscan-no-auth"
 #         sender: "ethereum-relay"
 #       kovan:
+#         balance-finder: "etherscan-no-auth"
 #         disabled: false
 #         nameservice-address: "mailchain"
 #         nameservice-domain-name: "mailchain"
@@ -41,6 +46,7 @@
 #         receiver: "etherscan-no-auth"
 #         sender: "ethereum-relay"
 #       mainnet:
+#         balance-finder: "etherscan-no-auth"
 #         disabled: false
 #         nameservice-address: "mailchain"
 #         nameservice-domain-name: "mailchain"
@@ -48,6 +54,7 @@
 #         receiver: "etherscan-no-auth"
 #         sender: "ethereum-relay"
 #       rinkeby:
+#         balance-finder: "etherscan-no-auth"
 #         disabled: false
 #         nameservice-address: "mailchain"
 #         nameservice-domain-name: "mailchain"
@@ -55,6 +62,7 @@
 #         receiver: "etherscan-no-auth"
 #         sender: "ethereum-relay"
 #       ropsten:
+#         balance-finder: "etherscan-no-auth"
 #         disabled: false
 #         nameservice-address: "mailchain"
 #         nameservice-domain-name: "mailchain"
@@ -65,6 +73,7 @@
 #     disabled: false
 #     networks:
 #       edgeware-beresheet:
+#         balance-finder: ""
 #         disabled: false
 #         nameservice-address: ""
 #         nameservice-domain-name: ""
@@ -72,6 +81,7 @@
 #         receiver: "mailchain"
 #         sender: "substrate-rpc-edgeware-beresheet"
 #       edgeware-local:
+#         balance-finder: ""
 #         disabled: false
 #         nameservice-address: ""
 #         nameservice-domain-name: ""
@@ -79,6 +89,7 @@
 #         receiver: "mailchain"
 #         sender: "substrate-rpc-edgeware-local"
 #       edgeware-mainnet:
+#         balance-finder: ""
 #         disabled: false
 #         nameservice-address: ""
 #         nameservice-domain-name: ""
@@ -135,6 +146,23 @@
 #       - "substrate/edgeware-mainnet"
 #       - "substrate/edgeware-beresheet"
 #       - "substrate/edgeware-local"
+# balance-finders:
+#   etherscan:
+#     api-key: ""
+#     enabled-networks:
+#       - "ethereum/goerli"
+#       - "ethereum/kovan"
+#       - "ethereum/mainnet"
+#       - "ethereum/rinkeby"
+#       - "ethereum/ropsten"
+#   etherscan-no-auth:
+#     api-key: ""
+#     enabled-networks:
+#       - "ethereum/goerli"
+#       - "ethereum/kovan"
+#       - "ethereum/mainnet"
+#       - "ethereum/rinkeby"
+#       - "ethereum/ropsten"
 # receivers:
 #   blockscout-no-auth:
 #     enabled-networks:

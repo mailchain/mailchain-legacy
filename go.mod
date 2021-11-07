@@ -14,12 +14,11 @@ require (
 	github.com/centrifuge/go-substrate-rpc-client v2.0.0-alpha.5+incompatible
 	github.com/dgraph-io/badger/v2 v2.0.3
 	github.com/dgraph-io/ristretto v0.0.2 // indirect
-	github.com/ethereum/go-ethereum v1.9.19
+	github.com/ethereum/go-ethereum v1.10.9
 	github.com/golang/mock v1.4.4
-	github.com/golang/protobuf v1.4.2
-	github.com/google/go-cmp v0.5.4 // indirect
-	github.com/google/uuid v1.1.1
-	github.com/gorilla/mux v1.7.4
+	github.com/golang/protobuf v1.4.3
+	github.com/google/uuid v1.1.5
+	github.com/gorilla/mux v1.8.0
 	github.com/gtank/merlin v0.1.1
 	github.com/gtank/ristretto255 v0.1.2
 	github.com/ipfs/go-cid v0.0.6
@@ -42,13 +41,11 @@ require (
 	github.com/spf13/afero v1.3.2
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
 	github.com/ttacon/chalk v0.0.0-20160626202418-22c06c80ed31
 	github.com/urfave/negroni v1.0.0
 	github.com/wealdtech/go-ens/v3 v3.4.3
-	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
-	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
+	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/resty.v1 v1.12.0
 	gopkg.in/yaml.v2 v2.4.0

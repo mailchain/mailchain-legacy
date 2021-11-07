@@ -25,7 +25,7 @@ help:
 clean:
 	$(GO) clean
 build:
-	$(GO) build ./...
+	$(GO) build -o ./dist/make/mailchain -ldflags="-s -w -X github.com/mailchain/mailchain.Version=dev -X github.com/mailchain/mailchain.BuildDate=$(date) -X github.com/mailchain/mailchain.CommitHash=no-hash" ./cmd/mailchain/main.go
 
 deps:
 	$(GO) get github.com/golang/mock/mockgen@v1.5.0

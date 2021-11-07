@@ -73,7 +73,7 @@ func GetBalance(balanceFinder map[string]mailbox.BalanceFinder) func(w http.Resp
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(GetBalanceResponseBody{
 			Balance: balance,
-			Unit:    "wei",
+			Unit:    "",
 		})
 	}
 }

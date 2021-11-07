@@ -117,6 +117,21 @@ func (mr *MockNetworkClientMockRecorder) Output() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Output", reflect.TypeOf((*MockNetworkClient)(nil).Output))
 }
 
+// ProduceBalanceFinders mocks base method.
+func (m *MockNetworkClient) ProduceBalanceFinders(balanceFinders *settings.BalanceFinders) (mailbox.BalanceFinder, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ProduceBalanceFinders", balanceFinders)
+	ret0, _ := ret[0].(mailbox.BalanceFinder)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ProduceBalanceFinders indicates an expected call of ProduceBalanceFinders.
+func (mr *MockNetworkClientMockRecorder) ProduceBalanceFinders(balanceFinders interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProduceBalanceFinders", reflect.TypeOf((*MockNetworkClient)(nil).ProduceBalanceFinders), balanceFinders)
+}
+
 // ProduceNameServiceAddress mocks base method.
 func (m *MockNetworkClient) ProduceNameServiceAddress(ans *settings.AddressNameServices) (nameservice.ReverseLookup, error) {
 	m.ctrl.T.Helper()
@@ -388,6 +403,72 @@ func (m *MockPublicKeyFinderClient) Supports() map[string]bool {
 func (mr *MockPublicKeyFinderClientMockRecorder) Supports() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Supports", reflect.TypeOf((*MockPublicKeyFinderClient)(nil).Supports))
+}
+
+// MockBalanceFinderClient is a mock of BalanceFinderClient interface.
+type MockBalanceFinderClient struct {
+	ctrl     *gomock.Controller
+	recorder *MockBalanceFinderClientMockRecorder
+}
+
+// MockBalanceFinderClientMockRecorder is the mock recorder for MockBalanceFinderClient.
+type MockBalanceFinderClientMockRecorder struct {
+	mock *MockBalanceFinderClient
+}
+
+// NewMockBalanceFinderClient creates a new mock instance.
+func NewMockBalanceFinderClient(ctrl *gomock.Controller) *MockBalanceFinderClient {
+	mock := &MockBalanceFinderClient{ctrl: ctrl}
+	mock.recorder = &MockBalanceFinderClientMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockBalanceFinderClient) EXPECT() *MockBalanceFinderClientMockRecorder {
+	return m.recorder
+}
+
+// Output mocks base method.
+func (m *MockBalanceFinderClient) Output() output.Element {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Output")
+	ret0, _ := ret[0].(output.Element)
+	return ret0
+}
+
+// Output indicates an expected call of Output.
+func (mr *MockBalanceFinderClientMockRecorder) Output() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Output", reflect.TypeOf((*MockBalanceFinderClient)(nil).Output))
+}
+
+// Produce mocks base method.
+func (m *MockBalanceFinderClient) Produce() (mailbox.BalanceFinder, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Produce")
+	ret0, _ := ret[0].(mailbox.BalanceFinder)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Produce indicates an expected call of Produce.
+func (mr *MockBalanceFinderClientMockRecorder) Produce() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Produce", reflect.TypeOf((*MockBalanceFinderClient)(nil).Produce))
+}
+
+// Supports mocks base method.
+func (m *MockBalanceFinderClient) Supports() map[string]bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Supports")
+	ret0, _ := ret[0].(map[string]bool)
+	return ret0
+}
+
+// Supports indicates an expected call of Supports.
+func (mr *MockBalanceFinderClientMockRecorder) Supports() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Supports", reflect.TypeOf((*MockBalanceFinderClient)(nil).Supports))
 }
 
 // MockNameServiceAddressClient is a mock of NameServiceAddressClient interface.

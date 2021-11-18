@@ -42,7 +42,7 @@ func Test_deriveKey(t *testing.T) {
 		{
 			"success-kdf-secp256k1",
 			args{
-				&encryptedKeySofiaSECP256k1,
+				&encryptedKeyAliceSECP256k1,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("test")},
 				},
@@ -53,7 +53,7 @@ func Test_deriveKey(t *testing.T) {
 		{
 			"success-kdf-ed25519",
 			args{
-				&encryptedKeySofiaED25519,
+				&encryptedKeyAliceED25519,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("sofia-ed25519")},
 				},
@@ -65,7 +65,7 @@ func Test_deriveKey(t *testing.T) {
 			"err-nil-script-params",
 			args{
 				func() *keystore.EncryptedKey {
-					m := encryptedKeySofiaED25519
+					m := encryptedKeyAliceED25519
 					m.ScryptParams = nil
 					return &m
 				}(),
@@ -80,7 +80,7 @@ func Test_deriveKey(t *testing.T) {
 			"err-kdf-invalid",
 			args{
 				func() *keystore.EncryptedKey {
-					m := encryptedKeySofiaED25519
+					m := encryptedKeyAliceED25519
 					m.KDF = "invalid"
 					return &m
 				}(),
@@ -134,51 +134,35 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-sofia-secp256k1",
+			"success-alice-secp256k1",
 			fields{
 				nil,
 				nil,
 			},
 			args{
-				&encryptedKeySofiaSECP256k1,
+				&encryptedKeyAliceSECP256k1,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("test")},
 				},
 			},
-			secp256k1test.SofiaPrivateKey,
+			secp256k1test.AlicePrivateKey,
 			false,
 		},
 		{
-			"success-sofia-ed25519",
+			"success-alice-ed25519",
 			fields{
 				nil,
 				nil,
 			},
 			args{
-				&encryptedKeySofiaED25519,
+				&encryptedKeyAliceED25519,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("sofia-ed25519")},
 				},
 			},
-			ed25519test.SofiaPrivateKey,
+			ed25519test.AlicePrivateKey,
 			false,
 		},
-		//{
-		//	"success-charlotte-sr25519",
-		//	fields{
-		//		nil,
-		//		nil,
-		//		ioutil.Discard,
-		//	},
-		//	args{
-		//		&encryptedKeyCharlotteSR25519,
-		//		multi.OptionsBuilders{
-		//			Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("sofia-ed25519")},
-		//		},
-		//	},
-		//	sr25519test.SofiaPrivateKey,
-		//	false,
-		//},
 		{
 			"err-private-key-bytes",
 			fields{
@@ -187,7 +171,7 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 			},
 			args{
 				func() *keystore.EncryptedKey {
-					m := encryptedKeySofiaED25519
+					m := encryptedKeyAliceED25519
 					m.CurveType = "invalid"
 					return &m
 				}(),
@@ -205,9 +189,9 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 				nil,
 			},
 			args{
-				&encryptedKeyCharlotteED25519,
+				&encryptedKeyBobED25519,
 				multi.OptionsBuilders{
-					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("sofia-ed25519")},
+					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("alice-ed25519")},
 				},
 			},
 			nil,
@@ -221,12 +205,12 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 			},
 			args{
 				func() *keystore.EncryptedKey {
-					m := encryptedKeySofiaED25519
+					m := encryptedKeyAliceED25519
 					m.KDF = "invalid"
 					return &m
 				}(),
 				multi.OptionsBuilders{
-					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("sofia-ed25519")},
+					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("alice-ed25519")},
 				},
 			},
 			nil,
@@ -241,7 +225,7 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 			args{
 				nil,
 				multi.OptionsBuilders{
-					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("sofia-ed25519")},
+					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("alice-ed25519")},
 				},
 			},
 			nil,

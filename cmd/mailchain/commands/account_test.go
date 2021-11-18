@@ -217,12 +217,12 @@ func Test_accountAddCmd(t *testing.T) {
 			args{
 				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					pk, _ := multikey.PrivateKeyFromBytes(secp256k1test.SofiaPrivateKey.Kind(), secp256k1test.SofiaPrivateKey.Bytes())
-					m.EXPECT().Store("ethereum", "mainnet", pk, gomock.Any()).Return(secp256k1test.SofiaPublicKey, nil)
+					pk, _ := multikey.PrivateKeyFromBytes(secp256k1test.AlicePrivateKey.Kind(), secp256k1test.AlicePrivateKey.Bytes())
+					m.EXPECT().Store("ethereum", "mainnet", pk, gomock.Any()).Return(secp256k1test.AlicePublicKey, nil)
 					return m, nil
 				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
-				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
+				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.AlicePrivateKey.Bytes()), nil),
 			},
 			nil,
 			map[string]string{
@@ -237,13 +237,13 @@ func Test_accountAddCmd(t *testing.T) {
 			args{
 				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					pk, _ := multikey.PrivateKeyFromBytes(ed25519test.SofiaPrivateKey.Kind(), ed25519test.SofiaPrivateKey.Bytes())
-					m.EXPECT().Store("algorand", "mainnet", pk, gomock.Any()).Return(ed25519test.SofiaPublicKey, nil)
+					pk, _ := multikey.PrivateKeyFromBytes(ed25519test.AlicePrivateKey.Kind(), ed25519test.AlicePrivateKey.Bytes())
+					m.EXPECT().Store("algorand", "mainnet", pk, gomock.Any()).Return(ed25519test.AlicePublicKey, nil)
 					return m, nil
 				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
 				promptstest.MockRequiredSecret(t, func() string {
-					s, err := encoding.EncodeMnemonicAlgorand(ed25519test.SofiaPrivateKey.Bytes()[:32])
+					s, err := encoding.EncodeMnemonicAlgorand(ed25519test.AlicePrivateKey.Bytes()[:32])
 					assert.NoError(t, err)
 					return s
 				}(), nil),
@@ -262,12 +262,12 @@ func Test_accountAddCmd(t *testing.T) {
 			args{
 				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					pk, _ := multikey.PrivateKeyFromBytes(secp256k1test.SofiaPrivateKey.Kind(), secp256k1test.SofiaPrivateKey.Bytes())
+					pk, _ := multikey.PrivateKeyFromBytes(secp256k1test.AlicePrivateKey.Kind(), secp256k1test.AlicePrivateKey.Bytes())
 					m.EXPECT().Store("ethereum", "mainnet", pk, gomock.Any()).Return(nil, errors.Errorf("failed"))
 					return m, nil
 				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
-				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
+				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.AlicePrivateKey.Bytes()), nil),
 			},
 			nil,
 			map[string]string{
@@ -285,7 +285,7 @@ func Test_accountAddCmd(t *testing.T) {
 					return m, nil
 				},
 				promptstest.MockRequiredSecret(t, "", errors.Errorf("failed")),
-				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
+				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.AlicePrivateKey.Bytes()), nil),
 			},
 			nil,
 			map[string]string{
@@ -339,7 +339,7 @@ func Test_accountAddCmd(t *testing.T) {
 					return m, nil
 				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
-				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
+				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.AlicePrivateKey.Bytes()), nil),
 			},
 			nil,
 			map[string]string{
@@ -357,7 +357,7 @@ func Test_accountAddCmd(t *testing.T) {
 					return m, nil
 				},
 				promptstest.MockRequiredSecret(t, "passphrase-secret", nil),
-				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.SofiaPrivateKey.Bytes()), nil),
+				promptstest.MockRequiredSecret(t, encoding.EncodeHex(secp256k1test.AlicePrivateKey.Bytes()), nil),
 			},
 			nil,
 			map[string]string{

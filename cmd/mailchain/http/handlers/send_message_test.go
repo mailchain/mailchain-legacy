@@ -163,7 +163,7 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To: encoding.EncodeHex(addressingtest.EthereumCharlotte),
+							To: encoding.EncodeHex(addressingtest.EthereumBob),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
@@ -183,8 +183,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:      encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From:    encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:      encoding.EncodeHex(addressingtest.EthereumBob),
+							From:    encoding.EncodeHex(addressingtest.EthereumAlice),
 							ReplyTo: "<invalid",
 						},
 						Subject:           "subject-value",
@@ -205,8 +205,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   encoding.EncodeHex(addressingtest.EthereumBob),
+							From: encoding.EncodeHex(addressingtest.EthereumAlice),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
@@ -226,12 +226,12 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   encoding.EncodeHex(addressingtest.EthereumBob),
+							From: encoding.EncodeHex(addressingtest.EthereumAlice),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
-						PublicKey:         encoding.EncodeHex(addressingtest.EthereumSofia),
+						PublicKey:         encoding.EncodeHex(addressingtest.EthereumAlice),
 						PublicKeyEncoding: "public-key-Encoding-value",
 						PublicKeyKind:     "public-key-kind-value",
 					},
@@ -248,12 +248,12 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   encoding.EncodeHex(addressingtest.EthereumBob),
+							From: encoding.EncodeHex(addressingtest.EthereumAlice),
 						},
 						Subject:   "subject-value",
 						Body:      "body-value",
-						PublicKey: "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKey: "0x" + encoding.EncodeHex(secp256k1test.BobPublicKey.Bytes()),
 					},
 				},
 				"ethereum",
@@ -267,12 +267,12 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumBob),
+							From: encoding.EncodeHex(addressingtest.EthereumAlice),
 						},
 						Subject:   "subject-value",
 						Body:      "body-value",
-						PublicKey: "0x" + encoding.EncodeHex(secp256k1test.SofiaPublicKey.Bytes()),
+						PublicKey: "0x" + encoding.EncodeHex(secp256k1test.AlicePublicKey.Bytes()),
 					},
 				},
 				"ethereum",
@@ -286,12 +286,12 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumBob),
+							From: encoding.EncodeHex(addressingtest.EthereumAlice),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
-						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.BobPublicKey.Bytes()),
 						PublicKeyEncoding: "hex/0x-prefix",
 						PublicKeyKind:     "invalid",
 					},
@@ -309,8 +309,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumBob),
+							From: encoding.EncodeHex(addressingtest.EthereumAlice),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
@@ -332,8 +332,8 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumBob),
+							From: encoding.EncodeHex(addressingtest.EthereumAlice),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
@@ -355,12 +355,12 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumBob),
+							From: encoding.EncodeHex(addressingtest.EthereumAlice),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
-						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.BobPublicKey.Bytes()),
 						PublicKeyEncoding: "hex/0x-prefix",
 						PublicKeyKind:     "secp256k1",
 					},
@@ -378,12 +378,12 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumBob),
+							From: encoding.EncodeHex(addressingtest.EthereumAlice),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
-						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.BobPublicKey.Bytes()),
 						PublicKeyEncoding: "hex/0x-prefix",
 						PublicKeyKind:     "secp256k1",
 					},
@@ -401,12 +401,12 @@ func Test_isValid(t *testing.T) {
 				&PostRequestBody{
 					Message: PostMessage{
 						Headers: &PostHeaders{
-							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumCharlotte),
-							From: encoding.EncodeHex(addressingtest.EthereumSofia),
+							To:   "0x" + encoding.EncodeHex(addressingtest.EthereumBob),
+							From: encoding.EncodeHex(addressingtest.EthereumAlice),
 						},
 						Subject:           "subject-value",
 						Body:              "body-value",
-						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.CharlottePublicKey.Bytes()),
+						PublicKey:         "0x" + encoding.EncodeHex(secp256k1test.BobPublicKey.Bytes()),
 						PublicKeyEncoding: "hex/0x-prefix",
 						PublicKeyKind:     "secp256k1",
 					},

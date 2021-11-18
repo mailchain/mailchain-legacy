@@ -49,9 +49,9 @@ func TestSigner_Sign(t *testing.T) {
 		wantErr    bool
 	}{
 		{
-			"sr25519-charlotte",
+			"sr25519-bob",
 			fields{
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 			},
 			args{
 				SignerOptions{
@@ -117,7 +117,7 @@ func TestSigner_Sign(t *testing.T) {
 		{
 			"err-nil-opts",
 			fields{
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 			},
 			args{
 				nil,
@@ -129,7 +129,7 @@ func TestSigner_Sign(t *testing.T) {
 		{
 			"err-sign",
 			fields{
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 			},
 			args{
 				&SignerOptions{
@@ -358,10 +358,10 @@ func TestNewSigner(t *testing.T) {
 		{
 			"success",
 			args{
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 			},
 			&Signer{
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 			},
 		},
 	}
@@ -392,9 +392,9 @@ func TestSigner_createSignature(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"sr25519-charlotte",
+			"sr25519-bob",
 			fields{
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 			},
 			args{
 				[]byte("signed-data"),
@@ -410,9 +410,9 @@ func TestSigner_createSignature(t *testing.T) {
 			false,
 		},
 		{
-			"ed25519-charlotte",
+			"ed25519-bob",
 			fields{
-				ed25519test.CharlottePrivateKey,
+				ed25519test.BobPrivateKey,
 			},
 			args{
 				[]byte("signed-data"),
@@ -428,9 +428,9 @@ func TestSigner_createSignature(t *testing.T) {
 			false,
 		},
 		{
-			"err-secp256k1-charlotte",
+			"err-secp256k1-bob",
 			fields{
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			args{
 				[]byte("signed-data"),

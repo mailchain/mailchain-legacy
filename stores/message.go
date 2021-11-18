@@ -7,7 +7,7 @@ type Header struct {
 	// example: 12 Mar 19 20:23 UTC
 	Date time.Time `json:"date"`
 	// The sender of the message
-	// example: Charlotte <5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum>
+	// example: Bob <5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum>
 	From string `json:"from"`
 	// The recipient of the message
 	// To: <4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum>

@@ -94,12 +94,12 @@ func Test_GetPublicKey(t *testing.T) {
 			http.StatusInternalServerError,
 		},
 		{
-			"200-sofia-secp256k1",
+			"200-alice-secp256k1",
 			args{
 				func() datastore.PublicKeyStore {
 					store := datastoretest.NewMockPublicKeyStore(mockCtrl)
 					res := &datastore.PublicKey{
-						PublicKey: secp256k1test.SofiaPublicKey,
+						PublicKey: secp256k1test.AlicePublicKey,
 						BlockHash: blockHash,
 						TxHash:    txHash,
 					}
@@ -115,12 +115,12 @@ func Test_GetPublicKey(t *testing.T) {
 			http.StatusOK,
 		},
 		{
-			"200-charlotte-secp256k1",
+			"200-bob-secp256k1",
 			args{
 				func() datastore.PublicKeyStore {
 					store := datastoretest.NewMockPublicKeyStore(mockCtrl)
 					res := &datastore.PublicKey{
-						PublicKey: secp256k1test.CharlottePublicKey,
+						PublicKey: secp256k1test.BobPublicKey,
 						BlockHash: blockHash,
 						TxHash:    txHash,
 					}

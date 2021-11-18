@@ -31,10 +31,10 @@ func TestNewDecrypter(t *testing.T) {
 		{
 			"ed25519",
 			args{
-				ed25519test.CharlottePrivateKey,
+				ed25519test.BobPrivateKey,
 			},
 			&Decrypter{
-				privateKey: ed25519test.CharlottePrivateKey,
+				privateKey: ed25519test.BobPrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewED25519(rand.Reader)
 					return k
@@ -45,10 +45,10 @@ func TestNewDecrypter(t *testing.T) {
 		{
 			"sr25519",
 			args{
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 			},
 			&Decrypter{
-				privateKey: sr25519test.CharlottePrivateKey,
+				privateKey: sr25519test.BobPrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewSR25519(rand.Reader)
 					return k
@@ -59,10 +59,10 @@ func TestNewDecrypter(t *testing.T) {
 		{
 			"secp256k1",
 			args{
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			&Decrypter{
-				privateKey: secp256k1test.CharlottePrivateKey,
+				privateKey: secp256k1test.BobPrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewSECP256K1(rand.Reader)
 					return k
@@ -108,9 +108,9 @@ func TestDecrypter_Decrypt(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"ed25519-charlotte",
+			"ed25519-bob",
 			fields{
-				privateKey: ed25519test.CharlottePrivateKey,
+				privateKey: ed25519test.BobPrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewED25519(rand.Reader)
 					return k
@@ -123,9 +123,9 @@ func TestDecrypter_Decrypt(t *testing.T) {
 			false,
 		},
 		{
-			"ed25519-sofia",
+			"ed25519-alice",
 			fields{
-				privateKey: ed25519test.SofiaPrivateKey,
+				privateKey: ed25519test.AlicePrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewED25519(rand.Reader)
 					return k
@@ -138,9 +138,9 @@ func TestDecrypter_Decrypt(t *testing.T) {
 			false,
 		},
 		{
-			"sr25519-charlotte",
+			"sr25519-bob",
 			fields{
-				privateKey: sr25519test.CharlottePrivateKey,
+				privateKey: sr25519test.BobPrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewSR25519(rand.Reader)
 					return k
@@ -153,9 +153,9 @@ func TestDecrypter_Decrypt(t *testing.T) {
 			false,
 		},
 		{
-			"sr25519-sofia",
+			"sr25519-alice",
 			fields{
-				privateKey: sr25519test.SofiaPrivateKey,
+				privateKey: sr25519test.AlicePrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewSR25519(rand.Reader)
 					return k
@@ -168,9 +168,9 @@ func TestDecrypter_Decrypt(t *testing.T) {
 			false,
 		},
 		{
-			"secp256k1-charlotte",
+			"secp256k1-bob",
 			fields{
-				privateKey: secp256k1test.CharlottePrivateKey,
+				privateKey: secp256k1test.BobPrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewSECP256K1(rand.Reader)
 					return k
@@ -183,9 +183,9 @@ func TestDecrypter_Decrypt(t *testing.T) {
 			false,
 		},
 		{
-			"secp256k1-sofia",
+			"secp256k1-alice",
 			fields{
-				privateKey: secp256k1test.SofiaPrivateKey,
+				privateKey: secp256k1test.AlicePrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewSECP256K1(rand.Reader)
 					return k
@@ -200,7 +200,7 @@ func TestDecrypter_Decrypt(t *testing.T) {
 		{
 			"err-decode",
 			fields{
-				privateKey: secp256k1test.SofiaPrivateKey,
+				privateKey: secp256k1test.AlicePrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewSECP256K1(rand.Reader)
 					return k
@@ -215,7 +215,7 @@ func TestDecrypter_Decrypt(t *testing.T) {
 		{
 			"err-secp256k1-wrong-key",
 			fields{
-				privateKey: secp256k1test.CharlottePrivateKey,
+				privateKey: secp256k1test.BobPrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewSECP256K1(rand.Reader)
 					return k
@@ -230,7 +230,7 @@ func TestDecrypter_Decrypt(t *testing.T) {
 		{
 			"err-ed25519-wrong-key",
 			fields{
-				privateKey: ed25519test.CharlottePrivateKey,
+				privateKey: ed25519test.BobPrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewED25519(rand.Reader)
 					return k
@@ -245,7 +245,7 @@ func TestDecrypter_Decrypt(t *testing.T) {
 		{
 			"err-ed25519-wrong-key",
 			fields{
-				privateKey: sr25519test.SofiaPrivateKey,
+				privateKey: sr25519test.AlicePrivateKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewSR25519(rand.Reader)
 					return k

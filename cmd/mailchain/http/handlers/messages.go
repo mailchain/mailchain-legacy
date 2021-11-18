@@ -363,7 +363,7 @@ type getHeaders struct {
 	Date time.Time `json:"date"`
 	// The sender of the message
 	// readOnly: true
-	// example: Charlotte <5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum>
+	// example: Bob <5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum>
 	From string `json:"from"`
 	// The recipient of the message
 	// readOnly: true

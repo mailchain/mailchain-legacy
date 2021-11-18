@@ -159,7 +159,7 @@ func TestSubstrateClient_Call(t *testing.T) {
 			args{
 				types.ExamplaryMetadataV8,
 				func() types.Address {
-					a := types.NewAddressFromAccountID(sr25519test.CharlottePublicKey.Bytes())
+					a := types.NewAddressFromAccountID(sr25519test.BobPublicKey.Bytes())
 					return a
 				}(),
 				big.NewInt(SuggestedGas),
@@ -181,7 +181,7 @@ func TestSubstrateClient_Call(t *testing.T) {
 			fields{},
 			args{
 				types.ExamplaryMetadataV4,
-				types.NewAddressFromAccountID(sr25519test.CharlottePublicKey.Bytes()),
+				types.NewAddressFromAccountID(sr25519test.BobPublicKey.Bytes()),
 				big.NewInt(SuggestedGas),
 				[]byte("message"),
 			},
@@ -294,7 +294,7 @@ func TestSubstrateClient_GetAddress(t *testing.T) {
 			"success",
 			fields{},
 			args{
-				sr25519test.CharlottePrivateKey.Bytes(),
+				sr25519test.BobPrivateKey.Bytes(),
 			},
 			types.Address{
 				IsAccountID:    true,

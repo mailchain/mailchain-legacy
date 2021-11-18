@@ -321,7 +321,7 @@ func TestNewZeroX01(t *testing.T) {
 					m.EXPECT().Encrypt(gomock.Any()).Return([]byte("encrypted"), nil)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:      mli.Mailchain,
 					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
@@ -342,7 +342,7 @@ func TestNewZeroX01(t *testing.T) {
 					m.EXPECT().Encrypt(gomock.Any()).Return([]byte("encrypted"), nil)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					EncryptedHash: encodingtest.MustDecodeHex("220455078214"),
 					Location:      mli.Mailchain,
@@ -364,7 +364,7 @@ func TestNewZeroX01(t *testing.T) {
 					m.EXPECT().Encrypt(gomock.Any()).Return(nil, errors.Errorf("failed"))
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:      mli.Mailchain,
 					Resource:      "2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba",
@@ -381,7 +381,7 @@ func TestNewZeroX01(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location: mli.Mailchain,
 				},
@@ -396,7 +396,7 @@ func TestNewZeroX01(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{},
 			},
 			nil,
@@ -409,7 +409,7 @@ func TestNewZeroX01(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:      mli.Mailchain,
 					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
@@ -425,7 +425,7 @@ func TestNewZeroX01(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:      mli.Mailchain,
 					Resource:      "invalid",
@@ -442,7 +442,7 @@ func TestNewZeroX01(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:      mli.Mailchain,
 					Resource:      "2c8432ca",

@@ -117,35 +117,35 @@ func TestSECP256K1_publicKey(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-secp256k1-sofia",
+			"success-secp256k1-alice",
 			fields{
 				nil,
 				nil,
 			},
 			args{
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 			},
 			false,
 		},
 		{
-			"success-secp256k1-charlotte",
+			"success-secp256k1-bob",
 			fields{
 				nil,
 				nil,
 			},
 			args{
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 			},
 			false,
 		},
 		{
-			"err-ed25519-sofia",
+			"err-ed25519-alice",
 			fields{
 				nil,
 				nil,
 			},
 			args{
-				ed25519test.SofiaPublicKey},
+				ed25519test.AlicePublicKey},
 			true,
 		},
 	}
@@ -179,35 +179,35 @@ func TestSECP256K1_privateKey(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-secp256k1-sofia",
+			"success-secp256k1-alice",
 			fields{
 				nil,
 				nil,
 			},
 			args{
-				secp256k1test.SofiaPrivateKey,
+				secp256k1test.AlicePrivateKey,
 			},
 			false,
 		},
 		{
-			"success-secp256k1-charlotte",
+			"success-secp256k1-bob",
 			fields{
 				nil,
 				nil,
 			},
 			args{
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			false,
 		},
 		{
-			"err-ed25519-sofia",
+			"err-ed25519-alice",
 			fields{
 				nil,
 				nil,
 			},
 			args{
-				ed25519test.SofiaPrivateKey,
+				ed25519test.AlicePrivateKey,
 			},
 			true,
 		},
@@ -244,53 +244,53 @@ func TestSECP256K1_SharedSecret(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-charlotte-sofia",
+			"success-bob-alice",
 			fields{
 				nil,
 				ethcrypto.S256(),
 			},
 			args{
-				secp256k1test.CharlottePrivateKey,
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.BobPrivateKey,
+				secp256k1test.AlicePublicKey,
 			},
 			[]byte{0xb6, 0xbd, 0xfa, 0xde, 0x23, 0x17, 0x82, 0x72, 0x42, 0x5d, 0x25, 0x77, 0x4a, 0x7d, 0xd, 0x38, 0x8f, 0xbe, 0xf9, 0x48, 0x8, 0x93, 0xfc, 0xc3, 0x64, 0x6a, 0xcc, 0xc1, 0x23, 0xea, 0xcc, 0x47},
 			false,
 		},
 		{
-			"success-sofia-charlotte",
+			"success-alice-bob",
 			fields{
 				nil,
 				ethcrypto.S256(),
 			},
 			args{
-				secp256k1test.SofiaPrivateKey,
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.AlicePrivateKey,
+				secp256k1test.BobPublicKey,
 			},
 			[]byte{0xb6, 0xbd, 0xfa, 0xde, 0x23, 0x17, 0x82, 0x72, 0x42, 0x5d, 0x25, 0x77, 0x4a, 0x7d, 0xd, 0x38, 0x8f, 0xbe, 0xf9, 0x48, 0x8, 0x93, 0xfc, 0xc3, 0x64, 0x6a, 0xcc, 0xc1, 0x23, 0xea, 0xcc, 0x47},
 			false,
 		},
 		{
-			"err-sofia-sofia",
+			"err-alice-alice",
 			fields{
 				nil,
 				ethcrypto.S256(),
 			},
 			args{
-				secp256k1test.SofiaPrivateKey,
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePrivateKey,
+				secp256k1test.AlicePublicKey,
 			},
 			nil,
 			true,
 		},
 		{
-			"err-charlotte-charlotte",
+			"err-bob-bob",
 			fields{
 				nil,
 				ethcrypto.S256(),
 			},
 			args{
-				secp256k1test.CharlottePrivateKey,
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPrivateKey,
+				secp256k1test.BobPublicKey,
 			},
 			nil,
 			true,
@@ -303,7 +303,7 @@ func TestSECP256K1_SharedSecret(t *testing.T) {
 			},
 			args{
 				nil,
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 			},
 			nil,
 			true,
@@ -315,7 +315,7 @@ func TestSECP256K1_SharedSecret(t *testing.T) {
 				ethcrypto.S256(),
 			},
 			args{
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 				nil,
 			},
 			nil,

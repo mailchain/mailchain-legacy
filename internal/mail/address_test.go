@@ -43,16 +43,16 @@ func TestParseAddress(t *testing.T) {
 			false,
 		}, {
 			"full-address-with-display-name",
-			args{"Charlotte <0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum>", "", ""},
+			args{"Bob <0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum>", "", ""},
 			&Address{
-				DisplayName:  "Charlotte",
+				DisplayName:  "Bob",
 				FullAddress:  "0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum",
 				ChainAddress: "0x92d8f10248c6a3953cc3692a894655ad05d61efb",
 			},
 			false,
 		}, {
 			"chain-only-address",
-			args{"Charlotte <0x92d8f10248c6a3953cc3692a894655ad05d61efb>", "", ""},
+			args{"Bob <0x92d8f10248c6a3953cc3692a894655ad05d61efb>", "", ""},
 			nil,
 			true,
 		},
@@ -67,12 +67,12 @@ func TestParseAddress(t *testing.T) {
 			false,
 		},
 		{"chain-only-address-with-display-name",
-			args{"Charlotte <0x92d8f10248c6a3953cc3692a894655ad05d61efb>", "ethereum", "ropsten"},
+			args{"Bob <0x92d8f10248c6a3953cc3692a894655ad05d61efb>", "ethereum", "ropsten"},
 			nil,
 			true,
 		},
 		{"invalid-address",
-			args{"Charlotte <0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum", "ethereum", "ropsten"},
+			args{"Bob <0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum", "ethereum", "ropsten"},
 			nil,
 			true,
 		},
@@ -217,11 +217,11 @@ func TestAddress_String(t *testing.T) {
 		{
 			"success",
 			fields{
-				"Charlotte",
+				"Bob",
 				"0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum",
 				"0x92d8f10248c6a3953cc3692a894655ad05d61efb",
 			},
-			"\"Charlotte\" <0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum>",
+			"\"Bob\" <0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum>",
 		},
 	}
 	for _, tt := range tests {

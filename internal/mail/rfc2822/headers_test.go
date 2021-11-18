@@ -324,20 +324,20 @@ func Test_parsePublicKey(t *testing.T) {
 			"secp256k1",
 			args{
 				nm.Header{
-					"Public-Key": []string{pubKeyHeader(secp256k1test.SofiaPublicKey)},
+					"Public-Key": []string{pubKeyHeader(secp256k1test.AlicePublicKey)},
 				},
 			},
-			secp256k1test.SofiaPublicKey,
+			secp256k1test.AlicePublicKey,
 			false,
 		},
 		{
 			"ed25519",
 			args{
 				nm.Header{
-					"Public-Key": []string{pubKeyHeader(ed25519test.SofiaPublicKey)},
+					"Public-Key": []string{pubKeyHeader(ed25519test.AlicePublicKey)},
 				},
 			},
-			ed25519test.SofiaPublicKey,
+			ed25519test.AlicePublicKey,
 			false,
 		},
 		{
@@ -352,7 +352,7 @@ func Test_parsePublicKey(t *testing.T) {
 			"err-missing-delimiter",
 			args{
 				nm.Header{
-					"Public-Key": []string{encoding.EncodeHexZeroX(ed25519test.SofiaPublicKey.Bytes()) + " type=ed25519 encoding=" + encoding.KindHex0XPrefix},
+					"Public-Key": []string{encoding.EncodeHexZeroX(ed25519test.AlicePublicKey.Bytes()) + " type=ed25519 encoding=" + encoding.KindHex0XPrefix},
 				},
 			},
 			nil,
@@ -372,7 +372,7 @@ func Test_parsePublicKey(t *testing.T) {
 			"err-missing-type",
 			args{
 				nm.Header{
-					"Public-Key": []string{encoding.EncodeHexZeroX(ed25519test.SofiaPublicKey.Bytes()) + "; encoding=" + encoding.KindHex0XPrefix},
+					"Public-Key": []string{encoding.EncodeHexZeroX(ed25519test.AlicePublicKey.Bytes()) + "; encoding=" + encoding.KindHex0XPrefix},
 				},
 			},
 			nil,
@@ -426,7 +426,7 @@ func Test_parseHeaders(t *testing.T) {
 					"From":         []string{"<4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum>"},
 					"Date":         []string{"Tue, 12 Mar 2019 20:23:13 UTC"},
 					"Content-Type": []string{"text/plain; charset=\"UTF-8\""},
-					"Public-Key":   []string{pubKeyHeader(ed25519test.SofiaPublicKey)},
+					"Public-Key":   []string{pubKeyHeader(ed25519test.AlicePublicKey)},
 				},
 			},
 			&mail.Headers{
@@ -436,7 +436,7 @@ func Test_parseHeaders(t *testing.T) {
 				Subject:     "test subject",
 				ReplyTo:     nil,
 				ContentType: "text/plain; charset=\"UTF-8\"",
-				PublicKey:   ed25519test.SofiaPublicKey,
+				PublicKey:   ed25519test.AlicePublicKey,
 			},
 			false,
 		},
@@ -449,7 +449,7 @@ func Test_parseHeaders(t *testing.T) {
 					"From":         []string{"<4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum>"},
 					"Date":         []string{"Tue, 12 Mar 2019 20:23:13 UTC"},
 					"Content-Type": []string{"text/html; charset=\"UTF-8\""},
-					"Public-Key":   []string{pubKeyHeader(secp256k1test.SofiaPublicKey)},
+					"Public-Key":   []string{pubKeyHeader(secp256k1test.AlicePublicKey)},
 				},
 			},
 			&mail.Headers{
@@ -459,7 +459,7 @@ func Test_parseHeaders(t *testing.T) {
 				Subject:     "test subject",
 				ReplyTo:     nil,
 				ContentType: "text/html; charset=\"UTF-8\"",
-				PublicKey:   secp256k1test.SofiaPublicKey,
+				PublicKey:   secp256k1test.AlicePublicKey,
 			},
 			false,
 		},
@@ -471,7 +471,7 @@ func Test_parseHeaders(t *testing.T) {
 					"To":         []string{"<5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum>"},
 					"From":       []string{"<4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum>"},
 					"Date":       []string{"Tue, 12 Mar 2019 20:23:13 UTC"},
-					"Public-Key": []string{pubKeyHeader(secp256k1test.SofiaPublicKey)},
+					"Public-Key": []string{pubKeyHeader(secp256k1test.AlicePublicKey)},
 				},
 			},
 			&mail.Headers{
@@ -481,7 +481,7 @@ func Test_parseHeaders(t *testing.T) {
 				Subject:     "test subject",
 				ReplyTo:     nil,
 				ContentType: "text/plain; charset=\"UTF-8\"",
-				PublicKey:   secp256k1test.SofiaPublicKey,
+				PublicKey:   secp256k1test.AlicePublicKey,
 			},
 			false,
 		},
@@ -492,7 +492,7 @@ func Test_parseHeaders(t *testing.T) {
 					"Subject":    []string{"test subject"},
 					"To":         []string{"<5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum>"},
 					"Date":       []string{"Tue, 12 Mar 2019 20:23:13 UTC"},
-					"Public-Key": []string{pubKeyHeader(secp256k1test.SofiaPublicKey)},
+					"Public-Key": []string{pubKeyHeader(secp256k1test.AlicePublicKey)},
 				},
 			},
 			nil,
@@ -505,7 +505,7 @@ func Test_parseHeaders(t *testing.T) {
 					"Subject":    []string{"test subject"},
 					"From":       []string{"<5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum>"},
 					"Date":       []string{"Tue, 12 Mar 2019 20:23:13 UTC"},
-					"Public-Key": []string{pubKeyHeader(secp256k1test.SofiaPublicKey)},
+					"Public-Key": []string{pubKeyHeader(secp256k1test.AlicePublicKey)},
 				},
 			},
 			nil,
@@ -518,7 +518,7 @@ func Test_parseHeaders(t *testing.T) {
 					"To":              []string{"<5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum>"},
 					"From":            []string{"<4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum>"},
 					"Date":            []string{"Tue, 12 Mar 2019 20:23:13 UTC"},
-					"Public-Key":      []string{encoding.EncodeHexZeroX(ed25519test.SofiaPublicKey.Bytes())},
+					"Public-Key":      []string{encoding.EncodeHexZeroX(ed25519test.AlicePublicKey.Bytes())},
 					"Public-Key-Type": []string{"ed25519"},
 				},
 			},
@@ -532,7 +532,7 @@ func Test_parseHeaders(t *testing.T) {
 					"Subject":    []string{"test subject"},
 					"To":         []string{"<5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum>"},
 					"From":       []string{"<4cb0a77b76667dac586c40cc9523ace73b5d772bd503c63ed0ca596eae1658b2@ropsten.ethereum>"},
-					"Public-Key": []string{pubKeyHeader(secp256k1test.SofiaPublicKey)},
+					"Public-Key": []string{pubKeyHeader(secp256k1test.AlicePublicKey)},
 				},
 			},
 			nil,

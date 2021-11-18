@@ -23,8 +23,8 @@ import (
 )
 
 // Address represents a single mail address.
-// An address such as "Charlotte <0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum.mailchain>" is represented
-// as Address{Name: "Charlotte", Address: "0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum.mailchain"}.
+// An address such as "Bob <0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum.mailchain>" is represented
+// as Address{Name: "Bob", Address: "0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum.mailchain"}.
 type Address struct {
 	DisplayName  string // Proper name; may be empty.
 	FullAddress  string // 0x92d8f10248c6a3953cc3692a894655ad05d61efb@chain.network.mailchain
@@ -36,7 +36,7 @@ func (a *Address) String() string {
 	return addr.String()
 }
 
-// ParseAddress parses a single RFC 5322 address, e.g. "Charlotte <0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum.mailchain>"
+// ParseAddress parses a single RFC 5322 address, e.g. "Bob <0x92d8f10248c6a3953cc3692a894655ad05d61efb@ropsten.ethereum.mailchain>"
 // then apply it to the chain address.
 func ParseAddress(input, chain, network string) (*Address, error) {
 	input = strings.Trim(input, " ")

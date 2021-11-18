@@ -53,7 +53,7 @@ func TestClient_Receive(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-charlotte",
+			"success-bob",
 			fields{
 				algorand.Testnet,
 				"",
@@ -80,7 +80,7 @@ func TestClient_Receive(t *testing.T) {
 			false,
 		},
 		{
-			"success-charlotte-rekey",
+			"success-bob-rekey",
 			fields{
 				algorand.Testnet,
 				"",

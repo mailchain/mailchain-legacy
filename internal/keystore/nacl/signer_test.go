@@ -46,12 +46,12 @@ func TestFileStore_GetSigner(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-sofia-secp256k1",
+			"success-alice-secp256k1",
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -73,8 +73,8 @@ func TestFileStore_GetSigner(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),

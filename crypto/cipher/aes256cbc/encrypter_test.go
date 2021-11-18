@@ -116,7 +116,7 @@ func Test_encrypt(t *testing.T) {
 					return ecies.ImportECDSA(tmpEphemeralPrivateKey)
 				}(),
 				func() *ecies.PublicKey {
-					tp, ok := secp256k1test.SofiaPublicKey.(*secp256k1.PublicKey)
+					tp, ok := secp256k1test.AlicePublicKey.(*secp256k1.PublicKey)
 					if !ok {
 						t.Error("failed to cast")
 					}
@@ -148,7 +148,7 @@ func Test_encrypt(t *testing.T) {
 					return ecies.ImportECDSA(tmpEphemeralPrivateKey)
 				}(),
 				func() *ecies.PublicKey {
-					tp, ok := secp256k1test.SofiaPublicKey.(*secp256k1.PublicKey)
+					tp, ok := secp256k1test.AlicePublicKey.(*secp256k1.PublicKey)
 					if !ok {
 						t.Error("failed to cast")
 					}

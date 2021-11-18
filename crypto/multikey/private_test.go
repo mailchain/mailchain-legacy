@@ -40,34 +40,34 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 			"secp256k1",
 			args{
 				"secp256k1",
-				secp256k1test.SofiaPrivateKey.Bytes(),
+				secp256k1test.AlicePrivateKey.Bytes(),
 			},
-			secp256k1test.SofiaPrivateKey,
+			secp256k1test.AlicePrivateKey,
 			false,
 		},
 		{
 			"ed25519",
 			args{
 				"ed25519",
-				ed25519test.SofiaPrivateKey.Bytes(),
+				ed25519test.AlicePrivateKey.Bytes(),
 			},
-			ed25519test.SofiaPrivateKey,
+			ed25519test.AlicePrivateKey,
 			false,
 		},
 		{
-			"sr25519-Charlotte",
+			"sr25519-Bob",
 			args{
 				"sr25519",
 				encodingtest.MustDecodeHex("23b063a581fd8e5e847c4e2b9c494247298791530f5293be369e8bf23a45d2bd"),
 			},
-			sr25519test.CharlottePrivateKey,
+			sr25519test.BobPrivateKey,
 			false,
 		},
 		{
 			"err",
 			args{
 				"unknown",
-				secp256k1test.SofiaPrivateKey.Bytes(),
+				secp256k1test.AlicePrivateKey.Bytes(),
 			},
 			nil,
 			true,

@@ -343,7 +343,7 @@ func TestNewZeroX02(t *testing.T) {
 					m.EXPECT().Encrypt(gomock.Any()).Return([]byte{0x2a, 0xe1, 0x2, 0xa3, 0xaa, 0xe8, 0xec, 0xaf, 0xd5, 0xe3, 0xb6, 0xbc, 0x8c, 0xef, 0x3b, 0x6a, 0x63, 0x79, 0x27, 0x5b, 0x89, 0xed, 0x78, 0x3c, 0xba, 0x9, 0xe4, 0xa0, 0xbc, 0x43, 0xba, 0x45, 0xd6, 0x3c, 0xc1, 0x39, 0x13, 0xd3, 0x7a, 0x16, 0x15, 0x37, 0x7d, 0x92, 0x3d, 0x47, 0x3a, 0x63, 0xef, 0x7c, 0x7a, 0xea, 0x4a, 0x1, 0xe1, 0x31, 0x41, 0xbc, 0xa7, 0x6b, 0x6b, 0x5b, 0xbc, 0x66, 0xda, 0x10, 0xdc, 0xb5, 0x26, 0x19, 0x4a, 0xe7, 0x91, 0x24, 0x34, 0x76, 0x1a, 0x43, 0xa, 0x6, 0xf9, 0x4e, 0xae, 0x9e, 0x1e, 0x77, 0xcd, 0x77, 0xdf, 0x91, 0x73, 0xa2, 0xf9, 0x42, 0xb7, 0x2d, 0x67, 0xe1, 0xfd, 0xef, 0xd4, 0x36, 0x54, 0xb5, 0xb, 0xfe, 0x3a, 0xd1, 0xbd, 0x80, 0x3, 0xf3, 0xdf}, nil)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:          mli.IPFS,
 					DecryptedHash:     encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
@@ -365,7 +365,7 @@ func TestNewZeroX02(t *testing.T) {
 					m.EXPECT().Encrypt(gomock.Any()).Return(nil, errors.Errorf("failed"))
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:          mli.Mailchain,
 					DecryptedHash:     encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
@@ -383,7 +383,7 @@ func TestNewZeroX02(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:          mli.Mailchain,
 					DecryptedHash:     encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
@@ -401,7 +401,7 @@ func TestNewZeroX02(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:          mli.Mailchain,
 					DecryptedHash:     encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
@@ -419,7 +419,7 @@ func TestNewZeroX02(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:          mli.Mailchain,
 					DecryptedHash:     encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
@@ -437,7 +437,7 @@ func TestNewZeroX02(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{},
 			},
 			nil,
@@ -450,7 +450,7 @@ func TestNewZeroX02(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:      mli.Mailchain,
 					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
@@ -466,7 +466,7 @@ func TestNewZeroX02(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:      mli.Mailchain,
 					Resource:      "invalid",
@@ -483,7 +483,7 @@ func TestNewZeroX02(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				&CreateOpts{
 					Location:      mli.Mailchain,
 					Resource:      "2c8432ca",

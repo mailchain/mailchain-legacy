@@ -46,7 +46,7 @@ func TestPublicKeyFinder_PublicKeyFromAddress(t *testing.T) {
 				"edgeware-mainnet",
 				encodingtest.MustDecodeBase58("kWCKFhkg5m5XmGz2pbcUYhJK7RAf6jLj1wLM5J5junonVTH"),
 			},
-			sr25519test.CharlottePublicKey,
+			sr25519test.BobPublicKey,
 			false,
 		},
 		{

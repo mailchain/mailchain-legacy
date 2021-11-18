@@ -28,7 +28,7 @@ func TestDatabase_PutTransaction(t *testing.T) {
 			args{
 				"ethereum",
 				"mainnet",
-				addressingtest.EthereumCharlotte,
+				addressingtest.EthereumBob,
 				stores.Transaction{
 					EnvelopeData: []byte("env1"),
 					BlockNumber:  100,
@@ -68,12 +68,12 @@ func TestDatabase_GetTransactions(t *testing.T) {
 		wantErr       bool
 	}{
 		{
-			"single-tx-charlotte",
+			"single-tx-bob",
 			[]args{
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env2"),
 						BlockNumber:  2,
@@ -82,7 +82,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumSofia,
+					addressingtest.EthereumAlice,
 					stores.Transaction{
 						EnvelopeData: []byte("env3"),
 						BlockNumber:  3,
@@ -91,7 +91,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			},
 			"ethereum",
 			"mainnet",
-			addressingtest.EthereumCharlotte,
+			addressingtest.EthereumBob,
 			0,
 			100,
 			[]stores.Transaction{
@@ -103,12 +103,12 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			false,
 		},
 		{
-			"multiple-message-charlotte",
+			"multiple-message-bob",
 			[]args{
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env2"),
 						BlockNumber:  2,
@@ -117,7 +117,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumSofia,
+					addressingtest.EthereumAlice,
 					stores.Transaction{
 						EnvelopeData: []byte("env3"),
 						BlockNumber:  3,
@@ -126,7 +126,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env4"),
 						BlockNumber:  4,
@@ -135,7 +135,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			},
 			"ethereum",
 			"mainnet",
-			addressingtest.EthereumCharlotte,
+			addressingtest.EthereumBob,
 			0,
 			100,
 			[]stores.Transaction{
@@ -151,12 +151,12 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			false,
 		},
 		{
-			"limit-message-charlotte",
+			"limit-message-bob",
 			[]args{
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env2"),
 						BlockNumber:  2,
@@ -165,7 +165,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env3"),
 						BlockNumber:  3,
@@ -174,7 +174,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env4"),
 						BlockNumber:  4,
@@ -183,7 +183,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			},
 			"ethereum",
 			"mainnet",
-			addressingtest.EthereumCharlotte,
+			addressingtest.EthereumBob,
 			0,
 			2,
 			[]stores.Transaction{
@@ -199,12 +199,12 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			false,
 		},
 		{
-			"skip-message-charlotte",
+			"skip-message-bob",
 			[]args{
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env2"),
 						BlockNumber:  2,
@@ -213,7 +213,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env3"),
 						BlockNumber:  3,
@@ -222,7 +222,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env4"),
 						BlockNumber:  4,
@@ -231,7 +231,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			},
 			"ethereum",
 			"mainnet",
-			addressingtest.EthereumCharlotte,
+			addressingtest.EthereumBob,
 			1,
 			100,
 			[]stores.Transaction{
@@ -247,12 +247,12 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			false,
 		},
 		{
-			"skip-limit-message-charlotte",
+			"skip-limit-message-bob",
 			[]args{
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env2"),
 						BlockNumber:  2,
@@ -261,7 +261,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env3"),
 						BlockNumber:  3,
@@ -270,7 +270,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env4"),
 						BlockNumber:  4,
@@ -279,7 +279,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			},
 			"ethereum",
 			"mainnet",
-			addressingtest.EthereumCharlotte,
+			addressingtest.EthereumBob,
 			1,
 			1,
 			[]stores.Transaction{
@@ -291,12 +291,12 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			false,
 		},
 		{
-			"multiple-message-charlotte-irregular-entry-order",
+			"multiple-message-bob-irregular-entry-order",
 			[]args{
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env2"),
 						BlockNumber:  2,
@@ -305,7 +305,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumSofia,
+					addressingtest.EthereumAlice,
 					stores.Transaction{
 						EnvelopeData: []byte("env2"),
 						BlockNumber:  3,
@@ -314,7 +314,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env4"),
 						BlockNumber:  4,
@@ -323,7 +323,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 				{
 					"ethereum",
 					"mainnet",
-					addressingtest.EthereumCharlotte,
+					addressingtest.EthereumBob,
 					stores.Transaction{
 						EnvelopeData: []byte("env1"),
 						BlockNumber:  1,
@@ -332,7 +332,7 @@ func TestDatabase_GetTransactions(t *testing.T) {
 			},
 			"ethereum",
 			"mainnet",
-			addressingtest.EthereumCharlotte,
+			addressingtest.EthereumBob,
 			0,
 			100,
 			[]stores.Transaction{

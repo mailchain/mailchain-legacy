@@ -39,7 +39,7 @@ func TestFromPublicKey(t *testing.T) {
 		{
 			"algorand",
 			args{
-				ed25519test.SofiaPublicKey,
+				ed25519test.AlicePublicKey,
 				"algorand",
 				"mainnet",
 			},
@@ -49,7 +49,7 @@ func TestFromPublicKey(t *testing.T) {
 		{
 			"ethereum",
 			args{
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 				"ethereum",
 				"mainnet",
 			},
@@ -59,7 +59,7 @@ func TestFromPublicKey(t *testing.T) {
 		{
 			"substrate",
 			args{
-				ed25519test.SofiaPublicKey,
+				ed25519test.AlicePublicKey,
 				"substrate",
 				substrate.EdgewareMainnet,
 			},
@@ -69,7 +69,7 @@ func TestFromPublicKey(t *testing.T) {
 		{
 			"err-invalid-protocol",
 			args{
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 				"invalid",
 				"mainnet",
 			},

@@ -37,7 +37,7 @@ func TestEncodeByProtocol(t *testing.T) {
 		{
 			"algorand",
 			args{
-				ed25519test.SofiaPublicKey.Bytes(),
+				ed25519test.AlicePublicKey.Bytes(),
 				"algorand",
 			},
 			"OI6KUI5FWUI26WWXW7XWA5XECSVX45NJ3SIQ5JQOIF5CW5YKKZYQ",

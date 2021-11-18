@@ -45,7 +45,7 @@ func Test_deriveSharedSecret(t *testing.T) {
 			"success",
 			args{
 				func() *ecies.PublicKey {
-					tp, ok := secp256k1test.CharlottePublicKey.(*secp256k1.PublicKey)
+					tp, ok := secp256k1test.BobPublicKey.(*secp256k1.PublicKey)
 					if !ok {
 						t.Error("failed to cast")
 					}
@@ -56,7 +56,7 @@ func Test_deriveSharedSecret(t *testing.T) {
 					return pub
 				}(),
 				func() *ecies.PrivateKey {
-					pk, ok := secp256k1test.SofiaPrivateKey.(*secp256k1.PrivateKey)
+					pk, ok := secp256k1test.AlicePrivateKey.(*secp256k1.PrivateKey)
 					if !ok {
 						t.Error("Can not cast")
 					}
@@ -70,7 +70,7 @@ func Test_deriveSharedSecret(t *testing.T) {
 			"err-scalar-mult",
 			args{
 				func() *ecies.PublicKey {
-					tp, ok := secp256k1test.CharlottePublicKey.(*secp256k1.PublicKey)
+					tp, ok := secp256k1test.BobPublicKey.(*secp256k1.PublicKey)
 					if !ok {
 						t.Error("failed to cast")
 					}
@@ -83,7 +83,7 @@ func Test_deriveSharedSecret(t *testing.T) {
 					return pub
 				}(),
 				func() *ecies.PrivateKey {
-					pk, ok := secp256k1test.SofiaPrivateKey.(*secp256k1.PrivateKey)
+					pk, ok := secp256k1test.AlicePrivateKey.(*secp256k1.PrivateKey)
 					if !ok {
 						t.Error("Can not cast")
 					}

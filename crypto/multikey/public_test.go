@@ -38,34 +38,34 @@ func TestPublicKeyFromBytes(t *testing.T) {
 			"secp256k1",
 			args{
 				"secp256k1",
-				secp256k1test.SofiaPublicKey.Bytes(),
+				secp256k1test.AlicePublicKey.Bytes(),
 			},
-			secp256k1test.SofiaPublicKey.Bytes(),
+			secp256k1test.AlicePublicKey.Bytes(),
 			false,
 		},
 		{
 			"ed25519",
 			args{
 				"ed25519",
-				ed25519test.SofiaPublicKey.Bytes(),
+				ed25519test.AlicePublicKey.Bytes(),
 			},
-			ed25519test.SofiaPublicKey.Bytes(),
+			ed25519test.AlicePublicKey.Bytes(),
 			false,
 		},
 		{
 			"sr25519",
 			args{
 				"sr25519",
-				sr25519test.SofiaPublicKey.Bytes(),
+				sr25519test.AlicePublicKey.Bytes(),
 			},
-			sr25519test.SofiaPublicKey.Bytes(),
+			sr25519test.AlicePublicKey.Bytes(),
 			false,
 		},
 		{
 			"err",
 			args{
 				"unknown",
-				secp256k1test.SofiaPublicKey.Bytes(),
+				secp256k1test.AlicePublicKey.Bytes(),
 			},
 			nil,
 			true,

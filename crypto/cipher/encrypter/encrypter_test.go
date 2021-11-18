@@ -41,10 +41,10 @@ func TestGetEncrypter(t *testing.T) {
 			"aes256cbc",
 			args{
 				"aes256cbc",
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 			},
 			func() cipher.Encrypter {
-				encrypter, _ := aes256cbc.NewEncrypter(secp256k1test.SofiaPublicKey)
+				encrypter, _ := aes256cbc.NewEncrypter(secp256k1test.AlicePublicKey)
 				return encrypter
 			}(),
 			false,
@@ -53,10 +53,10 @@ func TestGetEncrypter(t *testing.T) {
 			"nacl-ecdh",
 			args{
 				"nacl-ecdh",
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 			},
 			func() cipher.Encrypter {
-				encrypter, _ := nacl.NewEncrypter(secp256k1test.SofiaPublicKey)
+				encrypter, _ := nacl.NewEncrypter(secp256k1test.AlicePublicKey)
 				return encrypter
 			}(),
 			false,
@@ -65,10 +65,10 @@ func TestGetEncrypter(t *testing.T) {
 			"noop",
 			args{
 				"noop",
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 			},
 			func() cipher.Encrypter {
-				encrypter, _ := noop.NewEncrypter(secp256k1test.SofiaPublicKey)
+				encrypter, _ := noop.NewEncrypter(secp256k1test.AlicePublicKey)
 				return encrypter
 			}(),
 			false,
@@ -77,7 +77,7 @@ func TestGetEncrypter(t *testing.T) {
 			"err-empty",
 			args{
 				"",
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 			},
 			nil,
 			true,
@@ -86,7 +86,7 @@ func TestGetEncrypter(t *testing.T) {
 			"err-invalid",
 			args{
 				"invalid",
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 			},
 			nil,
 			true,

@@ -41,23 +41,23 @@ func Test_SharedSecretEndToEnd(t *testing.T) {
 			},
 		},
 		{
-			"secp256k1-charlotte",
+			"secp256k1-bob",
 			args{
 				func() cipher.KeyExchange {
 					kx, _ := NewSECP256K1(rand.Reader)
 					return kx
 				}(),
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 		},
 		{
-			"secp256k1-sofia",
+			"secp256k1-alice",
 			args{
 				func() cipher.KeyExchange {
 					kx, _ := NewSECP256K1(rand.Reader)
 					return kx
 				}(),
-				secp256k1test.SofiaPrivateKey,
+				secp256k1test.AlicePrivateKey,
 			},
 		},
 		{
@@ -77,23 +77,23 @@ func Test_SharedSecretEndToEnd(t *testing.T) {
 			},
 		},
 		{
-			"ed25519-sofia",
+			"ed25519-alice",
 			args{
 				func() cipher.KeyExchange {
 					kx, _ := NewED25519(rand.Reader)
 					return kx
 				}(),
-				ed25519test.SofiaPrivateKey,
+				ed25519test.AlicePrivateKey,
 			},
 		},
 		{
-			"ed25519-charlotte",
+			"ed25519-bob",
 			args{
 				func() cipher.KeyExchange {
 					kx, _ := NewED25519(rand.Reader)
 					return kx
 				}(),
-				ed25519test.CharlottePrivateKey,
+				ed25519test.BobPrivateKey,
 			},
 		},
 		{
@@ -113,23 +113,23 @@ func Test_SharedSecretEndToEnd(t *testing.T) {
 			},
 		},
 		{
-			"sr25519-sofia",
+			"sr25519-alice",
 			args{
 				func() cipher.KeyExchange {
 					kx, _ := NewSR25519(rand.Reader)
 					return kx
 				}(),
-				sr25519test.SofiaPrivateKey,
+				sr25519test.AlicePrivateKey,
 			},
 		},
 		{
-			"sr25519-charlotte",
+			"sr25519-bob",
 			args{
 				func() cipher.KeyExchange {
 					kx, _ := NewSR25519(rand.Reader)
 					return kx
 				}(),
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 			},
 		},
 	}

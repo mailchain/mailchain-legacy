@@ -632,7 +632,7 @@ func spec() string {
           "type": "string",
           "x-go-name": "From",
           "readOnly": true,
-          "example": "Charlotte \u003c5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum\u003e"
+          "example": "Bob \u003c5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum\u003e"
         },
         "message-id": {
           "description": "Unique identifier of the message",
@@ -916,7 +916,7 @@ func spec() string {
           "description": "The sender of the message",
           "type": "string",
           "x-go-name": "From",
-          "example": "Charlotte \u003c5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum\u003e"
+          "example": "Bob \u003c5602ea95540bee46d03ba335eed6f49d117eab95c8ab8b71bae2cdd1e564a761@ropsten.ethereum\u003e"
         },
         "reply-to": {
           "description": "Reply to if the reply address is different to the from address.",

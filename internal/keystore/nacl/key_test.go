@@ -55,7 +55,7 @@ func Test_deriveKey(t *testing.T) {
 			args{
 				&encryptedKeyAliceED25519,
 				multi.OptionsBuilders{
-					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("alice-ed25519")},
+					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("sofia-ed25519")},
 				},
 			},
 			[]byte{0x7c, 0xb3, 0xf1, 0xbf, 0xe8, 0x19, 0xdb, 0x82, 0x55, 0xb2, 0x19, 0xd4, 0x1e, 0xa8, 0x7f, 0xb7, 0x13, 0x67, 0x20, 0x45, 0x7f, 0x6a, 0xcf, 0x4c, 0xb8, 0xde, 0x52, 0x91, 0xf3, 0x2e, 0xd0, 0xb6},
@@ -157,28 +157,12 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 			args{
 				&encryptedKeyAliceED25519,
 				multi.OptionsBuilders{
-					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("alice-ed25519")},
+					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("sofia-ed25519")},
 				},
 			},
 			ed25519test.AlicePrivateKey,
 			false,
 		},
-		//{
-		//	"success-bob-sr25519",
-		//	fields{
-		//		nil,
-		//		nil,
-		//		ioutil.Discard,
-		//	},
-		//	args{
-		//		&encryptedKeyBobSR25519,
-		//		multi.OptionsBuilders{
-		//			Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("alice-ed25519")},
-		//		},
-		//	},
-		//	sr25519test.AlicePrivateKey,
-		//	false,
-		//},
 		{
 			"err-private-key-bytes",
 			fields{
@@ -192,7 +176,7 @@ func TestFileStore_getPrivateKey(t *testing.T) {
 					return &m
 				}(),
 				multi.OptionsBuilders{
-					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("alice-ed25519")},
+					Scrypt: []scrypt.DeriveOptionsBuilder{scrypt.WithPassphrase("sofia-ed25519")},
 				},
 			},
 			nil,

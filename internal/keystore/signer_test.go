@@ -45,10 +45,10 @@ func TestSigner(t *testing.T) {
 			"algorand",
 			args{
 				protocols.Algorand,
-				ed25519test.CharlottePrivateKey,
+				ed25519test.BobPrivateKey,
 			},
 			func() signer.Signer {
-				m, _ := algorand.NewSigner(ed25519test.CharlottePrivateKey)
+				m, _ := algorand.NewSigner(ed25519test.BobPrivateKey)
 				return m
 			}(),
 			false,
@@ -57,10 +57,10 @@ func TestSigner(t *testing.T) {
 			"ethereum",
 			args{
 				protocols.Ethereum,
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			func() signer.Signer {
-				m, _ := ethereum.NewSigner(secp256k1test.CharlottePrivateKey)
+				m, _ := ethereum.NewSigner(secp256k1test.BobPrivateKey)
 				return m
 			}(),
 			false,
@@ -69,10 +69,10 @@ func TestSigner(t *testing.T) {
 			"substrate",
 			args{
 				protocols.Substrate,
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 			},
 			func() signer.Signer {
-				m := substrate.NewSigner(sr25519test.CharlottePrivateKey)
+				m := substrate.NewSigner(sr25519test.BobPrivateKey)
 				return m
 			}(),
 			false,
@@ -81,7 +81,7 @@ func TestSigner(t *testing.T) {
 			"err",
 			args{
 				"invalid",
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			nil,
 			true,

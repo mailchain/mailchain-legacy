@@ -64,7 +64,7 @@ func TestNewEnvelope(t *testing.T) {
 					m := ciphertest.NewMockEncrypter(mockCtrl)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				opts(0x00),
 			},
 			nil,
@@ -78,7 +78,7 @@ func TestNewEnvelope(t *testing.T) {
 					m.EXPECT().Encrypt(gomock.Any()).Return([]byte("encrypted"), nil)
 					return m
 				}(),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				opts(Kind0x01),
 			},
 			&ZeroX01{},

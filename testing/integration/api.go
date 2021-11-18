@@ -67,10 +67,10 @@ func apiSendMessage(t *testing.T, protocol, network string, contentType, envelop
 		"envelope":               envelope,
 		"message": map[string]interface{}{
 			"headers": map[string]interface{}{
-				"to":   fmt.Sprintf("Charlotte <%s@%s.%s>", toAddress, network, protocol),
-				"from": fmt.Sprintf("Sofia <%s@%s.%s>", fromAddress, network, protocol),
+				"to":   fmt.Sprintf("Bob <%s@%s.%s>", toAddress, network, protocol),
+				"from": fmt.Sprintf("Alice <%s@%s.%s>", fromAddress, network, protocol),
 			},
-			"body":                fmt.Sprintf("Integration test %s. Sending message from Sofia to Charlotte. Time %s", t.Name(), now),
+			"body":                fmt.Sprintf("Integration test %s. Sending message from Alice to Bob. Time %s", t.Name(), now),
 			"subject":             subject,
 			"public-key":          encoding.EncodeHexZeroX(pubKey.Bytes()),
 			"public-key-encoding": encoding.KindHex0XPrefix,

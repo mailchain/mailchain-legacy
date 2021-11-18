@@ -47,13 +47,13 @@ func TestSendReceive(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-algorand-testnet-send-charlotte-sofia",
+			"success-algorand-testnet-send-bob-alice",
 			fields{},
 			args{
 				protocols.Algorand,
 				algorand.Testnet,
-				"algorand.testnet.charlotte",
-				"algorand.testnet.sofia",
+				"algorand.testnet.bob",
+				"algorand.testnet.alice",
 				"'text/plain; charset=\\\"UTF-8\\\"'",
 				"0x01",
 			},

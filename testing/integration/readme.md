@@ -6,24 +6,24 @@
 ```
 algorand:
   testnet:
-    charlotte:
+    bob:
       private-key: "words"
       private-key-encoding: "mnemonic/algorand"
       key-type: ed25519
     
-    sofia:
+    alice:
       private-key: "words"
       private-key-encoding: "mnemonic/algorand"
       key-type: ed25519
 
 ethereum:
   goerli:
-    charlotte:
+    bob:
       private-key: "0x....."
       private-key-encoding: "hex/0x-prefix"
       key-type: ed25519
     
-    sofia:
+    alice:
       private-key: "0x....."
       private-key-encoding: "hex/0x-prefix"
       key-type: ed25519      

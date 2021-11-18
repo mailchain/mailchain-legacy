@@ -47,8 +47,8 @@ func TestFileStore_getPublicKeys(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -59,8 +59,8 @@ func TestFileStore_getPublicKeys(t *testing.T) {
 				"mainnet",
 			},
 			[][]byte{
-				secp256k1test.SofiaPublicKey.Bytes(),
-				ed25519test.SofiaPublicKey.Bytes(),
+				secp256k1test.AlicePublicKey.Bytes(),
+				ed25519test.AlicePublicKey.Bytes(),
 			},
 			false,
 		},
@@ -70,7 +70,7 @@ func TestFileStore_getPublicKeys(t *testing.T) {
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
 					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileInvalidCurve, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -81,7 +81,7 @@ func TestFileStore_getPublicKeys(t *testing.T) {
 				"mainnet",
 			},
 			[][]byte{
-				ed25519test.SofiaPublicKey.Bytes(),
+				ed25519test.AlicePublicKey.Bytes(),
 			},
 			false,
 		},
@@ -174,12 +174,12 @@ func TestFileStore_GetAddresses(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
 
 					return m
 				}(),
@@ -201,12 +201,12 @@ func TestFileStore_GetAddresses(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
 
 					return m
 				}(),
@@ -231,12 +231,12 @@ func TestFileStore_GetAddresses(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
 
 					return m
 				}(),
@@ -261,12 +261,12 @@ func TestFileStore_GetAddresses(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
 
 					return m
 				}(),
@@ -305,12 +305,12 @@ func TestFileStore_GetAddresses(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileCharlotteED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/1269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/823caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileCharlotteED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileBobED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/1269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/823caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileBobED25519, 0755)
 
 					return m
 				}(),
@@ -360,12 +360,12 @@ func TestFileStore_getEncryptedKeyByAddress(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-sofia-secp256k1",
+			"success-alice-secp256k1",
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -376,16 +376,16 @@ func TestFileStore_getEncryptedKeyByAddress(t *testing.T) {
 				"ethereum",
 				"mainnet",
 			},
-			&encryptedKeySofiaSECP256k1,
+			&encryptedKeyAliceSECP256k1,
 			false,
 		},
 		{
-			"success-sofia-ed255419",
+			"success-alice-ed255419",
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -396,17 +396,17 @@ func TestFileStore_getEncryptedKeyByAddress(t *testing.T) {
 				"substrate",
 				substrate.EdgewareMainnet,
 			},
-			&encryptedKeySofiaED25519,
+			&encryptedKeyAliceED25519,
 			false,
 		},
 		{
-			"success-charlotte-ed25519",
+			"success-bob-ed25519",
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
 					// afero.WriteFile(m, "./0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileInvalidCurve, 0755)
-					// afero.WriteFile(m, "./723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
+					// afero.WriteFile(m, "./723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
 
 					return m
 				}(),
@@ -417,7 +417,7 @@ func TestFileStore_getEncryptedKeyByAddress(t *testing.T) {
 				"substrate",
 				substrate.EdgewareMainnet,
 			},
-			&encryptedKeyCharlotteED25519,
+			&encryptedKeyBobED25519,
 			false,
 		},
 		{
@@ -444,7 +444,7 @@ func TestFileStore_getEncryptedKeyByAddress(t *testing.T) {
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
 					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileInvalidCurve, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -494,12 +494,12 @@ func TestFileStore_HasAddress(t *testing.T) {
 		want   bool
 	}{
 		{
-			"true-sofia-secp256k1",
+			"true-alice-secp256k1",
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -513,13 +513,13 @@ func TestFileStore_HasAddress(t *testing.T) {
 			true,
 		},
 		{
-			"true-charlotte-ed25519",
+			"true-bob-ed25519",
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
 					afero.WriteFile(m, "./substrate/edgeware-mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileInvalidCurve, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
 
 					return m
 				}(),
@@ -533,12 +533,12 @@ func TestFileStore_HasAddress(t *testing.T) {
 			true,
 		},
 		{
-			"false-sofia-secp256k1-invalid-key",
+			"false-alice-secp256k1-invalid-key",
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -603,12 +603,12 @@ func TestFileStore_getProtocolNetworkAddresses(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
 
 					return m
 				}(),
@@ -629,12 +629,12 @@ func TestFileStore_getProtocolNetworkAddresses(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
 
 					return m
 				}(),
@@ -652,12 +652,12 @@ func TestFileStore_getProtocolNetworkAddresses(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
-					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileCharlotteED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/goerli/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-beresheet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
+					afero.WriteFile(m, "./substrate/edgeware-mainnet/2e322f8740c60172111ac8eadcdda2512f90d06d0e503ef189979a159bece1e8.json", fileBobED25519, 0755)
 
 					return m
 				}(),

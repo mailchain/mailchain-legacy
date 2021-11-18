@@ -30,7 +30,7 @@ func Test_getPublicKeyExchange(t *testing.T) {
 		{
 			"ed25519",
 			args{
-				ed25519test.SofiaPublicKey,
+				ed25519test.AlicePublicKey,
 			},
 			&ecdh.ED25519{},
 			false,
@@ -38,7 +38,7 @@ func Test_getPublicKeyExchange(t *testing.T) {
 		{
 			"sr25519",
 			args{
-				sr25519test.SofiaPublicKey,
+				sr25519test.AlicePublicKey,
 			},
 			&ecdh.SR25519{},
 			false,
@@ -46,7 +46,7 @@ func Test_getPublicKeyExchange(t *testing.T) {
 		{
 			"ed25519",
 			args{
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 			},
 			&ecdh.SECP256K1{},
 			false,
@@ -90,7 +90,7 @@ func Test_getPrivateKeyExchange(t *testing.T) {
 		{
 			"ed25519",
 			args{
-				ed25519test.SofiaPrivateKey,
+				ed25519test.AlicePrivateKey,
 			},
 			&ecdh.ED25519{},
 			false,
@@ -98,7 +98,7 @@ func Test_getPrivateKeyExchange(t *testing.T) {
 		{
 			"sr25519",
 			args{
-				sr25519test.SofiaPrivateKey,
+				sr25519test.AlicePrivateKey,
 			},
 			&ecdh.SR25519{},
 			false,
@@ -106,7 +106,7 @@ func Test_getPrivateKeyExchange(t *testing.T) {
 		{
 			"ed25519",
 			args{
-				secp256k1test.SofiaPrivateKey,
+				secp256k1test.AlicePrivateKey,
 			},
 			&ecdh.SECP256K1{},
 			false,

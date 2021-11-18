@@ -111,34 +111,34 @@ func TestSR25519_publicKey(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-sr25519-sofia",
+			"success-sr25519-alice",
 			fields{
 				nil,
 			},
 			args{
-				sr25519test.SofiaPublicKey,
+				sr25519test.AlicePublicKey,
 			},
-			sr25519test.SofiaPublicKey,
+			sr25519test.AlicePublicKey,
 			false,
 		},
 		{
-			"success-sr25519-charlotte",
+			"success-sr25519-bob",
 			fields{
 				nil,
 			},
 			args{
-				sr25519test.CharlottePublicKey,
+				sr25519test.BobPublicKey,
 			},
-			sr25519test.CharlottePublicKey,
+			sr25519test.BobPublicKey,
 			false,
 		},
 		{
-			"err-secp256k1-sofia",
+			"err-secp256k1-alice",
 			fields{
 				nil,
 			},
 			args{
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 			},
 			(*sr25519.PublicKey)(nil),
 			true,
@@ -176,34 +176,34 @@ func TestSR25519_privateKey(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-sr25519-sofia",
+			"success-sr25519-alice",
 			fields{
 				nil,
 			},
 			args{
-				sr25519test.SofiaPrivateKey,
+				sr25519test.AlicePrivateKey,
 			},
-			sr25519test.SofiaPrivateKey,
+			sr25519test.AlicePrivateKey,
 			false,
 		},
 		{
-			"success-ed25519-charlotte",
+			"success-ed25519-bob",
 			fields{
 				nil,
 			},
 			args{
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 			},
-			sr25519test.CharlottePrivateKey,
+			sr25519test.BobPrivateKey,
 			false,
 		},
 		{
-			"err-secp256k1-sofia",
+			"err-secp256k1-alice",
 			fields{
 				nil,
 			},
 			args{
-				secp256k1test.SofiaPrivateKey,
+				secp256k1test.AlicePrivateKey,
 			},
 			(*sr25519.PrivateKey)(nil),
 			true,
@@ -242,73 +242,73 @@ func TestSR25519_SharedSecret(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-charlotte-sofia",
+			"success-bob-alice",
 			fields{
 				nil,
 			},
 			args{
-				sr25519test.CharlottePrivateKey,
-				sr25519test.SofiaPublicKey,
+				sr25519test.BobPrivateKey,
+				sr25519test.AlicePublicKey,
 			},
 			[]byte{0xfe, 0x3d, 0xbc, 0xea, 0xb5, 0x76, 0x69, 0xa8, 0xe6, 0x30, 0x7f, 0xfe, 0x11, 0xf3, 0xac, 0xb9, 0x8f, 0xb9, 0x61, 0xdd, 0x49, 0xef, 0xb1, 0xd9, 0xbc, 0x40, 0x67, 0x7, 0xf7, 0xb0, 0xc8, 0x64},
 			false,
 		},
 		{
-			"success-sofia-charlotte",
+			"success-alice-bob",
 			fields{
 				nil,
 			},
 			args{
-				sr25519test.SofiaPrivateKey,
-				sr25519test.CharlottePublicKey,
+				sr25519test.AlicePrivateKey,
+				sr25519test.BobPublicKey,
 			},
 			[]byte{0xfe, 0x3d, 0xbc, 0xea, 0xb5, 0x76, 0x69, 0xa8, 0xe6, 0x30, 0x7f, 0xfe, 0x11, 0xf3, 0xac, 0xb9, 0x8f, 0xb9, 0x61, 0xdd, 0x49, 0xef, 0xb1, 0xd9, 0xbc, 0x40, 0x67, 0x7, 0xf7, 0xb0, 0xc8, 0x64},
 			false,
 		},
 		{
-			"success-eve-charlotte",
+			"success-eve-bob",
 			fields{
 				nil,
 			},
 			args{
 				sr25519test.EvePrivateKey,
-				sr25519test.CharlottePublicKey,
+				sr25519test.BobPublicKey,
 			},
 			[]byte{0x9f, 0x1f, 0x3a, 0xa8, 0xfc, 0x22, 0xa8, 0x47, 0xed, 0xdd, 0x7a, 0xfc, 0x48, 0x85, 0x80, 0x8f, 0x71, 0x2, 0x12, 0x29, 0xda, 0xf6, 0x9a, 0xb2, 0xba, 0x30, 0x67, 0x76, 0xde, 0x45, 0xff, 0x21},
 			false,
 		},
 		{
-			"success-charlotte-eve",
+			"success-bob-eve",
 			fields{
 				nil,
 			},
 			args{
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 				sr25519test.EvePublicKey,
 			},
 			[]byte{0x9f, 0x1f, 0x3a, 0xa8, 0xfc, 0x22, 0xa8, 0x47, 0xed, 0xdd, 0x7a, 0xfc, 0x48, 0x85, 0x80, 0x8f, 0x71, 0x2, 0x12, 0x29, 0xda, 0xf6, 0x9a, 0xb2, 0xba, 0x30, 0x67, 0x76, 0xde, 0x45, 0xff, 0x21},
 			false,
 		},
 		{
-			"err-sofia-sofia",
+			"err-alice-alice",
 			fields{
 				nil,
 			},
 			args{
-				sr25519test.SofiaPrivateKey,
-				sr25519test.SofiaPublicKey,
+				sr25519test.AlicePrivateKey,
+				sr25519test.AlicePublicKey,
 			},
 			nil,
 			true,
 		},
 		{
-			"err-charlotte-charlotte",
+			"err-bob-bob",
 			fields{
 				nil,
 			},
 			args{
-				sr25519test.CharlottePrivateKey,
-				sr25519test.CharlottePublicKey,
+				sr25519test.BobPrivateKey,
+				sr25519test.BobPublicKey,
 			},
 			nil,
 			true,
@@ -320,7 +320,7 @@ func TestSR25519_SharedSecret(t *testing.T) {
 			},
 			args{
 				nil,
-				sr25519test.SofiaPublicKey,
+				sr25519test.AlicePublicKey,
 			},
 			nil,
 			true,
@@ -331,7 +331,7 @@ func TestSR25519_SharedSecret(t *testing.T) {
 				nil,
 			},
 			args{
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 				nil,
 			},
 			nil,

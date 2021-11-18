@@ -100,7 +100,7 @@ func TestFileStore_Store(t *testing.T) {
 		wantFiles [][]byte
 	}{
 		{
-			"success-sofia-secp256k1",
+			"success-alice-secp256k1",
 			fields{
 				afero.NewMemMapFs(),
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
@@ -108,7 +108,7 @@ func TestFileStore_Store(t *testing.T) {
 			args{
 				"ethereum",
 				"mainnet",
-				secp256k1test.SofiaPrivateKey,
+				secp256k1test.AlicePrivateKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{
 						scrypt.DefaultDeriveOptions(),
@@ -116,12 +116,12 @@ func TestFileStore_Store(t *testing.T) {
 					},
 				},
 			},
-			secp256k1test.SofiaPublicKey,
+			secp256k1test.AlicePublicKey,
 			false,
 			nil,
 		},
 		{
-			"success-sofia-ed25519",
+			"success-alice-ed25519",
 			fields{
 				afero.NewMemMapFs(),
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
@@ -129,7 +129,7 @@ func TestFileStore_Store(t *testing.T) {
 			args{
 				"algorand",
 				"mainnet",
-				ed25519test.SofiaPrivateKey,
+				ed25519test.AlicePrivateKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{
 						scrypt.DefaultDeriveOptions(),
@@ -137,12 +137,12 @@ func TestFileStore_Store(t *testing.T) {
 					},
 				},
 			},
-			ed25519test.SofiaPublicKey,
+			ed25519test.AlicePublicKey,
 			false,
 			nil,
 		},
 		{
-			"success-charlotte-sr25519",
+			"success-bob-sr25519",
 			fields{
 				afero.NewMemMapFs(),
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
@@ -150,7 +150,7 @@ func TestFileStore_Store(t *testing.T) {
 			args{
 				"substrate",
 				"mainnet",
-				sr25519test.CharlottePrivateKey,
+				sr25519test.BobPrivateKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{
 						scrypt.DefaultDeriveOptions(),
@@ -158,7 +158,7 @@ func TestFileStore_Store(t *testing.T) {
 					},
 				},
 			},
-			sr25519test.CharlottePublicKey,
+			sr25519test.BobPublicKey,
 			false,
 			nil,
 		},
@@ -171,7 +171,7 @@ func TestFileStore_Store(t *testing.T) {
 			args{
 				"algorand",
 				"mainnet",
-				ed25519test.SofiaPrivateKey,
+				ed25519test.AlicePrivateKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{
 						scrypt.DefaultDeriveOptions(),
@@ -192,7 +192,7 @@ func TestFileStore_Store(t *testing.T) {
 			args{
 				"algorand",
 				"mainnet",
-				ed25519test.SofiaPrivateKey,
+				ed25519test.AlicePrivateKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{
 						scrypt.DefaultDeriveOptions(),
@@ -213,7 +213,7 @@ func TestFileStore_Store(t *testing.T) {
 			args{
 				"algorand",
 				"mainnet",
-				ed25519test.SofiaPrivateKey,
+				ed25519test.AlicePrivateKey,
 				multi.OptionsBuilders{
 					Scrypt: []scrypt.DeriveOptionsBuilder{},
 				},

@@ -66,18 +66,18 @@ func TestFileStore_filename(t *testing.T) {
 		want   string
 	}{
 		{
-			"secp256k1-sofia",
+			"secp256k1-alice",
 			fields{},
 			args{
-				secp256k1test.SofiaPublicKey.Bytes(),
+				secp256k1test.AlicePublicKey.Bytes(),
 			},
 			"69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0.json",
 		},
 		{
-			"ed25519-sofia",
+			"ed25519-alice",
 			fields{},
 			args{
-				ed25519test.SofiaPublicKey.Bytes(),
+				ed25519test.AlicePublicKey.Bytes(),
 			},
 			"723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json",
 		},
@@ -117,8 +117,8 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -129,7 +129,7 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 				"mainnet",
 				encodingtest.MustDecodeHex("0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006"),
 			},
-			&encryptedKeySofiaSECP256k1,
+			&encryptedKeyAliceSECP256k1,
 			false,
 		},
 		{
@@ -137,8 +137,8 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./algorand/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./algorand/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./algorand/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./algorand/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -149,7 +149,7 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 				"mainnet",
 				encodingtest.MustDecodeHex("723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671"),
 			},
-			&encryptedKeySofiaED25519,
+			&encryptedKeyAliceED25519,
 			false,
 		},
 		{
@@ -157,8 +157,8 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -178,7 +178,7 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
 					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", []byte("not-json"), 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -197,8 +197,8 @@ func TestFileStore_getEncryptedKey(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -252,8 +252,8 @@ func TestFileStore_getEncryptedKeys(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -264,8 +264,8 @@ func TestFileStore_getEncryptedKeys(t *testing.T) {
 				"mainnet",
 			},
 			[]keystore.EncryptedKey{
-				encryptedKeySofiaSECP256k1,
-				encryptedKeySofiaED25519,
+				encryptedKeyAliceSECP256k1,
+				encryptedKeyAliceED25519,
 			},
 			false,
 		},
@@ -274,9 +274,9 @@ func TestFileStore_getEncryptedKeys(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -287,8 +287,8 @@ func TestFileStore_getEncryptedKeys(t *testing.T) {
 				"mainnet",
 			},
 			[]keystore.EncryptedKey{
-				encryptedKeySofiaSECP256k1,
-				encryptedKeySofiaED25519,
+				encryptedKeyAliceSECP256k1,
+				encryptedKeyAliceED25519,
 			},
 			false,
 		},
@@ -297,9 +297,9 @@ func TestFileStore_getEncryptedKeys(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/invalid-file-name.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/invalid-file-name.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -310,8 +310,8 @@ func TestFileStore_getEncryptedKeys(t *testing.T) {
 				"mainnet",
 			},
 			[]keystore.EncryptedKey{
-				encryptedKeySofiaSECP256k1,
-				encryptedKeySofiaED25519,
+				encryptedKeyAliceSECP256k1,
+				encryptedKeyAliceED25519,
 			},
 			false,
 		},
@@ -320,9 +320,9 @@ func TestFileStore_getEncryptedKeys(t *testing.T) {
 			fields{
 				func() afero.Fs {
 					m := afero.NewMemMapFs()
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.invalid", fileSofiaSECP256k1, 0755)
-					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileSofiaED25519, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.invalid", fileAliceSECP256k1, 0755)
+					afero.WriteFile(m, "./ethereum/mainnet/723caa23a5b511af5ad7b7ef6076e414ab7e75a9dc910ea60e417a2b770a5671.json", fileAliceED25519, 0755)
 
 					return m
 				}(),
@@ -333,8 +333,8 @@ func TestFileStore_getEncryptedKeys(t *testing.T) {
 				"mainnet",
 			},
 			[]keystore.EncryptedKey{
-				encryptedKeySofiaSECP256k1,
-				encryptedKeySofiaED25519,
+				encryptedKeyAliceSECP256k1,
+				encryptedKeyAliceED25519,
 			},
 			false,
 		},

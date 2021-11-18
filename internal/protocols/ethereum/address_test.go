@@ -35,17 +35,17 @@ func TestAddress(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"sofia",
+			"alice",
 			args{
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 			},
 			[]byte{0xd5, 0xab, 0x4c, 0xe3, 0x60, 0x5c, 0xd5, 0x90, 0xdb, 0x60, 0x9b, 0x6b, 0x5c, 0x89, 0x1, 0xfd, 0xb2, 0xef, 0x7f, 0xe6},
 			false,
 		},
 		{
-			"charlotte",
+			"bob",
 			args{
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 			},
 			[]byte{0x92, 0xd8, 0xf1, 0x2, 0x48, 0xc6, 0xa3, 0x95, 0x3c, 0xc3, 0x69, 0x2a, 0x89, 0x46, 0x55, 0xad, 0x5, 0xd6, 0x1e, 0xfb},
 			false,
@@ -53,7 +53,7 @@ func TestAddress(t *testing.T) {
 		{
 			"err-ed25519",
 			args{
-				ed25519test.CharlottePublicKey,
+				ed25519test.BobPublicKey,
 			},
 			nil,
 			true,
@@ -61,7 +61,7 @@ func TestAddress(t *testing.T) {
 		{
 			"err-sr25519",
 			args{
-				sr25519test.SofiaPublicKey,
+				sr25519test.AlicePublicKey,
 			},
 			nil,
 			true,

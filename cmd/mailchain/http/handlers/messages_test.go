@@ -62,16 +62,16 @@ func Test_GetMessages(t *testing.T) {
 			args{
 				inbox: func() stores.State {
 					stateMock := statemock.NewMockState(mockCtrl)
-					stateMock.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte, int32(0), int32(15)).Times(1)
+					stateMock.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumBob, int32(0), int32(15)).Times(1)
 					return stateMock
 				}(),
 				ks: func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().HasAddress(addressingtest.EthereumCharlotte, "ethereum", "mainnet").Return(true).Times(1)
+					store.EXPECT().HasAddress(addressingtest.EthereumBob, "ethereum", "mainnet").Return(true).Times(1)
 					return store
 				}(),
 			},
-			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addressingtest.EthereumCharlotte)), nil),
+			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addressingtest.EthereumBob)), nil),
 			http.StatusOK,
 		},
 		{
@@ -86,7 +86,7 @@ func Test_GetMessages(t *testing.T) {
 				inbox: func() stores.State {
 					inbox := statemock.NewMockState(mockCtrl)
 					inbox.EXPECT().GetReadStatus(mail.ID{71, 236, 160, 17, 227, 43, 82, 199, 16, 5, 173, 138, 143, 117, 225, 180, 76, 146, 201, 159, 209, 46, 67, 188, 207, 229, 113, 227, 194, 209, 61, 46, 154, 130, 106, 85, 15, 95, 246, 59, 36, 122, 244, 113}).Return(false, nil).Times(1)
-					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte, int32(0), int32(15)).Return([]stores.Transaction{
+					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumBob, int32(0), int32(15)).Return([]stores.Transaction{
 						{
 							BlockNumber:  100,
 							Hash:         []byte{0x01, 0x02, 0x03},
@@ -111,12 +111,12 @@ func Test_GetMessages(t *testing.T) {
 					)
 
 					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().HasAddress(addressingtest.EthereumCharlotte, "ethereum", "mainnet").Return(true).Times(1)
-					store.EXPECT().GetDecrypter(addressingtest.EthereumCharlotte, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil).Times(1)
+					store.EXPECT().HasAddress(addressingtest.EthereumBob, "ethereum", "mainnet").Return(true).Times(1)
+					store.EXPECT().GetDecrypter(addressingtest.EthereumBob, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil).Times(1)
 					return store
 				}(),
 			},
-			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addressingtest.EthereumCharlotte)), nil),
+			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addressingtest.EthereumBob)), nil),
 			http.StatusOK,
 		},
 		{
@@ -131,12 +131,12 @@ func Test_GetMessages(t *testing.T) {
 				inbox: func() stores.State {
 					inbox := statemock.NewMockState(mockCtrl)
 					inbox.EXPECT().GetReadStatus(mail.ID{71, 236, 160, 17, 227, 43, 82, 199, 16, 5, 173, 138, 143, 117, 225, 180, 76, 146, 201, 159, 209, 46, 67, 188, 207, 229, 113, 227, 194, 209, 61, 46, 154, 130, 106, 85, 15, 95, 246, 59, 36, 122, 244, 113}).Return(false, nil).Times(1)
-					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte, int32(0), int32(15)).Return([]stores.Transaction{
+					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumBob, int32(0), int32(15)).Return([]stores.Transaction{
 						{
 							BlockNumber:  100,
 							Hash:         []byte{0x01, 0x02, 0x03},
 							EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
-							RekeyAddress: addressingtest.EthereumCharlotte,
+							RekeyAddress: addressingtest.EthereumBob,
 						},
 					}, nil)
 					return inbox
@@ -151,12 +151,12 @@ func Test_GetMessages(t *testing.T) {
 					)
 
 					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().HasAddress(addressingtest.EthereumCharlotte, "ethereum", "mainnet").Return(true).Times(1)
-					store.EXPECT().GetDecrypter(addressingtest.EthereumCharlotte, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil).Times(1)
+					store.EXPECT().HasAddress(addressingtest.EthereumBob, "ethereum", "mainnet").Return(true).Times(1)
+					store.EXPECT().GetDecrypter(addressingtest.EthereumBob, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil).Times(1)
 					return store
 				}(),
 			},
-			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addressingtest.EthereumCharlotte)), nil),
+			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addressingtest.EthereumBob)), nil),
 			http.StatusOK,
 		},
 		{
@@ -171,14 +171,14 @@ func Test_GetMessages(t *testing.T) {
 				inbox: func() stores.State {
 					inbox := statemock.NewMockState(mockCtrl)
 					inbox.EXPECT().GetReadStatus(mail.ID{71, 236, 160, 17, 227, 43, 82, 199, 16, 5, 173, 138, 143, 117, 225, 180, 76, 146, 201, 159, 209, 46, 67, 188, 207, 229, 113, 227, 194, 209, 61, 46, 154, 130, 106, 85, 15, 95, 246, 59, 36, 122, 244, 113}).Return(false, nil).Times(1)
-					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte, int32(0), int32(15)).Return([]stores.Transaction{
+					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumBob, int32(0), int32(15)).Return([]stores.Transaction{
 						{
 							BlockNumber:  100,
 							Hash:         []byte{0x01, 0x02, 0x03},
 							EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
 						},
 					}, nil)
-					inbox.EXPECT().PutTransaction("ethereum", "mainnet", addressingtest.EthereumCharlotte, gomock.Any()).Return(nil).Times(1)
+					inbox.EXPECT().PutTransaction("ethereum", "mainnet", addressingtest.EthereumBob, gomock.Any()).Return(nil).Times(1)
 
 					return inbox
 				}(),
@@ -192,14 +192,14 @@ func Test_GetMessages(t *testing.T) {
 					)
 
 					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().HasAddress(addressingtest.EthereumCharlotte, "ethereum", "mainnet").Return(true).Times(1)
-					store.EXPECT().GetDecrypter(addressingtest.EthereumCharlotte, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil).Times(1)
+					store.EXPECT().HasAddress(addressingtest.EthereumBob, "ethereum", "mainnet").Return(true).Times(1)
+					store.EXPECT().GetDecrypter(addressingtest.EthereumBob, "ethereum", "mainnet", byte(0x73), multi.OptionsBuilders{}).Return(decrypter, nil).Times(1)
 					return store
 				}(),
 				receivers: map[string]mailbox.Receiver{
 					"ethereum/mainnet": func() mailbox.Receiver {
 						receiver := mailboxtest.NewMockReceiver(mockCtrl)
-						receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumCharlotte).
+						receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumBob).
 							Return([]stores.Transaction{
 								{
 									EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
@@ -211,7 +211,7 @@ func Test_GetMessages(t *testing.T) {
 					}(),
 				},
 			},
-			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum&fetch=true", encoding.EncodeHexZeroX(addressingtest.EthereumCharlotte)), nil),
+			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum&fetch=true", encoding.EncodeHexZeroX(addressingtest.EthereumBob)), nil),
 			http.StatusOK,
 		},
 		{
@@ -219,16 +219,16 @@ func Test_GetMessages(t *testing.T) {
 			args{
 				inbox: func() stores.State {
 					inbox := statemock.NewMockState(mockCtrl)
-					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumCharlotte, int32(0), int32(15)).Return(nil, errors.New("internal error"))
+					inbox.EXPECT().GetTransactions("ethereum", "mainnet", addressingtest.EthereumBob, int32(0), int32(15)).Return(nil, errors.New("internal error"))
 					return inbox
 				}(),
 				ks: func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().HasAddress(addressingtest.EthereumCharlotte, "ethereum", "mainnet").Return(true).Times(1)
+					store.EXPECT().HasAddress(addressingtest.EthereumBob, "ethereum", "mainnet").Return(true).Times(1)
 					return store
 				}(),
 			},
-			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addressingtest.EthereumCharlotte)), nil),
+			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addressingtest.EthereumBob)), nil),
 			http.StatusInternalServerError,
 		},
 		{
@@ -236,11 +236,11 @@ func Test_GetMessages(t *testing.T) {
 			args{
 				ks: func() keystore.Store {
 					store := keystoretest.NewMockStore(mockCtrl)
-					store.EXPECT().HasAddress(addressingtest.EthereumCharlotte, "ethereum", "mainnet").Return(false).Times(1)
+					store.EXPECT().HasAddress(addressingtest.EthereumBob, "ethereum", "mainnet").Return(false).Times(1)
 					return store
 				}(),
 			},
-			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addressingtest.EthereumCharlotte)), nil),
+			httptest.NewRequest("GET", fmt.Sprintf("/?address=%s&network=mainnet&protocol=ethereum", encoding.EncodeHexZeroX(addressingtest.EthereumBob)), nil),
 			http.StatusNotAcceptable,
 		},
 		{
@@ -448,12 +448,12 @@ func Test_fetchMessages(t *testing.T) {
 				context.Background(),
 				"ethereum",
 				"mainnet",
-				addressingtest.EthereumCharlotte,
+				addressingtest.EthereumBob,
 				func() map[string]mailbox.Receiver {
 					return map[string]mailbox.Receiver{
 						"ethereum/mainnet": func() mailbox.Receiver {
 							receiver := mailboxtest.NewMockReceiver(mockCtrl)
-							receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumCharlotte).
+							receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumBob).
 								Return([]stores.Transaction{
 									{
 										EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
@@ -467,7 +467,7 @@ func Test_fetchMessages(t *testing.T) {
 				}(),
 				func() stores.State {
 					inbox := statemock.NewMockState(mockCtrl)
-					inbox.EXPECT().PutTransaction("ethereum", "mainnet", addressingtest.EthereumCharlotte, stores.Transaction{EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"), BlockNumber: 100, Hash: []byte("YS1oYXNo")}).Return(nil).Times(1)
+					inbox.EXPECT().PutTransaction("ethereum", "mainnet", addressingtest.EthereumBob, stores.Transaction{EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"), BlockNumber: 100, Hash: []byte("YS1oYXNo")}).Return(nil).Times(1)
 					return inbox
 				}(),
 			},
@@ -479,12 +479,12 @@ func Test_fetchMessages(t *testing.T) {
 				context.Background(),
 				"ethereum",
 				"mainnet",
-				addressingtest.EthereumCharlotte,
+				addressingtest.EthereumBob,
 				func() map[string]mailbox.Receiver {
 					return map[string]mailbox.Receiver{
 						"ethereum/mainnet": func() mailbox.Receiver {
 							receiver := mailboxtest.NewMockReceiver(mockCtrl)
-							receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumCharlotte).Return([]stores.Transaction{}, nil).Times(1)
+							receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumBob).Return([]stores.Transaction{}, nil).Times(1)
 							return receiver
 						}(),
 					}
@@ -502,12 +502,12 @@ func Test_fetchMessages(t *testing.T) {
 				context.Background(),
 				"ethereum",
 				"mainnet",
-				addressingtest.EthereumCharlotte,
+				addressingtest.EthereumBob,
 				func() map[string]mailbox.Receiver {
 					return map[string]mailbox.Receiver{
 						"ethereum/mainnet": func() mailbox.Receiver {
 							receiver := mailboxtest.NewMockReceiver(mockCtrl)
-							receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumCharlotte).
+							receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumBob).
 								Return([]stores.Transaction{
 									{
 										EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"),
@@ -521,7 +521,7 @@ func Test_fetchMessages(t *testing.T) {
 				}(),
 				func() stores.State {
 					inbox := statemock.NewMockState(mockCtrl)
-					inbox.EXPECT().PutTransaction("ethereum", "mainnet", addressingtest.EthereumCharlotte, stores.Transaction{EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"), BlockNumber: 100, Hash: []byte("YS1oYXNo")}).Return(errors.New("error")).Times(1)
+					inbox.EXPECT().PutTransaction("ethereum", "mainnet", addressingtest.EthereumBob, stores.Transaction{EnvelopeData: encodingtest.MustDecodeHex("500801120f7365637265742d6c6f636174696f6e1a221620d3c47ef741473ebf42773d25687b7540a3d96429aec07dd1ce66c0d4fd16ea13"), BlockNumber: 100, Hash: []byte("YS1oYXNo")}).Return(errors.New("error")).Times(1)
 					return inbox
 				}(),
 			},
@@ -533,12 +533,12 @@ func Test_fetchMessages(t *testing.T) {
 				context.Background(),
 				"ethereum",
 				"mainnet",
-				addressingtest.EthereumCharlotte,
+				addressingtest.EthereumBob,
 				func() map[string]mailbox.Receiver {
 					return map[string]mailbox.Receiver{
 						"ethereum/mainnet": func() mailbox.Receiver {
 							receiver := mailboxtest.NewMockReceiver(mockCtrl)
-							receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumCharlotte).Return([]stores.Transaction{}, errors.New("network not supported")).Times(1)
+							receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumBob).Return([]stores.Transaction{}, errors.New("network not supported")).Times(1)
 							return receiver
 						}(),
 					}
@@ -556,12 +556,12 @@ func Test_fetchMessages(t *testing.T) {
 				context.Background(),
 				"ethereum",
 				"mainnet",
-				addressingtest.EthereumCharlotte,
+				addressingtest.EthereumBob,
 				func() map[string]mailbox.Receiver {
 					return map[string]mailbox.Receiver{
 						"ethereum/mainnet": func() mailbox.Receiver {
 							receiver := mailboxtest.NewMockReceiver(mockCtrl)
-							receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumCharlotte).Return([]stores.Transaction{}, errors.New("error")).Times(1)
+							receiver.EXPECT().Receive(context.Background(), "ethereum", "mainnet", addressingtest.EthereumBob).Return([]stores.Transaction{}, errors.New("error")).Times(1)
 							return receiver
 						}(),
 					}
@@ -579,7 +579,7 @@ func Test_fetchMessages(t *testing.T) {
 				context.Background(),
 				"ethereum",
 				"mainnet",
-				addressingtest.EthereumCharlotte,
+				addressingtest.EthereumBob,
 				func() map[string]mailbox.Receiver {
 					return map[string]mailbox.Receiver{
 						"ethereum/mainnet": nil,
@@ -598,7 +598,7 @@ func Test_fetchMessages(t *testing.T) {
 				context.Background(),
 				"ethereum",
 				"mainnet",
-				addressingtest.EthereumCharlotte,
+				addressingtest.EthereumBob,
 				func() map[string]mailbox.Receiver {
 					return map[string]mailbox.Receiver{}
 				}(),

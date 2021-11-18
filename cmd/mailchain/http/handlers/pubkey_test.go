@@ -207,11 +207,11 @@ func TestGetPublicKey(t *testing.T) {
 			http.StatusInternalServerError,
 		},
 		{
-			"200-sofia-secp256k1",
+			"200-alice-secp256k1",
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
-					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHexZeroX("0xD5ab4CE3605Cd590Db609b6b5C8901fdB2ef7FE6")).Return(secp256k1test.SofiaPublicKey, nil).Times(1)
+					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHexZeroX("0xD5ab4CE3605Cd590Db609b6b5C8901fdB2ef7FE6")).Return(secp256k1test.AlicePublicKey, nil).Times(1)
 					return map[string]mailbox.PubKeyFinder{"ethereum/mainnet": finder}
 				}(),
 			},
@@ -223,11 +223,11 @@ func TestGetPublicKey(t *testing.T) {
 			http.StatusOK,
 		},
 		{
-			"200-charlotte-secp256k1",
+			"200-bob-secp256k1",
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
-					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHexZeroX("0xD5ab4CE3605Cd590Db609b6b5C8901fdB2ef7FE6")).Return(secp256k1test.CharlottePublicKey, nil).Times(1)
+					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "ethereum", "mainnet", encodingtest.MustDecodeHexZeroX("0xD5ab4CE3605Cd590Db609b6b5C8901fdB2ef7FE6")).Return(secp256k1test.BobPublicKey, nil).Times(1)
 					return map[string]mailbox.PubKeyFinder{"ethereum/mainnet": finder}
 				}(),
 			},
@@ -239,11 +239,11 @@ func TestGetPublicKey(t *testing.T) {
 			http.StatusOK,
 		},
 		{
-			"200-charlotte-sr25519",
+			"200-bob-sr25519",
 			args{
 				func() map[string]mailbox.PubKeyFinder {
 					finder := mailboxtest.NewMockPubKeyFinder(mockCtrl)
-					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "substrate", "edgeware-beresheet", encodingtest.MustDecodeBase58("5CaLgJUDdDRxw6KQXJY2f5hFkMEEGHvtUPQYDWdSbku42Dv2")).Return(sr25519test.CharlottePublicKey, nil).Times(1)
+					finder.EXPECT().PublicKeyFromAddress(gomock.Any(), "substrate", "edgeware-beresheet", encodingtest.MustDecodeBase58("5CaLgJUDdDRxw6KQXJY2f5hFkMEEGHvtUPQYDWdSbku42Dv2")).Return(sr25519test.BobPublicKey, nil).Times(1)
 					return map[string]mailbox.PubKeyFinder{"substrate/edgeware-beresheet": finder}
 				}(),
 			},

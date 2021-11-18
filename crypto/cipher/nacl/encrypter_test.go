@@ -36,11 +36,11 @@ func TestNewEncrypter(t *testing.T) {
 		{
 			"ed25519",
 			args{
-				ed25519test.CharlottePublicKey,
+				ed25519test.BobPublicKey,
 			},
 			&Encrypter{
 				rand:      rand.Reader,
-				publicKey: ed25519test.CharlottePublicKey,
+				publicKey: ed25519test.BobPublicKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewED25519(rand.Reader)
 					return k
@@ -51,11 +51,11 @@ func TestNewEncrypter(t *testing.T) {
 		{
 			"sr25519",
 			args{
-				sr25519test.CharlottePublicKey,
+				sr25519test.BobPublicKey,
 			},
 			&Encrypter{
 				rand:      rand.Reader,
-				publicKey: sr25519test.CharlottePublicKey,
+				publicKey: sr25519test.BobPublicKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewSR25519(rand.Reader)
 					return k
@@ -66,11 +66,11 @@ func TestNewEncrypter(t *testing.T) {
 		{
 			"secp256k1",
 			args{
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 			},
 			&Encrypter{
 				rand:      rand.Reader,
-				publicKey: secp256k1test.CharlottePublicKey,
+				publicKey: secp256k1test.BobPublicKey,
 				keyExchange: func() cipher.KeyExchange {
 					k, _ := ecdh.NewSECP256K1(rand.Reader)
 					return k
@@ -122,10 +122,10 @@ func TestEncrypter_Encrypt(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"ed25519-charlotte",
+			"ed25519-bob",
 			fields{
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				ed25519test.CharlottePublicKey,
+				ed25519test.BobPublicKey,
 				func() cipher.KeyExchange {
 					k, _ := ecdh.NewED25519(bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ")))
 					return k
@@ -138,10 +138,10 @@ func TestEncrypter_Encrypt(t *testing.T) {
 			false,
 		},
 		{
-			"ed25519-sofia",
+			"ed25519-alice",
 			fields{
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				ed25519test.SofiaPublicKey,
+				ed25519test.AlicePublicKey,
 				func() cipher.KeyExchange {
 					k, _ := ecdh.NewED25519(bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ")))
 					return k
@@ -154,10 +154,10 @@ func TestEncrypter_Encrypt(t *testing.T) {
 			false,
 		},
 		{
-			"sr25519-charlotte",
+			"sr25519-bob",
 			fields{
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				sr25519test.CharlottePublicKey,
+				sr25519test.BobPublicKey,
 				func() cipher.KeyExchange {
 					k, _ := ecdh.NewSR25519(bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ")))
 					return k
@@ -170,10 +170,10 @@ func TestEncrypter_Encrypt(t *testing.T) {
 			false,
 		},
 		{
-			"sr25519-sofia",
+			"sr25519-alice",
 			fields{
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				sr25519test.SofiaPublicKey,
+				sr25519test.AlicePublicKey,
 				func() cipher.KeyExchange {
 					k, _ := ecdh.NewSR25519(bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ")))
 					return k
@@ -186,10 +186,10 @@ func TestEncrypter_Encrypt(t *testing.T) {
 			false,
 		},
 		{
-			"secp256k1-charlotte",
+			"secp256k1-bob",
 			fields{
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				secp256k1test.CharlottePublicKey,
+				secp256k1test.BobPublicKey,
 				func() cipher.KeyExchange {
 					k, _ := ecdh.NewSECP256K1(bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ")))
 					return k
@@ -202,10 +202,10 @@ func TestEncrypter_Encrypt(t *testing.T) {
 			false,
 		},
 		{
-			"secp256k1-sofia",
+			"secp256k1-alice",
 			fields{
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				secp256k1test.SofiaPublicKey,
+				secp256k1test.AlicePublicKey,
 				func() cipher.KeyExchange {
 					k, _ := ecdh.NewSECP256K1(bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ")))
 					return k
@@ -221,7 +221,7 @@ func TestEncrypter_Encrypt(t *testing.T) {
 			"err-generate-ephemeral",
 			fields{
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				ed25519test.SofiaPublicKey,
+				ed25519test.AlicePublicKey,
 
 				func() cipher.KeyExchange {
 					m := ciphertest.NewMockKeyExchange(mockCtrl)
@@ -239,11 +239,11 @@ func TestEncrypter_Encrypt(t *testing.T) {
 			"err-generate-ephemeral",
 			fields{
 				bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")),
-				ed25519test.SofiaPublicKey,
+				ed25519test.AlicePublicKey,
 				func() cipher.KeyExchange {
 					m := ciphertest.NewMockKeyExchange(mockCtrl)
-					m.EXPECT().EphemeralKey().Return(ed25519test.CharlottePrivateKey, nil)
-					m.EXPECT().SharedSecret(ed25519test.CharlottePrivateKey, ed25519test.SofiaPublicKey).Return([]byte{}, errors.New("error"))
+					m.EXPECT().EphemeralKey().Return(ed25519test.BobPrivateKey, nil)
+					m.EXPECT().SharedSecret(ed25519test.BobPrivateKey, ed25519test.AlicePublicKey).Return([]byte{}, errors.New("error"))
 					return m
 				}(),
 			},
@@ -257,7 +257,7 @@ func TestEncrypter_Encrypt(t *testing.T) {
 			"err-seal",
 			fields{
 				iotest.DataErrReader(bytes.NewReader(nil)),
-				ed25519test.SofiaPublicKey,
+				ed25519test.AlicePublicKey,
 				func() cipher.KeyExchange {
 					k, _ := ecdh.NewED25519(bytes.NewReader([]byte("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ")))
 					return k

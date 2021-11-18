@@ -35,10 +35,10 @@ func Test_asPrivateECIES(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-secp256k1-sofia-val",
+			"success-secp256k1-alice-val",
 			args{
 				func() secp256k1.PrivateKey {
-					t := secp256k1test.SofiaPrivateKey.(*secp256k1.PrivateKey)
+					t := secp256k1test.AlicePrivateKey.(*secp256k1.PrivateKey)
 					return *t
 				}(),
 			},
@@ -46,10 +46,10 @@ func Test_asPrivateECIES(t *testing.T) {
 			false,
 		},
 		{
-			"success-secp256k1-sofia-pointer",
+			"success-secp256k1-alice-pointer",
 			args{
 				func() *secp256k1.PrivateKey {
-					return secp256k1test.SofiaPrivateKey.(*secp256k1.PrivateKey)
+					return secp256k1test.AlicePrivateKey.(*secp256k1.PrivateKey)
 				}(),
 			},
 			false,
@@ -58,7 +58,7 @@ func Test_asPrivateECIES(t *testing.T) {
 		{
 			"err-unsupported",
 			args{
-				ed25519test.SofiaPrivateKey,
+				ed25519test.AlicePrivateKey,
 			},
 			true,
 			true,
@@ -66,7 +66,7 @@ func Test_asPrivateECIES(t *testing.T) {
 		{
 			"err-unsupported-sr25519",
 			args{
-				sr25519test.SofiaPrivateKey,
+				sr25519test.AlicePrivateKey,
 			},
 			true,
 			true,
@@ -98,20 +98,20 @@ func Test_asPublicECIES(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-secp256k1-sofia-pointer",
+			"success-secp256k1-alice-pointer",
 			args{
 				func() crypto.PublicKey {
-					return secp256k1test.SofiaPublicKey.(*secp256k1.PublicKey)
+					return secp256k1test.AlicePublicKey.(*secp256k1.PublicKey)
 				}(),
 			},
 			false,
 			false,
 		},
 		{
-			"success-secp256k1-sofia-val",
+			"success-secp256k1-alice-val",
 			args{
 				func() crypto.PublicKey {
-					pk := secp256k1test.SofiaPublicKey.(*secp256k1.PublicKey)
+					pk := secp256k1test.AlicePublicKey.(*secp256k1.PublicKey)
 					return *pk
 				}(),
 			},
@@ -121,7 +121,7 @@ func Test_asPublicECIES(t *testing.T) {
 		{
 			"err-invalid",
 			args{
-				ed25519test.SofiaPublicKey,
+				ed25519test.AlicePublicKey,
 			},
 			true,
 			true,
@@ -129,7 +129,7 @@ func Test_asPublicECIES(t *testing.T) {
 		{
 			"err-invalid-sr25519",
 			args{
-				sr25519test.CharlottePublicKey,
+				sr25519test.BobPublicKey,
 			},
 			true,
 			true,

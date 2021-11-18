@@ -42,17 +42,17 @@ func TestNewSigner(t *testing.T) {
 		{
 			"success",
 			args{
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			&Signer{
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			false,
 		},
 		{
 			"invalid-key",
 			args{
-				ed25519test.CharlottePrivateKey,
+				ed25519test.BobPrivateKey,
 			},
 			nil,
 			true,
@@ -100,7 +100,7 @@ func TestSigner_Sign(t *testing.T) {
 		{
 			"err-invalid-SignerOptions",
 			fields{
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			args{
 				func() interface{} {
@@ -116,7 +116,7 @@ func TestSigner_Sign(t *testing.T) {
 		{
 			"success-SignerOptions",
 			fields{
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			args{
 				SignerOptions{
@@ -130,7 +130,7 @@ func TestSigner_Sign(t *testing.T) {
 		{
 			"success-SignerOptions-chainid-nil",
 			fields{
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			args{
 				SignerOptions{
@@ -170,9 +170,9 @@ func Test_validatePrivateKeyType(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"success-secp256k1-charlotte",
+			"success-secp256k1-bob",
 			args{
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			func() *ecdsa.PrivateKey {
 				m, _ := ethcrypto.ToECDSA([]byte{0xdf, 0x4b, 0xa9, 0xf6, 0x10, 0x6a, 0xd2, 0x84, 0x64, 0x72, 0xf7, 0x59, 0x47, 0x65, 0x35, 0xe5, 0x5c, 0x58, 0x05, 0xd8, 0x33, 0x7d, 0xf5, 0xa1, 0x1c, 0x3b, 0x13, 0x9f, 0x43, 0x8b, 0x98, 0xb3})
@@ -181,9 +181,9 @@ func Test_validatePrivateKeyType(t *testing.T) {
 			false,
 		},
 		{
-			"success-secp256k1-charlotte",
+			"success-secp256k1-bob",
 			args{
-				*secp256k1test.CharlottePrivateKey.(*secp256k1.PrivateKey),
+				*secp256k1test.BobPrivateKey.(*secp256k1.PrivateKey),
 			},
 			func() *ecdsa.PrivateKey {
 				m, _ := ethcrypto.ToECDSA([]byte{0xdf, 0x4b, 0xa9, 0xf6, 0x10, 0x6a, 0xd2, 0x84, 0x64, 0x72, 0xf7, 0x59, 0x47, 0x65, 0x35, 0xe5, 0x5c, 0x58, 0x05, 0xd8, 0x33, 0x7d, 0xf5, 0xa1, 0x1c, 0x3b, 0x13, 0x9f, 0x43, 0x8b, 0x98, 0xb3})
@@ -192,9 +192,9 @@ func Test_validatePrivateKeyType(t *testing.T) {
 			false,
 		},
 		{
-			"err-ed25519-charlotte",
+			"err-ed25519-bob",
 			args{
-				ed25519test.CharlottePrivateKey,
+				ed25519test.BobPrivateKey,
 			},
 			nil,
 			true,

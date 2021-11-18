@@ -47,10 +47,10 @@ func TestDecrypter(t *testing.T) {
 			"aes256cbc",
 			args{
 				cipher.AES256CBC,
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			func() cipher.Decrypter {
-				m, _ := aes256cbc.NewDecrypter(secp256k1test.CharlottePrivateKey)
+				m, _ := aes256cbc.NewDecrypter(secp256k1test.BobPrivateKey)
 				return m
 			}(),
 			false,
@@ -59,10 +59,10 @@ func TestDecrypter(t *testing.T) {
 			"nacl",
 			args{
 				cipher.NACLECDH,
-				ed25519test.CharlottePrivateKey,
+				ed25519test.BobPrivateKey,
 			},
 			func() cipher.Decrypter {
-				m, _ := nacl.NewDecrypter(ed25519test.CharlottePrivateKey)
+				m, _ := nacl.NewDecrypter(ed25519test.BobPrivateKey)
 				return m
 			}(),
 			false,
@@ -71,7 +71,7 @@ func TestDecrypter(t *testing.T) {
 			"noop",
 			args{
 				cipher.NoOperation,
-				ed25519test.CharlottePrivateKey,
+				ed25519test.BobPrivateKey,
 			},
 			func() cipher.Decrypter {
 				m := noop.NewDecrypter()
@@ -83,7 +83,7 @@ func TestDecrypter(t *testing.T) {
 			"err-invalid-key-type",
 			args{
 				0xFF,
-				secp256k1test.CharlottePrivateKey,
+				secp256k1test.BobPrivateKey,
 			},
 			nil,
 			true,
@@ -101,7 +101,7 @@ func TestDecrypter(t *testing.T) {
 			"err-invalid-aes256cbc-key-type",
 			args{
 				cipher.AES256CBC,
-				ed25519test.CharlottePrivateKey,
+				ed25519test.BobPrivateKey,
 			},
 			(*aes256cbc.Decrypter)(nil),
 			true,

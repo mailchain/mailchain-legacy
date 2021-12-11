@@ -27,7 +27,7 @@ func pubKeyElements(pubKey crypto.PublicKey) (id byte, data []byte, err error) {
 	switch pk := pubKey.(type) {
 	case *secp256k1.PublicKey:
 		id = crypto.ByteSECP256K1
-		data = pk.CompressedBytes()
+		data = pk.Bytes()
 	case *ed25519.PublicKey:
 		id = crypto.ByteED25519
 		data = pk.Bytes()

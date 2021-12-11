@@ -71,7 +71,7 @@ func TestFileStore_filename(t *testing.T) {
 			args{
 				secp256k1test.AlicePublicKey.Bytes(),
 			},
-			"69d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb00687055e5924a2fd8dd35f069dc14d8147aa11c1f7e2f271573487e1beeb2be9d0.json",
+			"0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006.json",
 		},
 		{
 			"ed25519-alice",

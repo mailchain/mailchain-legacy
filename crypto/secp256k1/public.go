@@ -49,11 +49,11 @@ func (pk PublicKey) Verify(message, sig []byte) bool {
 
 // Bytes returns the byte representation of the public key
 func (pk PublicKey) Bytes() []byte {
-	return append(pk.ecdsa.X.Bytes(), pk.ecdsa.Y.Bytes()...)
+	return ethcrypto.CompressPubkey(&pk.ecdsa)
 }
 
-func (pk PublicKey) CompressedBytes() []byte {
-	return ethcrypto.CompressPubkey(&pk.ecdsa)
+func (pk PublicKey) UncompressedBytes() []byte {
+	return append(pk.ecdsa.X.Bytes(), pk.ecdsa.Y.Bytes()...)
 }
 
 // PublicKeyFromBytes create a public key from []byte

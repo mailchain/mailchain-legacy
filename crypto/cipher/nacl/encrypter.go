@@ -44,5 +44,5 @@ func (e Encrypter) Encrypt(message cipher.PlainContent) (cipher.EncryptedContent
 		return nil, err
 	}
 
-	return bytesEncode(encrypted, ephemeralKey.PublicKey())
+	return serializeSecret(encrypted, ephemeralKey.PublicKey())
 }

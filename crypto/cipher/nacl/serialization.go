@@ -41,8 +41,8 @@ func pubKeyElements(pubKey crypto.PublicKey) (id byte, data []byte, err error) {
 	return
 }
 
-// bytesEncode encode the encrypted data to the hex format
-func bytesEncode(data cipher.EncryptedContent, pubKey crypto.PublicKey) (cipher.EncryptedContent, error) {
+// serializeSecret encode the encrypted data to the hex format
+func serializeSecret(data cipher.EncryptedContent, pubKey crypto.PublicKey) (cipher.EncryptedContent, error) {
 	pkID, pkBytes, err := pubKeyElements(pubKey)
 	if err != nil {
 		return nil, err
@@ -58,14 +58,14 @@ func bytesEncode(data cipher.EncryptedContent, pubKey crypto.PublicKey) (cipher.
 	return encodedData, nil
 }
 
-// bytesDecode convert the hex format in to the encrypted data format
-func bytesDecode(raw cipher.EncryptedContent) (cph cipher.EncryptedContent, pubKey crypto.PublicKey, err error) {
+// deserializeSecret convert the hex format in to the encrypted data format
+func deserializeSecret(raw cipher.EncryptedContent) (cph cipher.EncryptedContent, pubKey crypto.PublicKey, err error) {
 	if raw[0] != cipher.NACLECDH {
 		return nil, nil, errors.Errorf("invalid prefix")
 	}
 
-	if len(raw) < 35 { //nolint: mnd will result in error is less than this
-		return nil, nil, errors.Errorf("cipher is too short")
+	if len(raw) < 35 {
+		return nil, nil, errors.Errorf("cipher is too short") // will result in error is less than this
 	}
 
 	switch raw[1] {

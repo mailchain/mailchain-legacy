@@ -110,7 +110,7 @@ func (k *ExtendedPrivateKey) ExtendedPublicKey() (crypto.ExtendedPublicKey, erro
 	return fromExtendedPublicKey(
 		hdkeychain.NewExtendedKey(
 			[]byte{0x04, 0x88, 0xad, 0xe4}, // starts with xprv used for serialization only
-			pubKey.CompressedBytes(),
+			pubKey.Bytes(),
 			k.chainCode[:],
 			fingerprint[:],
 			k.depth,

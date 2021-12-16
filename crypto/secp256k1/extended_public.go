@@ -26,7 +26,7 @@ func (k *ExtendedPublicKey) Bytes() []byte {
 	copy(serializationBytes[serializationBeginFingerPrint:serializationEndFingerPrint], fingerprint[:])
 	copy(serializationBytes[serializationBeginIndex:serializationEndIndex], childNumBytes[:])
 	copy(serializationBytes[serializationBeginChainCode:serializationEndChainCode], k.chainCode[:])
-	copy(serializationBytes[serializationBeginKeyBytes:serializationEndKeyBytes], k.key.CompressedBytes())
+	copy(serializationBytes[serializationBeginKeyBytes:serializationEndKeyBytes], k.key.Bytes())
 
 	return serializationBytes[:]
 }
@@ -41,7 +41,7 @@ func (k *ExtendedPublicKey) Derive(index uint32) (crypto.ExtendedPublicKey, erro
 
 	child, err := hdkeychain.NewExtendedKey(
 		[]byte{0x04, 0x88, 0xb2, 0x1e}, // starts with xpub used for serialization only
-		k.key.CompressedBytes(),
+		k.key.Bytes(),
 		k.chainCode[:],
 		fingerprint[:],
 		k.depth,

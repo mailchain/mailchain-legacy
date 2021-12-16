@@ -26,3 +26,10 @@ type PrivateKey interface {
 	// Sign signs the message with the key and returns the signature.
 	Sign(message []byte) ([]byte, error)
 }
+
+type ExtendedPrivateKey interface {
+	Bytes() []byte
+	PrivateKey() PrivateKey
+	Derive(index uint32) (ExtendedPrivateKey, error)
+	ExtendedPublicKey() (ExtendedPublicKey, error)
+}

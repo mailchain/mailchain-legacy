@@ -26,3 +26,9 @@ type PublicKey interface {
 	// Verify verifies whether sig is a valid signature of message.
 	Verify(message, sig []byte) bool
 }
+
+type ExtendedPublicKey interface {
+	Bytes() []byte
+	PublicKey() PublicKey
+	Derive(index uint32) (ExtendedPublicKey, error)
+}

@@ -18,6 +18,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/sha256"
 	"io"
+	"math/big"
 
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/ecies"
@@ -25,12 +26,21 @@ import (
 	"github.com/pkg/errors"
 )
 
-// PrivateKey based on the secp256k1 curve
+var (
+
+	// ErrUnusableSeed describes an error in which the provided seed is not
+	// usable due to the derived key falling outside of the valid range for
+	// secp256k1 private keys.  This error indicates the caller must choose
+	// another seed.
+	ErrUnusableSeed = errors.New("unusable seed")
+)
+
+// PrivateKey based on the secp256k1 curve.
 type PrivateKey struct {
 	ecdsa ecdsa.PrivateKey
 }
 
-// Bytes returns the byte representation of the private key
+// Bytes returns the byte representation of the private key.
 func (pk PrivateKey) Bytes() []byte {
 	return ethcrypto.FromECDSA(&pk.ecdsa)
 }
@@ -38,10 +48,11 @@ func (pk PrivateKey) Bytes() []byte {
 // Sign signs the message with the private key and returns the signature.
 func (pk PrivateKey) Sign(message []byte) (signature []byte, err error) {
 	hash := sha256.Sum256(message)
+
 	return ethcrypto.Sign(hash[:], &pk.ecdsa)
 }
 
-// PublicKey return the public key that is derived from the private key
+// PublicKey return the public key that is derived from the private key.
 func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	return &PublicKey{ecdsa: pk.ecdsa.PublicKey}
 }
@@ -59,16 +70,24 @@ func (pk PrivateKey) ECIES() *ecies.PrivateKey {
 // ECDSA returns an ECDSA representation of the private key.
 func (pk PrivateKey) ECDSA() (*ecdsa.PrivateKey, error) {
 	rpk, err := ethcrypto.ToECDSA(pk.Bytes())
+
 	return rpk, errors.WithMessage(err, "could not convert private key")
 }
 
-// PrivateKeyFromECDSA get a private key from an ecdsa.PrivateKey
+// PrivateKeyFromECDSA get a private key from an ecdsa.PrivateKey.
 func PrivateKeyFromECDSA(pk ecdsa.PrivateKey) PrivateKey {
 	return PrivateKey{ecdsa: pk}
 }
 
-// PrivateKeyFromBytes get a private key from []byte
+// PrivateKeyFromBytes get a private key from []byte.
 func PrivateKeyFromBytes(pk []byte) (*PrivateKey, error) {
+	// Ensure the private key is valid.  It must be within the range
+	// of the order of the secp256k1 curve and not be 0.
+	keyNum := new(big.Int).SetBytes(pk)
+	if keyNum.Cmp(ethcrypto.S256().Params().N) >= 0 || keyNum.Sign() == 0 {
+		return nil, ErrUnusableSeed
+	}
+
 	rpk, err := ethcrypto.ToECDSA(pk)
 	if err != nil {
 		return nil, errors.Errorf("could not convert private key")

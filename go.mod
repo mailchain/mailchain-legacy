@@ -10,6 +10,7 @@ require (
 	github.com/algorand/go-algorand-sdk v1.5.1
 	github.com/andreburgaud/crypt2go v0.11.0
 	github.com/aws/aws-sdk-go v1.34.6
+	github.com/btcsuite/btcutil v1.0.3-0.20210929233259-9cdf59f60c51
 	github.com/cenkalti/backoff/v4 v4.1.0
 	github.com/centrifuge/go-substrate-rpc-client v2.0.0-alpha.5+incompatible
 	github.com/dgraph-io/badger/v2 v2.0.3

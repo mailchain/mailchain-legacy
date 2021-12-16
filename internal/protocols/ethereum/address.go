@@ -25,14 +25,9 @@ import (
 
 // Address returns the byte representation of the address
 func Address(pubKey crypto.PublicKey) ([]byte, error) {
-	switch pubKey.(type) {
-	case secp256k1.PublicKey, *secp256k1.PublicKey:
-		ecdsa, err := ethcrypto.UnmarshalPubkey(append([]byte{byte(4)}, pubKey.Bytes()...))
-		if err != nil {
-			return nil, errors.WithMessage(err, "could not decompress key")
-		}
-
-		return Keccak256(ethcrypto.FromECDSAPub(ecdsa)[1:])[12:], nil
+	switch pk := pubKey.(type) {
+	case *secp256k1.PublicKey:
+		return Keccak256(ethcrypto.FromECDSAPub(pk.ECDSA())[1:])[12:], nil
 	default:
 		return nil, errors.Errorf("invalid public key type: %T", pubKey)
 	}

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_bytesEncode(t *testing.T) {
+func Test_serializeSecret(t *testing.T) {
 	type args struct {
 		data   cipher.EncryptedContent
 		pubKey crypto.PublicKey
@@ -103,13 +103,13 @@ func Test_bytesEncode(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := bytesEncode(tt.args.data, tt.args.pubKey)
+			got, err := serializeSecret(tt.args.data, tt.args.pubKey)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("bytesEncode() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("serializeSecret() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !assert.Equal(t, tt.want, got) {
-				t.Errorf("bytesEncode() = %v, want %v", got, tt.want)
+				t.Errorf("serializeSecret() = %v, want %v", got, tt.want)
 			}
 			assert.True(t, err != nil || bytes.Contains(got, tt.args.data))
 			assert.Len(t, got, tt.wantLen)
@@ -117,7 +117,7 @@ func Test_bytesEncode(t *testing.T) {
 	}
 }
 
-func Test_bytesDecode(t *testing.T) {
+func Test_deserializeSecret(t *testing.T) {
 	type args struct {
 		raw cipher.EncryptedContent
 	}
@@ -212,22 +212,22 @@ func Test_bytesDecode(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotCph, gotPubKey, err := bytesDecode(tt.args.raw)
+			gotCph, gotPubKey, err := deserializeSecret(tt.args.raw)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("bytesDecode() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("deserializeSecret() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(gotCph, tt.wantCph) {
-				t.Errorf("bytesDecode() gotCph = %v, want %v", gotCph, tt.wantCph)
+				t.Errorf("deserializeSecret() gotCph = %v, want %v", gotCph, tt.wantCph)
 			}
 			if !reflect.DeepEqual(gotPubKey, tt.wantPubKey) {
-				t.Errorf("bytesDecode() gotPubKey = %v, want %v", gotPubKey, tt.wantPubKey)
+				t.Errorf("deserializeSecret() gotPubKey = %v, want %v", gotPubKey, tt.wantPubKey)
 			}
 		})
 	}
 }
 
-func Test_bytesEncodeDecode(t *testing.T) {
+func Test_serializeSecretDecode(t *testing.T) {
 	type args struct {
 		data   cipher.EncryptedContent
 		pubKey crypto.PublicKey
@@ -292,15 +292,15 @@ func Test_bytesEncodeDecode(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			encoded, err := bytesEncode(tt.args.data, tt.args.pubKey)
+			encoded, err := serializeSecret(tt.args.data, tt.args.pubKey)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("bytesEncode() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("serializeSecret() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
-			decoded, pubKey, err := bytesDecode(encoded)
+			decoded, pubKey, err := deserializeSecret(encoded)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("bytesDecode() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("deserializeSecret() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			assert.Equal(t, tt.args.data, decoded)

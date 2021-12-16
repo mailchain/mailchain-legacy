@@ -52,8 +52,8 @@ func (pk PublicKey) Bytes() []byte {
 	return ethcrypto.CompressPubkey(&pk.ecdsa)
 }
 
-func (pk PublicKey) CompressedBytes() []byte {
-	return ethcrypto.CompressPubkey(&pk.ecdsa)
+func (pk PublicKey) UncompressedBytes() []byte {
+	return append(pk.ecdsa.X.Bytes(), pk.ecdsa.Y.Bytes()...)
 }
 
 // PublicKeyFromBytes create a public key from []byte

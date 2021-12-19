@@ -18,11 +18,9 @@ package handlers
 // swagger:response ValidationError
 type ValidationError struct {
 	// Code describing the error
-	// example: 422
 	Code string `json:"code"`
 
 	// Description of the error
-	// example: Response to invalid input
 	Message string `json:"message"`
 }
 
@@ -30,10 +28,8 @@ type ValidationError struct {
 // swagger:response NotFoundError
 type NotFoundError struct {
 	// Code describing the error
-	// example: 404
 	Code string `json:"code"`
 
 	// Description of the error
-	// example: Not found.
 	Message string `json:"message"`
 }

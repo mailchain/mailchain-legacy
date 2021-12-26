@@ -18,6 +18,12 @@ const (
 	ByteSR25519 = 0xe3
 )
 
+var CurveKindByteMapping = map[string]byte{ //nolint:gochecknoglobals
+	KindSECP256K1: ByteSECP256K1,
+	KindED25519:   ByteED25519,
+	KindSR25519:   ByteSR25519,
+}
+
 // KeyTypes available key types.
 func KeyTypes() map[string]bool {
 	return map[string]bool{

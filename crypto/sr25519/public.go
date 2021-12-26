@@ -21,11 +21,6 @@ func (pk PublicKey) Bytes() []byte {
 	return pk.key
 }
 
-// Kind returns the key type
-func (pk PublicKey) Kind() string {
-	return crypto.KindSR25519
-}
-
 // Verify uses the sr25519 signature algorithm to verify that the message was signed by
 // this public key; it returns true if this key created the signature for the message,
 // false otherwise

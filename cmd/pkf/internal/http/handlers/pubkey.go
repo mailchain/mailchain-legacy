@@ -6,6 +6,7 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/internal/datastore"
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
+	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/pubkey"
@@ -47,7 +48,13 @@ func GetPublicKey(store datastore.PublicKeyStore) func(w http.ResponseWriter, r 
 			return
 		}
 
-		encryptionTypes, err := pubkey.EncryptionMethods(publicKey.PublicKey.Kind())
+		encryptionTypes, err := pubkey.EncryptionMethods(publicKey.PublicKey)
+		if err != nil {
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
+			return
+		}
+
+		kind, err := multikey.KindFromPublicKey(publicKey.PublicKey)
 		if err != nil {
 			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
 			return
@@ -58,7 +65,7 @@ func GetPublicKey(store datastore.PublicKeyStore) func(w http.ResponseWriter, r 
 			PublicKey:                encodedKey,
 			PublicKeyEncoding:        encodingType,
 			SupportedEncryptionTypes: encryptionTypes,
-			PublicKeyKind:            publicKey.PublicKey.Kind(),
+			PublicKeyKind:            kind,
 		})
 	}
 }

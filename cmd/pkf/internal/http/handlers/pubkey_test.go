@@ -75,7 +75,6 @@ func Test_GetPublicKey(t *testing.T) {
 				func() datastore.PublicKeyStore {
 					mockPublicKey := cryptotest.NewMockPublicKey(mockCtrl)
 					mockPublicKey.EXPECT().Bytes().Return([]byte("unknown public key")).Times(1)
-					mockPublicKey.EXPECT().Kind().Return("unknown").Times(1)
 					res := &datastore.PublicKey{
 						PublicKey: mockPublicKey,
 						BlockHash: blockHash,

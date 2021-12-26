@@ -1,4 +1,4 @@
 {
     "code":500,
-    "message":"\"unknown\" unsupported public key type"
+    "message":"unsupported public key"
 }

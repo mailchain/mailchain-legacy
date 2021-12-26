@@ -29,11 +29,6 @@ type PublicKey struct {
 	ecdsa ecdsa.PublicKey
 }
 
-// Kind returns the key type
-func (pk PublicKey) Kind() string {
-	return crypto.KindSECP256K1
-}
-
 // Verify verifies whether sig is a valid signature of message.
 func (pk PublicKey) Verify(message, sig []byte) bool {
 	// VerifySignature requires the signature to be in

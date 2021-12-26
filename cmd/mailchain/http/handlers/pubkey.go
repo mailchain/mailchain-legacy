@@ -20,6 +20,7 @@ import (
 	"net/http"
 
 	"github.com/mailchain/mailchain/cmd/internal/http/params"
+	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/errs"
 	"github.com/mailchain/mailchain/internal/addressing"
 	"github.com/mailchain/mailchain/internal/mailbox"
@@ -76,7 +77,13 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 			return
 		}
 
-		encryptionTypes, err := pubkey.EncryptionMethods(publicKey.Kind())
+		encryptionTypes, err := pubkey.EncryptionMethods(publicKey)
+		if err != nil {
+			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
+			return
+		}
+
+		kind, err := multikey.KindFromPublicKey(publicKey)
 		if err != nil {
 			errs.JSONWriter(w, r, http.StatusInternalServerError, errors.WithStack(err), log.Logger)
 			return
@@ -87,7 +94,7 @@ func GetPublicKey(finders map[string]mailbox.PubKeyFinder) func(w http.ResponseW
 			PublicKey:                encodedKey,
 			PublicKeyEncoding:        encodingType,
 			SupportedEncryptionTypes: encryptionTypes,
-			PublicKeyKind:            publicKey.Kind(),
+			PublicKeyKind:            kind,
 		})
 	}
 }

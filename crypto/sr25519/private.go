@@ -29,17 +29,12 @@ type PrivateKey struct {
 }
 
 // Bytes returns the byte representation of the private key
-func (pk *PrivateKey) Bytes() []byte {
+func (pk PrivateKey) Bytes() []byte {
 	return pk.secretKey.Seed()
 }
 
-// Kind is the type of private key.
-func (pk *PrivateKey) Kind() string {
-	return crypto.KindSR25519
-}
-
 // PublicKey return the crypto.PublicKey that is derived from the Privatekey
-func (pk *PrivateKey) PublicKey() crypto.PublicKey {
+func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	key := ristretto255.NewScalar()
 	if err := key.Decode(pk.secretKey.Key()); err != nil {
 		return nil
@@ -49,7 +44,7 @@ func (pk *PrivateKey) PublicKey() crypto.PublicKey {
 }
 
 // Sign uses the PrivateKey to sign the message using the sr25519 signature algorithm
-func (pk *PrivateKey) Sign(message []byte) ([]byte, error) {
+func (pk PrivateKey) Sign(message []byte) ([]byte, error) {
 	context := newSigningContext(substrateContext, message)
 
 	context.AppendMessage([]byte("proto-name"), []byte("Schnorr-sig")) // https://github.com/w3f/schnorrkel/blob/4112f6e8cb684a1cc6574f9097497e1e302ab9a8/src/sign.rs#L173

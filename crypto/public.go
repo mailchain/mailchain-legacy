@@ -21,8 +21,6 @@ type PublicKey interface {
 	//
 	// The returned bytes are used for encrypting, verifying a signature, and locating an address.
 	Bytes() []byte
-	// Kind returns the type of the key.
-	Kind() string
 	// Verify verifies whether sig is a valid signature of message.
 	Verify(message, sig []byte) bool
 }

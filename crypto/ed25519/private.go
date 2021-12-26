@@ -18,11 +18,6 @@ func (pk PrivateKey) Bytes() []byte {
 	return pk.key
 }
 
-// Kind is the type of private key.
-func (pk PrivateKey) Kind() string {
-	return crypto.KindED25519
-}
-
 // Sign signs the message with the private key and returns the signature.
 func (pk PrivateKey) Sign(message []byte) (signature []byte, err error) {
 	if len(pk.key) != ed25519.PrivateKeySize {

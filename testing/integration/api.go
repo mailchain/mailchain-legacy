@@ -10,6 +10,7 @@ import (
 
 	"github.com/mailchain/mailchain/cmd/mailchain/http/handlers"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/resty.v1"
@@ -61,6 +62,11 @@ func apiSendMessage(t *testing.T, protocol, network string, contentType, envelop
 	subject := fmt.Sprintf("IT-%s-%d", t.Name(), now.Unix())
 	client := resty.New()
 
+	keyKind, err := multikey.KindFromPublicKey(pubKey)
+	if err != nil {
+		assert.FailNow(t, err.Error())
+	}
+
 	body := map[string]interface{}{
 		"content-type":           contentType,
 		"encryption-method-name": encryptionMethodName,
@@ -74,7 +80,7 @@ func apiSendMessage(t *testing.T, protocol, network string, contentType, envelop
 			"subject":             subject,
 			"public-key":          encoding.EncodeHexZeroX(pubKey.Bytes()),
 			"public-key-encoding": encoding.KindHex0XPrefix,
-			"public-key-kind":     pubKey.Kind(),
+			"public-key-kind":     keyKind,
 		},
 	}
 	req := client.R().SetBody(body)

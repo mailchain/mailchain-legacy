@@ -38,7 +38,12 @@ func (s PublicKeyStore) PutPublicKey(ctx context.Context, protocol, network stri
 		return errors.WithStack((err))
 	}
 
-	uPublicKeyType, err := getPublicKeyTypeUint8(pubKey.PublicKey.Kind())
+	kind, err := multikey.KindFromPublicKey(pubKey.PublicKey)
+	if err != nil {
+		return errors.WithStack((err))
+	}
+
+	uPublicKeyType, err := getPublicKeyTypeUint8(kind)
 	if err != nil {
 		return errors.WithStack((err))
 	}

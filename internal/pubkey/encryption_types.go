@@ -15,22 +15,25 @@
 package pubkey
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher/encrypter"
+	"github.com/mailchain/mailchain/crypto/ed25519"
+	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/sr25519"
 )
 
 // EncryptionMethods returns supported encryption methods.
-func EncryptionMethods(kind string) ([]string, error) {
-	switch kind {
-	case crypto.KindED25519:
+func EncryptionMethods(key crypto.PublicKey) ([]string, error) {
+	switch key.(type) {
+	case *ed25519.PublicKey:
 		return []string{encrypter.NACLECDH, encrypter.NoOperation}, nil
-	case crypto.KindSECP256K1:
+	case *secp256k1.PublicKey:
 		return []string{encrypter.AES256CBC, encrypter.NoOperation}, nil
-	case crypto.KindSR25519:
+	case *sr25519.PublicKey:
 		return []string{encrypter.NACLECDH, encrypter.NoOperation}, nil
 	default:
-		return nil, fmt.Errorf("%q unsupported public key type", kind)
+		return nil, errors.New("unsupported public key")
 	}
 }

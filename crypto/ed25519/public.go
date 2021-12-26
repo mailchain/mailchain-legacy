@@ -21,11 +21,6 @@ func (pk PublicKey) Bytes() []byte {
 	return pk.key
 }
 
-// Kind returns the key type
-func (pk PublicKey) Kind() string {
-	return crypto.KindED25519
-}
-
 // PublicKeyFromBytes create a public key from []byte
 func PublicKeyFromBytes(keyBytes []byte) (crypto.PublicKey, error) {
 	if len(keyBytes) != ed25519.PublicKeySize {

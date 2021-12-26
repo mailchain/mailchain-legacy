@@ -33,27 +33,6 @@ func TestPublicKey_Bytes(t *testing.T) {
 	}
 }
 
-func TestPublicKey_Kind(t *testing.T) {
-	tests := []struct {
-		name string
-		pk   PublicKey
-		want string
-	}{
-		{
-			"bob",
-			bobPublicKey,
-			crypto.KindSR25519,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.pk.Kind(); !assert.Equal(t, tt.want, got) {
-				t.Errorf("PublicKey.Kind() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestPublicKeyFromBytes(t *testing.T) {
 	type args struct {
 		keyBytes []byte

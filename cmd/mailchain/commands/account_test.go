@@ -217,7 +217,7 @@ func Test_accountAddCmd(t *testing.T) {
 			args{
 				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					pk, _ := multikey.PrivateKeyFromBytes(secp256k1test.AlicePrivateKey.Kind(), secp256k1test.AlicePrivateKey.Bytes())
+					pk, _ := multikey.PrivateKeyFromBytes("secp256k1", secp256k1test.AlicePrivateKey.Bytes())
 					m.EXPECT().Store("ethereum", "mainnet", pk, gomock.Any()).Return(secp256k1test.AlicePublicKey, nil)
 					return m, nil
 				},
@@ -237,7 +237,7 @@ func Test_accountAddCmd(t *testing.T) {
 			args{
 				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					pk, _ := multikey.PrivateKeyFromBytes(ed25519test.AlicePrivateKey.Kind(), ed25519test.AlicePrivateKey.Bytes())
+					pk, _ := multikey.PrivateKeyFromBytes("ed25519", ed25519test.AlicePrivateKey.Bytes())
 					m.EXPECT().Store("algorand", "mainnet", pk, gomock.Any()).Return(ed25519test.AlicePublicKey, nil)
 					return m, nil
 				},
@@ -262,7 +262,7 @@ func Test_accountAddCmd(t *testing.T) {
 			args{
 				func() (keystore.Store, error) {
 					m := keystoretest.NewMockStore(mockCtrl)
-					pk, _ := multikey.PrivateKeyFromBytes(secp256k1test.AlicePrivateKey.Kind(), secp256k1test.AlicePrivateKey.Bytes())
+					pk, _ := multikey.PrivateKeyFromBytes("secp256k1", secp256k1test.AlicePrivateKey.Bytes())
 					m.EXPECT().Store("ethereum", "mainnet", pk, gomock.Any()).Return(nil, errors.Errorf("failed"))
 					return m, nil
 				},

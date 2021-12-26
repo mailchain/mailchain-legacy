@@ -21,6 +21,7 @@ import (
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
+	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/internal/mail"
@@ -309,7 +310,11 @@ func Test_parseContentType(t *testing.T) {
 
 func Test_parsePublicKey(t *testing.T) {
 	pubKeyHeader := func(pk crypto.PublicKey) string {
-		return encoding.EncodeHexZeroX(pk.Bytes()) + "; type=\"" + pk.Kind() + "\"; encoding=" + encoding.KindHex0XPrefix
+		keyKind, err := multikey.KindFromPublicKey(pk)
+		if err != nil {
+			assert.FailNow(t, err.Error())
+		}
+		return encoding.EncodeHexZeroX(pk.Bytes()) + "; type=\"" + keyKind + "\"; encoding=" + encoding.KindHex0XPrefix
 	}
 	type args struct {
 		h nm.Header
@@ -405,7 +410,11 @@ func Test_parsePublicKey(t *testing.T) {
 
 func Test_parseHeaders(t *testing.T) {
 	pubKeyHeader := func(pk crypto.PublicKey) string {
-		return encoding.EncodeHexZeroX(pk.Bytes()) + "; type=" + pk.Kind() + "; encoding=" + encoding.KindHex0XPrefix
+		keyKind, err := multikey.KindFromPublicKey(pk)
+		if err != nil {
+			assert.FailNow(t, err.Error())
+		}
+		return encoding.EncodeHexZeroX(pk.Bytes()) + "; type=" + keyKind + "; encoding=" + encoding.KindHex0XPrefix
 	}
 
 	type args struct {

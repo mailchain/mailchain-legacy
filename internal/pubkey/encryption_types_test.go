@@ -20,11 +20,14 @@ import (
 
 	"github.com/mailchain/mailchain/crypto"
 	"github.com/mailchain/mailchain/crypto/cipher/encrypter"
+	"github.com/mailchain/mailchain/crypto/ed25519/ed25519test"
+	"github.com/mailchain/mailchain/crypto/secp256k1/secp256k1test"
+	"github.com/mailchain/mailchain/crypto/sr25519/sr25519test"
 )
 
 func TestEncryptionMethods(t *testing.T) {
 	type args struct {
-		kind string
+		key crypto.PublicKey
 	}
 	tests := []struct {
 		name    string
@@ -35,7 +38,7 @@ func TestEncryptionMethods(t *testing.T) {
 		{
 			"ed25519",
 			args{
-				crypto.KindED25519,
+				ed25519test.AlicePublicKey,
 			},
 			[]string{encrypter.NACLECDH, encrypter.NoOperation},
 			false,
@@ -43,7 +46,7 @@ func TestEncryptionMethods(t *testing.T) {
 		{
 			"sr25519",
 			args{
-				crypto.KindSR25519,
+				sr25519test.AlicePublicKey,
 			},
 			[]string{encrypter.NACLECDH, encrypter.NoOperation},
 			false,
@@ -51,23 +54,15 @@ func TestEncryptionMethods(t *testing.T) {
 		{
 			"secp256k1",
 			args{
-				crypto.KindSECP256K1,
+				secp256k1test.AlicePublicKey,
 			},
 			[]string{encrypter.AES256CBC, encrypter.NoOperation},
 			false,
 		},
-		{
-			"unknown",
-			args{
-				"unknown",
-			},
-			nil,
-			true,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := EncryptionMethods(tt.args.kind)
+			got, err := EncryptionMethods(tt.args.key)
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("EncryptionMethods() error = %v, wantErr %v", err, tt.wantErr)

@@ -57,11 +57,6 @@ func (pk PrivateKey) PublicKey() crypto.PublicKey {
 	return &PublicKey{ecdsa: pk.ecdsa.PublicKey}
 }
 
-// Kind is the type of private key.
-func (pk PrivateKey) Kind() string {
-	return crypto.KindSECP256K1
-}
-
 // ECIES returns an ECIES representation of the private key.
 func (pk PrivateKey) ECIES() *ecies.PrivateKey {
 	return ecies.ImportECDSA(&pk.ecdsa)

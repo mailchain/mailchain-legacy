@@ -23,6 +23,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mailchain/mailchain"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/multikey"
 	"github.com/mailchain/mailchain/internal/keystore"
 	"github.com/mailchain/mailchain/internal/keystore/kdf"
 	"github.com/mailchain/mailchain/internal/keystore/kdf/multi"
@@ -47,11 +48,16 @@ func (f FileStore) Store(protocol, network string, private crypto.PrivateKey, de
 		return nil, errors.Errorf("kdf not supported")
 	}
 
+	kind, err := multikey.KindFromPrivateKey(private)
+	if err != nil {
+		return nil, err
+	}
+
 	keyJSON := keystore.EncryptedKey{
 		PublicKeyBytes: private.PublicKey().Bytes(),
 		StorageCipher:  "nacl",
 		CipherText:     encrypted,
-		CurveType:      private.Kind(),
+		CurveType:      kind,
 		ID:             uuid.New().String(),
 		KDF:            keyDefFunc,
 		Timestamp:      time.Now(),

@@ -21,3 +21,16 @@ func KindFromPublicKey(key crypto.PublicKey) (string, error) {
 		return "", errors.New("unknown public key type")
 	}
 }
+
+func KindFromPrivateKey(key crypto.PrivateKey) (string, error) {
+	switch key.(type) {
+	case *ed25519.PrivateKey, ed25519.PrivateKey:
+		return crypto.KindED25519, nil
+	case *secp256k1.PrivateKey, secp256k1.PrivateKey:
+		return crypto.KindSECP256K1, nil
+	case *sr25519.PrivateKey, sr25519.PrivateKey:
+		return crypto.KindSR25519, nil
+	default:
+		return "", errors.New("unknown private key type")
+	}
+}

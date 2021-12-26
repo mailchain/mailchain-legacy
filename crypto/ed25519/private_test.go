@@ -130,26 +130,6 @@ func TestPrivateKey_PublicKey(t *testing.T) {
 	}
 }
 
-func TestPrivateKey_Kind(t *testing.T) {
-	tests := []struct {
-		name string
-		want string
-	}{
-		{
-			"success",
-			"ed25519",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			pk := PrivateKey{}
-			if got := pk.Kind(); got != tt.want {
-				t.Errorf("PrivateKey.Kind() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestPrivateKey_Sign(t *testing.T) {
 	tests := []struct {
 		name    string

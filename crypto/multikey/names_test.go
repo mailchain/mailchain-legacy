@@ -57,3 +57,52 @@ func TestKindFromPublicKey(t *testing.T) {
 		})
 	}
 }
+
+func TestKindFromPrivateKey(t *testing.T) {
+	type args struct {
+		key crypto.PrivateKey
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			"ed25519",
+			args{
+				ed25519test.AlicePrivateKey,
+			},
+			"ed25519",
+			false,
+		},
+		{
+			"secp256k1",
+			args{
+				secp256k1test.AlicePrivateKey,
+			},
+			"secp256k1",
+			false,
+		},
+		{
+			"sr25519",
+			args{
+				sr25519test.AlicePrivateKey,
+			},
+			"sr25519",
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := KindFromPrivateKey(tt.args.key)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("KindFromPrivateKey() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("KindFromPrivateKey() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

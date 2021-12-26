@@ -10,18 +10,20 @@ const (
 )
 
 const (
-	// ByteSECP256K1 byte identifier for secp256k1 keys.
-	ByteSECP256K1 = 0xe1
-	// ByteED25519 byte identifier for ed25519 keys.
-	ByteED25519 = 0xe2
-	// ByteSR25519 byte identifier for sr25519 keys.
-	ByteSR25519 = 0xe3
+	// IDUnknown byte identifier for unknown keys.
+	IDUnknown = 0x0
+	// IDSECP256K1 byte identifier for secp256k1 keys.
+	IDSECP256K1 = 0xe1
+	// IDED25519 byte identifier for ed25519 keys.
+	IDED25519 = 0xe2
+	// IDSR25519 byte identifier for sr25519 keys.
+	IDSR25519 = 0xe3
 )
 
-var CurveKindByteMapping = map[string]byte{ //nolint:gochecknoglobals
-	KindSECP256K1: ByteSECP256K1,
-	KindED25519:   ByteED25519,
-	KindSR25519:   ByteSR25519,
+var CurveKindIDMapping = map[string]byte{ //nolint:gochecknoglobals
+	KindSECP256K1: IDSECP256K1,
+	KindED25519:   IDED25519,
+	KindSR25519:   IDSR25519,
 }
 
 // KeyTypes available key types.

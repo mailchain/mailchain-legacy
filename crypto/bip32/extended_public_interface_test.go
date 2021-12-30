@@ -1,10 +1,11 @@
-package secp256k1_test
+package bip32_test
 
 import (
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/bip32"
+
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
@@ -34,7 +35,7 @@ func TestExtendedPublicKey_RoundTripSerialization(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			k, err := secp256k1.ExtendedPublicKeyFromBytes(tt.coreBytes) // only need the relevant bytes
+			k, err := bip32.ExtendedPublicKeyFromBytes(tt.coreBytes) // only need the relevant bytes
 			if !assert.NoError(t, err) {
 				assert.FailNow(t, "failed to unmarshal key")
 			}
@@ -56,7 +57,7 @@ func publicKeyFromBIP32String(t *testing.T, in string) crypto.ExtendedPublicKey 
 		assert.FailNow(t, "failed to decode input")
 	}
 
-	k, err := secp256k1.ExtendedPublicKeyFromBytes(b[4:78]) // only need the relevant bytes
+	k, err := bip32.ExtendedPublicKeyFromBytes(b[4:78]) // only need the relevant bytes
 	if !assert.NoError(t, err) {
 		assert.FailNow(t, "failed to unmarshal key")
 	}

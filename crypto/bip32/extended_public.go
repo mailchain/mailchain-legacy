@@ -1,10 +1,11 @@
-package secp256k1
+package bip32
 
 import (
 	"encoding/binary"
 
 	"github.com/btcsuite/btcutil/hdkeychain"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/secp256k1"
 )
 
 type ExtendedPublicKey struct {
@@ -12,7 +13,7 @@ type ExtendedPublicKey struct {
 	parentFingerPrint uint32 // [4] bytes
 	index             uint32 // also known as child number [4] bytes
 	chainCode         [32]byte
-	key               PublicKey // [33] bytes
+	key               secp256k1.PublicKey // [33] bytes
 }
 
 func (k *ExtendedPublicKey) Bytes() []byte {
@@ -71,7 +72,7 @@ func fromExtendedPublicKey(in *hdkeychain.ExtendedKey) (*ExtendedPublicKey, erro
 		return nil, err
 	}
 
-	key, err := PublicKeyFromBytes(rawPk.SerializeCompressed())
+	key, err := secp256k1.PublicKeyFromBytes(rawPk.SerializeCompressed())
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +81,7 @@ func fromExtendedPublicKey(in *hdkeychain.ExtendedKey) (*ExtendedPublicKey, erro
 	copy(chainCode[:], in.ChainCode())
 
 	return &ExtendedPublicKey{
-		key:               *(key.(*PublicKey)),
+		key:               *(key.(*secp256k1.PublicKey)),
 		chainCode:         chainCode,
 		parentFingerPrint: in.ParentFingerprint(),
 		index:             in.ChildIndex(),

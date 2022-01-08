@@ -1,11 +1,17 @@
-package secp256k1
+package bip32
 
 import (
+	"crypto/hmac"
+	"crypto/sha512"
 	"encoding/binary"
 	"errors"
+	"fmt"
+	"math/big"
 
 	"github.com/btcsuite/btcutil/hdkeychain"
+	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/mailchain/mailchain/crypto"
+	"github.com/mailchain/mailchain/crypto/secp256k1"
 )
 
 const (
@@ -29,6 +35,16 @@ const (
 	serializationKeyLen = serializationLengthDepth + serializationLengthFingerPrint + serializationLengthIndex + serializationLengthChainCode + serializationLengthKeyBytes // 74 bytes
 )
 
+const (
+	// MinSeedBytes is the minimum number of bytes allowed for a seed to
+	// a master node.
+	MinSeedBytes = 16 // 128 bits
+
+	// MaxSeedBytes is the maximum number of bytes allowed for a seed to
+	// a master node.
+	MaxSeedBytes = 64 // 512 bits
+)
+
 var (
 	versionEmpty = [4]byte{}
 
@@ -39,6 +55,11 @@ var (
 	// 0x0. This error indicates the key is invalid and the user should check if
 	// it's a public key.
 	ErrNotAPrivateKey = errors.New("private key must start with leading 0x0")
+
+	// ErrInvalidSeedLen describes an error in which the provided seed or
+	// seed length is not in the allowed range.
+	ErrInvalidSeedLen = fmt.Errorf("seed length must be between %d and %d "+
+		"bits", MinSeedBytes*8, MaxSeedBytes*8)
 )
 
 type ExtendedPrivateKey struct {
@@ -46,7 +67,7 @@ type ExtendedPrivateKey struct {
 	parentFingerPrint uint32 // [4] bytes
 	index             uint32 // also known as child number [4] bytes
 	chainCode         [32]byte
-	key               PrivateKey // [33] bytes
+	key               secp256k1.PrivateKey // [33] bytes
 }
 
 // Bytes the format is the functional representation of the extended key.
@@ -55,7 +76,7 @@ type ExtendedPrivateKey struct {
 // BIP 32 = version + depth + fingerprint+ child num + chain code + key data + checksum
 // Functional = depth + fingerprint+ child num + chain code + key data.
 // BIP32 keys are created by adding the version and calculating the checksum.
-func (k *ExtendedPrivateKey) Bytes() []byte {
+func (k ExtendedPrivateKey) Bytes() []byte {
 	var childNumBytes, fingerprint [4]byte
 	var serializationBytes [serializationKeyLen]byte
 
@@ -74,11 +95,11 @@ func (k *ExtendedPrivateKey) Bytes() []byte {
 	return serializationBytes[:]
 }
 
-func (k *ExtendedPrivateKey) PrivateKey() crypto.PrivateKey {
+func (k ExtendedPrivateKey) PrivateKey() crypto.PrivateKey {
 	return k.key
 }
 
-func (k *ExtendedPrivateKey) Derive(index uint32) (crypto.ExtendedPrivateKey, error) {
+func (k ExtendedPrivateKey) Derive(index uint32) (crypto.ExtendedPrivateKey, error) {
 	var fingerprint [4]byte
 	binary.BigEndian.PutUint32(fingerprint[:], k.parentFingerPrint)
 
@@ -98,11 +119,11 @@ func (k *ExtendedPrivateKey) Derive(index uint32) (crypto.ExtendedPrivateKey, er
 	return fromExtendedPrivateKey(child)
 }
 
-func (k *ExtendedPrivateKey) ExtendedPublicKey() (crypto.ExtendedPublicKey, error) {
+func (k ExtendedPrivateKey) ExtendedPublicKey() (crypto.ExtendedPublicKey, error) {
 	var fingerprint [4]byte
 	binary.BigEndian.PutUint32(fingerprint[:], k.parentFingerPrint)
 
-	pubKey, ok := k.key.PublicKey().(*PublicKey)
+	pubKey, ok := k.key.PublicKey().(*secp256k1.PublicKey)
 	if !ok || pubKey == nil {
 		return nil, errors.New("invalid public key")
 	}
@@ -141,6 +162,42 @@ func ExtendedPrivateKeyFromBytes(in []byte) (*ExtendedPrivateKey, error) {
 	return fromExtendedPrivateKey(hdkeychain.NewExtendedKey(versionEmpty[:], keyData, chainCode, parentFP, depth, childNum, true))
 }
 
+func ExtendedPrivateKeyFromSeed(seed []byte) (*ExtendedPrivateKey, error) {
+	// source: github.com/btcsuite/btcutil/hdkeychain/extendedkey.go#NewMaster
+	// cloned to avoiding adding in github.com/btcsuite/btcd/chaincfg as a
+	// dependency for a parameter field
+	// Per [BIP32], the seed must be in range [MinSeedBytes, MaxSeedBytes].
+	if len(seed) < MinSeedBytes || len(seed) > MaxSeedBytes {
+		return nil, ErrInvalidSeedLen
+	}
+
+	// masterKey is the master key used along with a random seed used to generate
+	// the master node in the hierarchical tree.
+	var masterKey = []byte("Bitcoin seed")
+
+	// First take the HMAC-SHA512 of the master key and the seed data:
+	//   I = HMAC-SHA512(Key = "Bitcoin seed", Data = S)
+	hmac512 := hmac.New(sha512.New, masterKey)
+	hmac512.Write(seed)
+	lr := hmac512.Sum(nil)
+
+	// Split "I" into two 32-byte sequences Il and Ir where:
+	//   Il = master secret key
+	//   Ir = master chain code
+	secretKey := lr[:len(lr)/2]
+	chainCode := lr[len(lr)/2:]
+
+	// Ensure the key in usable.
+	secretKeyNum := new(big.Int).SetBytes(secretKey)
+	if secretKeyNum.Cmp(ethcrypto.S256().Params().N) >= 0 || secretKeyNum.Sign() == 0 {
+		return nil, secp256k1.ErrUnusableSeed
+	}
+
+	parentFP := []byte{0x00, 0x00, 0x00, 0x00}
+
+	return fromExtendedPrivateKey(hdkeychain.NewExtendedKey(versionEmpty[:], secretKey, chainCode, parentFP, 0, 0, true))
+}
+
 func fromExtendedPrivateKey(in *hdkeychain.ExtendedKey) (*ExtendedPrivateKey, error) {
 	rawPk, err := in.ECPrivKey()
 	if err != nil {
@@ -153,7 +210,7 @@ func fromExtendedPrivateKey(in *hdkeychain.ExtendedKey) (*ExtendedPrivateKey, er
 	copy(chainCode[:], in.ChainCode())
 
 	return &ExtendedPrivateKey{
-		key:               PrivateKeyFromECDSA(*ecdsa),
+		key:               secp256k1.PrivateKeyFromECDSA(*ecdsa),
 		chainCode:         chainCode,
 		parentFingerPrint: in.ParentFingerprint(),
 		index:             in.ChildIndex(),

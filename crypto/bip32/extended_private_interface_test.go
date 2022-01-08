@@ -1,10 +1,10 @@
-package secp256k1_test
+package bip32_test
 
 import (
 	"testing"
 
 	"github.com/mailchain/mailchain/crypto"
-	"github.com/mailchain/mailchain/crypto/secp256k1"
+	"github.com/mailchain/mailchain/crypto/bip32"
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/mailchain/mailchain/encoding/encodingtest"
 	"github.com/stretchr/testify/assert"
@@ -29,7 +29,7 @@ func TestExtendedPrivateKey_RoundTripSerialization(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			k, err := secp256k1.ExtendedPrivateKeyFromBytes(tt.coreBytes) // only need the relevant bytes
+			k, err := bip32.ExtendedPrivateKeyFromBytes(tt.coreBytes) // only need the relevant bytes
 			if !assert.NoError(t, err) {
 				assert.FailNow(t, "failed to unmarshal key")
 			}
@@ -51,13 +51,14 @@ func privateKeyFromBIP32String(t *testing.T, in string) crypto.ExtendedPrivateKe
 		assert.FailNow(t, "failed to decode input")
 	}
 
-	k, err := secp256k1.ExtendedPrivateKeyFromBytes(b[4:78]) // only need the relevant bytes
+	k, err := bip32.ExtendedPrivateKeyFromBytes(b[4:78]) // only need the relevant bytes
 	if !assert.NoError(t, err) {
 		assert.FailNow(t, "failed to unmarshal key")
 	}
 
 	return k
 }
+
 func TestExtendedPrivateKey_Derive(t *testing.T) {
 	// The private extended keys for test vectors in [BIP32].
 	testVec1MasterPrivKey := "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi"
@@ -70,6 +71,7 @@ func TestExtendedPrivateKey_Derive(t *testing.T) {
 		want    crypto.ExtendedPrivateKey
 		wantErr bool
 	}{
+		// test vectors from github.com/btcsuite/btcutil/hdkeychain
 		{
 			"test vector 1 chain m",
 			privateKeyFromBIP32String(t, testVec1MasterPrivKey),

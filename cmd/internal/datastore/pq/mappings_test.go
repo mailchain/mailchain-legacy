@@ -91,7 +91,7 @@ func TestGetPublicKeyTypeUint8(t *testing.T) {
 				crypto.KindSECP256K1,
 			},
 			result{
-				crypto.ByteSECP256K1,
+				crypto.IDSECP256K1,
 				false,
 			},
 		},
@@ -132,7 +132,7 @@ func TestGetPublicKeyTypeString(t *testing.T) {
 		{
 			"success",
 			args{
-				crypto.ByteSECP256K1,
+				crypto.IDSECP256K1,
 			},
 			result{
 				crypto.KindSECP256K1,

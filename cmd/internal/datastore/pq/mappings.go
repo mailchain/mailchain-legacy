@@ -61,13 +61,13 @@ var protocolNetworkUint8 = map[string]map[string]uint8{ //nolint:gochecknoglobal
 }
 
 var publicKeyTypeUint8 = map[string]uint8{ //nolint:gochecknoglobals
-	crypto.KindSECP256K1: crypto.ByteSECP256K1,
-	crypto.KindED25519:   crypto.ByteED25519,
-	crypto.KindSR25519:   crypto.ByteSR25519,
+	crypto.KindSECP256K1: crypto.IDSECP256K1,
+	crypto.KindED25519:   crypto.IDED25519,
+	crypto.KindSR25519:   crypto.IDSR25519,
 }
 
 var publicKeyTypeString = map[uint8]string{ //nolint:gochecknoglobals
-	crypto.ByteSECP256K1: crypto.KindSECP256K1,
-	crypto.ByteED25519:   crypto.KindED25519,
-	crypto.ByteSR25519:   crypto.KindSR25519,
+	crypto.IDSECP256K1: crypto.KindSECP256K1,
+	crypto.IDED25519:   crypto.KindED25519,
+	crypto.IDSR25519:   crypto.KindSR25519,
 }

@@ -26,13 +26,13 @@ import (
 func pubKeyElements(pubKey crypto.PublicKey) (id byte, data []byte, err error) {
 	switch pk := pubKey.(type) {
 	case *secp256k1.PublicKey:
-		id = crypto.ByteSECP256K1
+		id = crypto.IDSECP256K1
 		data = pk.Bytes()
 	case *ed25519.PublicKey:
-		id = crypto.ByteED25519
+		id = crypto.IDED25519
 		data = pk.Bytes()
 	case *sr25519.PublicKey:
-		id = crypto.ByteSR25519
+		id = crypto.IDSR25519
 		data = pk.Bytes()
 	default:
 		err = errors.New("unsupported public key")
@@ -69,13 +69,13 @@ func deserializeSecret(raw cipher.EncryptedContent) (cph cipher.EncryptedContent
 	}
 
 	switch raw[1] {
-	case crypto.ByteED25519:
+	case crypto.IDED25519:
 		pubKey, err = ed25519.PublicKeyFromBytes(raw[2:34])
 		cph = raw[34:]
-	case crypto.ByteSR25519:
+	case crypto.IDSR25519:
 		pubKey, err = sr25519.PublicKeyFromBytes(raw[2:34])
 		cph = raw[34:]
-	case crypto.ByteSECP256K1:
+	case crypto.IDSECP256K1:
 		pubKey, err = secp256k1.PublicKeyFromBytes(raw[2:35])
 		cph = raw[35:]
 	default:

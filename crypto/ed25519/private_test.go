@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/rand"
 	"io"
-	"reflect"
 	"testing"
 	"testing/iotest"
 
@@ -97,7 +96,7 @@ func TestPrivateKeyFromBytes(t *testing.T) {
 				t.Errorf("PrivateKeyFromBytes() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if !assert.Equal(t, tt.want, got) {
 				t.Errorf("PrivateKeyFromBytes() = %v, want %v", got, tt.want)
 			}
 		})

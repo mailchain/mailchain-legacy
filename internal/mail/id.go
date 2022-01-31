@@ -1,4 +1,4 @@
-// Copyright 2019 Finobo
+// Copyright 2022 Mailchain Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ package mail
 
 import (
 	"crypto/rand"
+
 	"github.com/mailchain/mailchain/encoding"
 	"github.com/pkg/errors"
 )

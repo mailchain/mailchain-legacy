@@ -1,4 +1,4 @@
-// Copyright 2019 Finobo
+// Copyright 2022 Mailchain Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,9 +21,8 @@ import (
 	"time"
 
 	"github.com/dgraph-io/badger/v2"
-	"github.com/pkg/errors"
 	"github.com/dgraph-io/badger/v2/options"
-
+	"github.com/pkg/errors"
 )
 
 const (
@@ -53,6 +52,7 @@ func newBadgerDB(opts *badger.Options) (*Database, error) {
 
 	return bdb, nil
 }
+
 //
 // Database is a persistent key-value store. Apart from
 // basic data store functionality it also supports iterating

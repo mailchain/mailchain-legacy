@@ -38,7 +38,7 @@ integration-test: unit-test
 	$(GO) test ./testing/integration
 
 license: .FORCE
-	addlicense -l apache -c Finobo ./internal
+	addlicense -l apache -c="Mailchain Ltd." ./internal
 
 proto:
 	rm -f ./internal/envelope/*.pb.go
@@ -75,7 +75,6 @@ openapi:
 	echo '`' >>  ./cmd/mailchain/internal/http/handlers/openapi.go
 	echo '}' >>  ./cmd/mailchain/internal/http/handlers/openapi.go	
 	gofmt -w -s ./cmd/mailchain/internal/http/handlers/openapi.go
-	addlicense -l apache -c Finobo ./cmd/mailchain/internal/http/handlers/openapi.go
 	rm -rf vendor
 
 snapshot:

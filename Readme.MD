@@ -58,7 +58,7 @@ The code in this repository has not been audited.
 
 ## License
 
-Copyright 2019, Finobo. All rights reserved.
+Copyright 2022, Mailchain Ltd. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 these files except in compliance with the License. You may obtain a copy of the

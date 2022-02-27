@@ -17,6 +17,7 @@ package envelope
 import (
 	"bytes"
 	"encoding/hex"
+	"github.com/mailchain/mailchain/crypto/cipher/noop"
 	"net/url"
 	"strings"
 
@@ -38,6 +39,10 @@ func NewZeroX01(encrypter cipher.Encrypter, opts *CreateOpts) (*ZeroX01, error) 
 
 	if opts.Resource == "" {
 		return nil, errors.Errorf("resource must not be empty")
+	}
+
+	if _, ok := encrypter.(noop.Encrypter); ok {
+		return nil, errors.Errorf("encrypter must not be of type NoOperation")
 	}
 
 	resource, err := hex.DecodeString(opts.Resource)

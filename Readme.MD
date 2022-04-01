@@ -12,7 +12,7 @@ It’s just like email but we’re convinced it’s better, it’s built for web
 
 ## Find out more
 
-We'd :heart: for you to join our growing community on [Discord](https://discord.gg/b258tj8z). It's the best place to reach us and get involved.
+We'd :heart: for you to join our growing community on [Discord](https://discord.gg/2gqGpagbhe). It's the best place to reach us and get involved.
 
 Follow [@mailchain_xyz](https://twitter.com/mailchain_xyz) on Twitter to hear about new releases and updates.
 

@@ -1,8 +1,0 @@
-{
-  "jsonrpc": "2.0",
-  "error": {
-      "code": -32602,
-      "message": "Invalid params: invalid length 63, expected a 0x-prefixed hex string with length of 64."
-  },
-  "id": 24
-}

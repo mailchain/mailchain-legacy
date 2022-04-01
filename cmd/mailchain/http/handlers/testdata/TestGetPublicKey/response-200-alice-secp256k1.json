@@ -1,9 +1,0 @@
-{
-    "public-key": "0x0269d908510e355beb1d5bf2df8129e5b6401e1969891e8016a0b2300739bbb006",
-    "public-key-encoding": "hex/0x-prefix",
-    "supported-encryption-types": [
-        "aes256cbc",
-        "noop"
-    ],
-    "public-key-kind": "secp256k1"
-}

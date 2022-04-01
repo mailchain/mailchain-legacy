@@ -15,6 +15,7 @@
 package envelope
 
 import (
+	"github.com/mailchain/mailchain/crypto/cipher/noop"
 	"net/url"
 	"reflect"
 	"testing"
@@ -413,6 +414,22 @@ func TestNewZeroX01(t *testing.T) {
 				&CreateOpts{
 					Location:      mli.Mailchain,
 					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+				},
+			},
+			nil,
+			true,
+		},
+		{
+			"err-invalid-encrypter",
+			args{
+				func() cipher.Encrypter {
+					return noop.Encrypter{}
+				}(),
+				secp256k1test.BobPublicKey,
+				&CreateOpts{
+					Location:      mli.Mailchain,
+					DecryptedHash: encodingtest.MustDecodeHex("2c8432ca28ce929b86a47f2d40413d161f591f8985229060491573d83f82f292f4dc68f918446332837aa57cd5145235cc40702d962cbb53ac27fb2246fb6cba"),
+					Resource:      "2c8432ca",
 				},
 			},
 			nil,

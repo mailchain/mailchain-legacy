@@ -1,7 +1,0 @@
-version: "3.7"
-
-services:
-    indexer-substrate:
-        environment:
-            INDEXER_RPC_ADDRESS: ws://beresheet1.edgewa.re:9944
-            INDEXER_NETWORK: edgeware-beresheet
